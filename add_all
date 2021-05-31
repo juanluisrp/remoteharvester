@@ -1,0 +1,71 @@
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://geometadaten.lfrz.at/at.lfrz.discoveryservices/srv/ger/csw","longTermTag":"AT-Austria","lookForNestedDiscoveryService":false}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://geobru-geonetwork.irisnet.be/geonetwork/inspire/fre/csw","longTermTag":"BE1-Belgium1","lookForNestedDiscoveryService":false}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://inspire.reporting.geo.be/eng/csw","longTermTag":"BE2-Belgium2","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://geoservices.wallonie.be/metawal/csw-inspire","longTermTag":"BE4-Belgium4","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://inspire-catalogue.egov.bg/geonetwork/srv/eng/csw","longTermTag":"BG-Bulgaria","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.geocat.ch/geonetwork/srv/eng/csw-geobasisdaten","longTermTag":"CH-Switzerland","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://geoportal.gov.cz/php/micka/csw/filter/inspire","longTermTag":"CZ-Czechia","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://metadata.geoportaal.ee/geonetwork/inspire/eng/csw","longTermTag":"EE-Estonia","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://geoportal.ypen.gr/geonetwork/srv/eng/csw","longTermTag":"GR-Greek","lookForNestedDiscoveryService":false}' 
+ 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://www.idee.es/csw-codsi-idee/srv/spa/csw","longTermTag":"ES-Spain","lookForNestedDiscoveryService":false}' 
+
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://www.geocatalogue.fr/api-public/prior/servicesRest","longTermTag":"FR-France","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://geoportal.nipp.hr/geonetwork/srv/hrv/csw-inspire","longTermTag":"HR-Croatia","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://inspire.gov.hu/geonetwork/srv/eng/csw","longTermTag":"HU-Hungary","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://gatt.lmi.is/geonetwork/srv/eng/csw","longTermTag":"IS-Iceland","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://geodati.gov.it/RNDT/csw","longTermTag":"IT-Italy","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.inspire-geoportal.lt/geonetwork/srv/eng/csw","longTermTag":"LT-Lithuania","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://catalog.inspire.geoportail.lu/geonetwork/srv/eng/csw","longTermTag":"LU-Luxembourg","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://msdi.data.gov.mt/geonetwork/srv/eng/csw","longTermTag":"MT-Malta","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://www.geonorge.no/geonetwork/srv/eng/csw-inspire","longTermTag":"NO-Norway","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.geodata.se/geodataportalen/srv/swe/csw-inspire-swe","longTermTag":"SE-Sweden","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://eprostor.gov.si/imps/srv/slv/csw-INSPIRE","longTermTag":"SI-Slovenia","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://eservices.dls.moi.gov.cy/geoportal_inspire/csw","longTermTag":"CY-Cyprus","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://inspire.geohive.ie/geoportal/csw","longTermTag":"IE-Ireland","lookForNestedDiscoveryService":false}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://mapy.geoportal.gov.pl/wss/service/CSWINSP/guest/CSWStartup","longTermTag":"PL-Poland","lookForNestedDiscoveryService":true}' 
+
+
+
+
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://metadata.vlaanderen.be/srv/dut/csw","longTermTag":"BE3-Belgium3","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsLike escapeChar=\"\\\" singleChar=\"_\" wildCard=\"%\"><ogc:PropertyName>keyword</ogc:PropertyName><ogc:Literal>%Lijst%M%R%INSPIRE%</ogc:Literal></ogc:PropertyIsLike></ogc:Filter>"}' 
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://l.gdk.prod.ffm.gdi-de.org/geonetwork/srv/ger/csw","longTermTag":"DE-Germany","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsEqualTo><ogc:PropertyName>apiso:subject</ogc:PropertyName><ogc:Literal>inspireidentifiziert</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>"}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.geodata-info.dk/srv/dan/csw","longTermTag":"DK-Denmark","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">  <ogc:Or>    <ogc:PropertyIsEqualTo>      <ogc:PropertyName>Subject</ogc:PropertyName>      <ogc:Literal>INSPIRE</ogc:Literal>    </ogc:PropertyIsEqualTo>    <ogc:PropertyIsEqualTo>      <ogc:PropertyName>Subject</ogc:PropertyName>      <ogc:Literal>Inspire</ogc:Literal>    </ogc:PropertyIsEqualTo>    <ogc:PropertyIsEqualTo>      <ogc:PropertyName>Subject</ogc:PropertyName>      <ogc:Literal>inspire</ogc:Literal>    </ogc:PropertyIsEqualTo>  </ogc:Or></ogc:Filter>"}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.paikkatietohakemisto.fi/geonetwork/srv/fin/csw","longTermTag":"FI-Finland","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:And><ogc:PropertyIsNotEqualTo><ogc:PropertyName>Subject</ogc:PropertyName><ogc:Literal>Ei-Inspire</ogc:Literal></ogc:PropertyIsNotEqualTo><ogc:PropertyIsNotEqualTo><ogc:PropertyName>Subject</ogc:PropertyName><ogc:Literal>Ej-Inspire</ogc:Literal></ogc:PropertyIsNotEqualTo><ogc:PropertyIsNotEqualTo><ogc:PropertyName>Subject</ogc:PropertyName><ogc:Literal>Not-Inspire</ogc:Literal></ogc:PropertyIsNotEqualTo></ogc:And></ogc:Filter>"}'
+
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://geometadati.viss.gov.lv/geoportal/csw","longTermTag":"LV-Latvia","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsNull><ogc:PropertyName>apiso:DataQualityValue</ogc:PropertyName></ogc:PropertyIsNull></ogc:Filter>"}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw-inspire","longTermTag":"NL-Netherlands","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:Or><ogc:PropertyIsEqualTo><ogc:PropertyName>apiso:type</ogc:PropertyName><ogc:Literal>dataset</ogc:Literal></ogc:PropertyIsEqualTo><ogc:PropertyIsEqualTo><ogc:PropertyName>apiso:type</ogc:PropertyName><ogc:Literal>series</ogc:Literal></ogc:PropertyIsEqualTo><ogc:PropertyIsEqualTo><ogc:PropertyName>apiso:type</ogc:PropertyName><ogc:Literal>service</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Or></ogc:Filter>"}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://www.geocat.ch/geonetwork/srv/ger/csw-liechtenstein-inspire","longTermTag":"LI-Liechtenstein","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsEqualTo><ogc:PropertyName>_groupOwner</ogc:PropertyName><ogc:Literal>13</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>"}'
+
+curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"https://snig.dgterritorio.gov.pt/rndg/srv/eng/csw-inspire","longTermTag":"PT-Portugal","lookForNestedDiscoveryService":false,"filter":"<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsEqualTo><ogc:PropertyName>Subject</ogc:PropertyName><ogc:Literal>INSPIRECORE</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>"}'
+
