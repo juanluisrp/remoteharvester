@@ -1,6 +1,7 @@
 package geocat.eventprocessor.processors.main;
 
 import geocat.database.entities.HarvestJob;
+import geocat.database.entities.HarvestJobState;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
@@ -29,7 +30,7 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
     @Override
     public EventProcessor_HarvestRequestedEvent internalProcessing() {
         harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
-        job = harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), "DETERMINEWORK");
+        job = harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.DETERMINING_WORK);
         return this;
     }
 

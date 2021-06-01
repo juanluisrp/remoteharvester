@@ -1,7 +1,9 @@
 package geocat.database.service;
 
 import geocat.database.entities.EndpointJob;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.entities.HarvestJob;
+import geocat.database.entities.HarvestJobState;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
 import geocat.events.HarvestRequestedEvent;
@@ -28,7 +30,7 @@ public class HarvestJobService {
 
         if (job.isPresent()) //2nd attempt
         {
-            job.get().setState("CREATING");
+            job.get().setState( HarvestJobState.CREATING);
             return harvestJobRepo.save(job.get());
         }
         HarvestJob newJob = new HarvestJob();
@@ -37,13 +39,12 @@ public class HarvestJobService {
         newJob.setLookForNestedDiscoveryService(event.isLookForNestedDiscoveryService());
         newJob.setInitialUrl(event.getUrl());
         newJob.setLongTermTag(event.getLongTermTag());
-        newJob.setState("CREATING");
-        newJob.setMessages("hi");
+        newJob.setState(HarvestJobState.CREATING);
 
         return harvestJobRepo.save(newJob);
     }
 
-    public HarvestJob updateHarvestJobStateInDB(String guid, String state) {
+    public HarvestJob updateHarvestJobStateInDB(String guid, HarvestJobState state) {
         HarvestJob job = harvestJobRepo.findById(guid).get();
         job.setState(state);
         return harvestJobRepo.save(job);
@@ -51,13 +52,13 @@ public class HarvestJobService {
 
     public synchronized WorkedDeterminedFinished determineIfWorkCompleted(String harvestId) {
         HarvestJob harvestJob = harvestJobRepo.findById(harvestId).get();
-        if (!harvestJob.getState().equalsIgnoreCase("DETERMINEWORK"))
+        if (!(harvestJob.getState() == HarvestJobState.DETERMINING_WORK) )
             return null; //already completed earlier
-        List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, "CREATED");
+        List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, EndpointJobState.DETERMINING_WORK);
         boolean workCompleted = outstandingJobs.isEmpty();
         if (workCompleted) {
             //move state
-            updateHarvestJobStateInDB(harvestId, "WORKDETERMINED");
+            updateHarvestJobStateInDB(harvestId, HarvestJobState.WORK_DETERMINED);
             return new WorkedDeterminedFinished(harvestId);
         }
         return null;

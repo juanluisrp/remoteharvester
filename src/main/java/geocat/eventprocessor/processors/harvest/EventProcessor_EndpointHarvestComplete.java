@@ -1,6 +1,8 @@
 package geocat.eventprocessor.processors.harvest;
 
 import geocat.database.entities.EndpointJob;
+import geocat.database.entities.EndpointJobState;
+import geocat.database.entities.HarvestJobState;
 import geocat.database.service.EndpointJobService;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
@@ -32,7 +34,7 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
         List<EndpointJob> jobs = endpointJobService.findAll(getInitiatingEvent().getHarvestId());
         allDone = true;
         for (EndpointJob job : jobs) {
-            boolean thisJobDone = job.getState().equals("HARVESTFINISHED");
+            boolean thisJobDone = job.getState() == EndpointJobState.RECORDS_RECEIVED;
             allDone = allDone && thisJobDone;
         }
 
@@ -48,7 +50,7 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         if (allDone) {
-            harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), "ACTUALHARVESTCOMPLETE");
+            harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.RECORDS_RECEIVED);
             ActualHarvestCompleted e = new ActualHarvestCompleted(getInitiatingEvent().getHarvestId());
             result.add(e);
         }

@@ -1,6 +1,7 @@
 package geocat.database.service;
 
 import geocat.database.entities.EndpointJob;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class EndpointJobService {
             newJob.setHarvestJobId(harvestId);
             newJob.setUrl(url);
             newJob.setFilter(filter);
-            newJob.setState("CREATED");
+            newJob.setState(EndpointJobState.CREATING);
             newJob.setLookForNestedDiscoveryService(lookForNestedDiscoveryService);
             return endpointJobRepo.save(newJob);
         }
@@ -61,7 +62,7 @@ public class EndpointJobService {
         return !endpointJobRepo.findByHarvestJobIdAndUrlIn(harvestId, urls).isEmpty();
     }
 
-    public EndpointJob updateState(String endpointId, String state) {
+    public EndpointJob updateState(String endpointId, EndpointJobState state) {
         EndpointJob job = getById(endpointId);
         job.setState(state);
         return endpointJobRepo.save(job);

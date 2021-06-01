@@ -1,5 +1,7 @@
 package geocat.eventprocessor.processors.determinework;
 
+import geocat.database.entities.EndpointJobState;
+import geocat.database.service.EndpointJobService;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
@@ -19,8 +21,12 @@ public class EventProcessor_CSWEndpointWorkDetermined extends BaseEventProcessor
     @Autowired
     HarvestJobService harvestJobService;
 
+    @Autowired
+    EndpointJobService endpointJobService;
+
     @Override
     public EventProcessor_CSWEndpointWorkDetermined internalProcessing() {
+        endpointJobService.updateState(getInitiatingEvent().getEndPointId(), EndpointJobState.WORK_DETERMINED);
         return this;
     }
 

@@ -39,7 +39,7 @@ public class MainOrchestrator extends SpringRouteBuilder {
         from("activemq:ActiveMQ.DLQ")
                 .routeId("MainOrchestrator.DLQ")
                 .onException(Throwable.class).to("activemq:ActiveMQ.DLQ_DLQ").end()
-                .bean(HarvestJobService.class, "updateHarvestJobStateInDB( ${header.processID} ,'ERROR')", BeanScope.Request)
+                .bean(HarvestJobService.class, "updateHarvestJobStateInDB( ${header.processID} ,HarvestJobState.ERROR)", BeanScope.Request)
         ;
 
     }

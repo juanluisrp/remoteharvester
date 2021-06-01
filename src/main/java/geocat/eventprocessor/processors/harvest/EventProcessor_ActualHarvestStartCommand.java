@@ -1,7 +1,9 @@
 package geocat.eventprocessor.processors.harvest;
 
 import geocat.database.entities.EndpointJob;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.entities.HarvestJob;
+import geocat.database.entities.HarvestJobState;
 import geocat.database.service.EndpointJobService;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
@@ -39,11 +41,11 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
     public EventProcessor_ActualHarvestStartCommand internalProcessing() {
         String harvestId = getInitiatingEvent().getHarvesterId();
 
-        harvestJobService.updateHarvestJobStateInDB(harvestId, "ACTUALHARVEST");
+        harvestJobService.updateHarvestJobStateInDB(harvestId, HarvestJobState.GETTING_RECORDS);
 
         List<EndpointJob> jobs = endpointJobService.findAll(harvestId);
         for (EndpointJob job : jobs) {
-            endpointJobService.updateState(job.getEndpointJobId(), "HARVESTING");
+            endpointJobService.updateState(job.getEndpointJobId(), EndpointJobState.GETTING_RECORDS);
         }
 
         return this;

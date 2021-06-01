@@ -2,7 +2,9 @@ package geocat.eventprocessor.processors.determinework;
 
 import geocat.csw.CSWMetadata;
 import geocat.csw.CSWService;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.service.DatabaseUpdateService;
+import geocat.database.service.EndpointJobService;
 import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
 import geocat.events.EventFactory;
@@ -19,6 +21,9 @@ import java.util.List;
 public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<CSWEndPointDetectedEvent> {
 
     @Autowired
+    EndpointJobService endpointJobService;
+
+    @Autowired
     CSWService cswService;
 
     @Autowired
@@ -33,6 +38,7 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
     @Override
     public EventProcessor_CSWEndPointDetectedEvent internalProcessing() {
         newEndpoints = databaseUpdateService.updateDatabase(result);
+        endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.DETERMINING_WORK);
         return this;
     }
 

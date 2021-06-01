@@ -1,6 +1,8 @@
 package geocat.database.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 // create table harvest_job (long_term_tag text, job_id varchar(40), state varchar(40), look_for_nested_discovery_service bool, filter text, initial_url text, messages text);
@@ -13,8 +15,8 @@ public class HarvestJob {
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
     private String filter;
-
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private HarvestJobState state;
 
     public String getMessages() {
         return messages;
@@ -64,11 +66,11 @@ public class HarvestJob {
         this.jobId = jobId;
     }
 
-    public String getState() {
+    public HarvestJobState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(HarvestJobState state) {
         this.state = state;
     }
 

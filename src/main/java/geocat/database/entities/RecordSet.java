@@ -1,9 +1,6 @@
 package geocat.database.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 //create table record_set (record_set_id varchar(40), endpoint_job_id varchar(40), harvest_job_id varchar(40), start_record_number int, end_record_number int, expected_number_records int, actual_number_records int, get_record_response text, last_set bool);
@@ -25,6 +22,7 @@ public class RecordSet {
     private int endRecordNumber;
     private int expectedNumberRecords;
     private int actualNumberRecords;
+    @Column(columnDefinition = "text")
     private String getRecordResponse;
     private boolean lastSet; // this is last one
 

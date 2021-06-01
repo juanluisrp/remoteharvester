@@ -1,5 +1,6 @@
 package geocat.eventprocessor.processors.main;
 
+import geocat.database.entities.HarvestJobState;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
@@ -25,7 +26,7 @@ public class EventProcessor_ActualHarvestCompleted extends BaseEventProcessor<Ac
 
     @Override
     public EventProcessor_ActualHarvestCompleted externalProcessing() {
-        // harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(),"FINISHEDACTUALHARVEST");
+        harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.RECORDS_RECEIVED);
         return this;
     }
 

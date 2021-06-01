@@ -2,6 +2,7 @@ package geocat.database.service;
 
 import geocat.csw.CSWMetadata;
 import geocat.database.entities.EndpointJob;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.entities.HarvestJob;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
@@ -44,7 +45,7 @@ public class DatabaseUpdateService {
         endpointJob.setUrlGetRecords(cswMetadata.getGetRecordsUrl());
 
         List<CSWEndPointDetectedEvent> result = createCSWEndPointDetectedEvents(cswMetadata);
-        endpointJob.setState("WORKDETERMINED");
+        endpointJob.setState(EndpointJobState.WORK_DETERMINED);
         endpointJobRepo.save(endpointJob);
         return result;
     }

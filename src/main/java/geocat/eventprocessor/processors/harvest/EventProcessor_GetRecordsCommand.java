@@ -2,6 +2,7 @@ package geocat.eventprocessor.processors.harvest;
 
 import geocat.csw.CSWService;
 import geocat.csw.csw.CSWGetRecordsHandler;
+import geocat.database.entities.EndpointJobState;
 import geocat.database.service.EndpointJobService;
 import geocat.database.service.RecordSetService;
 import geocat.eventprocessor.BaseEventProcessor;
@@ -64,7 +65,7 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
         if (recordSetService.complete(getInitiatingEvent().getEndPointId())) {
             EndpointHarvestComplete e = new EndpointHarvestComplete(getInitiatingEvent().getEndPointId(),
                     getInitiatingEvent().getHarvesterId());
-            endpointJobService.updateState(getInitiatingEvent().getEndPointId(), "HARVESTFINISHED");
+            endpointJobService.updateState(getInitiatingEvent().getEndPointId(), EndpointJobState.RECORDS_RECEIVED);
             result.add(e);
         }
         return result;

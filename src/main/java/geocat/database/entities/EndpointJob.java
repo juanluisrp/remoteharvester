@@ -1,9 +1,7 @@
 package geocat.database.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 
 //create table endpoint_job ( endpoint_job_id varchar(40), harvest_job_id varchar(40), state varchar(40), url varchar(255), url_get_records varchar(255), expected_number_of_records int, filter text,look_for_nested_discovery_service bool);
 @Entity
@@ -25,7 +23,8 @@ public class EndpointJob {
     private String filter;
     private Integer expectedNumberOfRecords;
     private String urlGetRecords;
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private EndpointJobState state;
 
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
@@ -59,11 +58,11 @@ public class EndpointJob {
         this.urlGetRecords = urlGetRecords;
     }
 
-    public String getState() {
+    public EndpointJobState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(EndpointJobState state) {
         this.state = state;
     }
 
