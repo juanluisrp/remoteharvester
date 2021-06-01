@@ -4,34 +4,13 @@ package geocat.csw;
 import java.util.List;
 
 public class CSWMetadata {
+    public String getRecordsUrl;
+    public List<List<String>> nestedGetCapUrls;
     private String harvesterId;
     private String endpointId;
     private int numberOfExpectedRecords;
-
-
     private boolean lookForNestedDiscoveryService;
-
-
-    public boolean isLookForNestedDiscoveryService() {
-        return lookForNestedDiscoveryService;
-    }
-
-    public void setLookForNestedDiscoveryService(boolean lookForNestedDiscoveryService) {
-        this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
-    }
-
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
     private String filter;
-    public String getRecordsUrl;
-    public List<List<String>> nestedGetCapUrls;
 
     public CSWMetadata(String harvesterId,
                        String endpointId,
@@ -46,7 +25,23 @@ public class CSWMetadata {
         this.getRecordsUrl = getRecordsUrl;
         this.nestedGetCapUrls = nestedGetCapUrls;
         this.filter = filter;
-        this.lookForNestedDiscoveryService=lookForNestedDiscoveryService;
+        this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
+    }
+
+    public boolean isLookForNestedDiscoveryService() {
+        return lookForNestedDiscoveryService;
+    }
+
+    public void setLookForNestedDiscoveryService(boolean lookForNestedDiscoveryService) {
+        this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     public int getNumberOfExpectedRecords() {

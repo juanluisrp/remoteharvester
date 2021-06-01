@@ -1,9 +1,13 @@
 package geocat.events;
 
-import java.util.List;
-
 public class HarvestRequestedEvent extends Event {
 
+
+    String url;
+    String harvestId;
+    String filter;
+    private String longTermTag;
+    private boolean lookForNestedDiscoveryService;
 
     public HarvestRequestedEvent() {
     }
@@ -16,8 +20,6 @@ public class HarvestRequestedEvent extends Event {
         this.longTermTag = longTermTag;
     }
 
-    private String longTermTag;
-
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
     }
@@ -25,8 +27,6 @@ public class HarvestRequestedEvent extends Event {
     public void setLookForNestedDiscoveryService(boolean lookForNestedDiscoveryService) {
         this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
     }
-
-    private boolean lookForNestedDiscoveryService;
 
     public String getUrl() {
         return url;
@@ -36,8 +36,6 @@ public class HarvestRequestedEvent extends Event {
         this.url = url;
     }
 
-    String url;
-
     public String getHarvestId() {
         return harvestId;
     }
@@ -46,8 +44,6 @@ public class HarvestRequestedEvent extends Event {
         this.harvestId = harvestId;
     }
 
-    String harvestId;
-
     public String getFilter() {
         return filter;
     }
@@ -55,6 +51,4 @@ public class HarvestRequestedEvent extends Event {
     public void setFilter(String filter) {
         this.filter = filter;
     }
-
-    String filter;
 }

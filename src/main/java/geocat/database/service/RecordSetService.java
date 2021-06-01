@@ -21,7 +21,7 @@ public class RecordSetService {
         RecordSet record = recordSetRepo.findByHarvestJobIdAndEndpointJobIdAndStartRecordNumber(cmd.getHarvesterId(),
                 cmd.getEndPointId(),
                 start
-                );
+        );
         if (record != null)
             return record;
 
@@ -29,7 +29,7 @@ public class RecordSetService {
         result.setRecordSetId(UUID.randomUUID().toString());
         result.setStartRecordNumber(start);
         result.setEndRecordNumber(end);
-        result.setExpectedNumberRecords(end-start+1);
+        result.setExpectedNumberRecords(end - start + 1);
         result.setEndpointJobId(cmd.getEndPointId());
         result.setHarvestJobId(cmd.getHarvesterId());
         result.setLastSet(lastSet);
@@ -45,16 +45,16 @@ public class RecordSetService {
     }
 
     public boolean complete(String endpointId) {
-            List<RecordSet> records = recordSetRepo.findByEndpointJobId(endpointId);
-            boolean allDone = true;
-            for(RecordSet recordSet : records){
-                boolean thisRecordDone = (recordSet.getGetRecordResponse() !=null) && (!recordSet.getGetRecordResponse().isEmpty());
-                allDone = allDone && thisRecordDone;
-            }
-            return allDone;
+        List<RecordSet> records = recordSetRepo.findByEndpointJobId(endpointId);
+        boolean allDone = true;
+        for (RecordSet recordSet : records) {
+            boolean thisRecordDone = (recordSet.getGetRecordResponse() != null) && (!recordSet.getGetRecordResponse().isEmpty());
+            allDone = allDone && thisRecordDone;
+        }
+        return allDone;
     }
 
-    public List<RecordSet> getAll(String endpointId){
-        return  recordSetRepo.findByEndpointJobId(endpointId);
+    public List<RecordSet> getAll(String endpointId) {
+        return recordSetRepo.findByEndpointJobId(endpointId);
     }
 }

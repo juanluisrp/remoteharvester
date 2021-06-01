@@ -35,27 +35,26 @@ public class XMLTools {
     }
 
 
-
-    public static org.w3c.dom.NodeList xpath_nodeset(Document doc,String xpathStr) throws XPathExpressionException {
+    public static org.w3c.dom.NodeList xpath_nodeset(Document doc, String xpathStr) throws XPathExpressionException {
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
 
-        return ((org.w3c.dom.NodeList)xpath.evaluate(xpathStr,doc, XPathConstants.NODESET));
+        return ((org.w3c.dom.NodeList) xpath.evaluate(xpathStr, doc, XPathConstants.NODESET));
     }
 
     public static org.w3c.dom.NodeList xpath_nodeset(Node doc, String xpathStr) throws XPathExpressionException {
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
 
-        return ((org.w3c.dom.NodeList)xpath.evaluate(xpathStr,doc, XPathConstants.NODESET));
+        return ((org.w3c.dom.NodeList) xpath.evaluate(xpathStr, doc, XPathConstants.NODESET));
     }
 
 
-    public static String xpath_attribute(Document doc,String xpathStr, String attname) throws XPathExpressionException {
+    public static String xpath_attribute(Document doc, String xpathStr, String attname) throws XPathExpressionException {
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
 
-        String value = ((org.w3c.dom.Node)xpath.evaluate(xpathStr,doc, XPathConstants.NODE)).getAttributes().getNamedItem(attname).getNodeValue();
+        String value = ((org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE)).getAttributes().getNamedItem(attname).getNodeValue();
         return value;
     }
 

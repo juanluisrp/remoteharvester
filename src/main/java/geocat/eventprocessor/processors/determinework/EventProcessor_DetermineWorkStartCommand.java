@@ -15,8 +15,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor<DetermineWorkStartCommand>
-{
+public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor<DetermineWorkStartCommand> {
 
     @Autowired
     EndpointJobService endpointJobService;
@@ -28,25 +27,25 @@ public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor
     EndpointJob job;
 
     @Override
-    public EventProcessor_DetermineWorkStartCommand internalProcessing(){
+    public EventProcessor_DetermineWorkStartCommand internalProcessing() {
 
-        job = endpointJobService.createInitial( getInitiatingEvent().getHarvestId(),
+        job = endpointJobService.createInitial(getInitiatingEvent().getHarvestId(),
                 getInitiatingEvent().getInitialUrl(),
                 getInitiatingEvent().getFilter(),
-                getInitiatingEvent().isLookForNestedDiscoveryService() );
+                getInitiatingEvent().isLookForNestedDiscoveryService());
 
 
         return this;
     }
 
     @Override
-    public EventProcessor_DetermineWorkStartCommand externalProcessing(){
+    public EventProcessor_DetermineWorkStartCommand externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
-        List<Event> result  = new ArrayList<>();
+    public List<Event> newEventProcessing() {
+        List<Event> result = new ArrayList<>();
 
 
         Event newEvent = eventFactory.create_CSWEndPointDetectedEvent(
@@ -54,7 +53,7 @@ public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor
                 job.getEndpointJobId(),
                 job.getUrl(),
                 job.getFilter(),
-                job.isLookForNestedDiscoveryService() );
+                job.isLookForNestedDiscoveryService());
 
         result.add(newEvent);
         return result;

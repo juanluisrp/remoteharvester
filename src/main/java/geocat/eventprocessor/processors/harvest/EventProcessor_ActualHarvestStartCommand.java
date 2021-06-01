@@ -19,8 +19,7 @@ import java.util.List;
 @Component
 @Scope("prototype")
 
-public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor<ActualHarvestStartCommand>
-{
+public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor<ActualHarvestStartCommand> {
 
     @Autowired
     HarvestJobService harvestJobService;
@@ -37,13 +36,13 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
 
 
     @Override
-    public EventProcessor_ActualHarvestStartCommand  internalProcessing() {
+    public EventProcessor_ActualHarvestStartCommand internalProcessing() {
         String harvestId = getInitiatingEvent().getHarvesterId();
 
-        harvestJobService.updateHarvestJobStateInDB(harvestId,"ACTUALHARVEST");
+        harvestJobService.updateHarvestJobStateInDB(harvestId, "ACTUALHARVEST");
 
         List<EndpointJob> jobs = endpointJobService.findAll(harvestId);
-        for(EndpointJob job : jobs){
+        for (EndpointJob job : jobs) {
             endpointJobService.updateState(job.getEndpointJobId(), "HARVESTING");
         }
 
@@ -51,20 +50,20 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
     }
 
     @Override
-    public EventProcessor_ActualHarvestStartCommand externalProcessing(){
+    public EventProcessor_ActualHarvestStartCommand externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         String harvestId = getInitiatingEvent().getHarvesterId();
 
         HarvestJob harvestJob = harvestJobService.getById(harvestId);
         List<EndpointJob> endpointJobs = harvestJobService.getEndpointJobs(harvestId);
 
-        for(EndpointJob job : endpointJobs) {
-            ActualHarvestEndpointStartCommand e =eventFactory.create_ActualHarvestEndpointStartCommand(job,harvestJob);
+        for (EndpointJob job : endpointJobs) {
+            ActualHarvestEndpointStartCommand e = eventFactory.create_ActualHarvestEndpointStartCommand(job, harvestJob);
             result.add(e);
         }
         return result;

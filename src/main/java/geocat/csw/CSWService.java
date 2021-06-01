@@ -33,7 +33,6 @@ public class CSWService {
     OGCFilterService ogcFilterService;
 
 
-
     //this will setup an endpoint for read harvesting
     // output;
     //    * update the corresponding endpoint_job in the database
@@ -53,13 +52,13 @@ public class CSWService {
         String endpointId = endPointDetectedEvent.getEndPointId();
         String filter = endPointDetectedEvent.getFilter();
 
-        logger.debug("getMetadata called on URL="+endPointDetectedEvent.getUrl());
+        logger.debug("getMetadata called on URL=" + endPointDetectedEvent.getUrl());
         String getRecordsUrl = endpoint_extractGetRecordsURL(endPointDetectedEvent);
-        int expectedNumberOfRecords = endpoint_numberOfRecordsMatchingFilter(endPointDetectedEvent,getRecordsUrl);
+        int expectedNumberOfRecords = endpoint_numberOfRecordsMatchingFilter(endPointDetectedEvent, getRecordsUrl);
 
         List<List<String>> nestedGetCaps = new ArrayList<>();
         if (endPointDetectedEvent.isLookForNestedDiscoveryService())
-            nestedGetCaps=  endpoint_nestedDiscovery(endPointDetectedEvent,getRecordsUrl);
+            nestedGetCaps = endpoint_nestedDiscovery(endPointDetectedEvent, getRecordsUrl);
 
         CSWMetadata result = new CSWMetadata(harvestId,
                 endpointId,
@@ -71,30 +70,30 @@ public class CSWService {
         return result;
     }
 
-    private List<List<String>> endpoint_nestedDiscovery(CSWEndPointDetectedEvent endPointDetectedEvent,String url) throws Exception {
-        logger.debug("determining nested discovery services from GETCAP URL="+endPointDetectedEvent.getUrl()+", with GetRecord URL="+url);
+    private List<List<String>> endpoint_nestedDiscovery(CSWEndPointDetectedEvent endPointDetectedEvent, String url) throws Exception {
+        logger.debug("determining nested discovery services from GETCAP URL=" + endPointDetectedEvent.getUrl() + ", with GetRecord URL=" + url);
         List<List<String>> result = new ArrayList<>();
 
-        String getDiscoveryRecordsXml =  cswEngine.GetRecords(url, ogcFilterService.getGetdiscoveryXml(endPointDetectedEvent.getFilter()));
+        String getDiscoveryRecordsXml = cswEngine.GetRecords(url, ogcFilterService.getGetdiscoveryXml(endPointDetectedEvent.getFilter()));
 
         return cswNestedDiscoveryHandler.extractNestedDiscoveryEndpoints(getDiscoveryRecordsXml);
     }
 
-    private int endpoint_numberOfRecordsMatchingFilter(CSWEndPointDetectedEvent endPointDetectedEvent,String url) throws Exception {
-        logger.debug("determining number of records from GETCAP URL="+endPointDetectedEvent.getUrl()+", with GetRecord URL="+url);
+    private int endpoint_numberOfRecordsMatchingFilter(CSWEndPointDetectedEvent endPointDetectedEvent, String url) throws Exception {
+        logger.debug("determining number of records from GETCAP URL=" + endPointDetectedEvent.getUrl() + ", with GetRecord URL=" + url);
 
         String getRecordSummaryXml = cswEngine.GetRecords(url, ogcFilterService.getExpectedNumberRecordsXml(endPointDetectedEvent.getFilter()));
         return cswGetRecordsHandler.extractTotalNumberOfRecords(getRecordSummaryXml);
     }
 
     private String endpoint_extractGetRecordsURL(CSWEndPointDetectedEvent endPointDetectedEvent) throws Exception {
-        logger.debug("requesting GetCapabilities from URL="+endPointDetectedEvent.getUrl());
+        logger.debug("requesting GetCapabilities from URL=" + endPointDetectedEvent.getUrl());
 
-        String getcapXmlString =  cswEngine.GetCapabilities(endPointDetectedEvent.getUrl());
+        String getcapXmlString = cswEngine.GetCapabilities(endPointDetectedEvent.getUrl());
         return cswGetCapHandler.extractGetRecordsURL(getcapXmlString);
-     }
+    }
 
-     public String GetRecords(String url, String filter, int startRecord, int endRecord) throws Exception {
-         return cswEngine.GetRecords(url, ogcFilterService.getRecordsXML(filter,startRecord,endRecord));
-     }
+    public String GetRecords(String url, String filter, int startRecord, int endRecord) throws Exception {
+        return cswEngine.GetRecords(url, ogcFilterService.getRecordsXML(filter, startRecord, endRecord));
+    }
 }

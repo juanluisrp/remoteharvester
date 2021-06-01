@@ -1,17 +1,13 @@
 package geocat.database.service;
 
 import geocat.database.entities.EndpointJob;
-import geocat.database.entities.HarvestJob;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
-import geocat.events.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -25,12 +21,8 @@ public class EndpointJobService {
     private HarvestJobRepo harvestJobRepo;
 
 
-
-
-
-    public EndpointJob createInitial(String harvestId, String url, String filter, boolean lookForNestedDiscoveryService)
-    {
-        EndpointJob job = endpointJobRepo.findFirstByHarvestJobIdAndUrl(harvestId,url);
+    public EndpointJob createInitial(String harvestId, String url, String filter, boolean lookForNestedDiscoveryService) {
+        EndpointJob job = endpointJobRepo.findFirstByHarvestJobIdAndUrl(harvestId, url);
         if (job == null) //normal case
         {
             UUID guid = java.util.UUID.randomUUID();
@@ -65,21 +57,21 @@ public class EndpointJobService {
 //        return endpointJobRepo.save(job);
 //    }
 
-    public boolean areTheseUrlsInDB(String harvestId, List<String> urls){
-        return  !endpointJobRepo.findByHarvestJobIdAndUrlIn(harvestId,urls).isEmpty();
+    public boolean areTheseUrlsInDB(String harvestId, List<String> urls) {
+        return !endpointJobRepo.findByHarvestJobIdAndUrlIn(harvestId, urls).isEmpty();
     }
 
-    public EndpointJob updateState(String endpointId, String state){
+    public EndpointJob updateState(String endpointId, String state) {
         EndpointJob job = getById(endpointId);
         job.setState(state);
         return endpointJobRepo.save(job);
     }
 
-    public List<EndpointJob> findAll(String harvestId){
+    public List<EndpointJob> findAll(String harvestId) {
         return endpointJobRepo.findByHarvestJobId(harvestId);
     }
 
-    public EndpointJob getById(String id){
+    public EndpointJob getById(String id) {
         return endpointJobRepo.findById(id).get();
     }
 

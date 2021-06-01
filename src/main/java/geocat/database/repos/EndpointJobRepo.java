@@ -12,10 +12,13 @@ import java.util.List;
 public interface EndpointJobRepo extends CrudRepository<EndpointJob, String> {
 
     EndpointJob findFirstByHarvestJobIdAndUrl(String harvestId, String url);
+
     List<EndpointJob> findByHarvestJobIdAndUrlIn(String harvestId, List<String> urls);
 
     List<EndpointJob> findByHarvestJobIdAndStateNot(String harvestId, String not_state);
+
     List<EndpointJob> findByHarvestJobIdAndState(String harvestId, String state);
+
     List<EndpointJob> findByHarvestJobId(String harvestId);
 
 

@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication()
 public class MySpringApp {
 
-    public static void main(String[] args) throws  Exception {
+    public static void main(String[] args) throws Exception {
         SpringApplication app = new SpringApplication(MySpringApp.class);
         ApplicationContext ctx = app.run(args);
     }

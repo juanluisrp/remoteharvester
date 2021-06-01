@@ -2,7 +2,9 @@ package geocat.csw.http;
 
 public class RedirectException extends Exception {
 
-    public RedirectException(String message , String newLocation) {
+    String newLocation;
+
+    public RedirectException(String message, String newLocation) {
         super(message);
         this.newLocation = newLocation;
     }
@@ -14,7 +16,5 @@ public class RedirectException extends Exception {
     public void setNewLocation(String newLocation) {
         this.newLocation = newLocation;
     }
-
-    String newLocation;
 
 }

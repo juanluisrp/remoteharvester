@@ -16,8 +16,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<CSWEndPointDetectedEvent>
-{
+public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<CSWEndPointDetectedEvent> {
 
     @Autowired
     CSWService cswService;
@@ -32,24 +31,24 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
     List<CSWEndPointDetectedEvent> newEndpoints;
 
     @Override
-    public EventProcessor_CSWEndPointDetectedEvent internalProcessing(){
-        newEndpoints =  databaseUpdateService.updateDatabase( result );
+    public EventProcessor_CSWEndPointDetectedEvent internalProcessing() {
+        newEndpoints = databaseUpdateService.updateDatabase(result);
         return this;
     }
 
     @Override
     public EventProcessor_CSWEndPointDetectedEvent externalProcessing() throws Exception {
-        result = cswService.getMetadata( getInitiatingEvent());
+        result = cswService.getMetadata(getInitiatingEvent());
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
-        if ( (newEndpoints != null) && (!newEndpoints.isEmpty()) )
-            result.addAll( newEndpoints);
+        if ((newEndpoints != null) && (!newEndpoints.isEmpty()))
+            result.addAll(newEndpoints);
         else {
-            Event e = eventFactory.create_CSWEndpointWorkDetermined( getInitiatingEvent().getHarvesterId(),
+            Event e = eventFactory.create_CSWEndpointWorkDetermined(getInitiatingEvent().getHarvesterId(),
                     getInitiatingEvent().getEndPointId());
             result.add(e);
         }

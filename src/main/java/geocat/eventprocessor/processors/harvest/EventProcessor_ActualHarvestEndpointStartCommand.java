@@ -16,8 +16,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventProcessor<ActualHarvestEndpointStartCommand>
-{
+public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventProcessor<ActualHarvestEndpointStartCommand> {
 
     @Autowired
     RecordSetService recordSetService;
@@ -25,12 +24,12 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
     @Autowired
     EventFactory eventFactory;
 
-    public EventProcessor_ActualHarvestEndpointStartCommand(){
+    public EventProcessor_ActualHarvestEndpointStartCommand() {
         super();
     }
 
     @Override
-    public EventProcessor_ActualHarvestEndpointStartCommand  internalProcessing() throws Exception {
+    public EventProcessor_ActualHarvestEndpointStartCommand internalProcessing() throws Exception {
         ActualHarvestEndpointStartCommand cmd = getInitiatingEvent();
         if (cmd.getExpectedNumberOfRecords() <= 0)
             throw new Exception("getExpectedNumberOfRecords <= 0");
@@ -41,29 +40,30 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
         //for example, for getting 10 records;
         //  first one - 1 to 10 (start at 1, get 10)
         //  2nd       - 11 to 20 (start at 11, get 10)
-        for(int idx=1; idx<= cmd.getExpectedNumberOfRecords(); idx += cmd.getnRecordPerRequest()) {
+        for (int idx = 1; idx <= cmd.getExpectedNumberOfRecords(); idx += cmd.getnRecordPerRequest()) {
             int start = idx;
-            int end = idx + cmd.getnRecordPerRequest()-1;
-            if (end >cmd.getExpectedNumberOfRecords())
+            int end = idx + cmd.getnRecordPerRequest() - 1;
+            if (end > cmd.getExpectedNumberOfRecords())
                 end = cmd.getExpectedNumberOfRecords();
-            boolean lastOne = (end==cmd.getExpectedNumberOfRecords());
-            RecordSet recordSet = recordSetService.create(start,end, cmd, lastOne);
+            boolean lastOne = (end == cmd.getExpectedNumberOfRecords());
+            RecordSet recordSet = recordSetService.create(start, end, cmd, lastOne);
             records.add(recordSet);
         }
         return this;
     }
 
     @Override
-    public EventProcessor_ActualHarvestEndpointStartCommand externalProcessing(){
+    public EventProcessor_ActualHarvestEndpointStartCommand externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         String endpointId = getInitiatingEvent().getEndPointId();
-        List<RecordSet> records =  recordSetService.getAll(endpointId);;
-        for(RecordSet record : records){
+        List<RecordSet> records = recordSetService.getAll(endpointId);
+        ;
+        for (RecordSet record : records) {
             GetRecordsCommand command = eventFactory.create_GetRecordsCommand(getInitiatingEvent(),
                     record.getStartRecordNumber(),
                     record.getEndRecordNumber(),

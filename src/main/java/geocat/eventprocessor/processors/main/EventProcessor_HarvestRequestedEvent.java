@@ -6,7 +6,6 @@ import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
 import geocat.events.EventFactory;
 import geocat.events.HarvestRequestedEvent;
-import geocat.events.determinework.WorkedDeterminedFinished;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<HarvestRequestedEvent>
-{
+public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<HarvestRequestedEvent> {
 
     @Autowired
     HarvestJobService harvestJobService;
@@ -29,21 +27,21 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
     HarvestJob job;
 
     @Override
-    public EventProcessor_HarvestRequestedEvent internalProcessing(){
+    public EventProcessor_HarvestRequestedEvent internalProcessing() {
         harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
         job = harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), "DETERMINEWORK");
         return this;
     }
 
     @Override
-    public EventProcessor_HarvestRequestedEvent externalProcessing(){
+    public EventProcessor_HarvestRequestedEvent externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
-        Event newEvent =  eventFactory.create_StartWorkCommand( job );
+        Event newEvent = eventFactory.create_StartWorkCommand(job);
         result.add(newEvent);
         return result;
     }

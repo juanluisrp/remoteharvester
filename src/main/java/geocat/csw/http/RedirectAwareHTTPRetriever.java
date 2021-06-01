@@ -12,16 +12,13 @@ import java.io.IOException;
 @Component
 @Scope("prototype")
 @Qualifier("redirectAwareHTTPRetriever")
-public class RedirectAwareHTTPRetriever implements  IHTTPRetriever {
-
-    Logger logger = LoggerFactory.getLogger(RedirectAwareHTTPRetriever.class);
-
+public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
 
     public static int MAXREDIRECTS = 5;
-
     @Autowired
     @Qualifier("basicHTTPRetriever")
     public BasicHTTPRetriever retriever; // public for testing
+    Logger logger = LoggerFactory.getLogger(RedirectAwareHTTPRetriever.class);
 
     public RedirectAwareHTTPRetriever() {
 
@@ -31,20 +28,19 @@ public class RedirectAwareHTTPRetriever implements  IHTTPRetriever {
     @Override
     public String retrieveXML(String verb, String location, String body, String cookie)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return _retrieveXML(verb,location,body, cookie, MAXREDIRECTS);
+        return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS);
     }
 
 
     protected String _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
         try {
-            return retriever.retrieveXML(verb,location,body,cookie);
-        }
-        catch(RedirectException re){
+            return retriever.retrieveXML(verb, location, body, cookie);
+        } catch (RedirectException re) {
             if (nRedirectsRemaining <= 0)
                 throw new IOException("too many redirects!");
-            logger.debug("     REDIRECTED TO location="+re.getNewLocation());
-            return _retrieveXML(verb,re.getNewLocation(),body,cookie,nRedirectsRemaining--);
+            logger.debug("     REDIRECTED TO location=" + re.getNewLocation());
+            return _retrieveXML(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--);
         }
     }
 }

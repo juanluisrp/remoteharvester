@@ -16,27 +16,22 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<EndpointHarvestComplete>
-{
-    public EventProcessor_EndpointHarvestComplete(){
+public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<EndpointHarvestComplete> {
+    @Autowired
+    EndpointJobService endpointJobService;
+    @Autowired
+    HarvestJobService harvestJobService;
+    boolean allDone;
+
+    public EventProcessor_EndpointHarvestComplete() {
         super();
     }
 
-
-    @Autowired
-    EndpointJobService endpointJobService;
-
-    @Autowired
-    HarvestJobService harvestJobService;
-
-    boolean allDone;
-
-
     @Override
-    public EventProcessor_EndpointHarvestComplete  internalProcessing(){
+    public EventProcessor_EndpointHarvestComplete internalProcessing() {
         List<EndpointJob> jobs = endpointJobService.findAll(getInitiatingEvent().getHarvestId());
         allDone = true;
-        for(EndpointJob job : jobs) {
+        for (EndpointJob job : jobs) {
             boolean thisJobDone = job.getState().equals("HARVESTFINISHED");
             allDone = allDone && thisJobDone;
         }
@@ -45,12 +40,12 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
     }
 
     @Override
-    public EventProcessor_EndpointHarvestComplete externalProcessing(){
+    public EventProcessor_EndpointHarvestComplete externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         if (allDone) {
             harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), "ACTUALHARVESTCOMPLETE");

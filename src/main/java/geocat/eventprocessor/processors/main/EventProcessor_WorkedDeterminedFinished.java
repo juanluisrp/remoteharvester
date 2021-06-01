@@ -12,21 +12,20 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_WorkedDeterminedFinished extends BaseEventProcessor<WorkedDeterminedFinished>
-{
+public class EventProcessor_WorkedDeterminedFinished extends BaseEventProcessor<WorkedDeterminedFinished> {
 
     @Override
-    public EventProcessor_WorkedDeterminedFinished internalProcessing(){
+    public EventProcessor_WorkedDeterminedFinished internalProcessing() {
         return this;
     }
 
     @Override
-    public EventProcessor_WorkedDeterminedFinished externalProcessing(){
+    public EventProcessor_WorkedDeterminedFinished externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         ActualHarvestStartCommand e = new ActualHarvestStartCommand(getInitiatingEvent().getHarvestId());
         result.add(e);

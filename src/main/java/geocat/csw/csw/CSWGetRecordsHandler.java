@@ -17,13 +17,13 @@ public class CSWGetRecordsHandler {
 
     public int extractTotalNumberOfRecords(String getRecordsResponseXML) throws Exception {
         Document doc = XMLTools.parseXML(getRecordsResponseXML);
-        String nrecordsString = XMLTools.xpath_attribute(doc,"/GetRecordsResponse/SearchResults","numberOfRecordsMatched");
+        String nrecordsString = XMLTools.xpath_attribute(doc, "/GetRecordsResponse/SearchResults", "numberOfRecordsMatched");
         return Integer.parseInt(nrecordsString);
     }
 
     public int extractNextRecordNumber(String getRecordsResponseXML) throws Exception {
         Document doc = XMLTools.parseXML(getRecordsResponseXML);
-        String nextRecordString = XMLTools.xpath_attribute(doc,"/GetRecordsResponse/SearchResults","nextRecord");
+        String nextRecordString = XMLTools.xpath_attribute(doc, "/GetRecordsResponse/SearchResults", "nextRecord");
         return Integer.parseInt(nextRecordString);
     }
 

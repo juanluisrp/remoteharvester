@@ -9,7 +9,7 @@ public class EndpointHarvestComplete extends Event {
     public EndpointHarvestComplete() {
     }
 
-    public EndpointHarvestComplete(String endPointId,String harvestId) {
+    public EndpointHarvestComplete(String endPointId, String harvestId) {
         this.endPointId = endPointId;
         this.harvestId = harvestId;
     }

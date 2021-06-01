@@ -4,12 +4,21 @@ import geocat.events.Event;
 
 public class DetermineWorkStartCommand extends Event {
 
+    private boolean lookForNestedDiscoveryService;
+    private String harvestId;
+    private String initialUrl;
+    private String filter;
+
     public DetermineWorkStartCommand(String harvestId, String initialUrl, String filter, boolean lookForNestedDiscoveryService) {
         this.harvestId = harvestId;
         this.initialUrl = initialUrl;
         this.filter = filter;
         this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
     }
+
+    public DetermineWorkStartCommand() {
+    }
+
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
     }
@@ -18,14 +27,10 @@ public class DetermineWorkStartCommand extends Event {
         this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
     }
 
-    private boolean lookForNestedDiscoveryService;
-
-    public DetermineWorkStartCommand() {
-    }
-
     public String getInitialUrl() {
         return initialUrl;
     }
+
     public void setInitialUrl(String initialUrl) {
         this.initialUrl = initialUrl;
     }
@@ -38,9 +43,6 @@ public class DetermineWorkStartCommand extends Event {
         this.harvestId = harvestId;
     }
 
-    private String harvestId;
-    private String initialUrl;
-
     public String getFilter() {
         return filter;
     }
@@ -48,7 +50,5 @@ public class DetermineWorkStartCommand extends Event {
     public void setFilter(String filter) {
         this.filter = filter;
     }
-
-    private String filter;
 
 }

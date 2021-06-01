@@ -14,12 +14,10 @@ import java.io.IOException;
 @Qualifier("cookieAttachingRetriever")
 public class CookieAttachingRetriever implements IHTTPRetriever {
 
-    Logger logger = LoggerFactory.getLogger(CookieAttachingRetriever.class);
-
-
     @Autowired
     @Qualifier("redirectAwareHTTPRetriever")
     public RedirectAwareHTTPRetriever retriever; // public for testing
+    Logger logger = LoggerFactory.getLogger(CookieAttachingRetriever.class);
 
     public CookieAttachingRetriever() {
 
@@ -27,12 +25,11 @@ public class CookieAttachingRetriever implements IHTTPRetriever {
 
     @Override
     public String retrieveXML(String verb, String location, String body, String cookie) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        try{
-            return retriever.retrieveXML(verb,location,body,cookie);
-        }
-        catch(ExceptionWithCookies eCookie){
-            logger.debug("   RETRYING WITH ATTACHED COOKIE:"+eCookie.cookie);
-            return retriever.retrieveXML(verb,location,body,eCookie.cookie);
+        try {
+            return retriever.retrieveXML(verb, location, body, cookie);
+        } catch (ExceptionWithCookies eCookie) {
+            logger.debug("   RETRYING WITH ATTACHED COOKIE:" + eCookie.cookie);
+            return retriever.retrieveXML(verb, location, body, eCookie.cookie);
         }
     }
 }

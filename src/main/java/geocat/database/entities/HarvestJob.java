@@ -6,6 +6,15 @@ import javax.persistence.Id;
 // create table harvest_job (long_term_tag text, job_id varchar(40), state varchar(40), look_for_nested_discovery_service bool, filter text, initial_url text, messages text);
 @Entity
 public class HarvestJob {
+    @Id
+    private String jobId;
+    public String initialUrl;
+    private String messages;
+    private String longTermTag;
+    private boolean lookForNestedDiscoveryService;
+    private String filter;
+
+    private String state;
 
     public String getMessages() {
         return messages;
@@ -15,10 +24,6 @@ public class HarvestJob {
         this.messages = messages;
     }
 
-    private String messages;
-
-
-
     public String getInitialUrl() {
         return initialUrl;
     }
@@ -27,12 +32,13 @@ public class HarvestJob {
         this.initialUrl = initalUrl;
     }
 
-    public String initialUrl;
-
     public String getFilter() {
         return filter;
     }
 
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
     public String getLongTermTag() {
         return longTermTag;
@@ -42,9 +48,6 @@ public class HarvestJob {
         this.longTermTag = longTermTag;
     }
 
-    private String longTermTag;
-
-
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
     }
@@ -52,14 +55,6 @@ public class HarvestJob {
     public void setLookForNestedDiscoveryService(boolean lookForNestedDiscoveryService) {
         this.lookForNestedDiscoveryService = lookForNestedDiscoveryService;
     }
-
-    private boolean lookForNestedDiscoveryService;
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    private String filter;
 
     public String getJobId() {
         return jobId;
@@ -69,9 +64,6 @@ public class HarvestJob {
         this.jobId = jobId;
     }
 
-    @Id
-    private String jobId;
-
     public String getState() {
         return state;
     }
@@ -80,6 +72,4 @@ public class HarvestJob {
         this.state = state;
     }
 
-    private String state;
-
- }
+}

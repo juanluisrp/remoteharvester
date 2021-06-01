@@ -14,26 +14,25 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_CSWEndpointWorkDetermined extends BaseEventProcessor<CSWEndpointWorkDetermined>
-{
+public class EventProcessor_CSWEndpointWorkDetermined extends BaseEventProcessor<CSWEndpointWorkDetermined> {
 
     @Autowired
     HarvestJobService harvestJobService;
 
     @Override
-    public EventProcessor_CSWEndpointWorkDetermined internalProcessing(){
+    public EventProcessor_CSWEndpointWorkDetermined internalProcessing() {
         return this;
     }
 
     @Override
-    public EventProcessor_CSWEndpointWorkDetermined externalProcessing(){
+    public EventProcessor_CSWEndpointWorkDetermined externalProcessing() {
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
-        WorkedDeterminedFinished finished =  harvestJobService.determineIfWorkCompleted(getInitiatingEvent().getHarvesterId());
+        WorkedDeterminedFinished finished = harvestJobService.determineIfWorkCompleted(getInitiatingEvent().getHarvesterId());
         if (finished != null)
             result.add(finished);
         return result;

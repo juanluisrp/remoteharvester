@@ -3,7 +3,8 @@ package geocat.routes.rest;
 import geocat.events.EventService;
 import geocat.model.HarvesterConfig;
 import geocat.routes.queuebased.MainOrchestrator;
-import org.apache.camel.*;
+import org.apache.camel.BeanScope;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
@@ -31,34 +32,30 @@ public class StartHarvesting extends RouteBuilder {
         //--- incoming start process request (HTTP)
         rest("/api/startHarvest")
                 .post()
-                    .route()
-                        .unmarshal( jsonDefHarvesterConfig)  // parse the json input (in post body)
+                .route()
+                .unmarshal(jsonDefHarvesterConfig)  // parse the json input (in post body)
                 .routeId("rest.rest.startHarvest")
                 .bean(EventService.class, "validateHarvesterConfig", BeanScope.Request)  // have config validate itself
-                        .bean(EventService.class,"addGUID",BeanScope.Request)  // strip off header and add the process ID guid
+                .bean(EventService.class, "addGUID", BeanScope.Request)  // strip off header and add the process ID guid
 
-                        .multicast()
-                            // send event to start process
-                            .to(ExchangePattern.InOnly,"direct:addToQueue") // add to queue (see below)
+                .multicast()
+                // send event to start process
+                .to(ExchangePattern.InOnly, "direct:addToQueue") // add to queue (see below)
 
-                            //return answer (guid) via http
-                            .setHeader("content-type",constant("application/json"))
-                            .bean(EventService.class,"resultJSON",BeanScope.Request)
+                //return answer (guid) via http
+                .setHeader("content-type", constant("application/json"))
+                .bean(EventService.class, "resultJSON", BeanScope.Request)
         ;
 
         // mini-route to send to the message queue
         from("direct:addToQueue") // from above route
                 .routeId("rest.HarvestRequestedEvent")
                 .log("HarvestRequestedEvent")
-                .bean(EventService.class, "createHarvestRequestedEvent(${body},${headers.processID})",BeanScope.Request)
+                .bean(EventService.class, "createHarvestRequestedEvent(${body},${headers.processID})", BeanScope.Request)
                 .marshal().json() // convert HarvesterConfig back to json
-                    .to("activemq:"+ MainOrchestrator.myJMSQueueName) //send to message queue
-                ;
+                .to("activemq:" + MainOrchestrator.myJMSQueueName) //send to message queue
+        ;
     }
-
-
-
-
 
 
 }

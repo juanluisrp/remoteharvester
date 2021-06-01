@@ -7,9 +7,9 @@ public class ActualHarvestEndpointStartCommand extends Event {
     private String harvesterId;
     private String getRecordsURL;
     private String filter;
-    private int    nRecordPerRequest;
-    private int    maxSimultaneousRequests;
-    private int    expectedNumberOfRecords;
+    private int nRecordPerRequest;
+    private int maxSimultaneousRequests;
+    private int expectedNumberOfRecords;
 
     public ActualHarvestEndpointStartCommand() {
     }
@@ -75,8 +75,8 @@ public class ActualHarvestEndpointStartCommand extends Event {
     }
 
     @Override
-    public String toString(){
-        return "ActualHarvestEndpointStartCommand with url="+getRecordsURL+", expected records ="+expectedNumberOfRecords;
+    public String toString() {
+        return "ActualHarvestEndpointStartCommand with url=" + getRecordsURL + ", expected records =" + expectedNumberOfRecords;
     }
 
 

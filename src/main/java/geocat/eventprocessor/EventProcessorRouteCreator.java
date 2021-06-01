@@ -11,10 +11,9 @@ import org.springframework.stereotype.Component;
 public class EventProcessorRouteCreator {
 
     /**
-     *
      * eventType example - eventType=ActualHarvestEndpointStartCommand
-     *                      Then there should be a class called
-     *                          EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventProcessor<ActualHarvestEndpointStartCommand>
+     * Then there should be a class called
+     * EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventProcessor<ActualHarvestEndpointStartCommand>
      *
      * @param routeBuilder
      * @param eventType
@@ -27,22 +26,22 @@ public class EventProcessorRouteCreator {
                                   String from,
                                   String to,
                                   String tag
-                                  ) throws Exception {
+    ) throws Exception {
         validate(eventType);
 
         //=====================================================================
         routeBuilder
                 .from(from)  // ${body} will be of type eventType
-                .routeId(tag+"_"+eventType.getSimpleName())
-                .log("processing event of type "+eventType.getSimpleName()+" from "+from)
-                .bean(EventProcessorFactory.class,"create( ${body} )",  BeanScope.Request)
+                .routeId(tag + "_" + eventType.getSimpleName())
+                .log("processing event of type " + eventType.getSimpleName() + " from " + from)
+                .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
                 .transform().simple("${body.externalProcessing()}")
                 .transform().simple("${body.internalProcessing()}")
                 .transform().simple("${body.newEventProcessing()}")
                 .split().simple("${body}")
-                    .marshal().json()
-                    .to(to)
-         ;
+                .marshal().json()
+                .to(to)
+        ;
         //=====================================================================
     }
 

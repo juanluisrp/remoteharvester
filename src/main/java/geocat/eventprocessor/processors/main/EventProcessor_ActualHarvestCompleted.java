@@ -13,25 +13,24 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_ActualHarvestCompleted extends BaseEventProcessor<ActualHarvestCompleted>
-{
+public class EventProcessor_ActualHarvestCompleted extends BaseEventProcessor<ActualHarvestCompleted> {
 
     @Autowired
     HarvestJobService harvestJobService;
 
     @Override
-    public EventProcessor_ActualHarvestCompleted  internalProcessing(){
+    public EventProcessor_ActualHarvestCompleted internalProcessing() {
         return this;
     }
 
     @Override
-    public EventProcessor_ActualHarvestCompleted externalProcessing(){
-       // harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(),"FINISHEDACTUALHARVEST");
+    public EventProcessor_ActualHarvestCompleted externalProcessing() {
+        // harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(),"FINISHEDACTUALHARVEST");
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
+    public List<Event> newEventProcessing() {
         return new ArrayList<>();
     }
 

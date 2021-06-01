@@ -22,7 +22,7 @@ public class EventService {
     @Autowired
     public EndpointJobService endpointJobService;
 
-    public DetermineWorkStartCommand createStartWorkCommand(HarvestJob job){
+    public DetermineWorkStartCommand createStartWorkCommand(HarvestJob job) {
         return new DetermineWorkStartCommand(
                 job.getJobId(),
                 job.getInitialUrl(),
@@ -34,7 +34,7 @@ public class EventService {
 
     //calls validate on the (parsed) input message
     public void validateHarvesterConfig(Message message) throws Exception {
-        ( (HarvesterConfig) message.getBody()).validate();
+        ((HarvesterConfig) message.getBody()).validate();
     }
 
     //creates a new GUID
@@ -47,11 +47,11 @@ public class EventService {
      * remove all headers from the request
      * add processID=GUID  to be used for this harvest
      */
-    public void addGUID(Message message){
+    public void addGUID(Message message) {
         message.getHeaders().clear();
         String guid = createGUID();
-        message.getHeaders().put("processID",guid);
-        ( (HarvesterConfig) message.getBody()).setProcessID( guid );
+        message.getHeaders().put("processID", guid);
+        ((HarvesterConfig) message.getBody()).setProcessID(guid);
 
     }
 
@@ -61,12 +61,12 @@ public class EventService {
     //{
     //     "processID":"5fcd5f22-1a40-4712-8d2d-ca88c2d0d472"
     //}
-    public void resultJSON(Message message){
-        String uuid =         ( (HarvesterConfig) message.getBody()).getProcessID();
-        message.setBody("{\n     \"processID\":\""+uuid+"\"\n}\n");
+    public void resultJSON(Message message) {
+        String uuid = ((HarvesterConfig) message.getBody()).getProcessID();
+        message.setBody("{\n     \"processID\":\"" + uuid + "\"\n}\n");
     }
 
-    public HarvestRequestedEvent createHarvestRequestedEvent(HarvesterConfig harvesterConfig,String processID){
+    public HarvestRequestedEvent createHarvestRequestedEvent(HarvesterConfig harvesterConfig, String processID) {
         HarvestRequestedEvent result = new HarvestRequestedEvent();
         result.setHarvestId(processID);
         result.setUrl(harvesterConfig.getUrl());
@@ -81,7 +81,7 @@ public class EventService {
                                                                    String endpointId,
                                                                    String url,
                                                                    String filter,
-                                                                   boolean lookForNestedDiscoveryService){
+                                                                   boolean lookForNestedDiscoveryService) {
         CSWEndPointDetectedEvent result = new CSWEndPointDetectedEvent();
         result.setHarvesterId(harvestId);
         result.setEndPointId(endpointId);
@@ -91,9 +91,8 @@ public class EventService {
         return result;
     }
 
-    public CSWEndpointWorkDetermined createCSWEndpointWorkDetermined(String harvestId, String endpointId)
-    {
-        return new CSWEndpointWorkDetermined(harvestId,endpointId);
+    public CSWEndpointWorkDetermined createCSWEndpointWorkDetermined(String harvestId, String endpointId) {
+        return new CSWEndpointWorkDetermined(harvestId, endpointId);
     }
 
 

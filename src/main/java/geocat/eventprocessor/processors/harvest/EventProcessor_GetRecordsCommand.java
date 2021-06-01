@@ -4,8 +4,8 @@ import geocat.csw.CSWService;
 import geocat.csw.csw.CSWGetRecordsHandler;
 import geocat.database.service.EndpointJobService;
 import geocat.database.service.RecordSetService;
-import geocat.eventprocessor.processors.GetRecordsResult;
 import geocat.eventprocessor.BaseEventProcessor;
+import geocat.eventprocessor.processors.GetRecordsResult;
 import geocat.events.Event;
 import geocat.events.actualRecordCollection.EndpointHarvestComplete;
 import geocat.events.actualRecordCollection.GetRecordsCommand;
@@ -18,8 +18,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetRecordsCommand>
-{
+public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetRecordsCommand> {
 
     @Autowired
     CSWService cswService;
@@ -35,14 +34,14 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
 
     GetRecordsResult result;
 
-    public EventProcessor_GetRecordsCommand(){
+    public EventProcessor_GetRecordsCommand() {
         super();
     }
 
     @Override
-    public EventProcessor_GetRecordsCommand  internalProcessing(){
+    public EventProcessor_GetRecordsCommand internalProcessing() {
         GetRecordsCommand cmd = getInitiatingEvent();
-        recordSetService.update(cmd.getRecordSetId(), result.getXmlGetRecordsResult(),result.getNumberRecordsReturned());
+        recordSetService.update(cmd.getRecordSetId(), result.getXmlGetRecordsResult(), result.getNumberRecordsReturned());
         return this;
     }
 
@@ -50,23 +49,22 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
     public EventProcessor_GetRecordsCommand externalProcessing() throws Exception {
 
         GetRecordsCommand e = getInitiatingEvent();
-        String xml = cswService.GetRecords(e.getGetRecordsURL(),e.getFilter(),e.getStartRecordNumber(),e.getEndRecordNumber());
+        String xml = cswService.GetRecords(e.getGetRecordsURL(), e.getFilter(), e.getStartRecordNumber(), e.getEndRecordNumber());
         int nrecords = cswGetRecordsHandler.extractActualNumberOfRecordsReturned(xml);
         // int nextRecordNumber = cswGetRecordsHandler.extractNextRecordNumber(xml); // we could test to see if this is 0 if this is the lastone (but this brittle)
         if (nrecords != e.expectedNumberOfRecords())
-            throw new Exception("got "+nrecords+", but expected "+e.expectedNumberOfRecords()); // TODO: might not want to throw
-        result = new GetRecordsResult(xml,nrecords);
+            throw new Exception("got " + nrecords + ", but expected " + e.expectedNumberOfRecords()); // TODO: might not want to throw
+        result = new GetRecordsResult(xml, nrecords);
         return this;
     }
 
     @Override
-    public List<Event> newEventProcessing(){
-        List<Event> result  = new ArrayList<>();
-        if (recordSetService.complete(getInitiatingEvent().getEndPointId()))
-        {
+    public List<Event> newEventProcessing() {
+        List<Event> result = new ArrayList<>();
+        if (recordSetService.complete(getInitiatingEvent().getEndPointId())) {
             EndpointHarvestComplete e = new EndpointHarvestComplete(getInitiatingEvent().getEndPointId(),
                     getInitiatingEvent().getHarvesterId());
-            endpointJobService.updateState(getInitiatingEvent().getEndPointId(),"HARVESTFINISHED");
+            endpointJobService.updateState(getInitiatingEvent().getEndPointId(), "HARVESTFINISHED");
             result.add(e);
         }
         return result;

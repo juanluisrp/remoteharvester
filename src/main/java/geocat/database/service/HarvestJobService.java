@@ -23,7 +23,7 @@ public class HarvestJobService {
     private EndpointJobRepo endpointJobRepo;
 
     //idempotent tx
-    public HarvestJob createNewHarvestJobInDB(HarvestRequestedEvent event){
+    public HarvestJob createNewHarvestJobInDB(HarvestRequestedEvent event) {
         Optional<HarvestJob> job = harvestJobRepo.findById(event.getHarvestId());
 
         if (job.isPresent()) //2nd attempt
@@ -34,7 +34,7 @@ public class HarvestJobService {
         HarvestJob newJob = new HarvestJob();
         newJob.setJobId(event.getHarvestId());
         newJob.setFilter(event.getFilter());
-        newJob.setLookForNestedDiscoveryService (event.isLookForNestedDiscoveryService());
+        newJob.setLookForNestedDiscoveryService(event.isLookForNestedDiscoveryService());
         newJob.setInitialUrl(event.getUrl());
         newJob.setLongTermTag(event.getLongTermTag());
         newJob.setState("CREATING");
@@ -43,31 +43,31 @@ public class HarvestJobService {
         return harvestJobRepo.save(newJob);
     }
 
-    public HarvestJob updateHarvestJobStateInDB(String guid,String state){
+    public HarvestJob updateHarvestJobStateInDB(String guid, String state) {
         HarvestJob job = harvestJobRepo.findById(guid).get();
         job.setState(state);
         return harvestJobRepo.save(job);
     }
 
-    public synchronized WorkedDeterminedFinished determineIfWorkCompleted(String harvestId){
+    public synchronized WorkedDeterminedFinished determineIfWorkCompleted(String harvestId) {
         HarvestJob harvestJob = harvestJobRepo.findById(harvestId).get();
         if (!harvestJob.getState().equalsIgnoreCase("DETERMINEWORK"))
             return null; //already completed earlier
-        List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId,"CREATED");
-        boolean workCompleted =  outstandingJobs.isEmpty();
+        List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, "CREATED");
+        boolean workCompleted = outstandingJobs.isEmpty();
         if (workCompleted) {
             //move state
-            updateHarvestJobStateInDB(harvestId,"WORKDETERMINED");
+            updateHarvestJobStateInDB(harvestId, "WORKDETERMINED");
             return new WorkedDeterminedFinished(harvestId);
         }
         return null;
     }
 
-    public HarvestJob getById(String id){
+    public HarvestJob getById(String id) {
         return harvestJobRepo.findById(id).get();
     }
 
-    public List<EndpointJob> getEndpointJobs(String harvestId){
+    public List<EndpointJob> getEndpointJobs(String harvestId) {
         return endpointJobRepo.findByHarvestJobId(harvestId);
     }
 

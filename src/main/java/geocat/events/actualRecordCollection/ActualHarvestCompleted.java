@@ -8,6 +8,7 @@ public class ActualHarvestCompleted extends Event {
 
     public ActualHarvestCompleted() {
     }
+
     public ActualHarvestCompleted(String harvestId) {
         this.harvestId = harvestId;
     }

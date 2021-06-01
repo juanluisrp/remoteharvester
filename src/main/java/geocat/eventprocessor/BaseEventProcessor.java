@@ -1,8 +1,6 @@
 package geocat.eventprocessor;
 
 import geocat.events.Event;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,11 +12,11 @@ public class BaseEventProcessor<T extends Event> {
     public T initiatingEvent;
     public Instant whenCreated;
 
-    public BaseEventProcessor(){
+    public BaseEventProcessor() {
         whenCreated = Instant.now();
     }
 
-    public T setInitiatingEvent(T initiatingEvent){
+    public T setInitiatingEvent(T initiatingEvent) {
         this.initiatingEvent = initiatingEvent;
         return initiatingEvent;
     }
@@ -27,7 +25,7 @@ public class BaseEventProcessor<T extends Event> {
         return initiatingEvent;
     }
 
-    public BaseEventProcessor<T>  internalProcessing() throws Exception {
+    public BaseEventProcessor<T> internalProcessing() throws Exception {
         return this;
     }
 

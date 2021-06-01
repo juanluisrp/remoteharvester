@@ -15,18 +15,17 @@ import java.util.Arrays;
 @Component
 public class DetermineWorkOrchestrator extends SpringRouteBuilder {
 
+    public static String myJMSQueueName = "harvest.DetermineWorkOrchestrator";
     @Autowired
     MainLoopRouteCreator mainLoopRouteCreator;
-
-    public static String myJMSQueueName = "harvest.DetermineWorkOrchestrator";
 
     @Override
     public void configure() throws Exception {
 
         mainLoopRouteCreator.createEventProcessingLoop(this,
-                "activemq:"+myJMSQueueName,
-                new Class[] {DetermineWorkStartCommand.class, CSWEndPointDetectedEvent.class, CSWEndpointWorkDetermined.class},
-                Arrays.asList(new RedirectEvent(WorkedDeterminedFinished.class,"activemq:"+MainOrchestrator.myJMSQueueName))
+                "activemq:" + myJMSQueueName,
+                new Class[]{DetermineWorkStartCommand.class, CSWEndPointDetectedEvent.class, CSWEndpointWorkDetermined.class},
+                Arrays.asList(new RedirectEvent(WorkedDeterminedFinished.class, "activemq:" + MainOrchestrator.myJMSQueueName))
         );
     }
 }

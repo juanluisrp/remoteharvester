@@ -3,7 +3,6 @@ package geocat.config;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.activemq.ActiveMQComponent;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +36,7 @@ public class Config {
         return factory;
     }
 
-//    @Bean
+    //    @Bean
 //    public JmsTransactionManager jmsTransactionManager(ActiveMQConnectionFactory connectionFactory) {
 //        JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
 //        jmsTransactionManager.setConnectionFactory(connectionFactory);
@@ -45,7 +44,7 @@ public class Config {
 //    }
     @Bean
     //@Primary
-    public ActiveMQComponent activemq(ConnectionFactory connectionFactory ) {
+    public ActiveMQComponent activemq(ConnectionFactory connectionFactory) {
         JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
         jmsTransactionManager.setConnectionFactory(connectionFactory);
 
@@ -53,11 +52,11 @@ public class Config {
         activeMQComponent.setConnectionFactory(connectionFactory);
         activeMQComponent.setTransacted(true);
         activeMQComponent.setTransactedInOut(true);
-       activeMQComponent.setTransactionManager(jmsTransactionManager);
-       //  activeMQComponent.setLazyCreateTransactionManager (false);
+        activeMQComponent.setTransactionManager(jmsTransactionManager);
+        //  activeMQComponent.setLazyCreateTransactionManager (false);
 
         activeMQComponent.setCacheLevelName("CACHE_CONSUMER");
-       // activeMQComponent.setAcknowledgementModeName("SESSION_TRANSACTED");
+        // activeMQComponent.setAcknowledgementModeName("SESSION_TRANSACTED");
 
 
         return activeMQComponent;
@@ -72,7 +71,7 @@ public class Config {
 
     @Bean(name = "transactionManager")
     public PlatformTransactionManager dbTransactionManager() {
-        JpaTransactionManager transactionManager =  new JpaTransactionManager();
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         return transactionManager;
     }

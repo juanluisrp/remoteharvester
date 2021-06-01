@@ -26,7 +26,7 @@ public class EventFactory {
         return result;
     }
 
-    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd,int startRecord, int endRecord, String recordSetId) {
+    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, String recordSetId) {
         GetRecordsCommand result = new GetRecordsCommand();
 
         result.setEndPointId(cmd.getEndPointId());
@@ -41,10 +41,10 @@ public class EventFactory {
     }
 
     public CSWEndPointDetectedEvent create_CSWEndPointDetectedEvent(String harvestId,
-                                                                   String endpointId,
-                                                                   String url,
-                                                                   String filter,
-                                                                   boolean lookForNestedDiscoveryService){
+                                                                    String endpointId,
+                                                                    String url,
+                                                                    String filter,
+                                                                    boolean lookForNestedDiscoveryService) {
         CSWEndPointDetectedEvent result = new CSWEndPointDetectedEvent();
         result.setHarvesterId(harvestId);
         result.setEndPointId(endpointId);
@@ -54,12 +54,11 @@ public class EventFactory {
         return result;
     }
 
-    public CSWEndpointWorkDetermined create_CSWEndpointWorkDetermined(String harvestId, String endpointId)
-    {
-        return new CSWEndpointWorkDetermined(harvestId,endpointId);
+    public CSWEndpointWorkDetermined create_CSWEndpointWorkDetermined(String harvestId, String endpointId) {
+        return new CSWEndpointWorkDetermined(harvestId, endpointId);
     }
 
-    public DetermineWorkStartCommand create_StartWorkCommand(HarvestJob job){
+    public DetermineWorkStartCommand create_StartWorkCommand(HarvestJob job) {
         return new DetermineWorkStartCommand(
                 job.getJobId(),
                 job.getInitialUrl(),

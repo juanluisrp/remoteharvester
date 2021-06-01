@@ -1,12 +1,10 @@
 package geocat.eventprocessor;
 
-import geocat.csw.http.CookieAttachingRetriever;
 import geocat.database.service.DatabaseUpdateService;
 import geocat.events.Event;
 import org.apache.camel.BeanScope;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.ChoiceDefinition;
 import org.apache.camel.spring.SpringRouteBuilder;
@@ -38,29 +36,28 @@ public class MainLoopRouteCreator {
 
         routeBuilder.errorHandler(routeBuilder.transactionErrorHandler().maximumRedeliveries(2).redeliveryDelay(1000));
         routeBuilder.onException().onExceptionOccurred(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        Exception ex = exchange.getException();
-                        exchange.getMessage().setHeader("exception", ex);
-                    }
-                })
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                Exception ex = exchange.getException();
+                exchange.getMessage().setHeader("exception", ex);
+            }
+        })
                 .bean(DatabaseUpdateService.class, "errorOccurred", BeanScope.Request).maximumRedeliveries(2)
         ;
 
         ChoiceDefinition choice = routeBuilder
                 .from(from)
-                .routeId(mainRouteName+".eventprocessor")
+                .routeId(mainRouteName + ".eventprocessor")
                 .transacted()
-                .unmarshal( jsonDefHarvesterConfig )
-                .setHeader("eventType",routeBuilder.simple("${body.getClass().getSimpleName()}"))
-                .log(mainRouteName+" received event of type ${headers.eventType} and body=${body} ")
-                .choice()
-                   ;
+                .unmarshal(jsonDefHarvesterConfig)
+                .setHeader("eventType", routeBuilder.simple("${body.getClass().getSimpleName()}"))
+                .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
+                .choice();
         // special events - re-broadcast to parent
-        for(RedirectEvent redirectEvent : redirectEventList){
+        for (RedirectEvent redirectEvent : redirectEventList) {
             choice = choice
-                    .when(routeBuilder.simple("${headers.eventType} == '"+redirectEvent.getEventType().getSimpleName()+"'"))
-                        .log("redirection event of type ${headers.eventType} to "+redirectEvent.getEndpoint())
+                    .when(routeBuilder.simple("${headers.eventType} == '" + redirectEvent.getEventType().getSimpleName() + "'"))
+                    .log("redirection event of type ${headers.eventType} to " + redirectEvent.getEndpoint())
 //                    .process(new Processor() {
 //                        @Override
 //                        public void process(Exchange exchange) throws Exception {
@@ -72,33 +69,33 @@ public class MainLoopRouteCreator {
 //                        }
 //                    })
                     .marshal().json()
-                        .to(redirectEvent.getEndpoint());
+                    .to(redirectEvent.getEndpoint());
         }
 
 
         // all other events, route to direct:
-        for (Class eventType: eventTypes) {
+        for (Class eventType : eventTypes) {
             choice = choice
-                    .when(routeBuilder.simple("${headers.eventType} == '"+eventType.getSimpleName()+"'"))
-                        .to("direct:"+mainRouteName+"_"+eventType.getSimpleName()) ;
+                    .when(routeBuilder.simple("${headers.eventType} == '" + eventType.getSimpleName() + "'"))
+                    .to("direct:" + mainRouteName + "_" + eventType.getSimpleName());
         }
 
         //add in individual processors
-        for (Class eventType: eventTypes) {
-           eventProcessorRouteCreator.addEventProcessor(routeBuilder,
-                   eventType,
-                   "direct:"+mainRouteName+"_"+eventType.getSimpleName(),
-                   from,
-                   mainRouteName);
+        for (Class eventType : eventTypes) {
+            eventProcessorRouteCreator.addEventProcessor(routeBuilder,
+                    eventType,
+                    "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
+                    from,
+                    mainRouteName);
         }
 
 
     }
 
     // activemq:abc?...  -> abc
-    public String extractName(String from){
-        return from.replaceFirst("[^:]+:","")
-                .replaceFirst("\\?[.]+","");
+    public String extractName(String from) {
+        return from.replaceFirst("[^:]+:", "")
+                .replaceFirst("\\?[.]+", "");
 
     }
 }

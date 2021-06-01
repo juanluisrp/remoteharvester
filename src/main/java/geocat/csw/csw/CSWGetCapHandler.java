@@ -14,23 +14,10 @@ public class CSWGetCapHandler {
 
     Logger logger = LoggerFactory.getLogger(CSWGetCapHandler.class);
 
-
-    public String extractGetRecordsURL(String getCapResponseXML) throws Exception {
-        Document doc = XMLTools.parseXML(getCapResponseXML);
-        String getRecordsURL = extractGetRecordsLink(doc);
-        URL u = new URL(getRecordsURL);
-        if (!u.getProtocol().equalsIgnoreCase("HTTP") && !u.getProtocol().equalsIgnoreCase("HTTPS"))
-            throw new Exception("getRecordsURL URL isn't HTTP or HTTPS - security violation");
-
-        logger.debug("      * GetRecords Endpoint is:"+u.toString());
-
-        return u.toString();
-    }
-
     //typically, this is easy, however, it can get more complicated if there are multiple postencodings
     public static String extractGetRecordsLink(Document getCapDoc) throws Exception {
-        NodeList nodes = XMLTools.xpath_nodeset(getCapDoc,"/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Post");
-        if (nodes.getLength() ==1){
+        NodeList nodes = XMLTools.xpath_nodeset(getCapDoc, "/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Post");
+        if (nodes.getLength() == 1) {
             Node node = nodes.item(0);
             return node.getAttributes().getNamedItem("xlink:href").getNodeValue();
         }
@@ -45,18 +32,30 @@ public class CSWGetCapHandler {
         //       <ows:Value>SOAP</ows:Value>
         //    </ows:Constraint>
         //</ows:Post>
-        nodes = XMLTools.xpath_nodeset(getCapDoc,"/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Post[Constraint/Value = 'XML']");
-        if (nodes.getLength() >0) {
+        nodes = XMLTools.xpath_nodeset(getCapDoc, "/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Post[Constraint/Value = 'XML']");
+        if (nodes.getLength() > 0) {
             Node node = nodes.item(0);
             return node.getAttributes().getNamedItem("xlink:href").getNodeValue();
         }
 
         //ireland case - only a GET
-        nodes = XMLTools.xpath_nodeset(getCapDoc,"/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Get");
-        if (nodes.getLength() >0) {
+        nodes = XMLTools.xpath_nodeset(getCapDoc, "/Capabilities/OperationsMetadata/Operation[@name='GetRecords']/DCP/HTTP/Get");
+        if (nodes.getLength() > 0) {
             Node node = nodes.item(0);
             return node.getAttributes().getNamedItem("xlink:href").getNodeValue();
         }
         throw new Exception("couldnt extract GetRecords from GetCapabilities document.");
+    }
+
+    public String extractGetRecordsURL(String getCapResponseXML) throws Exception {
+        Document doc = XMLTools.parseXML(getCapResponseXML);
+        String getRecordsURL = extractGetRecordsLink(doc);
+        URL u = new URL(getRecordsURL);
+        if (!u.getProtocol().equalsIgnoreCase("HTTP") && !u.getProtocol().equalsIgnoreCase("HTTPS"))
+            throw new Exception("getRecordsURL URL isn't HTTP or HTTPS - security violation");
+
+        logger.debug("      * GetRecords Endpoint is:" + u.toString());
+
+        return u.toString();
     }
 }

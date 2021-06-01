@@ -1,7 +1,7 @@
 package geocat.csw.csw;
 
 
- import org.slf4j.Logger;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -25,16 +25,14 @@ public class CSWNestedDiscoveryHandler {
         Document doc = XMLTools.parseXML(getRecordsResponseXML);
 
         //one for each Discovery metadata record
-        NodeList nodeList = XMLTools.xpath_nodeset(doc,"//GetRecordsResponse/SearchResults/MD_Metadata/identificationInfo/SV_ServiceIdentification/containsOperations[SV_OperationMetadata/operationName/CharacterString = 'GetCapabilities']");
-        logger.debug("     * found "+nodeList.getLength()+" discovery services");
-        for(int t=0;t<nodeList.getLength();t++)
-        {
+        NodeList nodeList = XMLTools.xpath_nodeset(doc, "//GetRecordsResponse/SearchResults/MD_Metadata/identificationInfo/SV_ServiceIdentification/containsOperations[SV_OperationMetadata/operationName/CharacterString = 'GetCapabilities']");
+        logger.debug("     * found " + nodeList.getLength() + " discovery services");
+        for (int t = 0; t < nodeList.getLength(); t++) {
             Node discoveryGetCapInfo = nodeList.item(t);
-            NodeList urls = XMLTools.xpath_nodeset(discoveryGetCapInfo,"SV_OperationMetadata/connectPoint/CI_OnlineResource/linkage/URL");
+            NodeList urls = XMLTools.xpath_nodeset(discoveryGetCapInfo, "SV_OperationMetadata/connectPoint/CI_OnlineResource/linkage/URL");
             List<String> potentialUrls = new ArrayList<>();
             //one for each of the URLs in ONE Discovery metadata record
-            for(int u=0;u<urls.getLength();u++)
-            {
+            for (int u = 0; u < urls.getLength(); u++) {
                 String discoveryGetCapUrl = urls.item(u).getTextContent();
                 if (discoveryGetCapUrl.isEmpty())
                     continue;
