@@ -58,4 +58,18 @@ public class XMLTools {
         return value;
     }
 
+    public static Node xpath_node(Document doc, String xpathStr) throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+
+        return ((org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE));
+    }
+
+    public static Node xpath_node(Node doc, String xpathStr) throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+
+        return ((org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE));
+    }
+
 }

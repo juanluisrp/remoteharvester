@@ -1,0 +1,30 @@
+package geocat.database.entities;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name="blob_storage")
+public class BlobStorage {
+    @Id
+    @Column(columnDefinition = "varchar(64)")
+    private String sha2;
+
+    @Column(columnDefinition = "text")
+    private String textValue;
+
+    public String getSha2() {
+        return sha2;
+    }
+
+    public void setSha2(String sha2) {
+        this.sha2 = sha2;
+    }
+
+    public String getTextValue() {
+        return textValue;
+    }
+
+    public void setTextValue(String textValue) {
+        this.textValue = textValue;
+    }
+}

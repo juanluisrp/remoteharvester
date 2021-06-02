@@ -41,6 +41,13 @@ public class OGCFilterService {
 //            " </csw:Query>\n" +
 //            "</csw:GetRecords>\n";
 
+    public static String ORDERBY = " <ogc:SortBy>\n" +
+            "            <ogc:SortProperty>\n" +
+            "                <ogc:PropertyName>Identifier</ogc:PropertyName>\n" +
+            "                <ogc:SortOrder>DESC</ogc:SortOrder>\n" +
+            "            </ogc:SortProperty>\n" +
+            "        </ogc:SortBy>\n";
+
     public static String GETRECORDS_FILTER_XML = "<?xml version=\"1.0\"?>\n" +
             "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" \n" +
             "xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:ogc=\"http://www.opengis.net/ogc\" \n" +
@@ -54,6 +61,7 @@ public class OGCFilterService {
             "    <csw:Constraint  version=\"1.1.0\">\n" +
             "        PUT_FILTER_HERE\n" +
             "     </csw:Constraint>\n" +
+            ORDERBY +
             " </csw:Query>\n" +
             "</csw:GetRecords>\n";
 
@@ -67,6 +75,7 @@ public class OGCFilterService {
             "outputSchema=\"http://www.isotc211.org/2005/gmd\">\n" +
             "  <csw:Query typeNames=\"csw:Record\">\n" +
             "    <csw:ElementSetName>full</csw:ElementSetName> \n" +
+            ORDERBY +
             " </csw:Query>\n" +
             "</csw:GetRecords>\n";
 

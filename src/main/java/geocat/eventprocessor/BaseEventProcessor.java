@@ -25,11 +25,12 @@ public class BaseEventProcessor<T extends Event> {
         return initiatingEvent;
     }
 
-    public BaseEventProcessor<T> internalProcessing() throws Exception {
+    public BaseEventProcessor<T> externalProcessing() throws Exception {
         return this;
     }
 
-    public BaseEventProcessor<T> externalProcessing() throws Exception {
+
+    public BaseEventProcessor<T> internalProcessing() throws Exception {
         return this;
     }
 

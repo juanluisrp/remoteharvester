@@ -37,9 +37,9 @@ public class RecordSetService {
         return recordSetRepo.save(result);
     }
 
-    public RecordSet update(String recordSetId, String xmlGetRecordsResult, int numberRecordsReturned) {
+    public RecordSet update(String recordSetId,  int numberRecordsReturned) {
         RecordSet record = recordSetRepo.findById(recordSetId).get();
-        record.setGetRecordResponse(xmlGetRecordsResult);
+      //  record.setGetRecordResponse(xmlGetRecordsResult);
         record.setActualNumberRecords(numberRecordsReturned);
         return recordSetRepo.save(record);
     }
@@ -48,11 +48,16 @@ public class RecordSetService {
         List<RecordSet> records = recordSetRepo.findByEndpointJobId(endpointId);
         boolean allDone = true;
         for (RecordSet recordSet : records) {
-            boolean thisRecordDone = (recordSet.getGetRecordResponse() != null) && (!recordSet.getGetRecordResponse().isEmpty());
+            boolean thisRecordDone = (recordSet.getActualNumberRecords() != null) ;
             allDone = allDone && thisRecordDone;
         }
         return allDone;
     }
+
+    public RecordSet getById(String recordSetId) {
+        return recordSetRepo.findById(recordSetId).get();
+    }
+
 
     public List<RecordSet> getAll(String endpointId) {
         return recordSetRepo.findByEndpointJobId(endpointId);

@@ -1,19 +1,20 @@
 package geocat.database.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 // create table harvest_job (long_term_tag text, job_id varchar(40), state varchar(40), look_for_nested_discovery_service bool, filter text, initial_url text, messages text);
 @Entity
+
 public class HarvestJob {
     @Id
+    @Column(columnDefinition = "varchar(40)")
     private String jobId;
     public String initialUrl;
+    @Column(columnDefinition = "text")
     private String messages;
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
+    @Column(columnDefinition = "text")
     private String filter;
     @Enumerated(EnumType.STRING)
     private HarvestJobState state;

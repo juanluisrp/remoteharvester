@@ -41,23 +41,6 @@ public class EndpointJobService {
         return job;
     }
 
-//    public EndpointJob addGetRecordsUrl(String id, String url){
-//        EndpointJob job = endpointJobRepo.findById(id).get();
-//        job.setUrlGetRecords(url);
-//        return endpointJobRepo.save(job);
-//    }
-
-//    public String getGetRecordsUrl(String id){
-//        EndpointJob job = endpointJobRepo.findById(id).get();
-//        return job.getUrlGetRecords();
-//    }
-
-//    public EndpointJob addExpectedRecords(String endPointId, int nrecords) {
-//        EndpointJob job = endpointJobRepo.findById(endPointId).get();
-//        job.setExpectedNumberOfRecords(nrecords);
-//        return endpointJobRepo.save(job);
-//    }
-
     public boolean areTheseUrlsInDB(String harvestId, List<String> urls) {
         return !endpointJobRepo.findByHarvestJobIdAndUrlIn(harvestId, urls).isEmpty();
     }

@@ -13,13 +13,16 @@ import javax.persistence.*;
                 unique=false
         )
     })
-public class EndpointJob {
 
+public class EndpointJob {
     @Id
+    @Column(columnDefinition = "varchar(40)")
     private String endpointJobId;
+    @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
     private String url;
     private boolean lookForNestedDiscoveryService;
+    @Column(columnDefinition = "text")
     private String filter;
     private Integer expectedNumberOfRecords;
     private String urlGetRecords;

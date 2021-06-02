@@ -44,6 +44,10 @@ public class HarvestJobService {
         return harvestJobRepo.save(newJob);
     }
 
+    public HarvestJob updateHarvestJobStateInDBToError(String guid ) {
+       return updateHarvestJobStateInDB(guid, HarvestJobState.ERROR);
+    }
+
     public HarvestJob updateHarvestJobStateInDB(String guid, HarvestJobState state) {
         HarvestJob job = harvestJobRepo.findById(guid).get();
         job.setState(state);

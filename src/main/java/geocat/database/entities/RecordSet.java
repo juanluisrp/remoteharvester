@@ -13,17 +13,21 @@ import javax.persistence.*;
                         unique=false
                 )
         })
+
 public class RecordSet {
     @Id
+    @Column(columnDefinition = "varchar(40)")
     private String recordSetId;
+    @Column(columnDefinition = "varchar(40)")
     private String endpointJobId;
+    @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
     private int startRecordNumber;
     private int endRecordNumber;
     private int expectedNumberRecords;
-    private int actualNumberRecords;
-    @Column(columnDefinition = "text")
-    private String getRecordResponse;
+    private Integer actualNumberRecords;
+//    @Column(columnDefinition = "text")
+//    private String getRecordResponse;
     private boolean lastSet; // this is last one
 
 
@@ -75,21 +79,21 @@ public class RecordSet {
         this.expectedNumberRecords = expectedNumberRecords;
     }
 
-    public int getActualNumberRecords() {
+    public Integer getActualNumberRecords() {
         return actualNumberRecords;
     }
 
-    public void setActualNumberRecords(int actualNumberRecords) {
+    public void setActualNumberRecords(Integer actualNumberRecords) {
         this.actualNumberRecords = actualNumberRecords;
     }
 
-    public String getGetRecordResponse() {
-        return getRecordResponse;
-    }
-
-    public void setGetRecordResponse(String getRecordResponse) {
-        this.getRecordResponse = getRecordResponse;
-    }
+//    public String getGetRecordResponse() {
+//        return getRecordResponse;
+//    }
+//
+//    public void setGetRecordResponse(String getRecordResponse) {
+//        this.getRecordResponse = getRecordResponse;
+//    }
 
     public boolean isLastSet() {
         return lastSet;
