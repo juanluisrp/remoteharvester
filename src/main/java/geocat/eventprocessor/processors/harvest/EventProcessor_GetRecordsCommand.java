@@ -81,7 +81,8 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
         GetRecordsResponseInfo info = new GetRecordsResponseInfo(xmlParsed);
         HarvestJob harvestJob = harvestJobService.getById(e.getHarvesterId());
         EndpointJob endpointJob = endpointJobService.getById(e.getEndPointId());
-        getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info);
+        RecordSet recordSet = recordSetService.getById(e.getRecordSetId());
+        getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info,recordSet);
 
         int nrecords = cswGetRecordsHandler.extractActualNumberOfRecordsReturned(xmlParsed);
         int nextRecordNumber = cswGetRecordsHandler.extractNextRecordNumber(xmlParsed); // we could test to see if this is 0 if this is the lastone (but this brittle)
