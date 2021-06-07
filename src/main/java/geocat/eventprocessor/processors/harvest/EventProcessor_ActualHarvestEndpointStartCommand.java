@@ -62,12 +62,13 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
         List<Event> result = new ArrayList<>();
         String endpointId = getInitiatingEvent().getEndPointId();
         List<RecordSet> records = recordSetService.getAll(endpointId);
-        ;
+
         for (RecordSet record : records) {
             GetRecordsCommand command = eventFactory.create_GetRecordsCommand(getInitiatingEvent(),
                     record.getStartRecordNumber(),
                     record.getEndRecordNumber(),
-                    record.getRecordSetId());
+                    record.getRecordSetId(),
+                    record.isLastSet());
             result.add(command);
         }
         return result;

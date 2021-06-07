@@ -22,14 +22,14 @@ public class EventService {
     @Autowired
     public EndpointJobService endpointJobService;
 
-    public DetermineWorkStartCommand createStartWorkCommand(HarvestJob job) {
-        return new DetermineWorkStartCommand(
-                job.getJobId(),
-                job.getInitialUrl(),
-                job.getFilter(),
-                job.isLookForNestedDiscoveryService()
-        );
-    }
+//    public DetermineWorkStartCommand createStartWorkCommand(HarvestJob job) {
+//        return new DetermineWorkStartCommand(
+//                job.getJobId(),
+//                job.getInitialUrl(),
+//                job.getFilter(),
+//                job.isLookForNestedDiscoveryService()
+//        );
+//    }
 
 
     //calls validate on the (parsed) input message
@@ -51,6 +51,7 @@ public class EventService {
         message.getHeaders().clear();
         String guid = createGUID();
         message.getHeaders().put("processID", guid);
+        message.getHeaders().put("JMSCorrelationID",guid);
         ((HarvesterConfig) message.getBody()).setProcessID(guid);
 
     }
@@ -73,39 +74,41 @@ public class EventService {
         result.setFilter(harvesterConfig.getFilter());
         result.setLookForNestedDiscoveryService(harvesterConfig.isLookForNestedDiscoveryService());
         result.setLongTermTag(harvesterConfig.getLongTermTag());
+        result.setProblematicResultsConfigurationJSON(harvesterConfig.getProblematicResultsConfiguration().toString());
+        result.setNumberRecordsPerRequest(harvesterConfig.getNumberOfRecordsPerRequest());
         return result;
     }
 
 
-    public CSWEndPointDetectedEvent createCSWEndPointDetectedEvent(String harvestId,
-                                                                   String endpointId,
-                                                                   String url,
-                                                                   String filter,
-                                                                   boolean lookForNestedDiscoveryService) {
-        CSWEndPointDetectedEvent result = new CSWEndPointDetectedEvent();
-        result.setHarvesterId(harvestId);
-        result.setEndPointId(endpointId);
-        result.setUrl(url);
-        result.setFilter(filter);
-        result.setLookForNestedDiscoveryService(lookForNestedDiscoveryService);
-        return result;
-    }
+//    public CSWEndPointDetectedEvent createCSWEndPointDetectedEvent(String harvestId,
+//                                                                   String endpointId,
+//                                                                   String url,
+//                                                                   String filter,
+//                                                                   boolean lookForNestedDiscoveryService) {
+//        CSWEndPointDetectedEvent result = new CSWEndPointDetectedEvent();
+//        result.setHarvesterId(harvestId);
+//        result.setEndPointId(endpointId);
+//        result.setUrl(url);
+//        result.setFilter(filter);
+//        result.setLookForNestedDiscoveryService(lookForNestedDiscoveryService);
+//        return result;
+//    }
 
-    public CSWEndpointWorkDetermined createCSWEndpointWorkDetermined(String harvestId, String endpointId) {
-        return new CSWEndpointWorkDetermined(harvestId, endpointId);
-    }
+//    public CSWEndpointWorkDetermined createCSWEndpointWorkDetermined(String harvestId, String endpointId) {
+//        return new CSWEndpointWorkDetermined(harvestId, endpointId);
+//    }
 
 
-    public GetRecordsCommand createGetRecordsCommand(ActualHarvestEndpointStartCommand info, int startRecord, int endRecord, String recordSetId) {
-        GetRecordsCommand result = new GetRecordsCommand();
-        result.setEndPointId(info.getEndPointId());
-        result.setHarvesterId(info.getHarvesterId());
-        result.setFilter(info.getFilter());
-        result.setGetRecordsURL(info.getGetRecordsURL());
-        result.setStartRecordNumber(startRecord);
-        result.setEndRecordNumber(endRecord);
-        result.setRecordSetId(recordSetId);
-        return result;
-    }
+//    public GetRecordsCommand createGetRecordsCommand(ActualHarvestEndpointStartCommand info, int startRecord, int endRecord, String recordSetId) {
+//        GetRecordsCommand result = new GetRecordsCommand();
+//        result.setEndPointId(info.getEndPointId());
+//        result.setHarvesterId(info.getHarvesterId());
+//        result.setFilter(info.getFilter());
+//        result.setGetRecordsURL(info.getGetRecordsURL());
+//        result.setStartRecordNumber(startRecord);
+//        result.setEndRecordNumber(endRecord);
+//        result.setRecordSetId(recordSetId);
+//        return result;
+//    }
 
 }

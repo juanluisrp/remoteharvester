@@ -22,11 +22,11 @@ public class EventFactory {
         result.setGetRecordsURL(job.getUrlGetRecords());
         result.setExpectedNumberOfRecords(job.getExpectedNumberOfRecords());
         result.setMaxSimultaneousRequests(1);
-        result.setnRecordPerRequest(20);
+        result.setnRecordPerRequest(harvestJob.getNrecordsPerRequest());
         return result;
     }
 
-    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, String recordSetId) {
+    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, String recordSetId, boolean lastOne) {
         GetRecordsCommand result = new GetRecordsCommand();
 
         result.setEndPointId(cmd.getEndPointId());
@@ -36,6 +36,8 @@ public class EventFactory {
         result.setStartRecordNumber(startRecord);
         result.setEndRecordNumber(endRecord);
         result.setRecordSetId(recordSetId);
+        result.setLastSet(lastOne);
+        result.setTotalRecordsInQuery(cmd.getExpectedNumberOfRecords());
 
         return result;
     }

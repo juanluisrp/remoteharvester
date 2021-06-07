@@ -18,6 +18,21 @@ public class HarvestJob {
     private String filter;
     @Enumerated(EnumType.STRING)
     private HarvestJobState state;
+    @Column(columnDefinition = "text")
+    private String problematicResultsConfigurationJSON;
+    int nrecordsPerRequest;
+
+
+
+    public String getProblematicResultsConfigurationJSON() {
+        return problematicResultsConfigurationJSON;
+    }
+
+    public void setProblematicResultsConfigurationJSON(String problematicResultsConfigurationJSON) {
+        this.problematicResultsConfigurationJSON = problematicResultsConfigurationJSON;
+    }
+
+
 
     public String getMessages() {
         return messages;
@@ -75,4 +90,11 @@ public class HarvestJob {
         this.state = state;
     }
 
+    public int getNrecordsPerRequest() {
+        return nrecordsPerRequest;
+    }
+
+    public void setNrecordsPerRequest(int nrecordsPerRequest) {
+        this.nrecordsPerRequest = nrecordsPerRequest;
+    }
 }

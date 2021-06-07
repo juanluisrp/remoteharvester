@@ -6,10 +6,22 @@ public class HarvestRequestedEvent extends Event {
     String url;
     String harvestId;
     String filter;
+    String problematicResultsConfigurationJSON;
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
+    int numberRecordsPerRequest;
+
 
     public HarvestRequestedEvent() {
+    }
+
+
+    public int getNumberRecordsPerRequest() {
+        return numberRecordsPerRequest;
+    }
+
+    public void setNumberRecordsPerRequest(int numberRecordsPerRequest) {
+        this.numberRecordsPerRequest = numberRecordsPerRequest;
     }
 
     public String getLongTermTag() {
@@ -50,5 +62,13 @@ public class HarvestRequestedEvent extends Event {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public String getProblematicResultsConfigurationJSON() {
+        return problematicResultsConfigurationJSON;
+    }
+
+    public void setProblematicResultsConfigurationJSON(String problematicResultsConfigurationJSON) {
+        this.problematicResultsConfigurationJSON = problematicResultsConfigurationJSON;
     }
 }

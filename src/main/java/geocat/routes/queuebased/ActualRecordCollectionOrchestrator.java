@@ -23,7 +23,7 @@ public class ActualRecordCollectionOrchestrator extends SpringRouteBuilder {
         mainLoopRouteCreator.createEventProcessingLoop(this,
                 "activemq:" + myJMSQueueName,
                 new Class[]{ActualHarvestStartCommand.class, ActualHarvestEndpointStartCommand.class, GetRecordsCommand.class, EndpointHarvestComplete.class},
-                Arrays.asList(new RedirectEvent(ActualHarvestCompleted.class, "activemq:harvest.mainOrchestrator.events"))
+                Arrays.asList(new RedirectEvent(ActualHarvestCompleted.class, "activemq:"+MainOrchestrator.myJMSQueueName))
         );
     }
 }

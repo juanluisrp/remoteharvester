@@ -10,6 +10,17 @@ public class GetRecordsCommand extends Event {
     private int startRecordNumber;
     private int endRecordNumber;
     private String recordSetId;
+    private boolean lastSet;
+
+    public int getTotalRecordsInQuery() {
+        return totalRecordsInQuery;
+    }
+
+    public void setTotalRecordsInQuery(int totalRecordsInQuery) {
+        this.totalRecordsInQuery = totalRecordsInQuery;
+    }
+
+    private int totalRecordsInQuery;
 
     public GetRecordsCommand() {
     }
@@ -76,6 +87,14 @@ public class GetRecordsCommand extends Event {
 
     @Override
     public String toString() {
-        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " from " + getRecordsURL;
+        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " (of "+totalRecordsInQuery+") from " + getRecordsURL;
+    }
+
+    public boolean isLastSet() {
+        return lastSet;
+    }
+
+    public void setLastSet(boolean lastSet) {
+        this.lastSet = lastSet;
     }
 }

@@ -6,6 +6,7 @@ import geocat.database.entities.EndpointJobState;
 import geocat.database.entities.HarvestJob;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
+import geocat.events.EventFactory;
 import geocat.events.EventService;
 import geocat.events.determinework.CSWEndPointDetectedEvent;
 import org.apache.camel.Exchange;
@@ -28,7 +29,7 @@ public class DatabaseUpdateService {
     @Autowired
     public EndpointJobService endpointJobService;
     @Autowired
-    public EventService eventService;
+    public EventFactory eventFactory;
     @Autowired
     private EndpointJobRepo endpointJobRepo;
     @Autowired
@@ -57,7 +58,7 @@ public class DatabaseUpdateService {
             if (!noActionRequired) {
                 String url = urlSet.get(0);
                 EndpointJob job = endpointJobService.createInitial(metadata.getHarvesterId(), url, metadata.getFilter(), metadata.isLookForNestedDiscoveryService());
-                result.add(eventService.createCSWEndPointDetectedEvent(job.getHarvestJobId(), job.getEndpointJobId(), url, metadata.getFilter(), metadata.isLookForNestedDiscoveryService()));
+                result.add(eventFactory.create_CSWEndPointDetectedEvent(job.getHarvestJobId(), job.getEndpointJobId(), url, metadata.getFilter(), metadata.isLookForNestedDiscoveryService()));
             }
         }
         return result;

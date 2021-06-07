@@ -26,8 +26,7 @@ public class RecordSet {
     private int endRecordNumber;
     private int expectedNumberRecords;
     private Integer actualNumberRecords;
-//    @Column(columnDefinition = "text")
-//    private String getRecordResponse;
+
     private boolean lastSet; // this is last one
 
 

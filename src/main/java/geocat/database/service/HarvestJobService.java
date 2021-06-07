@@ -40,6 +40,8 @@ public class HarvestJobService {
         newJob.setInitialUrl(event.getUrl());
         newJob.setLongTermTag(event.getLongTermTag());
         newJob.setState(HarvestJobState.CREATING);
+        newJob.setProblematicResultsConfigurationJSON(event.getProblematicResultsConfigurationJSON());
+        newJob.setNrecordsPerRequest(event.getNumberRecordsPerRequest());
 
         return harvestJobRepo.save(newJob);
     }

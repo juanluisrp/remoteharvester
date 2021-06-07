@@ -23,6 +23,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
     Logger logger = LoggerFactory.getLogger(BasicHTTPRetriever.class);
 
+    int TIMEOUT_MS = 2 * 60 * 1000;
+
     /**
      * @param verb     GET or POST
      * @param location url
@@ -49,6 +51,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
         URLConnection con = url.openConnection();
         HttpURLConnection http = (HttpURLConnection) con;
+        http.setConnectTimeout(TIMEOUT_MS);
+        http.setReadTimeout(TIMEOUT_MS);
         http.setRequestMethod(verb);
         http.setDoOutput(true);
         http.setDoInput(true);

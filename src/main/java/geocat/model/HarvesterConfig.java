@@ -13,6 +13,19 @@ public class HarvesterConfig {
     private String filter;
     private String url;
     private String processID;
+    private int numberOfRecordsPerRequest;
+
+    public static int DEFAULT_NRECORDS = 20;
+
+    public ProblematicResultsConfiguration getProblematicResultsConfiguration() {
+        return problematicResultsConfiguration;
+    }
+
+    public void setProblematicResultsConfiguration(ProblematicResultsConfiguration problematicResultsConfiguration) {
+        this.problematicResultsConfiguration = problematicResultsConfiguration;
+    }
+
+    private ProblematicResultsConfiguration problematicResultsConfiguration;
 
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
@@ -67,10 +80,27 @@ public class HarvesterConfig {
             if (rootNodeName != "ogc:Filter")
                 throw new Exception("filter doesn't start with <ogc:Filter>");
         }
+        if (problematicResultsConfiguration == null)
+            problematicResultsConfiguration = new ProblematicResultsConfiguration();
+        problematicResultsConfiguration.validate();
+
+        if (numberOfRecordsPerRequest <=0)
+            numberOfRecordsPerRequest = DEFAULT_NRECORDS;
+
+        if (numberOfRecordsPerRequest > 500) // unreasonable
+            numberOfRecordsPerRequest  =500;
     }
 
     @Override
     public String toString() {
         return "{processID=" + processID + ", urls=" + url + "}";
+    }
+
+    public int getNumberOfRecordsPerRequest() {
+        return numberOfRecordsPerRequest;
+    }
+
+    public void setNumberOfRecordsPerRequest(int numberOfRecordsPerRequest) {
+        this.numberOfRecordsPerRequest = numberOfRecordsPerRequest;
     }
 }

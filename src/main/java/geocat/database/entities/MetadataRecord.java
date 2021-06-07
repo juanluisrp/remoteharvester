@@ -21,7 +21,7 @@ public class MetadataRecord {
     private int recordNumber;
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
-    @Column(columnDefinition = "varchar(40)")
+    @Column(columnDefinition = "text")
     private String recordIdentifier;
 
 
