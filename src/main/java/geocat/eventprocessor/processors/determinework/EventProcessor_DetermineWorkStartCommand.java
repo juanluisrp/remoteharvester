@@ -26,6 +26,16 @@ public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor
 
     EndpointJob job;
 
+
+
+
+    @Override
+    public EventProcessor_DetermineWorkStartCommand externalProcessing() {
+        return this;
+    }
+
+
+
     @Override
     public EventProcessor_DetermineWorkStartCommand internalProcessing() {
 
@@ -35,11 +45,6 @@ public class EventProcessor_DetermineWorkStartCommand extends BaseEventProcessor
                 getInitiatingEvent().isLookForNestedDiscoveryService());
 
 
-        return this;
-    }
-
-    @Override
-    public EventProcessor_DetermineWorkStartCommand externalProcessing() {
         return this;
     }
 

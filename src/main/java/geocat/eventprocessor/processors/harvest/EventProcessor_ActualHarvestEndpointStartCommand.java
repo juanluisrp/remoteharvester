@@ -28,6 +28,15 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
         super();
     }
 
+
+
+    @Override
+    public EventProcessor_ActualHarvestEndpointStartCommand externalProcessing() {
+        return this;
+    }
+
+
+
     @Override
     public EventProcessor_ActualHarvestEndpointStartCommand internalProcessing() throws Exception {
         ActualHarvestEndpointStartCommand cmd = getInitiatingEvent();
@@ -52,10 +61,6 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
         return this;
     }
 
-    @Override
-    public EventProcessor_ActualHarvestEndpointStartCommand externalProcessing() {
-        return this;
-    }
 
     @Override
     public List<Event> newEventProcessing() {

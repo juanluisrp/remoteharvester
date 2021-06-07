@@ -41,6 +41,14 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
         super();
     }
 
+
+    @Override
+    public EventProcessor_EndpointHarvestComplete externalProcessing() {
+        return this;
+    }
+
+
+
     @Override
     public EventProcessor_EndpointHarvestComplete internalProcessing() throws Exception {
         List<EndpointJob> jobs = endpointJobService.findAll(getInitiatingEvent().getHarvestId());
@@ -56,11 +64,6 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
     }
 
 
-
-    @Override
-    public EventProcessor_EndpointHarvestComplete externalProcessing() {
-        return this;
-    }
 
     @Override
     public List<Event> newEventProcessing() {

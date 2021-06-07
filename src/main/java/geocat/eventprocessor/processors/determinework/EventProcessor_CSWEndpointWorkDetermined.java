@@ -24,16 +24,19 @@ public class EventProcessor_CSWEndpointWorkDetermined extends BaseEventProcessor
     @Autowired
     EndpointJobService endpointJobService;
 
+
+    @Override
+    public EventProcessor_CSWEndpointWorkDetermined externalProcessing() {
+        return this;
+    }
+
+
     @Override
     public EventProcessor_CSWEndpointWorkDetermined internalProcessing() {
         endpointJobService.updateState(getInitiatingEvent().getEndPointId(), EndpointJobState.WORK_DETERMINED);
         return this;
     }
 
-    @Override
-    public EventProcessor_CSWEndpointWorkDetermined externalProcessing() {
-        return this;
-    }
 
     @Override
     public List<Event> newEventProcessing() {

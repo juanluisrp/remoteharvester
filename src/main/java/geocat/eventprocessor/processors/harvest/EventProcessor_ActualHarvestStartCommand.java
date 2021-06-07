@@ -38,6 +38,13 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
 
 
     @Override
+    public EventProcessor_ActualHarvestStartCommand externalProcessing() {
+        return this;
+    }
+
+
+
+    @Override
     public EventProcessor_ActualHarvestStartCommand internalProcessing() {
         String harvestId = getInitiatingEvent().getHarvesterId();
 
@@ -51,10 +58,6 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
         return this;
     }
 
-    @Override
-    public EventProcessor_ActualHarvestStartCommand externalProcessing() {
-        return this;
-    }
 
     @Override
     public List<Event> newEventProcessing() {

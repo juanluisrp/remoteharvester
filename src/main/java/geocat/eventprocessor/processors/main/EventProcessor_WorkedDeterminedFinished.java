@@ -14,15 +14,18 @@ import java.util.List;
 @Scope("prototype")
 public class EventProcessor_WorkedDeterminedFinished extends BaseEventProcessor<WorkedDeterminedFinished> {
 
-    @Override
-    public EventProcessor_WorkedDeterminedFinished internalProcessing() {
-        return this;
-    }
 
     @Override
     public EventProcessor_WorkedDeterminedFinished externalProcessing() {
         return this;
     }
+
+    
+    @Override
+    public EventProcessor_WorkedDeterminedFinished internalProcessing() {
+        return this;
+    }
+
 
     @Override
     public List<Event> newEventProcessing() {

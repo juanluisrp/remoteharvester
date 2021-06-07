@@ -27,6 +27,13 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
 
     HarvestJob job;
 
+
+    @Override
+    public EventProcessor_HarvestRequestedEvent externalProcessing() {
+        return this;
+    }
+
+
     @Override
     public EventProcessor_HarvestRequestedEvent internalProcessing() {
         harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
@@ -34,10 +41,6 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
         return this;
     }
 
-    @Override
-    public EventProcessor_HarvestRequestedEvent externalProcessing() {
-        return this;
-    }
 
     @Override
     public List<Event> newEventProcessing() {

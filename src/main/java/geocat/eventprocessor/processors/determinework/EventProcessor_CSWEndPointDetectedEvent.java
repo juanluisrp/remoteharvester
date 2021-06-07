@@ -35,6 +35,14 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
     CSWMetadata result;
     List<CSWEndPointDetectedEvent> newEndpoints;
 
+
+    @Override
+    public EventProcessor_CSWEndPointDetectedEvent externalProcessing() throws Exception {
+        result = cswService.getMetadata(getInitiatingEvent());
+        return this;
+    }
+
+
     @Override
     public EventProcessor_CSWEndPointDetectedEvent internalProcessing() {
         newEndpoints = databaseUpdateService.updateDatabase(result);
@@ -42,11 +50,7 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
         return this;
     }
 
-    @Override
-    public EventProcessor_CSWEndPointDetectedEvent externalProcessing() throws Exception {
-        result = cswService.getMetadata(getInitiatingEvent());
-        return this;
-    }
+
 
     @Override
     public List<Event> newEventProcessing() {

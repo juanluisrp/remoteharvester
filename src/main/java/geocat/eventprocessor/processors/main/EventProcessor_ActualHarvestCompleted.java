@@ -19,16 +19,19 @@ public class EventProcessor_ActualHarvestCompleted extends BaseEventProcessor<Ac
     @Autowired
     HarvestJobService harvestJobService;
 
-    @Override
-    public EventProcessor_ActualHarvestCompleted internalProcessing() {
-        return this;
-    }
 
     @Override
     public EventProcessor_ActualHarvestCompleted externalProcessing() {
         harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.RECORDS_RECEIVED);
         return this;
     }
+
+
+    @Override
+    public EventProcessor_ActualHarvestCompleted internalProcessing() {
+        return this;
+    }
+
 
     @Override
     public List<Event> newEventProcessing() {

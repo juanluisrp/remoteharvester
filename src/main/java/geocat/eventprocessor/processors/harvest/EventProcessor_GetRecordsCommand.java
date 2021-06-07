@@ -63,15 +63,6 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
     }
 
     @Override
-    public EventProcessor_GetRecordsCommand internalProcessing() throws Exception {
-        GetRecordsCommand cmd = getInitiatingEvent();
-        recordSetService.update(cmd.getRecordSetId(),  result.getNumberRecordsReturned());
-        RecordSet recordSet = recordSetService.getById(cmd.getRecordSetId());
-        metadataExploderService.explode(recordSet,result.getXmlGetRecordsResult());
-        return this;
-    }
-
-    @Override
     public EventProcessor_GetRecordsCommand externalProcessing() throws Exception {
 
         GetRecordsCommand e = getInitiatingEvent();
@@ -85,32 +76,44 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
         getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info,recordSet);
 
         int nrecords = cswGetRecordsHandler.extractActualNumberOfRecordsReturned(xmlParsed);
-        int nextRecordNumber = cswGetRecordsHandler.extractNextRecordNumber(xmlParsed); // we could test to see if this is 0 if this is the lastone (but this brittle)
-        int totalExpectedResults = cswGetRecordsHandler.extractTotalNumberOfRecords(xmlParsed);
-
-        // we requested (say, 20) records, but didn't get back 20 records
-        if (nrecords != e.expectedNumberOfRecords())
-            throw new Exception("got " + nrecords + ", but expected " + e.expectedNumberOfRecords()); // TODO: might not want to throw
-
-        // totalExpectedResults has changed during the harvest -- indicates an index change
-        if (totalExpectedResults != e.getTotalRecordsInQuery()) {
-            throw new Exception("totalExpectedResults changed during harvest - index change?");
-        }
-
-        if (getInitiatingEvent().isLastSet()) {
-            //this ought to be the last one - so, the nextRecordNumber should be 0
-            if (nextRecordNumber != 0) {
-                logger.debug("expected the last set to return nextRecordNumber=0, but got " + nextRecordNumber +" -- assuming this is a server implementation error and ignoring");
-               // throw new Exception("last recordSet - expected nextRecordNumber=0, but got " + nextRecordNumber);
-            }
-        } else {
-            int computedNextRecord = e.getStartRecordNumber()+nrecords;
-            if (nextRecordNumber != computedNextRecord)
-                throw new Exception("computed NextRecord != received NextRecordNumber - "+computedNextRecord+" != "+nextRecordNumber);
-        }
+//        int nextRecordNumber = cswGetRecordsHandler.extractNextRecordNumber(xmlParsed); // we could test to see if this is 0 if this is the lastone (but this brittle)
+//        int totalExpectedResults = cswGetRecordsHandler.extractTotalNumberOfRecords(xmlParsed);
+//
+//        // we requested (say, 20) records, but didn't get back 20 records
+//        if (nrecords != e.expectedNumberOfRecords())
+//            throw new Exception("got " + nrecords + ", but expected " + e.expectedNumberOfRecords()); // TODO: might not want to throw
+//
+//        // totalExpectedResults has changed during the harvest -- indicates an index change
+//        if (totalExpectedResults != e.getTotalRecordsInQuery()) {
+//            throw new Exception("totalExpectedResults changed during harvest - index change?");
+//        }
+//
+//        if (getInitiatingEvent().isLastSet()) {
+//            //this ought to be the last one - so, the nextRecordNumber should be 0
+//            if (nextRecordNumber != 0) {
+//                logger.debug("expected the last set to return nextRecordNumber=0, but got " + nextRecordNumber +" -- assuming this is a server implementation error and ignoring");
+//                // throw new Exception("last recordSet - expected nextRecordNumber=0, but got " + nextRecordNumber);
+//            }
+//        } else {
+//            int computedNextRecord = e.getStartRecordNumber()+nrecords;
+//            if (nextRecordNumber != computedNextRecord)
+//                throw new Exception("computed NextRecord != received NextRecordNumber - "+computedNextRecord+" != "+nextRecordNumber);
+//        }
         result = new GetRecordsResult(xml, nrecords, xmlParsed);
         return this;
     }
+
+
+    @Override
+    public EventProcessor_GetRecordsCommand internalProcessing() throws Exception {
+        GetRecordsCommand cmd = getInitiatingEvent();
+        recordSetService.update(cmd.getRecordSetId(),  result.getNumberRecordsReturned());
+        RecordSet recordSet = recordSetService.getById(cmd.getRecordSetId());
+        metadataExploderService.explode(recordSet,result.getXmlGetRecordsResult());
+        return this;
+    }
+
+
 
     @Override
     public List<Event> newEventProcessing() {
