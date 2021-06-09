@@ -17,6 +17,7 @@ public class RecordSetService {
     @Autowired
     RecordSetRepo recordSetRepo;
 
+    //idempotent
     public RecordSet create(int start, int end, ActualHarvestEndpointStartCommand cmd, boolean lastSet) {
         RecordSet record = recordSetRepo.findByHarvestJobIdAndEndpointJobIdAndStartRecordNumber(cmd.getHarvesterId(),
                 cmd.getEndPointId(),
@@ -37,6 +38,7 @@ public class RecordSetService {
         return recordSetRepo.save(result);
     }
 
+    //idempotent
     public RecordSet update(String recordSetId,  int numberRecordsReturned) {
         RecordSet record = recordSetRepo.findById(recordSetId).get();
       //  record.setGetRecordResponse(xmlGetRecordsResult);

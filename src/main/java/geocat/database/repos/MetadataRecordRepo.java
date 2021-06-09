@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public interface MetadataRecordRepo extends CrudRepository<MetadataRecord, String> {
 
+
+    MetadataRecord findByEndpointJobIdAndRecordNumber(String endpointjobId, int recordNumber);
+
     long countByEndpointJobId(String endpointJobId);
 
     @Query(value = "Select count(distinct record_identifier) from metadata_record   where endpoint_job_id = ?1",

@@ -61,7 +61,7 @@ public class MetadataExploderService {
             String xmlStr = writeXML(metadataRecord);
             String identifier = extractIdentifier(metadataRecord);
             String sha2 = blobStorageService.computeSHA2(xmlStr);
-            blobStorageService.ensureBlobExists(xmlStr,sha2);
+            blobStorageService.ensureBlobExists(xmlStr,sha2);  //ok to do multiple times
             MetadataRecord record = metadataRecordService.create(recordSet,t,sha2,identifier);
         }
     }

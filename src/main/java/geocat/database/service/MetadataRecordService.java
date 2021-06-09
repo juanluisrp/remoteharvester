@@ -23,12 +23,17 @@ public class MetadataRecordService {
      * @param sha2 should already exist in BlobStorage
      * @return
      */
+    //idempotent
     public MetadataRecord create(RecordSet recordSet, int recordNumberOffset, String sha2, String identifier){
-        MetadataRecord result= new MetadataRecord();
-        UUID guid = java.util.UUID.randomUUID();
 
-        result.setMetadataRecordId(guid.toString());
-        result.setEndpointJobId(recordSet.getEndpointJobId());
+        MetadataRecord result=metadataRecordRepo.findByEndpointJobIdAndRecordNumber(recordSet.getEndpointJobId(),recordNumberOffset);
+        if (result == null) {
+            result = new MetadataRecord();
+            UUID guid = java.util.UUID.randomUUID();
+            result.setMetadataRecordId(guid.toString());
+            result.setEndpointJobId(recordSet.getEndpointJobId());
+        }
+
         result.setSha2(sha2);
         result.setRecordNumber(recordSet.getStartRecordNumber()+recordNumberOffset);
         result.setRecordIdentifier(identifier);

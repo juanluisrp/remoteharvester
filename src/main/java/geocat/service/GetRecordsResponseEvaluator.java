@@ -106,8 +106,8 @@ public class GetRecordsResponseEvaluator {
         long totalCount = metadataRecordRepo.countByEndpointJobId(endpointJob.getEndpointJobId());
         long distinctRecordIdentifiers = metadataRecordRepo.countDistinctRecordIdentifierByEndpointJobId(endpointJob.getEndpointJobId());
 
-        if (totalCount != distinctRecordIdentifiers) {
-            int t = 0;
+        if ( (totalCount != distinctRecordIdentifiers) && (problematicResultsConfiguration.errorIfDuplicateUUIDs()) ) {
+            throw new Exception("duplicate record uuids detected - totalCount="+totalCount+", distinctCount="+distinctRecordIdentifiers);
         }
     }
 }

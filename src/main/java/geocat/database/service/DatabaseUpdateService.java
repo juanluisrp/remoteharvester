@@ -40,13 +40,14 @@ public class DatabaseUpdateService {
 //        return m.invoke(obj);
 //    }
 
+    //idempotent transaction
     public List<CSWEndPointDetectedEvent> updateDatabase(CSWMetadata cswMetadata) {
         EndpointJob endpointJob = endpointJobRepo.findById(cswMetadata.getEndpointId()).get();
         endpointJob.setExpectedNumberOfRecords(cswMetadata.getNumberOfExpectedRecords());
         endpointJob.setUrlGetRecords(cswMetadata.getGetRecordsUrl());
 
         List<CSWEndPointDetectedEvent> result = createCSWEndPointDetectedEvents(cswMetadata);
-        endpointJob.setState(EndpointJobState.WORK_DETERMINED);
+       // endpointJob.setState(EndpointJobState.WORK_DETERMINED);
         endpointJobRepo.save(endpointJob);
         return result;
     }

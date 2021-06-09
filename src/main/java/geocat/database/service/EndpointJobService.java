@@ -21,7 +21,7 @@ public class EndpointJobService {
     @Autowired
     private HarvestJobRepo harvestJobRepo;
 
-
+    //idempotent
     public EndpointJob createInitial(String harvestId, String url, String filter, boolean lookForNestedDiscoveryService) {
         EndpointJob job = endpointJobRepo.findFirstByHarvestJobIdAndUrl(harvestId, url);
         if (job == null) //normal case

@@ -20,7 +20,7 @@ public class EventProcessor_WorkedDeterminedFinished extends BaseEventProcessor<
         return this;
     }
 
-    
+
     @Override
     public EventProcessor_WorkedDeterminedFinished internalProcessing() {
         return this;

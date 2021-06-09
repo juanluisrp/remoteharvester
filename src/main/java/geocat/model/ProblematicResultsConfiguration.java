@@ -18,6 +18,7 @@ public class ProblematicResultsConfiguration extends HashMap<String,String>{
     public static String KEY_TOTAL_RECORDS_CHANGED = "TOTAL_RECORDS_CHANGED";
     public static String KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED = "MAX_PERCENT_TOTAL_RECORDS_ALLOWED";
 
+    public static String KEY_DUPLICATE_UUIDS = "DUPLICATE_UUIDS";
 
 
     public static List<String> ALL_KEYS = Arrays.asList( new String[]  {
@@ -25,14 +26,16 @@ public class ProblematicResultsConfiguration extends HashMap<String,String>{
             KEY_NEXTRECORD_BAD_VALUE,
             KEY_RESPONSE_CONTAINS_FEWER_RECORDS_THAN_REQUESTED,
             KEY_TOTAL_RECORDS_CHANGED,
-            KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED
+            KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED,
+            KEY_DUPLICATE_UUIDS
     } );
 
     public static List<String> ALL_KEYS_ERROR_IGNORE = Arrays.asList( new String[] {
             KEY_LAST_RECORDSET_NEXTRECORD_NOT_ZERO,
             KEY_NEXTRECORD_BAD_VALUE,
             KEY_RESPONSE_CONTAINS_FEWER_RECORDS_THAN_REQUESTED,
-            KEY_TOTAL_RECORDS_CHANGED
+            KEY_TOTAL_RECORDS_CHANGED,
+
     } );
 
     public static List<String> ALL_KEYS_INTEGER = Arrays.asList( new String[] {
@@ -45,6 +48,8 @@ public class ProblematicResultsConfiguration extends HashMap<String,String>{
             put(KEY_NEXTRECORD_BAD_VALUE,"ERROR");
             put(KEY_RESPONSE_CONTAINS_FEWER_RECORDS_THAN_REQUESTED,"ERROR");
             put(KEY_TOTAL_RECORDS_CHANGED,"ERROR");
+            put(KEY_DUPLICATE_UUIDS,"ERROR");
+
             put(KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED,"1");
         }
     };
@@ -94,6 +99,10 @@ public class ProblematicResultsConfiguration extends HashMap<String,String>{
         return mapper.readValue(problematicResultsConfigurationJSON, ProblematicResultsConfiguration.class);
     }
 
+
+    public boolean errorIfDuplicateUUIDs(){
+        return get(ProblematicResultsConfiguration.KEY_DUPLICATE_UUIDS).equals("ERROR");
+    }
 
 
     public boolean errorIfLastRecordIsNotZero() {
