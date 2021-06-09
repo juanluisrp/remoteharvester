@@ -10,6 +10,9 @@ public class ActualHarvestEndpointStartCommand extends Event {
     private int nRecordPerRequest;
     private int maxSimultaneousRequests;
     private int expectedNumberOfRecords;
+    private String recordQueueHint;
+    private String actualGetRecordQueue;
+
 
     public ActualHarvestEndpointStartCommand() {
     }
@@ -80,4 +83,19 @@ public class ActualHarvestEndpointStartCommand extends Event {
     }
 
 
+    public String getRecordQueueHint() {
+        return recordQueueHint;
+    }
+
+    public void setRecordQueueHint(String recordQueueHint) {
+        this.recordQueueHint = recordQueueHint;
+    }
+
+    public String getActualGetRecordQueue() {
+        return actualGetRecordQueue;
+    }
+
+    public void setActualGetRecordQueue(String actualGetRecordQueue) {
+        this.actualGetRecordQueue = actualGetRecordQueue;
+    }
 }

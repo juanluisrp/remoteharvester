@@ -11,6 +11,12 @@ public class GetRecordsCommand extends Event {
     private int endRecordNumber;
     private String recordSetId;
     private boolean lastSet;
+    private String workQueueName;
+    private int totalRecordsInQuery;
+
+    public GetRecordsCommand() {
+    }
+
 
     public int getTotalRecordsInQuery() {
         return totalRecordsInQuery;
@@ -20,10 +26,7 @@ public class GetRecordsCommand extends Event {
         this.totalRecordsInQuery = totalRecordsInQuery;
     }
 
-    private int totalRecordsInQuery;
 
-    public GetRecordsCommand() {
-    }
 
     public String getRecordSetId() {
         return recordSetId;
@@ -96,5 +99,13 @@ public class GetRecordsCommand extends Event {
 
     public void setLastSet(boolean lastSet) {
         this.lastSet = lastSet;
+    }
+
+    public String getWorkQueueName() {
+        return workQueueName;
+    }
+
+    public void setWorkQueueName(String workQueueName) {
+        this.workQueueName = workQueueName;
     }
 }

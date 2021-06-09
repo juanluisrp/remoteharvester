@@ -14,8 +14,18 @@ public class HarvesterConfig {
     private String url;
     private String processID;
     private int numberOfRecordsPerRequest;
+    private String getRecordQueueHint;
 
     public static int DEFAULT_NRECORDS = 20;
+
+
+    public String getGetRecordQueueHint() {
+        return getRecordQueueHint;
+    }
+
+    public void setGetRecordQueueHint(String getRecordQueueHint) {
+        this.getRecordQueueHint = getRecordQueueHint;
+    }
 
     public ProblematicResultsConfiguration getProblematicResultsConfiguration() {
         return problematicResultsConfiguration;

@@ -53,6 +53,7 @@ public class Config {
         activeMQComponent.setTransacted(true);
         activeMQComponent.setTransactedInOut(true);
         activeMQComponent.setTransactionManager(jmsTransactionManager);
+
         //  activeMQComponent.setLazyCreateTransactionManager (false);
 
         activeMQComponent.setCacheLevelName("CACHE_CONSUMER");

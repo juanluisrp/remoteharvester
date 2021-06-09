@@ -3,6 +3,7 @@ package geocat.eventprocessor;
 import geocat.events.Event;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -25,23 +26,43 @@ public class EventProcessorRouteCreator {
                                   Class eventType,
                                   String from,
                                   String to,
-                                  String tag
+                                  String tag,
+                                  boolean unmarshal //will unmarshal message + transacted
     ) throws Exception {
         validate(eventType);
+        JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
+
 
         //=====================================================================
-        routeBuilder
-                .from(from)  // ${body} will be of type eventType
-                .routeId(tag + "_" + eventType.getSimpleName())
-                .log("processing event of type " + eventType.getSimpleName() + " from " + from)
-                .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
-                .transform().simple("${body.externalProcessing()}")
-                .transform().simple("${body.internalProcessing()}")
-                .transform().simple("${body.newEventProcessing()}")
-                .split().simple("${body}")
-                .marshal().json()
-                .to(to)
-        ;
+        if (unmarshal)
+            routeBuilder
+                    .from(from)  // ${body} will be JMS message - unmarshal
+                    .transacted()
+                    .unmarshal(jsonDefHarvesterConfig)
+                    .routeId(tag + "_" + eventType.getSimpleName())
+                    .log("processing event of type " + eventType.getSimpleName() + " from " + from)
+                    .log("event = ${body}")
+                    .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
+                    .transform().simple("${body.externalProcessing()}")
+                    .transform().simple("${body.internalProcessing()}")
+                    .transform().simple("${body.newEventProcessing()}")
+                    .split().simple("${body}")
+                    .marshal().json()
+                    .to(to)
+                ;
+        else
+            routeBuilder
+                    .from(from)  // ${body} will be of type eventType
+                    .routeId(tag + "_" + eventType.getSimpleName())
+                    .log("processing event of type " + eventType.getSimpleName() + " from " + from)
+                    .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
+                    .transform().simple("${body.externalProcessing()}")
+                    .transform().simple("${body.internalProcessing()}")
+                    .transform().simple("${body.newEventProcessing()}")
+                    .split().simple("${body}")
+                    .marshal().json()
+                    .to(to)
+                    ;
         //=====================================================================
     }
 

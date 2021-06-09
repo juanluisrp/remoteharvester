@@ -76,6 +76,7 @@ public class EventService {
         result.setLongTermTag(harvesterConfig.getLongTermTag());
         result.setProblematicResultsConfigurationJSON(harvesterConfig.getProblematicResultsConfiguration().toString());
         result.setNumberRecordsPerRequest(harvesterConfig.getNumberOfRecordsPerRequest());
+        result.setGetRecordQueueHint(harvesterConfig.getGetRecordQueueHint());
         return result;
     }
 

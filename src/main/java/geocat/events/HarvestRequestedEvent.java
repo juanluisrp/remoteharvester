@@ -10,7 +10,7 @@ public class HarvestRequestedEvent extends Event {
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
     int numberRecordsPerRequest;
-
+    String getRecordQueueHint;
 
     public HarvestRequestedEvent() {
     }
@@ -70,5 +70,13 @@ public class HarvestRequestedEvent extends Event {
 
     public void setProblematicResultsConfigurationJSON(String problematicResultsConfigurationJSON) {
         this.problematicResultsConfigurationJSON = problematicResultsConfigurationJSON;
+    }
+
+    public String getGetRecordQueueHint() {
+        return getRecordQueueHint;
+    }
+
+    public void setGetRecordQueueHint(String getRecordQueueHint) {
+        this.getRecordQueueHint = getRecordQueueHint;
     }
 }

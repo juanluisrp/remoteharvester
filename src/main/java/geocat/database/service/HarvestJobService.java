@@ -42,7 +42,7 @@ public class HarvestJobService {
         newJob.setState(HarvestJobState.CREATING);
         newJob.setProblematicResultsConfigurationJSON(event.getProblematicResultsConfigurationJSON());
         newJob.setNrecordsPerRequest(event.getNumberRecordsPerRequest());
-
+        newJob.setGetRecordQueueHint(event.getGetRecordQueueHint());
         return harvestJobRepo.save(newJob);
     }
 

@@ -60,7 +60,7 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
 
 
     @Override
-    public List<Event> newEventProcessing() {
+    public List<Event> newEventProcessing() throws Exception {
         List<Event> result = new ArrayList<>();
         String harvestId = getInitiatingEvent().getHarvesterId();
 

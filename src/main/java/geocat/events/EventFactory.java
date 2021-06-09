@@ -7,6 +7,8 @@ import geocat.events.actualRecordCollection.GetRecordsCommand;
 import geocat.events.determinework.CSWEndPointDetectedEvent;
 import geocat.events.determinework.CSWEndpointWorkDetermined;
 import geocat.events.determinework.DetermineWorkStartCommand;
+import geocat.service.QueueChooserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,10 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class EventFactory {
 
-    public ActualHarvestEndpointStartCommand create_ActualHarvestEndpointStartCommand(EndpointJob job, HarvestJob harvestJob) {
+    @Autowired
+    QueueChooserService queueChooserService;
+
+    public ActualHarvestEndpointStartCommand create_ActualHarvestEndpointStartCommand(EndpointJob job, HarvestJob harvestJob) throws Exception {
         ActualHarvestEndpointStartCommand result = new ActualHarvestEndpointStartCommand();
         result.setFilter(harvestJob.getFilter());
         result.setHarvesterId(harvestJob.getJobId());
@@ -23,6 +28,8 @@ public class EventFactory {
         result.setExpectedNumberOfRecords(job.getExpectedNumberOfRecords());
         result.setMaxSimultaneousRequests(1);
         result.setnRecordPerRequest(harvestJob.getNrecordsPerRequest());
+        result.setRecordQueueHint(harvestJob.getGetRecordQueueHint());
+        result.setActualGetRecordQueue( queueChooserService.chooseQueue(harvestJob.getGetRecordQueueHint(),job.getExpectedNumberOfRecords()) );
         return result;
     }
 
@@ -38,6 +45,7 @@ public class EventFactory {
         result.setRecordSetId(recordSetId);
         result.setLastSet(lastOne);
         result.setTotalRecordsInQuery(cmd.getExpectedNumberOfRecords());
+        result.setWorkQueueName(cmd.getActualGetRecordQueue());
 
         return result;
     }

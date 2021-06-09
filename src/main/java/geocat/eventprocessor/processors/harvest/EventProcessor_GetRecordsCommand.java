@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Component
 @Scope("prototype")

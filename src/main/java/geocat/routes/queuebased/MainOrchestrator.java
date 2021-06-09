@@ -32,7 +32,8 @@ public class MainOrchestrator extends SpringRouteBuilder {
                 Arrays.asList(
                         new RedirectEvent(DetermineWorkStartCommand.class, "activemq:" + DetermineWorkOrchestrator.myJMSQueueName),
                         new RedirectEvent(ActualHarvestStartCommand.class, "activemq:" + ActualRecordCollectionOrchestrator.myJMSQueueName)
-                )
+                ),
+                Arrays.asList(new Class[0])
         );
 
 

@@ -26,10 +26,20 @@ public class MainLoopRouteCreator {
     @Autowired
     EventProcessorRouteCreator eventProcessorRouteCreator;
 
+    /**
+     *
+     * @param routeBuilder
+     * @param from
+     * @param eventTypes
+     * @param redirectEventList
+     * @param handledElsewhereEvents - just send to "direct:" + mainRouteName + "_" + eventType.getSimpleName() but don't implement it add a .from()
+     * @throws Exception
+     */
     public void createEventProcessingLoop(SpringRouteBuilder routeBuilder,
                                           String from,
                                           Class[] eventTypes,
-                                          List<RedirectEvent> redirectEventList) throws Exception {
+                                          List<RedirectEvent> redirectEventList,
+                                          List<Class> handledElsewhereEvents) throws Exception {
 
         String mainRouteName = extractName(from);
         JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
@@ -82,11 +92,14 @@ public class MainLoopRouteCreator {
 
         //add in individual processors
         for (Class eventType : eventTypes) {
-            eventProcessorRouteCreator.addEventProcessor(routeBuilder,
-                    eventType,
-                    "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
-                    from,
-                    mainRouteName);
+            if (!handledElsewhereEvents.contains(eventType)) {
+                    eventProcessorRouteCreator.addEventProcessor(routeBuilder,
+                            eventType,
+                            "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
+                            from,
+                            mainRouteName,
+                            false);
+            }
         }
 
 

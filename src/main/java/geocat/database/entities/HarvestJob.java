@@ -21,6 +21,17 @@ public class HarvestJob {
     @Column(columnDefinition = "text")
     private String problematicResultsConfigurationJSON;
     int nrecordsPerRequest;
+    String getRecordQueueHint;
+
+
+    public String getGetRecordQueueHint() {
+        return getRecordQueueHint;
+    }
+
+    public void setGetRecordQueueHint(String getRecordQueueHint) {
+        this.getRecordQueueHint = getRecordQueueHint;
+    }
+
 
 
 
