@@ -1,8 +1,11 @@
 package geocat.config;
 
+import geocat.dblogging.MYUnitOfWorkFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.camel.CamelContext;
+import org.apache.camel.ExtendedCamelContext;
 import org.apache.camel.component.activemq.ActiveMQComponent;
+import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +45,23 @@ public class Config {
 //        jmsTransactionManager.setConnectionFactory(connectionFactory);
 //        return jmsTransactionManager;
 //    }
+
+    @Bean
+    public CamelContextConfiguration contextConfiguration() {
+        return new CamelContextConfiguration() {
+            @Override
+            public void beforeApplicationStart(CamelContext context) {
+                context.setUseMDCLogging(true);
+                context.adapt(ExtendedCamelContext.class).setUnitOfWorkFactory(new MYUnitOfWorkFactory());
+            }
+
+            @Override
+            public void afterApplicationStart(CamelContext camelContext) {
+            }
+        };
+    }
+    
+    
     @Bean
     //@Primary
     public ActiveMQComponent activemq(ConnectionFactory connectionFactory) {
