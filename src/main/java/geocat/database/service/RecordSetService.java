@@ -46,7 +46,7 @@ public class RecordSetService {
         return recordSetRepo.save(record);
     }
 
-    public boolean complete(String endpointId) {
+    public boolean complete(long endpointId) {
         List<RecordSet> records = recordSetRepo.findByEndpointJobId(endpointId);
         boolean allDone = true;
         for (RecordSet recordSet : records) {
@@ -61,7 +61,7 @@ public class RecordSetService {
     }
 
 
-    public List<RecordSet> getAll(String endpointId) {
+    public List<RecordSet> getAll(long endpointId) {
         return recordSetRepo.findByEndpointJobId(endpointId);
     }
 }

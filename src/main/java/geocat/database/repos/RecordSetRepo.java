@@ -11,9 +11,9 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public interface RecordSetRepo extends CrudRepository<RecordSet, String> {
-    RecordSet findByHarvestJobIdAndEndpointJobIdAndStartRecordNumber(String harvestId, String endPointJobId, int start);
+    RecordSet findByHarvestJobIdAndEndpointJobIdAndStartRecordNumber(String harvestId, long endPointJobId, int start);
 
-    List<RecordSet> findByEndpointJobId(String endPointJobId);
+    List<RecordSet> findByEndpointJobId(long endPointJobId);
 
 }
 

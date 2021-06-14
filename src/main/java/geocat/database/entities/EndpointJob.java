@@ -16,8 +16,8 @@ import javax.persistence.*;
 
 public class EndpointJob {
     @Id
-    @Column(columnDefinition = "varchar(40)")
-    private String endpointJobId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private long endpointJobId;
     @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
     private String url;
@@ -69,11 +69,11 @@ public class EndpointJob {
         this.state = state;
     }
 
-    public String getEndpointJobId() {
+    public long getEndpointJobId() {
         return endpointJobId;
     }
 
-    public void setEndpointJobId(String endpointJobId) {
+    public void setEndpointJobId(long endpointJobId) {
         this.endpointJobId = endpointJobId;
     }
 

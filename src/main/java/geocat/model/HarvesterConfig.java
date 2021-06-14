@@ -8,13 +8,13 @@ import java.net.URL;
 
 public class HarvesterConfig {
 
-    private String longTermTag;
-    private boolean lookForNestedDiscoveryService;
-    private String filter;
-    private String url;
-    private String processID;
-    private int numberOfRecordsPerRequest;
-    private String getRecordQueueHint;
+    private String longTermTag;  //i.e. country name
+    private boolean lookForNestedDiscoveryService; //true for poland
+    private String filter;  //CSW <ogc:Filter>
+    private String url; // endpoint for GetCapabilities
+    private String processID; // GUID for the harvest (used as JMS Correlation ID).  Provided by server
+    private int numberOfRecordsPerRequest; // defaults to 20 records in a GetRecords request
+    private String getRecordQueueHint; // which queue set to use.  blank=auto determined.  Otherwise "PARALLEL#" #=2,3,4
 
     public static int DEFAULT_NRECORDS = 20;
 

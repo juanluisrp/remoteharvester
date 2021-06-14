@@ -14,10 +14,11 @@ import javax.persistence.*;
         })
 public class MetadataRecord {
     @Id
-    @Column(columnDefinition = "varchar(40)")
-    private String metadataRecordId;
-    @Column(columnDefinition = "varchar(40)")
-    private String endpointJobId;
+   // @Column(columnDefinition = "varchar(40)")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private long metadataRecordId;
+   // @Column(columnDefinition = "varchar(40)")
+    private long endpointJobId;
     private int recordNumber;
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
@@ -35,19 +36,19 @@ public class MetadataRecord {
 
 
 
-    public String getMetadataRecordId() {
+    public long getMetadataRecordId() {
         return metadataRecordId;
     }
 
-    public void setMetadataRecordId(String metadataRecordId) {
+    public void setMetadataRecordId(long metadataRecordId) {
         this.metadataRecordId = metadataRecordId;
     }
 
-    public String getEndpointJobId() {
+    public long getEndpointJobId() {
         return endpointJobId;
     }
 
-    public void setEndpointJobId(String endpointJobId) {
+    public void setEndpointJobId(long endpointJobId) {
         this.endpointJobId = endpointJobId;
     }
 

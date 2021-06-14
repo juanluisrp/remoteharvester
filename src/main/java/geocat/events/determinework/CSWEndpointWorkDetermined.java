@@ -5,22 +5,22 @@ import geocat.events.Event;
 public class CSWEndpointWorkDetermined extends Event {
 
 
-    private String endPointId;
+    private long endPointId;
     private String harvesterId;
 
     public CSWEndpointWorkDetermined() {
     }
 
-    public CSWEndpointWorkDetermined(String harvesterId, String endPointId) {
+    public CSWEndpointWorkDetermined(String harvesterId, long endPointId) {
         this.endPointId = endPointId;
         this.harvesterId = harvesterId;
     }
 
-    public String getEndPointId() {
+    public long getEndPointId() {
         return endPointId;
     }
 
-    public void setEndPointId(String endPointId) {
+    public void setEndPointId(long endPointId) {
         this.endPointId = endPointId;
     }
 

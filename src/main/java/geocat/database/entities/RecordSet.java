@@ -18,8 +18,8 @@ public class RecordSet {
     @Id
     @Column(columnDefinition = "varchar(40)")
     private String recordSetId;
-    @Column(columnDefinition = "varchar(40)")
-    private String endpointJobId;
+    //@Column(columnDefinition = "varchar(40)")
+    private long endpointJobId;
     @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
     private int startRecordNumber;
@@ -38,11 +38,11 @@ public class RecordSet {
         this.recordSetId = recordSetId;
     }
 
-    public String getEndpointJobId() {
+    public long getEndpointJobId() {
         return endpointJobId;
     }
 
-    public void setEndpointJobId(String endpointJobId) {
+    public void setEndpointJobId(long endpointJobId) {
         this.endpointJobId = endpointJobId;
     }
 

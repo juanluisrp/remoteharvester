@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public interface EndpointJobRepo extends CrudRepository<EndpointJob, String> {
+public interface EndpointJobRepo extends CrudRepository<EndpointJob, Long> {
 
     EndpointJob findFirstByHarvestJobIdAndUrl(String harvestId, String url);
 

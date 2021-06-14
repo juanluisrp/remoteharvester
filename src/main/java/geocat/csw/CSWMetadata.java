@@ -7,13 +7,13 @@ public class CSWMetadata {
     public String getRecordsUrl;
     public List<List<String>> nestedGetCapUrls;
     private String harvesterId;
-    private String endpointId;
+    private long endpointId;
     private int numberOfExpectedRecords;
     private boolean lookForNestedDiscoveryService;
     private String filter;
 
     public CSWMetadata(String harvesterId,
-                       String endpointId,
+                       long endpointId,
                        int numberOfExpectedRecords,
                        String getRecordsUrl,
                        List<List<String>> nestedGetCapUrls,
@@ -76,11 +76,11 @@ public class CSWMetadata {
         this.harvesterId = harvesterId;
     }
 
-    public String getEndpointId() {
+    public long getEndpointId() {
         return endpointId;
     }
 
-    public void setEndpointId(String endpointId) {
+    public void setEndpointId(long endpointId) {
         this.endpointId = endpointId;
     }
 }

@@ -29,7 +29,7 @@ public class EndpointJobService {
             UUID guid = java.util.UUID.randomUUID();
 
             EndpointJob newJob = new EndpointJob();
-            newJob.setEndpointJobId(guid.toString());
+            //newJob.setEndpointJobId(guid.toString());
             newJob.setHarvestJobId(harvestId);
             newJob.setUrl(url);
             newJob.setFilter(filter);
@@ -45,7 +45,7 @@ public class EndpointJobService {
         return !endpointJobRepo.findByHarvestJobIdAndUrlIn(harvestId, urls).isEmpty();
     }
 
-    public EndpointJob updateState(String endpointId, EndpointJobState state) {
+    public EndpointJob updateState(long endpointId, EndpointJobState state) {
         EndpointJob job = getById(endpointId);
         job.setState(state);
         return endpointJobRepo.save(job);
@@ -55,7 +55,7 @@ public class EndpointJobService {
         return endpointJobRepo.findByHarvestJobId(harvestId);
     }
 
-    public EndpointJob getById(String id) {
+    public EndpointJob getById(long id) {
         return endpointJobRepo.findById(id).get();
     }
 

@@ -51,7 +51,7 @@ public class EventFactory {
     }
 
     public CSWEndPointDetectedEvent create_CSWEndPointDetectedEvent(String harvestId,
-                                                                    String endpointId,
+                                                                    long endpointId,
                                                                     String url,
                                                                     String filter,
                                                                     boolean lookForNestedDiscoveryService) {
@@ -64,7 +64,7 @@ public class EventFactory {
         return result;
     }
 
-    public CSWEndpointWorkDetermined create_CSWEndpointWorkDetermined(String harvestId, String endpointId) {
+    public CSWEndpointWorkDetermined create_CSWEndpointWorkDetermined(String harvestId, long endpointId) {
         return new CSWEndpointWorkDetermined(harvestId, endpointId);
     }
 

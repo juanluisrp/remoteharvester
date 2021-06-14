@@ -25,17 +25,17 @@ public class MetadataRecordService {
      */
     //idempotent
     public MetadataRecord create(RecordSet recordSet, int recordNumberOffset, String sha2, String identifier){
-
-        MetadataRecord result=metadataRecordRepo.findByEndpointJobIdAndRecordNumber(recordSet.getEndpointJobId(),recordNumberOffset);
+        int recordNumber = recordSet.getStartRecordNumber()+recordNumberOffset;
+        MetadataRecord result=metadataRecordRepo.findByEndpointJobIdAndRecordNumber(recordSet.getEndpointJobId(),recordNumber);
         if (result == null) {
             result = new MetadataRecord();
-            UUID guid = java.util.UUID.randomUUID();
-            result.setMetadataRecordId(guid.toString());
+            //UUID guid = java.util.UUID.randomUUID();
+           // result.setMetadataRecordId(guid.toString());
             result.setEndpointJobId(recordSet.getEndpointJobId());
         }
 
         result.setSha2(sha2);
-        result.setRecordNumber(recordSet.getStartRecordNumber()+recordNumberOffset);
+        result.setRecordNumber(recordNumber);
         result.setRecordIdentifier(identifier);
 
         return metadataRecordRepo.save(result);

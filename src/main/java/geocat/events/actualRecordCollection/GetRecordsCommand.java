@@ -3,7 +3,7 @@ package geocat.events.actualRecordCollection;
 import geocat.events.Event;
 
 public class GetRecordsCommand extends Event {
-    private String endPointId;
+    private long endPointId;
     private String harvesterId;
     private String getRecordsURL;
     private String filter;
@@ -36,11 +36,11 @@ public class GetRecordsCommand extends Event {
         this.recordSetId = recordSetId;
     }
 
-    public String getEndPointId() {
+    public long getEndPointId() {
         return endPointId;
     }
 
-    public void setEndPointId(String endPointId) {
+    public void setEndPointId(long endPointId) {
         this.endPointId = endPointId;
     }
 

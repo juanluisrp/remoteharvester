@@ -5,7 +5,7 @@ import geocat.events.Event;
 public class CSWEndPointDetectedEvent extends Event {
     private boolean lookForNestedDiscoveryService;
     private String url;
-    private String endPointId;
+    private long endPointId;
     private String harvesterId;
     private String filter;
 
@@ -28,11 +28,11 @@ public class CSWEndPointDetectedEvent extends Event {
         this.url = url;
     }
 
-    public String getEndPointId() {
+    public long getEndPointId() {
         return endPointId;
     }
 
-    public void setEndPointId(String endPointId) {
+    public void setEndPointId(long endPointId) {
         this.endPointId = endPointId;
     }
 

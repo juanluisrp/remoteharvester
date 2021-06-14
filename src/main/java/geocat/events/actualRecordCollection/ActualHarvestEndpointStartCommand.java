@@ -3,7 +3,7 @@ package geocat.events.actualRecordCollection;
 import geocat.events.Event;
 
 public class ActualHarvestEndpointStartCommand extends Event {
-    private String endPointId;
+    private long endPointId;
     private String harvesterId;
     private String getRecordsURL;
     private String filter;
@@ -18,11 +18,11 @@ public class ActualHarvestEndpointStartCommand extends Event {
     }
 
 
-    public String getEndPointId() {
+    public long getEndPointId() {
         return endPointId;
     }
 
-    public void setEndPointId(String endPointId) {
+    public void setEndPointId(long endPointId) {
         this.endPointId = endPointId;
     }
 

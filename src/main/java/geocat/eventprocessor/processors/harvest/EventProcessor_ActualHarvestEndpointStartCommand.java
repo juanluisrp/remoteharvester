@@ -65,7 +65,7 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
     @Override
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
-        String endpointId = getInitiatingEvent().getEndPointId();
+        long endpointId = getInitiatingEvent().getEndPointId();
         List<RecordSet> records = recordSetService.getAll(endpointId);
 
         for (RecordSet record : records) {

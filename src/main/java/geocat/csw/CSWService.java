@@ -49,7 +49,7 @@ public class CSWService {
     //      * emit CSWEndPointDetectedEvent events
     public CSWMetadata getMetadata(CSWEndPointDetectedEvent endPointDetectedEvent) throws Exception {
         String harvestId = endPointDetectedEvent.getHarvesterId();
-        String endpointId = endPointDetectedEvent.getEndPointId();
+        long endpointId = endPointDetectedEvent.getEndPointId();
         String filter = endPointDetectedEvent.getFilter();
 
         logger.debug("getMetadata called on URL=" + endPointDetectedEvent.getUrl());
