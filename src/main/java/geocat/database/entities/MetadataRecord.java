@@ -2,6 +2,10 @@ package geocat.database.entities;
 
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="metadata_record",
@@ -24,6 +28,22 @@ public class MetadataRecord {
     private String sha2;
     @Column(columnDefinition = "text")
     private String recordIdentifier;
+
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
+
+
+
+    @PrePersist
+    private void onInsert() {
+        this.createTimeUTC =  ZonedDateTime.now(ZoneId.of("UTC"));
+    }
+
+
+
+    public ZonedDateTime getCreateTimeUTC() {
+        return createTimeUTC;
+    }
 
 
     public String getRecordIdentifier() {

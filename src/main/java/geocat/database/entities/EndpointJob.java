@@ -1,6 +1,10 @@
 package geocat.database.entities;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 
 //create table endpoint_job ( endpoint_job_id varchar(40), harvest_job_id varchar(40), state varchar(40), url varchar(255), url_get_records varchar(255), expected_number_of_records int, filter text,look_for_nested_discovery_service bool);
@@ -28,6 +32,32 @@ public class EndpointJob {
     private String urlGetRecords;
     @Enumerated(EnumType.STRING)
     private EndpointJobState state;
+
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime lastUpdateUTC;
+
+
+    @PrePersist
+    private void onInsert() {
+        this.createTimeUTC =  ZonedDateTime.now(ZoneId.of("UTC"));
+        this.lastUpdateUTC = this.createTimeUTC;
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        this.lastUpdateUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+    }
+
+    public ZonedDateTime getCreateTimeUTC() {
+        return createTimeUTC;
+    }
+
+    public ZonedDateTime getLastUpdateUTC() {
+        return lastUpdateUTC;
+    }
+
 
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
