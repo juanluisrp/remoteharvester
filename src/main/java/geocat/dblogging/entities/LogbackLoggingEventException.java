@@ -28,5 +28,29 @@ public class LogbackLoggingEventException {
     private short i;
 
     @Column(columnDefinition = "varchar(254)")
-    private String traceLing;
+    private String traceLine;
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
+    }
+
+    public short getI() {
+        return i;
+    }
+
+    public void setI(short i) {
+        this.i = i;
+    }
+
+    public String getTraceLine() {
+        return traceLine;
+    }
+
+    public void setTraceLine(String traceLine) {
+        this.traceLine = traceLine;
+    }
 }

@@ -12,7 +12,10 @@ public class MyUnitOfWork extends MDCUnitOfWork {
 
         super(exchange,inflightRepository,pattern,allowUseOriginalMessage,useBreadcrumb);
 
-            MDC.put("JMSCorrelationID", (String) exchange.getMessage().getHeader("JMSCorrelationID"));
+            MDC.clear();
+            String correlationId = (String) exchange.getMessage().getHeader("JMSCorrelationID");
+            if ( (correlationId !=null) && (!correlationId.isEmpty()) )
+                MDC.put("JMSCorrelationID", correlationId);
 
     }
 }

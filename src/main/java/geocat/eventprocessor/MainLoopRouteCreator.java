@@ -44,7 +44,10 @@ public class MainLoopRouteCreator {
         String mainRouteName = extractName(from);
         JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
 
-        routeBuilder.errorHandler(routeBuilder.transactionErrorHandler().maximumRedeliveries(2).redeliveryDelay(1000));
+        routeBuilder.errorHandler(routeBuilder.transactionErrorHandler()
+                .maximumRedeliveries(2)
+                .redeliveryDelay(1000) );
+
         routeBuilder.onException().onExceptionOccurred(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
@@ -57,6 +60,7 @@ public class MainLoopRouteCreator {
 
         ChoiceDefinition choice = routeBuilder
                 .from(from)
+
                 .routeId(mainRouteName + ".eventprocessor")
                 .transacted()
                 .unmarshal(jsonDefHarvesterConfig)

@@ -24,12 +24,12 @@ public class MySpringApp {
     public  static void main(String[] args) throws Exception {
 
         Logger logger = LoggerFactory.getLogger(MySpringApp.class);
-        logger.debug("hi");
-        logger.debug("hi2");
+//        logger.debug("hi");
+//        logger.debug("hi2");
         SpringApplication app = new SpringApplication(MySpringApp.class);
         ApplicationContext ctx = app.run(args);
-        logger.debug("hi");
-        logger.debug("hi");
+//        logger.debug("hi");
+//        logger.debug("hi");
     }
 
 

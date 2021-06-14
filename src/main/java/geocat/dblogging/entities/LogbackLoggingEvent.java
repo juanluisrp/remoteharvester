@@ -20,52 +20,52 @@ import javax.persistence.*;
 public class LogbackLoggingEvent {
 
     @Column(columnDefinition = "bigint")
-    private long timestmp;
+    public long timestmp;
 
     @Column(columnDefinition = "text")
-    private String formattedMessage;
+    public String formattedMessage;
 
     @Column(columnDefinition = "varchar(254)")
-    private String loggerName;
+    public String loggerName;
 
     @Column(columnDefinition = "varchar(254)")
-    private String levelString;
+    public String levelString;
 
     @Column(columnDefinition = "varchar(254)")
-    private String threadName;
+    public String threadName;
 
     @Column(columnDefinition = "smallint")
-    private short referenceFlag;
+    public short referenceFlag;
 
     @Column(columnDefinition = "varchar(254)")
-    private String arg0;
+    public String arg0;
     @Column(columnDefinition = "varchar(254)")
-    private String arg1;
+    public String arg1;
     @Column(columnDefinition = "varchar(254)")
-    private String arg2;
+    public String arg2;
     @Column(columnDefinition = "varchar(254)")
-    private String arg3;
+    public String arg3;
 
     @Column(columnDefinition = "varchar(254)")
-    private String callerFilename;
+    public String callerFilename;
 
     @Column(columnDefinition = "varchar(254)")
-    private String callerClass;
+    public String callerClass;
 
     @Column(columnDefinition = "varchar(254)")
-    private String callerMethod;
+    public String callerMethod;
 
     @Column(columnDefinition = "char(4)")
-    private String callerLine;
+    public String callerLine;
 
     @Column(columnDefinition = "varchar(254)")
-    private String jmsCorrelationId;
+    public String jmsCorrelationId;
 
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
-    private long   eventId;
+    public long   eventId;
 
 
 }

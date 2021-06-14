@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class EventProcessorRouteCreator {
+    static JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
 
     /**
      * eventType example - eventType=ActualHarvestEndpointStartCommand
@@ -30,7 +31,6 @@ public class EventProcessorRouteCreator {
                                   boolean unmarshal //will unmarshal message + transacted
     ) throws Exception {
         validate(eventType);
-        JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
 
 
         //=====================================================================

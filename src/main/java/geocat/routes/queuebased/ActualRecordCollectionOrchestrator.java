@@ -38,12 +38,7 @@ public class ActualRecordCollectionOrchestrator extends SpringRouteBuilder {
         );
 
         from("direct:"+myJMSQueueName+"_GetRecordsCommand")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        int t=0;
-                    }
-                })
+               .routeId(myJMSQueueName+"_GetRecordsCommand")
                 .setHeader("workQueueName",simple(" ${body.getWorkQueueName()}"))
                 .log("routing to queue: ${body.getWorkQueueName()}")
                 .marshal().json()

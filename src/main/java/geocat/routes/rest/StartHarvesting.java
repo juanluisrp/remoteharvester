@@ -4,7 +4,9 @@ import geocat.events.EventService;
 import geocat.model.HarvesterConfig;
 import geocat.routes.queuebased.MainOrchestrator;
 import org.apache.camel.BeanScope;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
@@ -50,7 +52,8 @@ public class StartHarvesting extends RouteBuilder {
         // mini-route to send to the message queue
         from("direct:addToQueue") // from above route
                 .routeId("rest.HarvestRequestedEvent")
-                .log("HarvestRequestedEvent")
+
+                .log("REST - generating HarvestRequestedEvent")
                 .bean(EventService.class, "createHarvestRequestedEvent(${body},${headers.processID})", BeanScope.Request)
                 .marshal().json() // convert HarvesterConfig back to json
                 .to("activemq:" + MainOrchestrator.myJMSQueueName) //send to message queue
