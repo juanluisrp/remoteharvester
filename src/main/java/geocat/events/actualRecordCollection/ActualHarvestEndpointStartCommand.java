@@ -8,7 +8,7 @@ public class ActualHarvestEndpointStartCommand extends Event {
     private String getRecordsURL;
     private String filter;
     private int nRecordPerRequest;
-    private int maxSimultaneousRequests;
+
     private int expectedNumberOfRecords;
     private String recordQueueHint;
     private String actualGetRecordQueue;
@@ -60,13 +60,6 @@ public class ActualHarvestEndpointStartCommand extends Event {
         this.nRecordPerRequest = nRecordPerRequest;
     }
 
-    public int getMaxSimultaneousRequests() {
-        return maxSimultaneousRequests;
-    }
-
-    public void setMaxSimultaneousRequests(int maxSimultaneousRequests) {
-        this.maxSimultaneousRequests = maxSimultaneousRequests;
-    }
 
 
     public int getExpectedNumberOfRecords() {
@@ -77,10 +70,7 @@ public class ActualHarvestEndpointStartCommand extends Event {
         this.expectedNumberOfRecords = expectedNumberOfRecords;
     }
 
-    @Override
-    public String toString() {
-        return "ActualHarvestEndpointStartCommand with url=" + getRecordsURL + ", expected records =" + expectedNumberOfRecords;
-    }
+
 
 
     public String getRecordQueueHint() {
@@ -97,5 +87,14 @@ public class ActualHarvestEndpointStartCommand extends Event {
 
     public void setActualGetRecordQueue(String actualGetRecordQueue) {
         this.actualGetRecordQueue = actualGetRecordQueue;
+    }
+
+    @Override
+    public String toString() {
+        return "ActualHarvestEndpointStartCommand for processID="+harvesterId+",endpoint="+endPointId+
+                ", getRecordsURL="+getRecordsURL+" ,nRecordPerRequest="+nRecordPerRequest
+                +",expectedNumberOfRecords="+expectedNumberOfRecords+",recordQueueHint="+recordQueueHint
+                +",actualGetRecordQueue="+actualGetRecordQueue
+                +", filter="+filter ;
     }
 }

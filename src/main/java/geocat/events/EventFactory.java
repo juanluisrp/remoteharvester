@@ -26,7 +26,6 @@ public class EventFactory {
         result.setEndPointId(job.getEndpointJobId());
         result.setGetRecordsURL(job.getUrlGetRecords());
         result.setExpectedNumberOfRecords(job.getExpectedNumberOfRecords());
-        result.setMaxSimultaneousRequests(1);
         result.setnRecordPerRequest(harvestJob.getNrecordsPerRequest());
         result.setRecordQueueHint(harvestJob.getGetRecordQueueHint());
         result.setActualGetRecordQueue( queueChooserService.chooseQueue(harvestJob.getGetRecordQueueHint(),job.getExpectedNumberOfRecords()) );
@@ -75,6 +74,10 @@ public class EventFactory {
                 job.getFilter(),
                 job.isLookForNestedDiscoveryService()
         );
+    }
+
+    public HarvestAbortEvent create_HarvestAbortEvent(String processID) {
+        return new HarvestAbortEvent(processID);
     }
 
 }

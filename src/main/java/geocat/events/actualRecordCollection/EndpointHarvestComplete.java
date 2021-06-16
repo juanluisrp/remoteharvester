@@ -29,4 +29,10 @@ public class EndpointHarvestComplete extends Event {
     public void setHarvestId(String harvestId) {
         this.harvestId = harvestId;
     }
+
+    @Override
+    public String toString() {
+        return "EndpointHarvestComplete for processID="+harvestId+", endpoint="+endPointId;
+    }
+
 }

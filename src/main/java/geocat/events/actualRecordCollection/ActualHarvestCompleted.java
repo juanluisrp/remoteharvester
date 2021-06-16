@@ -20,4 +20,9 @@ public class ActualHarvestCompleted extends Event {
     public void setHarvestId(String harvestId) {
         this.harvestId = harvestId;
     }
+
+    @Override
+    public String toString() {
+        return "ActualHarvestCompleted for processID="+harvestId;
+    }
 }

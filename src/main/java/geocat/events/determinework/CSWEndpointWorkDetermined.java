@@ -31,4 +31,9 @@ public class CSWEndpointWorkDetermined extends Event {
     public void setHarvesterId(String harvesterId) {
         this.harvesterId = harvesterId;
     }
+
+    @Override
+    public String toString() {
+        return "CSWEndpointWorkDetermined for processID="+harvesterId+", endpoint="+endPointId;
+    }
 }

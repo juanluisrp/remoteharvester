@@ -21,4 +21,8 @@ public class WorkedDeterminedFinished extends Event {
         this.harvestId = harvestId;
     }
 
+    @Override
+    public String toString() {
+        return "WorkedDeterminedFinished for processID="+harvestId;
+    }
 }

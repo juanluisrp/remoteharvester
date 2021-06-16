@@ -3,6 +3,7 @@ package geocat.routes.queuebased;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.MainLoopRouteCreator;
 import geocat.eventprocessor.RedirectEvent;
+import geocat.events.HarvestAbortEvent;
 import geocat.events.HarvestRequestedEvent;
 import geocat.events.actualRecordCollection.ActualHarvestCompleted;
 import geocat.events.actualRecordCollection.ActualHarvestStartCommand;
@@ -28,7 +29,7 @@ public class MainOrchestrator extends SpringRouteBuilder {
 
         mainLoopRouteCreator.createEventProcessingLoop(this,
                 "activemq:" + myJMSQueueName,
-                new Class[]{HarvestRequestedEvent.class, WorkedDeterminedFinished.class, ActualHarvestCompleted.class},
+                new Class[]{HarvestRequestedEvent.class, WorkedDeterminedFinished.class, ActualHarvestCompleted.class, HarvestAbortEvent.class},
                 Arrays.asList(
                         new RedirectEvent(DetermineWorkStartCommand.class, "activemq:" + DetermineWorkOrchestrator.myJMSQueueName),
                         new RedirectEvent(ActualHarvestStartCommand.class, "activemq:" + ActualRecordCollectionOrchestrator.myJMSQueueName)

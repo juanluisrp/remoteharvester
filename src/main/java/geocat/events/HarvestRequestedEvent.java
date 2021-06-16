@@ -79,4 +79,12 @@ public class HarvestRequestedEvent extends Event {
     public void setGetRecordQueueHint(String getRecordQueueHint) {
         this.getRecordQueueHint = getRecordQueueHint;
     }
+
+    @Override
+    public String toString() {
+        return "HarvestRequestedEvent for processID="+harvestId+", tag="+longTermTag+", url="+url
+                +", with filter="+filter+",numberRecordsPerRequest="+numberRecordsPerRequest
+                +", getRecordQueueHint="+getRecordQueueHint+",lookForNestedDiscoveryService="+lookForNestedDiscoveryService;
+    }
+
 }

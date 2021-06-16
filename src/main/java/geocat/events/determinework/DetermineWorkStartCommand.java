@@ -51,4 +51,9 @@ public class DetermineWorkStartCommand extends Event {
         this.filter = filter;
     }
 
+    @Override
+    public String toString() {
+        return "DetermineWorkStartCommand for processID="+harvestId+", initialUrl="+initialUrl
+                +", filter="+filter+", lookForNestedDiscoveryService="+lookForNestedDiscoveryService;
+    }
 }

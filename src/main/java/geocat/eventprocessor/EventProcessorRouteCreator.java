@@ -1,6 +1,7 @@
 package geocat.eventprocessor;
 
 import geocat.events.Event;
+import geocat.service.StopProcessingMessageService;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -42,6 +43,7 @@ public class EventProcessorRouteCreator {
                     .routeId(tag + "_" + eventType.getSimpleName())
                     .log("processing event of type " + eventType.getSimpleName() + " from " + from)
                     .log("event = ${body}")
+                    .bean(StopProcessingMessageService.class,"checkIfShouldBeProcessed",BeanScope.Request)
                     .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
                     .transform().simple("${body.externalProcessing()}")
                     .transform().simple("${body.internalProcessing()}")
@@ -55,6 +57,7 @@ public class EventProcessorRouteCreator {
                     .from(from)  // ${body} will be of type eventType
                     .routeId(tag + "_" + eventType.getSimpleName())
                     .log("processing event of type " + eventType.getSimpleName() + " from " + from)
+                    .bean(StopProcessingMessageService.class,"checkIfShouldBeProcessed",BeanScope.Request)
                     .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
                     .transform().simple("${body.externalProcessing()}")
                     .transform().simple("${body.internalProcessing()}")

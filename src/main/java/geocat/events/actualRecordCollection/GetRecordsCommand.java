@@ -88,10 +88,7 @@ public class GetRecordsCommand extends Event {
         return (endRecordNumber - startRecordNumber) + 1;
     }
 
-    @Override
-    public String toString() {
-        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " (of "+totalRecordsInQuery+") from " + getRecordsURL;
-    }
+
 
     public boolean isLastSet() {
         return lastSet;
@@ -107,5 +104,12 @@ public class GetRecordsCommand extends Event {
 
     public void setWorkQueueName(String workQueueName) {
         this.workQueueName = workQueueName;
+    }
+
+    @Override
+    public String toString() {
+        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " (of "+totalRecordsInQuery+") from " + getRecordsURL
+                +", harvesterId="+harvesterId+", endpointid="+endPointId+", filter="+filter+", recordSetId="+recordSetId+", islastSet="+lastSet
+                +", workQueueName="+workQueueName+", totalRecordsInQuery="+totalRecordsInQuery;
     }
 }
