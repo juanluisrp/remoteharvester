@@ -16,8 +16,8 @@ import javax.persistence.*;
 
 public class RecordSet {
     @Id
-    @Column(columnDefinition = "varchar(40)")
-    private String recordSetId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private long recordSetId;
     //@Column(columnDefinition = "varchar(40)")
     private long endpointJobId;
     @Column(columnDefinition = "varchar(40)")
@@ -30,11 +30,11 @@ public class RecordSet {
     private boolean lastSet; // this is last one
 
 
-    public String getRecordSetId() {
+    public long getRecordSetId() {
         return recordSetId;
     }
 
-    public void setRecordSetId(String recordSetId) {
+    public void setRecordSetId(long recordSetId) {
         this.recordSetId = recordSetId;
     }
 

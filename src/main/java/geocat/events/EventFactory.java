@@ -32,7 +32,7 @@ public class EventFactory {
         return result;
     }
 
-    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, String recordSetId, boolean lastOne) {
+    public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, long recordSetId, boolean lastOne) {
         GetRecordsCommand result = new GetRecordsCommand();
 
         result.setEndPointId(cmd.getEndPointId());

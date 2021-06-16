@@ -9,7 +9,7 @@ public class GetRecordsCommand extends Event {
     private String filter;
     private int startRecordNumber;
     private int endRecordNumber;
-    private String recordSetId;
+    private long recordSetId;
     private boolean lastSet;
     private String workQueueName;
     private int totalRecordsInQuery;
@@ -28,11 +28,11 @@ public class GetRecordsCommand extends Event {
 
 
 
-    public String getRecordSetId() {
+    public long getRecordSetId() {
         return recordSetId;
     }
 
-    public void setRecordSetId(String recordSetId) {
+    public void setRecordSetId(long recordSetId) {
         this.recordSetId = recordSetId;
     }
 

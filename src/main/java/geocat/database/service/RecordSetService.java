@@ -27,7 +27,7 @@ public class RecordSetService {
             return record;
 
         RecordSet result = new RecordSet();
-        result.setRecordSetId(UUID.randomUUID().toString());
+        //result.setRecordSetId(UUID.randomUUID().toString());
         result.setStartRecordNumber(start);
         result.setEndRecordNumber(end);
         result.setExpectedNumberRecords(end - start + 1);
@@ -39,7 +39,7 @@ public class RecordSetService {
     }
 
     //idempotent
-    public RecordSet update(String recordSetId,  int numberRecordsReturned) {
+    public RecordSet update(long recordSetId,  int numberRecordsReturned) {
         RecordSet record = recordSetRepo.findById(recordSetId).get();
       //  record.setGetRecordResponse(xmlGetRecordsResult);
         record.setActualNumberRecords(numberRecordsReturned);
@@ -56,7 +56,7 @@ public class RecordSetService {
         return allDone;
     }
 
-    public RecordSet getById(String recordSetId) {
+    public RecordSet getById(long recordSetId) {
         return recordSetRepo.findById(recordSetId).get();
     }
 

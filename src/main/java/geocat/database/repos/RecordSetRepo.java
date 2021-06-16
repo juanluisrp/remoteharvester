@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public interface RecordSetRepo extends CrudRepository<RecordSet, String> {
+public interface RecordSetRepo extends CrudRepository<RecordSet, Long> {
     RecordSet findByHarvestJobIdAndEndpointJobIdAndStartRecordNumber(String harvestId, long endPointJobId, int start);
 
     List<RecordSet> findByEndpointJobId(long endPointJobId);
