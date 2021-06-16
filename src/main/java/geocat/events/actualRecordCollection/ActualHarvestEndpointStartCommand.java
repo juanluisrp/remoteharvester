@@ -61,7 +61,6 @@ public class ActualHarvestEndpointStartCommand extends Event {
     }
 
 
-
     public int getExpectedNumberOfRecords() {
         return expectedNumberOfRecords;
     }
@@ -69,8 +68,6 @@ public class ActualHarvestEndpointStartCommand extends Event {
     public void setExpectedNumberOfRecords(int expectedNumberOfRecords) {
         this.expectedNumberOfRecords = expectedNumberOfRecords;
     }
-
-
 
 
     public String getRecordQueueHint() {
@@ -91,10 +88,10 @@ public class ActualHarvestEndpointStartCommand extends Event {
 
     @Override
     public String toString() {
-        return "ActualHarvestEndpointStartCommand for processID="+harvesterId+",endpoint="+endPointId+
-                ", getRecordsURL="+getRecordsURL+" ,nRecordPerRequest="+nRecordPerRequest
-                +",expectedNumberOfRecords="+expectedNumberOfRecords+",recordQueueHint="+recordQueueHint
-                +",actualGetRecordQueue="+actualGetRecordQueue
-                +", filter="+filter ;
+        return "ActualHarvestEndpointStartCommand for processID=" + harvesterId + ",endpoint=" + endPointId +
+                ", getRecordsURL=" + getRecordsURL + " ,nRecordPerRequest=" + nRecordPerRequest
+                + ",expectedNumberOfRecords=" + expectedNumberOfRecords + ",recordQueueHint=" + recordQueueHint
+                + ",actualGetRecordQueue=" + actualGetRecordQueue
+                + ", filter=" + filter;
     }
 }

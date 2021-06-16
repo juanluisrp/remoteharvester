@@ -1,12 +1,6 @@
 package geocat.events;
 
-import geocat.database.entities.HarvestJob;
 import geocat.database.service.EndpointJobService;
-import geocat.events.actualRecordCollection.ActualHarvestEndpointStartCommand;
-import geocat.events.actualRecordCollection.GetRecordsCommand;
-import geocat.events.determinework.CSWEndPointDetectedEvent;
-import geocat.events.determinework.CSWEndpointWorkDetermined;
-import geocat.events.determinework.DetermineWorkStartCommand;
 import geocat.model.HarvesterConfig;
 import org.apache.camel.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +45,7 @@ public class EventService {
         message.getHeaders().clear();
         String guid = createGUID();
         message.getHeaders().put("processID", guid);
-        message.getHeaders().put("JMSCorrelationID",guid);
+        message.getHeaders().put("JMSCorrelationID", guid);
         ((HarvesterConfig) message.getBody()).setProcessID(guid);
 
     }

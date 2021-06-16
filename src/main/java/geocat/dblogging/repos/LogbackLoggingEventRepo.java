@@ -7,5 +7,5 @@ import java.util.List;
 
 
 public interface LogbackLoggingEventRepo extends CrudRepository<LogbackLoggingEvent, Long> {
-    List<LogbackLoggingEvent>   findByJmsCorrelationIdOrderByTimestmp(String jms_correlation_id);
+    List<LogbackLoggingEvent> findByJmsCorrelationIdOrderByTimestmp(String jms_correlation_id);
 }

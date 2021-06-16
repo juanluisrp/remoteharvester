@@ -2,26 +2,26 @@ package geocat.database.entities;
 
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name="metadata_record",
-        indexes= {
+@Table(name = "metadata_record",
+        indexes = {
                 @Index(
-                        name="metadata_record_endpointJobId_idx",
-                        columnList="endpointJobId",
-                        unique=false
+                        name = "metadata_record_endpointJobId_idx",
+                        columnList = "endpointJobId",
+                        unique = false
                 )
         })
 public class MetadataRecord {
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
     @Id
-   // @Column(columnDefinition = "varchar(40)")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    // @Column(columnDefinition = "varchar(40)")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long metadataRecordId;
-   // @Column(columnDefinition = "varchar(40)")
+    // @Column(columnDefinition = "varchar(40)")
     private long endpointJobId;
     private int recordNumber;
     @Column(columnDefinition = "varchar(64)")
@@ -29,16 +29,10 @@ public class MetadataRecord {
     @Column(columnDefinition = "text")
     private String recordIdentifier;
 
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime createTimeUTC;
-
-
-
     @PrePersist
     private void onInsert() {
-        this.createTimeUTC =  ZonedDateTime.now(ZoneId.of("UTC"));
+        this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
     }
-
 
 
     public ZonedDateTime getCreateTimeUTC() {
@@ -53,7 +47,6 @@ public class MetadataRecord {
     public void setRecordIdentifier(String recordIdentifier) {
         this.recordIdentifier = recordIdentifier;
     }
-
 
 
     public long getMetadataRecordId() {

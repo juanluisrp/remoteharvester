@@ -43,7 +43,7 @@ public class EventProcessorRouteCreator {
                     .routeId(tag + "_" + eventType.getSimpleName())
                     .log("processing event of type " + eventType.getSimpleName() + " from " + from)
                     .log("event = ${body}")
-                    .bean(StopProcessingMessageService.class,"checkIfShouldBeProcessed",BeanScope.Request)
+                    .bean(StopProcessingMessageService.class, "checkIfShouldBeProcessed", BeanScope.Request)
                     .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
                     .transform().simple("${body.externalProcessing()}")
                     .transform().simple("${body.internalProcessing()}")
@@ -51,13 +51,13 @@ public class EventProcessorRouteCreator {
                     .split().simple("${body}")
                     .marshal().json()
                     .to(to)
-                ;
+                    ;
         else
             routeBuilder
                     .from(from)  // ${body} will be of type eventType
                     .routeId(tag + "_" + eventType.getSimpleName())
                     .log("processing event of type " + eventType.getSimpleName() + " from " + from)
-                    .bean(StopProcessingMessageService.class,"checkIfShouldBeProcessed",BeanScope.Request)
+                    .bean(StopProcessingMessageService.class, "checkIfShouldBeProcessed", BeanScope.Request)
                     .bean(EventProcessorFactory.class, "create( ${body} )", BeanScope.Request)
                     .transform().simple("${body.externalProcessing()}")
                     .transform().simple("${body.internalProcessing()}")

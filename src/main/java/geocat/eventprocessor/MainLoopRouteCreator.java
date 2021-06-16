@@ -27,7 +27,6 @@ public class MainLoopRouteCreator {
     EventProcessorRouteCreator eventProcessorRouteCreator;
 
     /**
-     *
      * @param routeBuilder
      * @param from
      * @param eventTypes
@@ -46,7 +45,7 @@ public class MainLoopRouteCreator {
 
         routeBuilder.errorHandler(routeBuilder.transactionErrorHandler()
                 .maximumRedeliveries(2)
-                .redeliveryDelay(1000) );
+                .redeliveryDelay(1000));
 
         routeBuilder.onException().onExceptionOccurred(new Processor() {
             @Override
@@ -97,12 +96,12 @@ public class MainLoopRouteCreator {
         //add in individual processors
         for (Class eventType : eventTypes) {
             if (!handledElsewhereEvents.contains(eventType)) {
-                    eventProcessorRouteCreator.addEventProcessor(routeBuilder,
-                            eventType,
-                            "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
-                            from,
-                            mainRouteName,
-                            false);
+                eventProcessorRouteCreator.addEventProcessor(routeBuilder,
+                        eventType,
+                        "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
+                        from,
+                        mainRouteName,
+                        false);
             }
         }
 

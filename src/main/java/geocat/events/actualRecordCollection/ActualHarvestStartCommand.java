@@ -23,6 +23,6 @@ public class ActualHarvestStartCommand extends Event {
 
     @Override
     public String toString() {
-        return "ActualHarvestStartCommand for processID="+harvesterId;
+        return "ActualHarvestStartCommand for processID=" + harvesterId;
     }
 }

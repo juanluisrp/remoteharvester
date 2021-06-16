@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @Scope("prototype")
 public class MetadataRecordService {
@@ -17,20 +15,19 @@ public class MetadataRecordService {
     private MetadataRecordRepo metadataRecordRepo;
 
     /**
-     *
      * @param recordSet
      * @param recordNumberOffset 0=first record in the recordSet
-     * @param sha2 should already exist in BlobStorage
+     * @param sha2               should already exist in BlobStorage
      * @return
      */
     //idempotent
-    public MetadataRecord create(RecordSet recordSet, int recordNumberOffset, String sha2, String identifier){
-        int recordNumber = recordSet.getStartRecordNumber()+recordNumberOffset;
-        MetadataRecord result=metadataRecordRepo.findByEndpointJobIdAndRecordNumber(recordSet.getEndpointJobId(),recordNumber);
+    public MetadataRecord create(RecordSet recordSet, int recordNumberOffset, String sha2, String identifier) {
+        int recordNumber = recordSet.getStartRecordNumber() + recordNumberOffset;
+        MetadataRecord result = metadataRecordRepo.findByEndpointJobIdAndRecordNumber(recordSet.getEndpointJobId(), recordNumber);
         if (result == null) {
             result = new MetadataRecord();
             //UUID guid = java.util.UUID.randomUUID();
-           // result.setMetadataRecordId(guid.toString());
+            // result.setMetadataRecordId(guid.toString());
             result.setEndpointJobId(recordSet.getEndpointJobId());
         }
 

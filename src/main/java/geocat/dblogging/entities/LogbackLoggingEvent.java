@@ -7,16 +7,16 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="logging_event"
+@Table(name = "logging_event"
         ,
-        indexes= {
+        indexes = {
                 @Index(
-                        name="logging_correlationid_idx",
-                        columnList="jmsCorrelationId",
-                        unique=false
+                        name = "logging_correlationid_idx",
+                        columnList = "jmsCorrelationId",
+                        unique = false
                 )
         }
-        )
+)
 public class LogbackLoggingEvent {
 
     @Column(columnDefinition = "bigint")
@@ -63,9 +63,9 @@ public class LogbackLoggingEvent {
 
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
-    public long   eventId;
+    public long eventId;
 
 
 }

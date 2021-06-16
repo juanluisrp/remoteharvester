@@ -29,12 +29,10 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
     }
 
 
-
     @Override
     public EventProcessor_ActualHarvestEndpointStartCommand externalProcessing() {
         return this;
     }
-
 
 
     @Override

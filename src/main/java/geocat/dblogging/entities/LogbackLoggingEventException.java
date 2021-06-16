@@ -6,7 +6,7 @@ import javax.persistence.*;
 // https://raw.githubusercontent.com/qos-ch/logback/master/logback-classic/src/main/resources/ch/qos/logback/classic/db/script/postgresql.sql
 
 @Entity
-@Table(name="logging_event_exception"
+@Table(name = "logging_event_exception"
 //        ,
 //        indexes= {
 //                @Index(

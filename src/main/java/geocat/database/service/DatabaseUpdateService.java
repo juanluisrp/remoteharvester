@@ -2,12 +2,10 @@ package geocat.database.service;
 
 import geocat.csw.CSWMetadata;
 import geocat.database.entities.EndpointJob;
-import geocat.database.entities.EndpointJobState;
 import geocat.database.entities.HarvestJob;
 import geocat.database.repos.EndpointJobRepo;
 import geocat.database.repos.HarvestJobRepo;
 import geocat.events.EventFactory;
-import geocat.events.EventService;
 import geocat.events.determinework.CSWEndPointDetectedEvent;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ public class DatabaseUpdateService {
         endpointJob.setUrlGetRecords(cswMetadata.getGetRecordsUrl());
 
         List<CSWEndPointDetectedEvent> result = createCSWEndPointDetectedEvents(cswMetadata);
-       // endpointJob.setState(EndpointJobState.WORK_DETERMINED);
+        // endpointJob.setState(EndpointJobState.WORK_DETERMINED);
         endpointJobRepo.save(endpointJob);
         return result;
     }

@@ -7,10 +7,10 @@ public class HarvestRequestedEvent extends Event {
     String harvestId;
     String filter;
     String problematicResultsConfigurationJSON;
-    private String longTermTag;
-    private boolean lookForNestedDiscoveryService;
     int numberRecordsPerRequest;
     String getRecordQueueHint;
+    private String longTermTag;
+    private boolean lookForNestedDiscoveryService;
 
     public HarvestRequestedEvent() {
     }
@@ -82,9 +82,9 @@ public class HarvestRequestedEvent extends Event {
 
     @Override
     public String toString() {
-        return "HarvestRequestedEvent for processID="+harvestId+", tag="+longTermTag+", url="+url
-                +", with filter="+filter+",numberRecordsPerRequest="+numberRecordsPerRequest
-                +", getRecordQueueHint="+getRecordQueueHint+",lookForNestedDiscoveryService="+lookForNestedDiscoveryService;
+        return "HarvestRequestedEvent for processID=" + harvestId + ", tag=" + longTermTag + ", url=" + url
+                + ", with filter=" + filter + ",numberRecordsPerRequest=" + numberRecordsPerRequest
+                + ", getRecordQueueHint=" + getRecordQueueHint + ",lookForNestedDiscoveryService=" + lookForNestedDiscoveryService;
     }
 
 }

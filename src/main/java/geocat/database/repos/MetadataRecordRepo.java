@@ -2,7 +2,6 @@ package geocat.database.repos;
 
 
 import geocat.database.entities.MetadataRecord;
-import geocat.database.entities.RecordSet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

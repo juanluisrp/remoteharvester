@@ -1,9 +1,6 @@
 package geocat.routes.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import geocat.dblogging.service.GetLogService;
 import geocat.events.EventFactory;
-import geocat.events.EventService;
 import geocat.model.HarvesterConfig;
 import geocat.routes.queuebased.MainOrchestrator;
 import org.apache.camel.BeanScope;
@@ -16,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class AbortHarvest  extends RouteBuilder {
+public class AbortHarvest extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         restConfiguration().component("jetty").host("localhost").port(9999);
@@ -28,18 +25,18 @@ public class AbortHarvest  extends RouteBuilder {
                 .get("/{processID}")
                 .route()
                 .routeId("rest.rest.abortharvest")
-                .setHeader("JMSCorrelationID",simple("${header.processID}"))
+                .setHeader("JMSCorrelationID", simple("${header.processID}"))
 
                 .multicast()
-                    .to(ExchangePattern.InOnly, "direct:abortharvest_addToQueue")
+                .to(ExchangePattern.InOnly, "direct:abortharvest_addToQueue")
 
-                    .process(new Processor() {
-                        @Override
-                        public void process(Exchange exchange) throws Exception {
-                            exchange.getMessage().setHeader("content-type","application/json");
-                            exchange.getMessage().setBody("{\"status\": \"USERABORT\"}");
-                        }
-                    })
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getMessage().setHeader("content-type", "application/json");
+                        exchange.getMessage().setBody("{\"status\": \"USERABORT\"}");
+                    }
+                })
         ;
 
         // mini-route to send to the message queue

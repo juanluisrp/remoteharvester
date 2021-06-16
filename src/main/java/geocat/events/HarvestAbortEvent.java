@@ -22,7 +22,7 @@ public class HarvestAbortEvent extends Event {
 
     @Override
     public String toString() {
-        return "HarvestAbortEvent for processID="+processID;
+        return "HarvestAbortEvent for processID=" + processID;
     }
 
 }

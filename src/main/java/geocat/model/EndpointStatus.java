@@ -12,7 +12,7 @@ public class EndpointStatus {
     public int expectedNumberOfRecords; //might be 0 if not processed yet
     public int numberOfRecordsReceived;
 
-    public EndpointStatus(EndpointJob job, int numberOfRecordsReceived){
+    public EndpointStatus(EndpointJob job, int numberOfRecordsReceived) {
         this.numberOfRecordsReceived = numberOfRecordsReceived;
         this.expectedNumberOfRecords = job.getExpectedNumberOfRecords();
         this.url = job.getUrl();

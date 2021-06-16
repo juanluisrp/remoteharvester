@@ -53,7 +53,7 @@ public class DetermineWorkStartCommand extends Event {
 
     @Override
     public String toString() {
-        return "DetermineWorkStartCommand for processID="+harvestId+", initialUrl="+initialUrl
-                +", filter="+filter+", lookForNestedDiscoveryService="+lookForNestedDiscoveryService;
+        return "DetermineWorkStartCommand for processID=" + harvestId + ", initialUrl=" + initialUrl
+                + ", filter=" + filter + ", lookForNestedDiscoveryService=" + lookForNestedDiscoveryService;
     }
 }

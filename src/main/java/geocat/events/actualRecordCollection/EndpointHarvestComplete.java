@@ -32,7 +32,7 @@ public class EndpointHarvestComplete extends Event {
 
     @Override
     public String toString() {
-        return "EndpointHarvestComplete for processID="+harvestId+", endpoint="+endPointId;
+        return "EndpointHarvestComplete for processID=" + harvestId + ", endpoint=" + endPointId;
     }
 
 }

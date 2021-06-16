@@ -5,18 +5,18 @@ import javax.persistence.*;
 
 //create table record_set (record_set_id varchar(40), endpoint_job_id varchar(40), harvest_job_id varchar(40), start_record_number int, end_record_number int, expected_number_records int, actual_number_records int, get_record_response text, last_set bool);
 @Entity
-@Table(name="record_set",
-        indexes= {
+@Table(name = "record_set",
+        indexes = {
                 @Index(
-                        name="endpointJobId_idx",
-                        columnList="endpointJobId",
-                        unique=false
+                        name = "endpointJobId_idx",
+                        columnList = "endpointJobId",
+                        unique = false
                 )
         })
 
 public class RecordSet {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long recordSetId;
     //@Column(columnDefinition = "varchar(40)")
     private long endpointJobId;

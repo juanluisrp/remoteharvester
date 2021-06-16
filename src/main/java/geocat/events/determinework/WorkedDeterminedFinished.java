@@ -23,6 +23,6 @@ public class WorkedDeterminedFinished extends Event {
 
     @Override
     public String toString() {
-        return "WorkedDeterminedFinished for processID="+harvestId;
+        return "WorkedDeterminedFinished for processID=" + harvestId;
     }
 }

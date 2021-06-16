@@ -1,14 +1,14 @@
 package geocat.routes.rest;
 
-import geocat.model.HarvesterConfig;
 import geocat.dblogging.service.GetLogService;
+import geocat.model.HarvesterConfig;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetLog  extends RouteBuilder {
+public class GetLog extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         restConfiguration().component("jetty").host("localhost").port(9999);
@@ -25,6 +25,6 @@ public class GetLog  extends RouteBuilder {
                 .setHeader("content-type", constant("application/json"))
                 .marshal().json()
 
-         ;
+        ;
     }
 }

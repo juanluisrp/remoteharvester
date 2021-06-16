@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @Scope("prototype")
@@ -39,9 +38,9 @@ public class RecordSetService {
     }
 
     //idempotent
-    public RecordSet update(long recordSetId,  int numberRecordsReturned) {
+    public RecordSet update(long recordSetId, int numberRecordsReturned) {
         RecordSet record = recordSetRepo.findById(recordSetId).get();
-      //  record.setGetRecordResponse(xmlGetRecordsResult);
+        //  record.setGetRecordResponse(xmlGetRecordsResult);
         record.setActualNumberRecords(numberRecordsReturned);
         return recordSetRepo.save(record);
     }
@@ -50,7 +49,7 @@ public class RecordSetService {
         List<RecordSet> records = recordSetRepo.findByEndpointJobId(endpointId);
         boolean allDone = true;
         for (RecordSet recordSet : records) {
-            boolean thisRecordDone = (recordSet.getActualNumberRecords() != null) ;
+            boolean thisRecordDone = (recordSet.getActualNumberRecords() != null);
             allDone = allDone && thisRecordDone;
         }
         return allDone;

@@ -27,7 +27,6 @@ public class GetRecordsCommand extends Event {
     }
 
 
-
     public long getRecordSetId() {
         return recordSetId;
     }
@@ -89,7 +88,6 @@ public class GetRecordsCommand extends Event {
     }
 
 
-
     public boolean isLastSet() {
         return lastSet;
     }
@@ -108,8 +106,8 @@ public class GetRecordsCommand extends Event {
 
     @Override
     public String toString() {
-        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " (of "+totalRecordsInQuery+") from " + getRecordsURL
-                +", harvesterId="+harvesterId+", endpointid="+endPointId+", filter="+filter+", recordSetId="+recordSetId+", islastSet="+lastSet
-                +", workQueueName="+workQueueName+", totalRecordsInQuery="+totalRecordsInQuery;
+        return "GetRecordsCommand - " + startRecordNumber + " to " + endRecordNumber + " (of " + totalRecordsInQuery + ") from " + getRecordsURL
+                + ", harvesterId=" + harvesterId + ", endpointid=" + endPointId + ", filter=" + filter + ", recordSetId=" + recordSetId + ", islastSet=" + lastSet
+                + ", workQueueName=" + workQueueName + ", totalRecordsInQuery=" + totalRecordsInQuery;
     }
 }

@@ -30,7 +30,7 @@ public class HarvestJobService {
 
         if (job.isPresent()) //2nd attempt
         {
-            job.get().setState( HarvestJobState.CREATING);
+            job.get().setState(HarvestJobState.CREATING);
             return harvestJobRepo.save(job.get());
         }
         HarvestJob newJob = new HarvestJob();
@@ -46,8 +46,8 @@ public class HarvestJobService {
         return harvestJobRepo.save(newJob);
     }
 
-    public HarvestJob updateHarvestJobStateInDBToError(String guid ) {
-       return updateHarvestJobStateInDB(guid, HarvestJobState.ERROR);
+    public HarvestJob updateHarvestJobStateInDBToError(String guid) {
+        return updateHarvestJobStateInDB(guid, HarvestJobState.ERROR);
     }
 
     public HarvestJob updateHarvestJobStateInDB(String guid, HarvestJobState state) {
@@ -58,7 +58,7 @@ public class HarvestJobService {
 
     public synchronized WorkedDeterminedFinished determineIfWorkCompleted(String harvestId) {
         HarvestJob harvestJob = harvestJobRepo.findById(harvestId).get();
-        if (!(harvestJob.getState() == HarvestJobState.DETERMINING_WORK) )
+        if (!(harvestJob.getState() == HarvestJobState.DETERMINING_WORK))
             return null; //already completed earlier
         List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, EndpointJobState.DETERMINING_WORK);
         boolean workCompleted = outstandingJobs.isEmpty();

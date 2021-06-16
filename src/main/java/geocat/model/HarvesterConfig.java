@@ -8,6 +8,7 @@ import java.net.URL;
 
 public class HarvesterConfig {
 
+    public static int DEFAULT_NRECORDS = 20;
     private String longTermTag;  //i.e. country name
     private boolean lookForNestedDiscoveryService; //true for poland
     private String filter;  //CSW <ogc:Filter>
@@ -15,9 +16,7 @@ public class HarvesterConfig {
     private String processID; // GUID for the harvest (used as JMS Correlation ID).  Provided by server
     private int numberOfRecordsPerRequest; // defaults to 20 records in a GetRecords request
     private String getRecordQueueHint; // which queue set to use.  blank=auto determined.  Otherwise "PARALLEL#" #=2,3,4
-
-    public static int DEFAULT_NRECORDS = 20;
-
+    private ProblematicResultsConfiguration problematicResultsConfiguration;
 
     public String getGetRecordQueueHint() {
         return getRecordQueueHint;
@@ -34,8 +33,6 @@ public class HarvesterConfig {
     public void setProblematicResultsConfiguration(ProblematicResultsConfiguration problematicResultsConfiguration) {
         this.problematicResultsConfiguration = problematicResultsConfiguration;
     }
-
-    private ProblematicResultsConfiguration problematicResultsConfiguration;
 
     public boolean isLookForNestedDiscoveryService() {
         return lookForNestedDiscoveryService;
@@ -94,11 +91,11 @@ public class HarvesterConfig {
             problematicResultsConfiguration = new ProblematicResultsConfiguration();
         problematicResultsConfiguration.validate();
 
-        if (numberOfRecordsPerRequest <=0)
+        if (numberOfRecordsPerRequest <= 0)
             numberOfRecordsPerRequest = DEFAULT_NRECORDS;
 
         if (numberOfRecordsPerRequest > 500) // unreasonable
-            numberOfRecordsPerRequest  =500;
+            numberOfRecordsPerRequest = 500;
     }
 
     @Override

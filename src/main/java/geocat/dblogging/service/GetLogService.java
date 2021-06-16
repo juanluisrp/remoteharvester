@@ -24,27 +24,27 @@ public class GetLogService {
     LogbackLoggingEventExceptionRepo logbackLoggingEventExceptionRepo;
 
     public List<LogLine> queryLogByProcessID(String processID) {
-       List<LogbackLoggingEvent> events = logbackLoggingEventRepo.findByJmsCorrelationIdOrderByTimestmp(processID);
+        List<LogbackLoggingEvent> events = logbackLoggingEventRepo.findByJmsCorrelationIdOrderByTimestmp(processID);
         List<LogLine> result = new ArrayList<>();
-       for(LogbackLoggingEvent event : events){
+        for (LogbackLoggingEvent event : events) {
             result.add(create(event));
-       }
-       return result;
+        }
+        return result;
     }
 
     public LogLine create(LogbackLoggingEvent event) {
-        LogLine result= new LogLine();
-            result.when = (Instant.ofEpochSecond(event.timestmp/1000)).toString();
-            result.isException =  (event.referenceFlag ==2) || (event.referenceFlag ==3);
-            result.level = event.levelString;
-            result.message = event.formattedMessage;
-            result.processID = event.jmsCorrelationId;
+        LogLine result = new LogLine();
+        result.when = (Instant.ofEpochSecond(event.timestmp / 1000)).toString();
+        result.isException = (event.referenceFlag == 2) || (event.referenceFlag == 3);
+        result.level = event.levelString;
+        result.message = event.formattedMessage;
+        result.processID = event.jmsCorrelationId;
 
         //exception
-        if ( result.isException){
+        if (result.isException) {
             List<LogbackLoggingEventException> exceptionlines = logbackLoggingEventExceptionRepo.findByEventIdOrderByI(event.eventId);
-            String allEx = String.join("\n",exceptionlines.stream().map(LogbackLoggingEventException::getTraceLine).collect(Collectors.toList()));
-            result.message += "\n"+ allEx;
+            String allEx = String.join("\n", exceptionlines.stream().map(LogbackLoggingEventException::getTraceLine).collect(Collectors.toList()));
+            result.message += "\n" + allEx;
         }
         return result;
     }

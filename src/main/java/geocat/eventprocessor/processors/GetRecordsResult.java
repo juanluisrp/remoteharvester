@@ -8,7 +8,7 @@ public class GetRecordsResult {
     private int numberRecordsReturned;
     private Document parsedXML;
 
-    public GetRecordsResult(String xmlGetRecordsResult, int numberRecordsReturned,Document parsedXML) {
+    public GetRecordsResult(String xmlGetRecordsResult, int numberRecordsReturned, Document parsedXML) {
         this.xmlGetRecordsResult = xmlGetRecordsResult;
         this.numberRecordsReturned = numberRecordsReturned;
         this.parsedXML = parsedXML;

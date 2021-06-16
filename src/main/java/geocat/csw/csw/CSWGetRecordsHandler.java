@@ -16,7 +16,7 @@ public class CSWGetRecordsHandler {
 
     public int extractTotalNumberOfRecords(String getRecordsResponseXML) throws Exception {
         Document doc = XMLTools.parseXML(getRecordsResponseXML);
-       return extractTotalNumberOfRecords(doc);
+        return extractTotalNumberOfRecords(doc);
     }
 
     public int extractTotalNumberOfRecords(Document getRecordsResponseXML) throws Exception {

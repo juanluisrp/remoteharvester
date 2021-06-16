@@ -1,26 +1,28 @@
 package geocat.database.entities;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 
 //create table endpoint_job ( endpoint_job_id varchar(40), harvest_job_id varchar(40), state varchar(40), url varchar(255), url_get_records varchar(255), expected_number_of_records int, filter text,look_for_nested_discovery_service bool);
 @Entity
-@Table(name="endpoint_job",
-    indexes= {
-        @Index(
-                name="harvestJobId_idx",
-                columnList="harvestJobId",
-                unique=false
-        )
-    })
+@Table(name = "endpoint_job",
+        indexes = {
+                @Index(
+                        name = "harvestJobId_idx",
+                        columnList = "harvestJobId",
+                        unique = false
+                )
+        })
 
 public class EndpointJob {
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime lastUpdateUTC;
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long endpointJobId;
     @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
@@ -33,15 +35,9 @@ public class EndpointJob {
     @Enumerated(EnumType.STRING)
     private EndpointJobState state;
 
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime createTimeUTC;
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime lastUpdateUTC;
-
-
     @PrePersist
     private void onInsert() {
-        this.createTimeUTC =  ZonedDateTime.now(ZoneId.of("UTC"));
+        this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
         this.lastUpdateUTC = this.createTimeUTC;
     }
 

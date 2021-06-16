@@ -3,23 +3,19 @@ package geocat.model;
 import geocat.csw.csw.CSWGetRecordsHandler;
 import geocat.service.MetadataExploderService;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 public class GetRecordsResponseInfo {
 
     CSWGetRecordsHandler cswGetRecordsHandler;
 
     int nrecords;  // number of records returned in GetRecords document
-    int nextRecordNumber ;  // CSW reported next record number
+    int nextRecordNumber;  // CSW reported next record number
     int totalExpectedResults; // total number of records that the GetRecords document reports
 
     Document xmlParsed;
 
 
-    public GetRecordsResponseInfo( String xml) throws Exception {
+    public GetRecordsResponseInfo(String xml) throws Exception {
         this(MetadataExploderService.parseXML(xml));
     }
 

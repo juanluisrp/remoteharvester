@@ -8,9 +8,6 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class MultiGetRecordQueues extends SpringRouteBuilder {
 
@@ -24,23 +21,23 @@ public class MultiGetRecordQueues extends SpringRouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        for(QueueInfo info : queueChooserService.enumerateAllQueues()){
-            create(info.queueName(),info.parallelism());
+        for (QueueInfo info : queueChooserService.enumerateAllQueues()) {
+            create(info.queueName(), info.parallelism());
         }
 
     }
 
     private void create(String queueName, int parallelism) throws Exception {
-        String queue = "activemq:"+queueName;
-        if (parallelism>1)
-            queue = queue + "?concurrentConsumers="+parallelism;
+        String queue = "activemq:" + queueName;
+        if (parallelism > 1)
+            queue = queue + "?concurrentConsumers=" + parallelism;
         eventProcessorRouteCreator.addEventProcessor(
                 this,
                 GetRecordsCommand.class,
                 queue,
-                "activemq:"+ActualRecordCollectionOrchestrator.myJMSQueueName,
+                "activemq:" + ActualRecordCollectionOrchestrator.myJMSQueueName,
                 queueName,
                 true
-                );
+        );
     }
 }

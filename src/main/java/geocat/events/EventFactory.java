@@ -28,7 +28,7 @@ public class EventFactory {
         result.setExpectedNumberOfRecords(job.getExpectedNumberOfRecords());
         result.setnRecordPerRequest(harvestJob.getNrecordsPerRequest());
         result.setRecordQueueHint(harvestJob.getGetRecordQueueHint());
-        result.setActualGetRecordQueue( queueChooserService.chooseQueue(harvestJob.getGetRecordQueueHint(),job.getExpectedNumberOfRecords()) );
+        result.setActualGetRecordQueue(queueChooserService.chooseQueue(harvestJob.getGetRecordQueueHint(), job.getExpectedNumberOfRecords()));
         return result;
     }
 

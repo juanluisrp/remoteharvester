@@ -1,6 +1,5 @@
 package geocat.service;
 
-import geocat.routes.queuebased.MultiGetRecordQueues;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,15 +16,15 @@ public class QueueChooserService {
 
     static int MAX_RECORDS_FOR_LARGE = 2000;
 
-    static Map<String,QueueGroupInfo> queueGroupsMap = new HashMap<>();
-    static List<QueueGroupInfo> queueGroups= new ArrayList<>();
+    static Map<String, QueueGroupInfo> queueGroupsMap = new HashMap<>();
+    static List<QueueGroupInfo> queueGroups = new ArrayList<>();
 
     static {
-        QueueGroupInfo normal = new QueueGroupInfo("GET_RECORDS_QUEUE_NORMAL_", 10,1);
-        QueueGroupInfo large = new QueueGroupInfo("GET_RECORDS_QUEUE_LARGE_", 3,1);
-        QueueGroupInfo parallel_2 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL2_", 3,2);
-        QueueGroupInfo parallel_3 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL3_", 3,3);
-        QueueGroupInfo parallel_4 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL4_", 3,4);
+        QueueGroupInfo normal = new QueueGroupInfo("GET_RECORDS_QUEUE_NORMAL_", 10, 1);
+        QueueGroupInfo large = new QueueGroupInfo("GET_RECORDS_QUEUE_LARGE_", 3, 1);
+        QueueGroupInfo parallel_2 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL2_", 3, 2);
+        QueueGroupInfo parallel_3 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL3_", 3, 3);
+        QueueGroupInfo parallel_4 = new QueueGroupInfo("GET_RECORDS_QUEUE_PARALLEL4_", 3, 4);
 
         queueGroups.add(normal);
         queueGroups.add(large);
@@ -41,42 +40,40 @@ public class QueueChooserService {
         queueGroupsMap.put("parallel_4", parallel_4);
     }
 
+    Pattern parallelPattern = Pattern.compile("^PARALLEL(\\d)$");
 
-    public List<QueueInfo> enumerateAllQueues(){
+    public List<QueueInfo> enumerateAllQueues() {
         List<QueueInfo> result = new ArrayList<>();
-        for(QueueGroupInfo info : queueGroupsMap.values()) {
-            for(int t=0;t<info.getNumberOfQueues();t++){
+        for (QueueGroupInfo info : queueGroupsMap.values()) {
+            for (int t = 0; t < info.getNumberOfQueues(); t++) {
                 result.add(info.queueInfo(t));
             }
         }
         return result;
     }
 
-    Pattern parallelPattern = Pattern.compile("^PARALLEL(\\d)$");
-
-
     public String chooseQueue(String hint, int expectedNumberOfRecords) throws Exception {
-        if ( (hint==null) || (hint.isEmpty()) || (!parallelPattern.matcher(hint).matches()) ) {
+        if ((hint == null) || (hint.isEmpty()) || (!parallelPattern.matcher(hint).matches())) {
             //we choose
-            if (expectedNumberOfRecords < MAX_RECORDS_FOR_LARGE){
-                return chooseQueueByGroup( queueGroupsMap.get("normal")); // always choose the first one
+            if (expectedNumberOfRecords < MAX_RECORDS_FOR_LARGE) {
+                return chooseQueueByGroup(queueGroupsMap.get("normal")); // always choose the first one
             }
-            return chooseQueueByGroup( queueGroupsMap.get("large")); // always choose the 2nd one
+            return chooseQueueByGroup(queueGroupsMap.get("large")); // always choose the 2nd one
         }
         //user specified something - we should choose something
         Matcher m = parallelPattern.matcher(hint);
         m.find();
         int parallellism = Integer.parseInt(m.group(0));
-        if (parallellism <=1)
+        if (parallellism <= 1)
             throw new Exception("requested parallelism of 0 or 1 - must be 2+!");
-        if  (!queueGroupsMap.containsKey("parallel_"+parallellism))
+        if (!queueGroupsMap.containsKey("parallel_" + parallellism))
             throw new Exception("requested parallelism too high!");
 
-        return chooseQueueByGroup(queueGroupsMap.get("parallel_"+parallellism));
+        return chooseQueueByGroup(queueGroupsMap.get("parallel_" + parallellism));
     }
 
 
-    public synchronized String chooseQueueByGroup(QueueGroupInfo groupInfo){
+    public synchronized String chooseQueueByGroup(QueueGroupInfo groupInfo) {
         QueueInfo result = groupInfo.currentQueueInfo();
         groupInfo.useNextQueue();
         return result.queueName();

@@ -34,6 +34,6 @@ public class CSWEndpointWorkDetermined extends Event {
 
     @Override
     public String toString() {
-        return "CSWEndpointWorkDetermined for processID="+harvesterId+", endpoint="+endPointId;
+        return "CSWEndpointWorkDetermined for processID=" + harvesterId + ", endpoint=" + endPointId;
     }
 }

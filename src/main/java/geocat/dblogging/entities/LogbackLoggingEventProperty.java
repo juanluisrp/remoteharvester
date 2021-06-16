@@ -1,13 +1,16 @@
 package geocat.dblogging.entities;
 
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 //taken from;
 // https://raw.githubusercontent.com/qos-ch/logback/master/logback-classic/src/main/resources/ch/qos/logback/classic/db/script/postgresql.sql
 
 //This is no longer required!
 //@Entity
-@Table(name="logging_event_property"
+@Table(name = "logging_event_property"
 //        ,
 //        indexes= {
 //                @Index(

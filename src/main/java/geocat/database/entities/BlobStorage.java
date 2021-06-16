@@ -1,9 +1,12 @@
 package geocat.database.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="blob_storage")
+@Table(name = "blob_storage")
 public class BlobStorage {
     @Id
     @Column(columnDefinition = "varchar(64)")

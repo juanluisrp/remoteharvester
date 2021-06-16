@@ -38,7 +38,7 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
 
     @Override
     public EventProcessor_CSWEndPointDetectedEvent externalProcessing() throws Exception {
-        endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.DETERMINING_WORK);
+        endpointJobService.updateState(getInitiatingEvent().getEndPointId(), EndpointJobState.DETERMINING_WORK);
         result = cswService.getMetadata(getInitiatingEvent());
         return this;
     }
@@ -47,10 +47,9 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
     @Override
     public EventProcessor_CSWEndPointDetectedEvent internalProcessing() {
         newEndpoints = databaseUpdateService.updateDatabase(result);
-       // endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.DETERMINING_WORK);
+        // endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.DETERMINING_WORK);
         return this;
     }
-
 
 
     @Override
@@ -63,7 +62,7 @@ public class EventProcessor_CSWEndPointDetectedEvent extends BaseEventProcessor<
                     getInitiatingEvent().getEndPointId());
             result.add(e);
         }
-      //  endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.WORK_DETERMINED);
+        //  endpointJobService.updateState(getInitiatingEvent().getEndPointId(),EndpointJobState.WORK_DETERMINED);
         return result;
     }
 

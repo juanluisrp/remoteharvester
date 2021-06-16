@@ -11,7 +11,6 @@ import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
 import geocat.events.actualRecordCollection.ActualHarvestCompleted;
 import geocat.events.actualRecordCollection.EndpointHarvestComplete;
-import geocat.model.ProblematicResultsConfiguration;
 import geocat.service.GetRecordsResponseEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -48,7 +47,6 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
     }
 
 
-
     @Override
     public EventProcessor_EndpointHarvestComplete internalProcessing() throws Exception {
         List<EndpointJob> jobs = endpointJobService.findAll(getInitiatingEvent().getHarvestId());
@@ -59,10 +57,9 @@ public class EventProcessor_EndpointHarvestComplete extends BaseEventProcessor<E
         }
         HarvestJob harvestJob = harvestJobService.getById(getInitiatingEvent().getHarvestId());
         EndpointJob endpointJob = endpointJobService.getById(getInitiatingEvent().getEndPointId());
-        getRecordsResponseEvaluator.evaluate_duplicateUUIDs(harvestJob,endpointJob);
+        getRecordsResponseEvaluator.evaluate_duplicateUUIDs(harvestJob, endpointJob);
         return this;
     }
-
 
 
     @Override

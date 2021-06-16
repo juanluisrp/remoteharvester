@@ -1,13 +1,8 @@
 package geocat.database.entities;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 // create table harvest_job (long_term_tag text, job_id varchar(40), state varchar(40), look_for_nested_discovery_service bool, filter text, initial_url text, messages text);
 @Entity
@@ -15,10 +10,16 @@ import java.util.TimeZone;
 public class HarvestJob {
 
 
+    public String initialUrl;
+    int nrecordsPerRequest;
+    String getRecordQueueHint;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime lastUpdateUTC;
     @Id
     @Column(columnDefinition = "varchar(40)")
     private String jobId;
-    public String initialUrl;
     @Column(columnDefinition = "text")
     private String messages;
     private String longTermTag;
@@ -29,18 +30,10 @@ public class HarvestJob {
     private HarvestJobState state;
     @Column(columnDefinition = "text")
     private String problematicResultsConfigurationJSON;
-    int nrecordsPerRequest;
-    String getRecordQueueHint;
-
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime createTimeUTC;
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime lastUpdateUTC;
-
 
     @PrePersist
     private void onInsert() {
-        this.createTimeUTC =  ZonedDateTime.now(ZoneId.of("UTC"));
+        this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
         this.lastUpdateUTC = this.createTimeUTC;
     }
 
@@ -66,8 +59,6 @@ public class HarvestJob {
     }
 
 
-
-
     public String getProblematicResultsConfigurationJSON() {
         return problematicResultsConfigurationJSON;
     }
@@ -75,7 +66,6 @@ public class HarvestJob {
     public void setProblematicResultsConfigurationJSON(String problematicResultsConfigurationJSON) {
         this.problematicResultsConfigurationJSON = problematicResultsConfigurationJSON;
     }
-
 
 
     public String getMessages() {

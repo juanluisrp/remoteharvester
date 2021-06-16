@@ -60,8 +60,8 @@ public class Config {
             }
         };
     }
-    
-    
+
+
     @Bean
     //@Primary
     public ActiveMQComponent activemq(ConnectionFactory connectionFactory) {

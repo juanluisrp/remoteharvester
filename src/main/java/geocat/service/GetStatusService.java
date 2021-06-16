@@ -5,7 +5,6 @@ import geocat.database.entities.HarvestJob;
 import geocat.database.repos.MetadataRecordRepo;
 import geocat.database.service.EndpointJobService;
 import geocat.database.service.HarvestJobService;
-import geocat.database.service.MetadataRecordService;
 import geocat.model.EndpointStatus;
 import geocat.model.HarvestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +26,14 @@ public class GetStatusService {
     @Autowired
     MetadataRecordRepo metadataRecordRepo;
 
-    public HarvestStatus getStatus(String processId){
+    public HarvestStatus getStatus(String processId) {
         HarvestJob job = harvestJobService.getById(processId);
         List<EndpointJob> endpointJobs = endpointJobService.findAll(processId);
 
         HarvestStatus result = new HarvestStatus(job);
-        for (EndpointJob endpointJob : endpointJobs){
+        for (EndpointJob endpointJob : endpointJobs) {
             long numberReceived = computeNumberReceived(endpointJob);
-            result.endpoints.add(new EndpointStatus(endpointJob,(int) numberReceived));
+            result.endpoints.add(new EndpointStatus(endpointJob, (int) numberReceived));
         }
         return result;
     }

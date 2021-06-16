@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPathExpressionException;
-
 @Component
 @Scope("prototype")
 public class GetRecordsResponseEvaluator {
@@ -43,9 +41,9 @@ public class GetRecordsResponseEvaluator {
                                           RecordSet recordSet,
                                           ProblematicResultsConfiguration problematicResultsConfiguration) throws Exception {
         //first, verify if the reported # of records matches the actual records in the reponse
-        NodeList metadataRecords = XMLTools.xpath_nodeset(info.getXmlParsed(),"/GetRecordsResponse/SearchResults/MD_Metadata");
+        NodeList metadataRecords = XMLTools.xpath_nodeset(info.getXmlParsed(), "/GetRecordsResponse/SearchResults/MD_Metadata");
         if (metadataRecords.getLength() != info.getNrecords())
-            throw new Exception("GetRecord response - reported "+info.getNrecords()+ " records, but actually are "+metadataRecords.getLength());
+            throw new Exception("GetRecord response - reported " + info.getNrecords() + " records, but actually are " + metadataRecords.getLength());
 
         // if > requested --> error
         if (info.getNrecords() > recordSet.getExpectedNumberRecords())
@@ -54,7 +52,7 @@ public class GetRecordsResponseEvaluator {
         if (info.getNrecords() != recordSet.getExpectedNumberRecords()) {
             //i.e. requested 20 records, only got 19
             if (problematicResultsConfiguration.errorIfTooFewRecordsReturnedInResponse())
-                throw new Exception("GetRecord response - returned fewer records than requested - got "+info.getNrecords()+", but expected "+recordSet.getExpectedNumberRecords());
+                throw new Exception("GetRecord response - returned fewer records than requested - got " + info.getNrecords() + ", but expected " + recordSet.getExpectedNumberRecords());
         }
     }
 
@@ -68,20 +66,20 @@ public class GetRecordsResponseEvaluator {
 
         //all bad
         if (problematicResultsConfiguration.errorIfTotalRecordsChanges())
-            throw new Exception("GetRecord response - total records expected was "+endpointJob.getExpectedNumberOfRecords()+", but now is "+info.getTotalExpectedResults());
+            throw new Exception("GetRecord response - total records expected was " + endpointJob.getExpectedNumberOfRecords() + ", but now is " + info.getTotalExpectedResults());
 
         //calculate % change and see if its too high
-        double change = ((double)endpointJob.getExpectedNumberOfRecords())/((double)info.getTotalExpectedResults())*100;
-        double percentChange = Math.abs(change-100.0);
+        double change = ((double) endpointJob.getExpectedNumberOfRecords()) / ((double) info.getTotalExpectedResults()) * 100;
+        double percentChange = Math.abs(change - 100.0);
         if (percentChange > problematicResultsConfiguration.getMaxPercentChangeTotalRecords())
-            throw new Exception("GetRecord response - total records expected was "+endpointJob.getExpectedNumberOfRecords()+", but now is "+info.getTotalExpectedResults() +", this is a "+percentChange+" change, which is more than "+problematicResultsConfiguration.getMaxPercentChangeTotalRecords());
+            throw new Exception("GetRecord response - total records expected was " + endpointJob.getExpectedNumberOfRecords() + ", but now is " + info.getTotalExpectedResults() + ", this is a " + percentChange + " change, which is more than " + problematicResultsConfiguration.getMaxPercentChangeTotalRecords());
     }
 
     private void evaluate_nextRecord(HarvestJob harvestJob,
-                                        EndpointJob endpointJob,
-                                        GetRecordsResponseInfo info,
-                                        RecordSet recordSet,
-                                        ProblematicResultsConfiguration problematicResultsConfiguration) throws Exception {
+                                     EndpointJob endpointJob,
+                                     GetRecordsResponseInfo info,
+                                     RecordSet recordSet,
+                                     ProblematicResultsConfiguration problematicResultsConfiguration) throws Exception {
         if (recordSet.isLastSet()) {
             if (info.getNextRecordNumber() == 0)
                 return; //all good
@@ -93,21 +91,21 @@ public class GetRecordsResponseEvaluator {
         }
 
         //not the last record set
-        int computedNextRecord = recordSet.getStartRecordNumber()+info.getNrecords();
-        if ( (info.getNextRecordNumber() != computedNextRecord) && (problematicResultsConfiguration.errorIfNextRecordComputedWrong()) ) {
+        int computedNextRecord = recordSet.getStartRecordNumber() + info.getNrecords();
+        if ((info.getNextRecordNumber() != computedNextRecord) && (problematicResultsConfiguration.errorIfNextRecordComputedWrong())) {
             throw new Exception("GetRecord response - computed NextRecord != received NextRecordNumber - " + computedNextRecord + " != " + info.getNextRecordNumber());
         }
     }
 
-    public void evaluate_duplicateUUIDs( HarvestJob harvestJob, EndpointJob endpointJob) throws Exception {
+    public void evaluate_duplicateUUIDs(HarvestJob harvestJob, EndpointJob endpointJob) throws Exception {
         ProblematicResultsConfiguration problematicResultsConfiguration
                 = ProblematicResultsConfiguration.parse(harvestJob.getProblematicResultsConfigurationJSON());
 
         long totalCount = metadataRecordRepo.countByEndpointJobId(endpointJob.getEndpointJobId());
         long distinctRecordIdentifiers = metadataRecordRepo.countDistinctRecordIdentifierByEndpointJobId(endpointJob.getEndpointJobId());
 
-        if ( (totalCount != distinctRecordIdentifiers) && (problematicResultsConfiguration.errorIfDuplicateUUIDs()) ) {
-            throw new Exception("duplicate record uuids detected - totalCount="+totalCount+", distinctCount="+distinctRecordIdentifiers);
+        if ((totalCount != distinctRecordIdentifiers) && (problematicResultsConfiguration.errorIfDuplicateUUIDs())) {
+            throw new Exception("duplicate record uuids detected - totalCount=" + totalCount + ", distinctCount=" + distinctRecordIdentifiers);
         }
     }
 }

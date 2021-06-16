@@ -2,8 +2,8 @@ package geocat.service;
 
 public class QueueGroupInfo {
     private String queueGroupName;
-    private int  numberOfQueues;
-    private int  nextQueueNumber;
+    private int numberOfQueues;
+    private int nextQueueNumber;
     private int parallelism;
 
     public QueueGroupInfo(String queueGroupName, int numberOfQueues, int parallelism) {
@@ -13,21 +13,21 @@ public class QueueGroupInfo {
         this.nextQueueNumber = 0;
     }
 
-    public QueueInfo currentQueueInfo(){
-        return new QueueInfo(this,nextQueueNumber);
+    public QueueInfo currentQueueInfo() {
+        return new QueueInfo(this, nextQueueNumber);
     }
 
-    public synchronized void useNextQueue(){
+    public synchronized void useNextQueue() {
         nextQueueNumber++;
-        if (nextQueueNumber>=numberOfQueues)
+        if (nextQueueNumber >= numberOfQueues)
             nextQueueNumber = 0;
     }
 
-    public QueueInfo queueInfo(int subQueueNumber){
-        return new QueueInfo(this,subQueueNumber);
+    public QueueInfo queueInfo(int subQueueNumber) {
+        return new QueueInfo(this, subQueueNumber);
     }
 
-    public String queueName(int subQueueNumber){
+    public String queueName(int subQueueNumber) {
         return queueGroupName + subQueueNumber;
     }
 

@@ -10,11 +10,11 @@ public class QueueInfo {
         this.queueNumber = queueNumber;
     }
 
-    public String queueName(){
+    public String queueName() {
         return queueGroupInfo.queueName(queueNumber);
     }
 
-    public int parallelism(){
+    public int parallelism() {
         return queueGroupInfo.getParallelism();
     }
 

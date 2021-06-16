@@ -54,7 +54,7 @@ public class CSWEndPointDetectedEvent extends Event {
 
     @Override
     public String toString() {
-        return "CSWEndPointDetectedEvent for processID="+harvesterId+", endpoint="+endPointId+", url="+url
-                +", with filter="+filter+ ",lookForNestedDiscoveryService="+lookForNestedDiscoveryService;
+        return "CSWEndPointDetectedEvent for processID=" + harvesterId + ", endpoint=" + endPointId + ", url=" + url
+                + ", with filter=" + filter + ",lookForNestedDiscoveryService=" + lookForNestedDiscoveryService;
     }
 }

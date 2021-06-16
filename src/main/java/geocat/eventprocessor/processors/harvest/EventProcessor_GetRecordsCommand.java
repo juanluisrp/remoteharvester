@@ -10,7 +10,6 @@ import geocat.database.service.EndpointJobService;
 import geocat.database.service.HarvestJobService;
 import geocat.database.service.RecordSetService;
 import geocat.eventprocessor.BaseEventProcessor;
-import geocat.eventprocessor.MainLoopRouteCreator;
 import geocat.eventprocessor.processors.GetRecordsResult;
 import geocat.events.Event;
 import geocat.events.actualRecordCollection.EndpointHarvestComplete;
@@ -72,7 +71,7 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
         HarvestJob harvestJob = harvestJobService.getById(e.getHarvesterId());
         EndpointJob endpointJob = endpointJobService.getById(e.getEndPointId());
         RecordSet recordSet = recordSetService.getById(e.getRecordSetId());
-        getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info,recordSet);
+        getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info, recordSet);
 
         int nrecords = cswGetRecordsHandler.extractActualNumberOfRecordsReturned(xmlParsed);
         result = new GetRecordsResult(xml, nrecords, xmlParsed);
@@ -83,12 +82,11 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
     @Override
     public EventProcessor_GetRecordsCommand internalProcessing() throws Exception {
         GetRecordsCommand cmd = getInitiatingEvent();
-        recordSetService.update(cmd.getRecordSetId(),  result.getNumberRecordsReturned());
+        recordSetService.update(cmd.getRecordSetId(), result.getNumberRecordsReturned());
         RecordSet recordSet = recordSetService.getById(cmd.getRecordSetId());
-        metadataExploderService.explode(recordSet,result.getParsedXML());
+        metadataExploderService.explode(recordSet, result.getParsedXML());
         return this;
     }
-
 
 
     @Override

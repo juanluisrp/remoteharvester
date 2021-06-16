@@ -43,7 +43,6 @@ public class EventProcessor_ActualHarvestStartCommand extends BaseEventProcessor
     }
 
 
-
     @Override
     public EventProcessor_ActualHarvestStartCommand internalProcessing() {
         String harvestId = getInitiatingEvent().getHarvesterId();
