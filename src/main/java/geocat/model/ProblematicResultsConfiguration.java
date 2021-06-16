@@ -9,15 +9,48 @@ import java.util.List;
 
 public class ProblematicResultsConfiguration extends HashMap<String,String>{
 
-
+    /**
+     * According to the CSW spec, when you request the last set of records (GetRecords), the response should have nextRecord=0.
+     * Some servers return a number (i.e. if you request 100-111, it will return 112, even through there is no record 112).
+     * ERROR - throw error if this occurs
+     * IGNORE - do not throw
+     */
     public static String KEY_LAST_RECORDSET_NEXTRECORD_NOT_ZERO = "LAST_RECORDSET_NEXTRECORD_NOT_ZERO";
+
+    /**
+     *   Say you request records 100-111.  The response should have nextRecord=112.
+     *   If the server doesn't return 112, then this indicates a problem.
+     *   ERROR - throw error if this occurs
+     *   IGNORE - do not throw
+     */
     public static String KEY_NEXTRECORD_BAD_VALUE = "NEXTRECORD_BAD_VALUE";
 
+    /**
+     *   Say you request records 100-111 (i.e. startRecord=100, numberOfRecords=10).  The response should contain 10 records.
+     *   If the response contains fewer records than requested, this indicates an issue.
+     *   ERROR - throw error if this occurs
+     *   IGNORE - do not throw
+     */
     public static String KEY_RESPONSE_CONTAINS_FEWER_RECORDS_THAN_REQUESTED = "RESPONSE_CONTAINS_FEWER_RECORDS_THAN_REQUESTED";
 
+    /**
+     *  During a harvest, the server may add/delete records.  In this case, the GetRecord responses will have a different
+     *  totalNumberOfRecords than earlier (i.e. during DetermineWork).
+     *
+     *  ERROR - throw error if this occurs.  You will likely be missing records or have duplicate records.
+     *  IGNORE - (not recommended).  If the % amount of the number of records changed is greater than KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED
+     *         then throw, otherwise do not.
+     *          For example, if total number of records=100 at the start of harvesting.  Later it becomes 105.  That's a 5% change.
+     *           If KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED >=5 then its "ok" otherwise ERROR.
+     */
     public static String KEY_TOTAL_RECORDS_CHANGED = "TOTAL_RECORDS_CHANGED";
     public static String KEY_MAX_PERCENT_TOTAL_RECORDS_ALLOWED = "MAX_PERCENT_TOTAL_RECORDS_ALLOWED";
 
+    /**
+     * After harvesting, look at the UUID for the records.  If there are duplicates, then something major has occurred.  The ingest will likely have issues with this.
+     *   ERROR - (recommended) throw error if this occurs
+     *   IGNORE - do not throw
+     */
     public static String KEY_DUPLICATE_UUIDS = "DUPLICATE_UUIDS";
 
 
