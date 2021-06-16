@@ -46,7 +46,9 @@ public class HarvestJobService {
         return harvestJobRepo.save(newJob);
     }
 
-    public HarvestJob updateHarvestJobStateInDBToError(String guid) {
+    public HarvestJob updateHarvestJobStateInDBToError(String guid) throws Exception {
+//        if (true)
+//            throw new Exception("BOOMY!!");
         return updateHarvestJobStateInDB(guid, HarvestJobState.ERROR);
     }
 

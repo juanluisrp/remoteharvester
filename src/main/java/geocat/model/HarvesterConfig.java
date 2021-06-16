@@ -8,15 +8,42 @@ import java.net.URL;
 
 public class HarvesterConfig {
 
-    public static int DEFAULT_NRECORDS = 20;
-    private String longTermTag;  //i.e. country name
-    private boolean lookForNestedDiscoveryService; //true for poland
-    private String filter;  //CSW <ogc:Filter>
-    private String url; // endpoint for GetCapabilities
-    private String processID; // GUID for the harvest (used as JMS Correlation ID).  Provided by server
-    private int numberOfRecordsPerRequest; // defaults to 20 records in a GetRecords request
-    private String getRecordQueueHint; // which queue set to use.  blank=auto determined.  Otherwise "PARALLEL#" #=2,3,4
+    // tag so you can refer to "previous run results"
+    //ie. country name
+    private String longTermTag;
+
+    // looks for nested discovery service
+    //true for poland, otherwise false
+    private boolean lookForNestedDiscoveryService;
+
+    //CSW <ogc:Filter>
+    private String filter;
+
+    // endpoint for GetCapabilities
+    private String url;
+
+    // GUID for the harvest (used as JMS Correlation ID).  Provided by server (do not specify)
+    private String processID;
+
+    // how many records to retrieve in a single GetRecords request
+    // defaults to 20 records in a GetRecords request (see DEFAULT_NRECORDS)
+    private int numberOfRecordsPerRequest;
+
+
+    // which queue set to use.  blank=auto determined.  Otherwise "PARALLEL#" #=2,3,4
+    // usually, you want to make this blank.  Except for large servers
+    //   (i.e. lots of records and can handle multiple simutaneous requests)
+    private String getRecordQueueHint;
+
+    //what to do in the case an error condition occurs.
+    // See the ProblematicResultsConfiguration class for details
     private ProblematicResultsConfiguration problematicResultsConfiguration;
+
+    // if numberOfRecordsPerRequest is not specified, use this
+    public static int DEFAULT_NRECORDS = 20;
+
+
+    
 
     public String getGetRecordQueueHint() {
         return getRecordQueueHint;

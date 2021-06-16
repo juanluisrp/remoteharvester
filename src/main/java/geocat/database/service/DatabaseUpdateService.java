@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Scope("prototype")
@@ -70,7 +71,10 @@ public class DatabaseUpdateService {
         if (e == null)
             return;
         String processId = (String) exchange.getMessage().getHeader("processID");
-        HarvestJob job = harvestJobRepo.findById(processId).get();
+        Optional<HarvestJob> _job = harvestJobRepo.findById(processId);
+        if (!_job.isPresent())
+            return; // cannot update database.  Likely DB issue or very very early exception
+        HarvestJob job = _job.get();
         if (job.getMessages() == null)
             job.setMessages("");
         String thisMessage = "\n--------------------------------------\n";
@@ -82,7 +86,8 @@ public class DatabaseUpdateService {
     }
 
 
-    public String convertToString(Throwable e) {
+
+    public static String convertToString(Throwable e) {
         String result = e.getClass().getCanonicalName() + " - " + e.getMessage();
 
         StringWriter sw = new StringWriter();

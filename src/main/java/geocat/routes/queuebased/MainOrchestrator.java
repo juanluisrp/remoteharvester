@@ -1,5 +1,6 @@
 package geocat.routes.queuebased;
 
+import geocat.database.service.DatabaseUpdateService;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.MainLoopRouteCreator;
 import geocat.eventprocessor.RedirectEvent;
@@ -10,6 +11,8 @@ import geocat.events.actualRecordCollection.ActualHarvestStartCommand;
 import geocat.events.determinework.DetermineWorkStartCommand;
 import geocat.events.determinework.WorkedDeterminedFinished;
 import org.apache.camel.BeanScope;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +43,18 @@ public class MainOrchestrator extends SpringRouteBuilder {
 
         from("activemq:ActiveMQ.DLQ")
                 .routeId("MainOrchestrator.DLQ")
-                .onException(Throwable.class).to("activemq:ActiveMQ.DLQ_DLQ").end()
+                .onException(Exception.class).onExceptionOccurred(new Processor() {
+                                @Override
+                                public void process(Exchange exchange) throws Exception {
+                                    Exception ex = exchange.getException();
+                                    exchange.getMessage().setHeader("exception", ex);
+                                    exchange.getMessage().setHeader("exceptionTxt", DatabaseUpdateService.convertToString(ex));
+                                }
+                            })
+                            .handled(true)
+                            .to("activemq:ActiveMQ.DLQ_DLQ")
+                            .end()
+
                 .bean(HarvestJobService.class, "updateHarvestJobStateInDBToError( ${header.processID} )", BeanScope.Request)
         ;
 
