@@ -8,6 +8,7 @@ import org.apache.camel.ExtendedCamelContext;
 import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.JmsTransactionManager;
@@ -21,7 +22,9 @@ import javax.jms.ConnectionFactory;
 public class Config {
 
 
-    String brokerUrl = "tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=1";
+    //String brokerUrl = "tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=1";
+    @Value( "${activemq.url}" )
+    String brokerUrl;
 
     int maxConnections = 11;
 
