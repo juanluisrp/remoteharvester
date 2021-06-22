@@ -7,4 +7,5 @@ public class LogLine {
     public String level;
     public String message;
     public boolean isException;
+    public String threadName;
 }

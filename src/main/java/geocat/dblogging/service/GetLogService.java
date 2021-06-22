@@ -39,6 +39,7 @@ public class GetLogService {
         result.level = event.levelString;
         result.message = event.formattedMessage;
         result.processID = event.jmsCorrelationId;
+        result.threadName = event.threadName;
 
         //exception
         if (result.isException) {
