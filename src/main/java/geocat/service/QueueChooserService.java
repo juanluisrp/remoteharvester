@@ -63,7 +63,7 @@ public class QueueChooserService {
         //user specified something - we should choose something
         Matcher m = parallelPattern.matcher(hint);
         m.find();
-        int parallellism = Integer.parseInt(m.group(0));
+        int parallellism = Integer.parseInt(m.group(1));
         if (parallellism <= 1)
             throw new Exception("requested parallelism of 0 or 1 - must be 2+!");
         if (!queueGroupsMap.containsKey("parallel_" + parallellism))

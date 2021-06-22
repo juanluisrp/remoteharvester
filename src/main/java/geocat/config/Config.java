@@ -1,6 +1,7 @@
 package geocat.config;
 
 import geocat.dblogging.MYUnitOfWorkFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExtendedCamelContext;
@@ -20,7 +21,7 @@ import javax.jms.ConnectionFactory;
 public class Config {
 
 
-    String brokerUrl = "tcp://localhost:61616";
+    String brokerUrl = "tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=1";
 
     int maxConnections = 11;
 
@@ -64,20 +65,24 @@ public class Config {
 
     @Bean
     //@Primary
-    public ActiveMQComponent activemq(ConnectionFactory connectionFactory) {
-        JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
-        jmsTransactionManager.setConnectionFactory(connectionFactory);
+    public ActiveMQComponent activemq(ActiveMQConnectionFactory connectionFactory) {
+
+        PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(connectionFactory);
+        pooledConnectionFactory.setMaxConnections(50);
+
+         JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
+        jmsTransactionManager.setConnectionFactory(pooledConnectionFactory);
 
         ActiveMQComponent activeMQComponent = new ActiveMQComponent();
-        activeMQComponent.setConnectionFactory(connectionFactory);
+        activeMQComponent.setConnectionFactory(pooledConnectionFactory);
         activeMQComponent.setTransacted(true);
         activeMQComponent.setTransactedInOut(true);
         activeMQComponent.setTransactionManager(jmsTransactionManager);
 
         //  activeMQComponent.setLazyCreateTransactionManager (false);
 
-        activeMQComponent.setCacheLevelName("CACHE_CONSUMER");
-        // activeMQComponent.setAcknowledgementModeName("SESSION_TRANSACTED");
+        activeMQComponent.setCacheLevelName("CACHE_NONE");
+         activeMQComponent.setAcknowledgementModeName("SESSION_TRANSACTED");
 
 
         return activeMQComponent;

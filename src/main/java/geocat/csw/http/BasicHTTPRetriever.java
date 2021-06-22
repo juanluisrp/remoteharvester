@@ -90,6 +90,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             String newUrl = http.getHeaderField("Location");
             throw new RedirectException("redirect requested", newUrl);
         }
+        //logger.debug("      * FINISHED " + verb + " to " + location + " with body " + body.replace("\n", ""));
         return response;
     }
 

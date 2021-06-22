@@ -1,5 +1,6 @@
 package geocat.eventprocessor.processors.harvest;
 
+import geocat.MySpringApp;
 import geocat.database.entities.RecordSet;
 import geocat.database.service.RecordSetService;
 import geocat.eventprocessor.BaseEventProcessor;
@@ -7,6 +8,8 @@ import geocat.events.Event;
 import geocat.events.EventFactory;
 import geocat.events.actualRecordCollection.ActualHarvestEndpointStartCommand;
 import geocat.events.actualRecordCollection.GetRecordsCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,7 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventProcessor<ActualHarvestEndpointStartCommand> {
+    Logger logger = LoggerFactory.getLogger(EventProcessor_ActualHarvestEndpointStartCommand.class);
 
     @Autowired
     RecordSetService recordSetService;
@@ -44,6 +48,8 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
             throw new Exception("getnRecordPerRequest <= 0");
 
         List<RecordSet> records = new ArrayList<>();
+
+        logger.debug("Adding RecordSets to Database... (approx "+ cmd.getExpectedNumberOfRecords()/cmd.getnRecordPerRequest()+" record sets)");
         //for example, for getting 10 records;
         //  first one - 1 to 10 (start at 1, get 10)
         //  2nd       - 11 to 20 (start at 11, get 10)
@@ -65,6 +71,7 @@ public class EventProcessor_ActualHarvestEndpointStartCommand extends BaseEventP
         List<Event> result = new ArrayList<>();
         long endpointId = getInitiatingEvent().getEndPointId();
         List<RecordSet> records = recordSetService.getAll(endpointId);
+        logger.debug("Creating GetRecordsCommand events... ("+records.size()+" commands)");
 
         for (RecordSet record : records) {
             GetRecordsCommand command = eventFactory.create_GetRecordsCommand(getInitiatingEvent(),

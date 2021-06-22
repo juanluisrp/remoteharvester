@@ -12,6 +12,11 @@ import java.time.ZonedDateTime;
                         name = "metadata_record_endpointJobId_idx",
                         columnList = "endpointJobId",
                         unique = false
+                ),
+                @Index(
+                        name = "metadata_record_endpointJobId_recordnumb_idx",
+                        columnList = "endpointJobId,recordNumber",
+                        unique = false
                 )
         })
 public class MetadataRecord {

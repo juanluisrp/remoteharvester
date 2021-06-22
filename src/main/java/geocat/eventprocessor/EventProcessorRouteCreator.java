@@ -55,6 +55,7 @@ public class EventProcessorRouteCreator {
         else
             routeBuilder
                     .from(from)  // ${body} will be of type eventType
+                    .transacted()
                     .routeId(tag + "_" + eventType.getSimpleName())
                     .log("processing event of type " + eventType.getSimpleName() + " from " + from)
                     .bean(StopProcessingMessageService.class, "checkIfShouldBeProcessed", BeanScope.Request)

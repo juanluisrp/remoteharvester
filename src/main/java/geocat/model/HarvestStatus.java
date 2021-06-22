@@ -12,6 +12,7 @@ public class HarvestStatus {
     public String state;
     public String createTimeUTC;
     public String lastUpdateUTC;
+    public String errorMessages;
 
     public List<EndpointStatus> endpoints;
 
@@ -23,6 +24,7 @@ public class HarvestStatus {
         this.state = job.getState().toString();
         this.createTimeUTC = job.getCreateTimeUTC().toInstant().toString();
         this.lastUpdateUTC = job.getLastUpdateUTC().toInstant().toString();
+        this.errorMessages = job.getMessages();
         endpoints = new ArrayList<>();
     }
 }

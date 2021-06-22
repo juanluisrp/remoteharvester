@@ -52,6 +52,7 @@ public class MainLoopRouteCreator {
             public void process(Exchange exchange) throws Exception {
                 Exception ex = exchange.getException();
                 exchange.getMessage().setHeader("exception", ex);
+                logger.error("exception occurred", ex);
             }
         })
                 .bean(DatabaseUpdateService.class, "errorOccurred", BeanScope.Request).maximumRedeliveries(2)
@@ -59,7 +60,6 @@ public class MainLoopRouteCreator {
 
         ChoiceDefinition choice = routeBuilder
                 .from(from)
-
                 .routeId(mainRouteName + ".eventprocessor")
                 .transacted()
                 .unmarshal(jsonDefHarvesterConfig)

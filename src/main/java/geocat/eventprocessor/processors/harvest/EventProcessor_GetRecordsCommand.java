@@ -65,16 +65,23 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
 
         GetRecordsCommand e = getInitiatingEvent();
         String xml = cswService.GetRecords(e.getGetRecordsURL(), e.getFilter(), e.getStartRecordNumber(), e.getEndRecordNumber());
+        //logger.debug("starting to parse xml");
         Document xmlParsed = MetadataExploderService.parseXML(xml);
+        //logger.debug("finish parse xml");
 
         GetRecordsResponseInfo info = new GetRecordsResponseInfo(xmlParsed);
         HarvestJob harvestJob = harvestJobService.getById(e.getHarvesterId());
         EndpointJob endpointJob = endpointJobService.getById(e.getEndPointId());
         RecordSet recordSet = recordSetService.getById(e.getRecordSetId());
+
+        //logger.debug("eval...");
+
         getRecordsResponseEvaluator.evaluate(harvestJob, endpointJob, info, recordSet);
 
         int nrecords = cswGetRecordsHandler.extractActualNumberOfRecordsReturned(xmlParsed);
         result = new GetRecordsResult(xml, nrecords, xmlParsed);
+        //logger.debug("done external");
+
         return this;
     }
 
@@ -84,7 +91,11 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
         GetRecordsCommand cmd = getInitiatingEvent();
         recordSetService.update(cmd.getRecordSetId(), result.getNumberRecordsReturned());
         RecordSet recordSet = recordSetService.getById(cmd.getRecordSetId());
+        //logger.debug("exploding");
+
         metadataExploderService.explode(recordSet, result.getParsedXML());
+        //logger.debug("exploded");
+
         return this;
     }
 

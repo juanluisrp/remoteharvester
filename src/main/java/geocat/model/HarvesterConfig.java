@@ -43,7 +43,7 @@ public class HarvesterConfig {
     public static int DEFAULT_NRECORDS = 20;
 
 
-    
+
 
     public String getGetRecordQueueHint() {
         return getRecordQueueHint;
