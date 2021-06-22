@@ -64,13 +64,13 @@ public class MainLoopRouteCreator {
                 .transacted()
                 .unmarshal(jsonDefHarvesterConfig)
                 .setHeader("eventType", routeBuilder.simple("${body.getClass().getSimpleName()}"))
-                .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
+              //  .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
                 .choice();
         // special events - re-broadcast to parent
         for (RedirectEvent redirectEvent : redirectEventList) {
             choice = choice
                     .when(routeBuilder.simple("${headers.eventType} == '" + redirectEvent.getEventType().getSimpleName() + "'"))
-                    .log("redirection event of type ${headers.eventType} to " + redirectEvent.getEndpoint())
+                    .log(mainRouteName + " redirecting event of type ${headers.eventType} to " + redirectEvent.getEndpoint())
 //                    .process(new Processor() {
 //                        @Override
 //                        public void process(Exchange exchange) throws Exception {
@@ -90,6 +90,7 @@ public class MainLoopRouteCreator {
         for (Class eventType : eventTypes) {
             choice = choice
                     .when(routeBuilder.simple("${headers.eventType} == '" + eventType.getSimpleName() + "'"))
+                    .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
                     .to("direct:" + mainRouteName + "_" + eventType.getSimpleName());
         }
 
