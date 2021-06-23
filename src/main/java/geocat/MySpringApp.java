@@ -1,5 +1,6 @@
 package geocat;
 
+import org.apache.camel.spring.SpringCamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class MySpringApp {
 //        logger.debug("hi2");
         SpringApplication app = new SpringApplication(MySpringApp.class);
         ApplicationContext ctx = app.run(args);
+//        SpringCamelContext camel = (SpringCamelContext) ctx.getBean(SpringCamelContext.class);
+//        camel.start();
 //        logger.debug("hi");
 //        logger.debug("hi");
     }

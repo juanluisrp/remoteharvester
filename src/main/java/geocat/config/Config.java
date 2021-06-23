@@ -66,6 +66,7 @@ public class Config {
     }
 
 
+
     @Bean
     //@Primary
     public ActiveMQComponent activemq(ActiveMQConnectionFactory connectionFactory) {

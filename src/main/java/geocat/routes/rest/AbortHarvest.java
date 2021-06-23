@@ -9,14 +9,22 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class AbortHarvest extends RouteBuilder {
+
+    @Value("${geocat.jettyHost}")
+    public String jettyHost;
+
+    @Value("${geocat.jettyPort}")
+    public Integer jettyPort;
+
     @Override
     public void configure() throws Exception {
-        restConfiguration().component("jetty").host("localhost").port(9999);
+        restConfiguration().component("jetty").host(jettyHost).port(jettyPort);
 
         JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(HarvesterConfig.class);
 

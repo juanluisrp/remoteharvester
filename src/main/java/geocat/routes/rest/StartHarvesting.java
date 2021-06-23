@@ -7,12 +7,20 @@ import org.apache.camel.BeanScope;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 //curl -X POST "http://localhost:9999/api/startHarvest" -H "Content-Type: application/json"  -d '{"url":"http://mapy.geoportal.gov.pl/wss/service/CSWINSP/guest/CSWStartup"}'@Component
 @Component
 public class StartHarvesting extends RouteBuilder {
+
+
+    @Value("${geocat.jettyHost}")
+    public String jettyHost;
+
+    @Value("${geocat.jettyPort}")
+    public Integer jettyPort;
 
 
     // This route takes an incoming request for starting a Harvesting job.
@@ -25,7 +33,7 @@ public class StartHarvesting extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        restConfiguration().component("jetty").host("localhost").port(9999);
+        restConfiguration().component("jetty").host(jettyHost).port(jettyPort);
 
         JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(HarvesterConfig.class);
 
