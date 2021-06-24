@@ -4,7 +4,6 @@ import com.geocat.ingester.dao.harvester.MetadataRecordRepo;
 import com.geocat.ingester.dao.metadata.MetadataRepository;
 import com.geocat.ingester.exception.IndexingRecordException;
 import com.geocat.ingester.model.metadata.Metadata;
-import com.geocat.ingester.service.IndexingService;
 import com.geocat.ingester.service.IngesterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,6 @@ public class IngesterController {
     private IngesterService ingesterService;
 
     @Autowired
-    private IndexingService indexingService;
-
-    @Autowired
     private MetadataRepository metadataRepo;
 
     @RequestMapping(value = "/ingester/{harvesterUuid}", method = RequestMethod.GET)
@@ -39,18 +35,4 @@ public class IngesterController {
 
         return ResponseEntity.ok().build();
     }
-
-    @RequestMapping(value = "/index/{uuid}", method = RequestMethod.GET)
-    public ResponseEntity index(@PathVariable String uuid) throws IndexingRecordException {
-        Optional<Metadata> metadataOptional = metadataRepo.findMetadataByUuid(uuid);
-
-        if (!metadataOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            indexingService.indexRecords(Collections.singletonList(metadataOptional.get().getId()));
-            return ResponseEntity.ok().build();
-        }
-
-    }
-
 }

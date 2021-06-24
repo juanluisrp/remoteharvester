@@ -67,29 +67,15 @@ public class CatalogueService {
         // Load in memory the records from the harvester that are in the catalogue database
         List<Metadata> metadataInDb = metadataRepo.findAllByUuidIn(harvestedUuids);
 
-        // TODO: Remove
-        /*metadataInDb.forEach(metadata -> {
-            metadataIdList.add(metadata.getId());
-        });
-
-        if (true) {
-            return metadataIdList;
-        }*/
-
         for(MetadataRecordXml metadataRecord: metadataRecords) {
             String metadataUuid = metadataRecord.getRecordIdentifier();
 
             LocalDateTime datetime = LocalDateTime.now();
-            ///boolean existMetadata = metadataRepo.existsMetadataByUuid(metadataUuid);
-            //Optional<Metadata> metadataOptional = metadataRepo.findMetadataByUuid(metadataUuid);
             Metadata metadata;
 
             Optional<Metadata> metadataOptional = metadataInDb.stream().filter(m -> m.getUuid().equals(metadataUuid)).findFirst();
 
-            boolean newMetadata;
             if (metadataOptional.isPresent()) {
-                newMetadata = false;
-                //Optional<Metadata> metadataOptional = metadataRepo.findMetadataByUuid(metadataUuid);
                 metadata = metadataOptional.get();
 
                 String sha2 = computeSHA2(metadata.getData());
@@ -99,8 +85,6 @@ public class CatalogueService {
                 }
                 // TODO: Check about harvester uuid
             } else {
-                newMetadata = true;
-
                 metadata = new Metadata();
                 metadata.setUuid(metadataRecord.getRecordIdentifier());
                 metadata.setHarvestUuid(harvesterConfiguration.getUuid());
@@ -118,9 +102,7 @@ public class CatalogueService {
             // TODO: Get from XML
             metadata.setChangeDate(datetime.format(DATE_PATTERN));
 
-
             metadataList.add(metadata);
-            //metadataRepo.save(metadata);
         }
 
         metadataRepo.saveAll(metadataList);
@@ -145,38 +127,21 @@ public class CatalogueService {
             boolean addOperation = false;
 
             Optional<OperationAllowed> operationAllowedOptional = operationAllowedInDb.stream().filter(oa -> (oa.getId().equals(operationAllowedId))).findFirst();
-            //Optional<OperationAllowed> operationAllowedOptional = operationAllowedRepo.findById(operationAllowedId);
 
             if (!operationAllowedOptional.isPresent()) {
                 addOperation = true;
             }
 
-            /*if (newMetadata) {
-                addOperation = true;
-            } else {
-                Optional<OperationAllowed> operationAllowedOptional = operationAllowedRepo.findById(operationAllowedId);
-
-                if (!operationAllowedOptional.isPresent()) {
-                    addOperation = true;
-                }
-            }*/
-
             if (addOperation) {
                 OperationAllowed operationAllowed = new OperationAllowed();
                 operationAllowed.setId(operationAllowedId);
                 operationAllowedList.add(operationAllowed);
-                //operationAllowedRepo.save(operationAllowed);
             }
         });
 
         operationAllowedRepo.saveAll(operationAllowedList);
 
-        /*metadataList.forEach(m -> {
-            metadataIdList.add(m.getId());
-        });*/
-
         return metadataUuidList;
-        //return metadata;
     }
 
 
