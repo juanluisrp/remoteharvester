@@ -57,8 +57,8 @@ public class PersistenceHarvesterConfiguration {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(Preconditions.checkNotNull(env.getProperty("jdbc.driverClassName")));
         dataSource.setUrl(Preconditions.checkNotNull(env.getProperty("harvester.jdbc.url")));
-        dataSource.setUsername(Preconditions.checkNotNull(env.getProperty("jdbc.user")));
-        dataSource.setPassword(Preconditions.checkNotNull(env.getProperty("jdbc.pass")));
+        dataSource.setUsername(Preconditions.checkNotNull(env.getProperty("harvester.jdbc.user")));
+        dataSource.setPassword(Preconditions.checkNotNull(env.getProperty("harvester.jdbc.pass")));
 
         return dataSource;
     }
