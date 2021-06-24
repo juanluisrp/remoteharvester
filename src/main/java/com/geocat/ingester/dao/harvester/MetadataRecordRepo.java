@@ -17,9 +17,10 @@ import java.util.List;
 @Scope("prototype")
 public interface MetadataRecordRepo extends CrudRepository<MetadataRecord, String> {
 
-    public List<MetadataRecord> findMetadataRecordByEndpointJobId(long endpointJobId);
+    List<MetadataRecord> findMetadataRecordByEndpointJobId(long endpointJobId);
 
+    long countMetadataRecordByEndpointJobId(long endPointJobId);
 
     @Query("select new com.geocat.ingester.model.harvester.MetadataRecordXml(r.recordIdentifier, r.sha2, b.textValue) from MetadataRecord r join BlobStorage b ON r.sha2 = b.sha2 where r.endpointJobId = :endpointJobId order by r.metadataRecordId")
-    public Page<MetadataRecordXml> findMetadataRecordWithXmlByEndpointJobId(@Param("endpointJobId") long endpointJobId, Pageable pageable);
+    Page<MetadataRecordXml> findMetadataRecordWithXmlByEndpointJobId(@Param("endpointJobId") long endpointJobId, Pageable pageable);
 }

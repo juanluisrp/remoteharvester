@@ -7,6 +7,7 @@ import com.geocat.ingester.geonetwork.client.GeoNetworkClient;
 import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
 import com.geocat.ingester.model.harvester.MetadataRecordXml;
+import com.geocat.ingester.model.ingester.IngestJobState;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.Optional;
 //@Transactional("metadataTransactionManager")
 @Slf4j(topic = "com.geocat.ingester.service")
 public class IngesterService {
+
     @Autowired
     private HarvestJobRepo harvestJobRepo;
 
@@ -39,6 +41,8 @@ public class IngesterService {
     @Autowired
     private GeoNetworkClient geoNetworkClient;
 
+    @Autowired
+    private IngestJobService ingestJobService;
 
     /**
      * Executes the ingester process.
@@ -46,7 +50,7 @@ public class IngesterService {
      * @param harvesterUuidOrName
      * @throws Exception
      */
-    public void run(String harvesterUuidOrName) throws Exception {
+    public void run(String processId, String harvesterUuidOrName) throws Exception {
         Optional<HarvestJob> harvestJob;
 
         Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuidOrName);
@@ -70,6 +74,13 @@ public class IngesterService {
         String jobId = harvestJob.get().getJobId();
         List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(jobId);
 
+        long totalMetadataToProcess = 0;
+        for (EndpointJob job : endpointJobList) {
+            totalMetadataToProcess = totalMetadataToProcess + metadataRecordRepo.countMetadataRecordByEndpointJobId(job.getEndpointJobId());
+        }
+
+        ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, 0, 0, totalMetadataToProcess);
+
         //List<Integer> metadataIds = new ArrayList<>();
         List<String> metadataIds = new ArrayList<>();
 
@@ -78,6 +89,8 @@ public class IngesterService {
 
             int page = 0;
             int size = 200;
+
+            long total = 0;
 
             while (pagesAvailable) {
                 Pageable pageableRequest = PageRequest.of(page++, size);
@@ -93,11 +106,17 @@ public class IngesterService {
                 long to =  Math.min((size * page) - 1, metadataRecordList.getTotalElements());
                 log.info("Adding harvested metadata records to the catalogue from " +  from + " to " + to + " of " + metadataRecordList.getTotalElements());
 
+                total = total + metadataRecordList.getNumberOfElements();
+
                 metadataIds.addAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
+
+                ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
 
                 pagesAvailable = !metadataRecordList.isLast();
             }
         }
+
+        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
 
         int batchSize = 50;
 
@@ -105,6 +124,8 @@ public class IngesterService {
         int totalPages = Math.toIntExact(Math.round(metadataIds.size() * 1.0 / batchSize));
 
         geoNetworkClient.init();
+
+        int total = 0;
 
         for (int i = 0; i < totalPages; i++) {
             try {
@@ -116,11 +137,17 @@ public class IngesterService {
 
                 geoNetworkClient.index(metadataIds.subList(from , to));
 
+                total = total + (to-from);
+
+                ingestJobService.updateIngestJobStateInDBIndexedRecords(processId, total);
+
             } catch (Exception ex) {
                 // TODO: Handle exception
                 ex.printStackTrace();
             }
         }
+
+        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.RECORDS_PROCESSED);
 
         log.info("Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
     }

@@ -20,11 +20,11 @@ import java.util.HashMap;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.geocat.ingester.dao.metadata", entityManagerFactoryRef = "metadataEntityManager", transactionManagerRef = "metadataTransactionManager")
 @Profile("!tc")
-public class PersistenceIngesterConfiguration {
+public class PersistenceMetadataConfiguration {
     @Autowired
     private Environment env;
 
-    public PersistenceIngesterConfiguration() {
+    public PersistenceMetadataConfiguration() {
         super();
     }
 
