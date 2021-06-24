@@ -145,26 +145,28 @@ public class CatalogueService {
     }
 
 
-    public Optional<HarvesterConfiguration> retrieveHarvesterConfiguration(String harvesterUuid) {
-        Optional<HarvesterSetting> harvesterSettingOptional = harvestingSettingRepo.findByNameAndValue("uuid", harvesterUuid);
+    public Optional<HarvesterConfiguration> retrieveHarvesterConfiguration(String harvesterUuidOrName) {
+        Optional<HarvesterSetting> harvesterSettingOptional = harvestingSettingRepo.findByNameAndValue("uuid", harvesterUuidOrName);
+
+        if (!harvesterSettingOptional.isPresent()) {
+            harvesterSettingOptional = harvestingSettingRepo.findByNameAndValue("name", harvesterUuidOrName);
+        }
 
         HarvesterConfiguration harvesterConfiguration = null;
 
         if (harvesterSettingOptional.isPresent()) {
             harvesterConfiguration = new HarvesterConfiguration();
-            harvesterConfiguration.setUuid(harvesterUuid);
 
             HarvesterSetting harvesterSetting = harvesterSettingOptional.get();
             HarvesterSetting harvesterSettingParent = harvesterSetting.getParent();
 
             List<HarvesterSetting> harvesterSettingList = harvestingSettingRepo.findAllByParent(harvesterSettingParent);
 
+            Optional<HarvesterSetting> harvestingSettingUuid = retrieveHarvesterSetting(harvesterSettingList, "uuid");
+            harvesterConfiguration.setUuid(harvestingSettingUuid.get().getValue());
+
             Optional<HarvesterSetting> harvestingSettingName = retrieveHarvesterSetting(harvesterSettingList, "name");
             harvesterConfiguration.setName(harvestingSettingName.get().getValue());
-
-
-            Optional<HarvesterSetting> harvestingSettingUuid = retrieveHarvesterSetting(harvesterSettingList, "ownerGroup");
-            harvesterConfiguration.setUrl(harvestingSettingUuid.get().getValue());
 
             Optional<HarvesterSetting> harvestingSettingUrl = retrieveHarvesterSetting(harvesterSettingList, "capabUrl");
             harvesterConfiguration.setUrl(harvestingSettingUrl.get().getValue());

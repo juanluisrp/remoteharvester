@@ -43,29 +43,29 @@ public class IngesterService {
     /**
      * Executes the ingester process.
      *
-     * @param harvesterUuid
+     * @param harvesterUuidOrName
      * @throws Exception
      */
-    public void run(String harvesterUuid) throws Exception {
+    public void run(String harvesterUuidOrName) throws Exception {
         Optional<HarvestJob> harvestJob;
 
-        Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuid);
+        Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuidOrName);
 
         if (!harvesterConfigurationOptional.isPresent()) {
-            log.info("Harvester with uuid " +  harvesterUuid + " not found.");
-
+            log.info("Harvester with name/uuid " +  harvesterUuidOrName + " not found.");
             // TODO: throw Exception harvester not found
             return;
         }
 
         // Filter most recent
-        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(harvesterUuid);
+        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(harvesterUuidOrName);
         if (!harvestJob.isPresent()) {
-            log.info("No harvester job related found for the harvester with uuid " +  harvesterUuid + ".");
-
+            log.info("No harvester job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
             // TODO: throw Exception harvester job not found
             return;
         }
+
+        log.info("Start ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
 
         String jobId = harvestJob.get().getJobId();
         List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(jobId);
@@ -85,7 +85,13 @@ public class IngesterService {
                 Page<MetadataRecordXml> metadataRecordList =
                         metadataRecordRepo.findMetadataRecordWithXmlByEndpointJobId(job.getEndpointJobId(), pageableRequest);
 
-                log.info("Processing metadata page (page size " + size + "): " +  metadataRecordList.getNumber() + " of " + metadataRecordList.getTotalPages());
+                if (page == 1) {
+                    log.info("Total harvested records to process: " + metadataRecordList.getTotalElements());
+                }
+
+                long from = (size * (page - 1) ) + 1;
+                long to =  Math.min((size * page) - 1, metadataRecordList.getTotalElements());
+                log.info("Adding harvested metadata records to the catalogue from " +  from + " to " + to + " of " + metadataRecordList.getTotalElements());
 
                 metadataIds.addAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
 
@@ -96,20 +102,26 @@ public class IngesterService {
         int batchSize = 50;
 
         // Index records
-        int totalPages = metadataIds.size() / batchSize;
+        int totalPages = Math.toIntExact(Math.round(metadataIds.size() * 1.0 / batchSize));
 
         geoNetworkClient.init();
 
         for (int i = 0; i < totalPages; i++) {
             try {
-                log.info("Indexing metadata page (page size " + batchSize + "): " +  (i+1) + " of " + totalPages);
+                int from = i * batchSize;
+                int to = Math.min(((i+1) * batchSize), metadataIds.size());
 
-                geoNetworkClient.index(metadataIds.subList(i * batchSize, Math.min((i+1) * batchSize, metadataIds.size()) - 1));
+                int toR = (i == totalPages - 1)?metadataIds.size():(to-1);
+                log.info("Indexing harvested metadata records from " +  Math.max(1, i * batchSize) + " to " + toR + " of " + metadataIds.size());
+
+                geoNetworkClient.index(metadataIds.subList(from , to));
 
             } catch (Exception ex) {
                 // TODO: Handle exception
                 ex.printStackTrace();
             }
         }
+
+        log.info("Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
     }
 }
