@@ -9,9 +9,7 @@ job("Build, test and install project artifacts") {
     container(displayName = "Run mvn install", image = "maven:latest") {
         // url of a Space Packages repository
         env["REPOSITORY_URL"] = "https://maven.pkg.jetbrains.space/geocat/p/jrc-inspire-portal/maven"
-        env["GEOCAT_DOCKER_REGISTRY_URL"] = "docker-registry.geocat.net:5000"
-        env["GEOCAT_DOCKER_REGISTRY_USER"] = Params("geocat_docker_registry_user")
-        env["GEOCAT_DOCKER_REGISTRY_PASSWORD"] = Secrets("geocat_docker_registry_password")
+
 
         shellScript {
             content = """
@@ -51,6 +49,10 @@ job("Build, test and install project artifacts") {
     }
     
     container("Push Docker image in GeoCat Docker repository", "golang:1.16") {
+        env["GEOCAT_DOCKER_REGISTRY_URL"] = "docker-registry.geocat.net:5000"
+        env["GEOCAT_DOCKER_REGISTRY_USER"] = Params("geocat_docker_registry_user")
+        env["GEOCAT_DOCKER_REGISTRY_PASSWORD"] = Secrets("geocat_docker_registry_password")
+        
         shellScript {
             content = """
             	BRANCH=${'$'}(echo ${'$'}JB_SPACE_GIT_BRANCH | cut -d'/' -f 3)
