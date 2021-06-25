@@ -16,7 +16,7 @@ job("Build, test and install project artifacts") {
             	echo === Build artifacts... ===
 	            mvn -B clean install -DskipTests
                 echo === Run the tests... ===
-                mvn -B tests
+                mvn -B test
                 echo === Publish artifacts... ===
                 mvn -B deploy -s .space/settings.xml \
                     -DskipTests \
@@ -59,8 +59,8 @@ job("Build, test and install project artifacts") {
             	go install github.com/google/go-containerregistry/cmd/crane@latest
                 crane auth login geocat.registry.jetbrains.space -u ${'$'}JB_SPACE_CLIENT_ID -p ${'$'}JB_SPACE_CLIENT_SECRET
                 crane auth login ${'$'}GEOCAT_DOCKER_REGISTRY_URL -u ${'$'}GEOCAT_DOCKER_REGISTRY_USER -p ${'$'}GEOCAT_DOCKER_REGISTRY_PASSWORD
-				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-geoportal/jrc-ingester::${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
-				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-geoportal/jrc-ingester::${'$'}BRANCH
+				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-geoportal/jrc-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
+				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-geoportal/jrc-ingester:${'$'}BRANCH
 			"""
         }
     }
