@@ -12,10 +12,12 @@ job("Build, test and install project artifacts") {
 
         shellScript {
             content = """
-            	echo Build artifacts...
-	            mvn clean install -DskipTests
-                echo Publish artifacts...
-                mvn deploy -s .space/settings.xml \
+            	echo === Build artifacts... ===
+	            mvn -B clean install -DskipTests
+                echo === Run the tests... ===
+                mvn -B tests
+                echo === Publish artifacts... ===
+                mvn -B deploy -s .space/settings.xml \
                     -DskipTests \
                     -DrepositoryUrl=${'$'}REPOSITORY_URL \
                     -DspaceUsername=${'$'}JB_SPACE_CLIENT_ID \
