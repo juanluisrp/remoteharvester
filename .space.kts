@@ -25,5 +25,21 @@ job("Build, test and install project artifacts") {
             """
         }
     }
+    geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/myimage:latest
+    
+    job("Build and push Docker") {
+        docker {
+            build {
+                context = "."
+                file = "./Dockerfile"
+                labels["vendor"] = "GeoCat B.V."
+            }
+
+            push("geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/myimage") {
+                tags("\$JB_SPACE_GIT_BRANCH", "\$JB_SPACE_GIT_BRANCH-\$JB_SPACE_EXECUTION_NUMBER")
+            }
+        }
+	}
+    
 
 }
