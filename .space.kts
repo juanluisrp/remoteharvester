@@ -12,11 +12,8 @@ job("Build, test and install project artifacts") {
 
         shellScript {
             content = """
+            	echo Build artifacts...
 	            mvn clean install -DskipTests
-            """
-        }
-        shellScript {
-            content = """
                 echo Publish artifacts...
                 mvn deploy -s .space/settings.xml \
                     -DskipTests \
