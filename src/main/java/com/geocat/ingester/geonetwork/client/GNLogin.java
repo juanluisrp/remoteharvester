@@ -1,5 +1,7 @@
 package com.geocat.ingester.geonetwork.client;
 
+import com.geocat.ingester.exception.GeoNetworkClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -34,9 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j(topic = "com.geocat.ingester.geonetwork.client")
 public class GNLogin {
-	private static final Logger logger = LogManager.getLogger(GNLogin.class);
-
     @Value("${geonetwork.baseUrl}")
     protected String baseUrl;
 
@@ -131,7 +132,7 @@ public class GNLogin {
         return csrfTokenCookie;
     }
 
-    public void login(GNConnection connection) throws Exception {
+    public void login(GNConnection connection) throws GeoNetworkClientException {
 
         CloseableHttpClient closeableHttpClient = connection.getCloseableHttpClient();
         Cookie jsessionidCookie = null;
@@ -166,25 +167,25 @@ public class GNLogin {
                 httpost.releaseConnection();
 
                 jsessionidCookie = clientContext.getCookieStore().getCookies().get(0);
-                logger.debug("Authentication session cookie: " + jsessionidCookie.getName()
+                log.debug("Authentication session cookie: " + jsessionidCookie.getName()
                         + " = " + jsessionidCookie.getValue()); // should print JSESSIONID =
             } else if(response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
                 httpost.releaseConnection();
 
                 jsessionidCookie = clientContext.getCookieStore().getCookies().get(0);
-                logger.debug("Authentication session cookie: " + jsessionidCookie.getName()
+                log.debug("Authentication session cookie: " + jsessionidCookie.getName()
                         + " = " + jsessionidCookie.getValue()); // should print JSESSIONID =
             } else {
                 httpost.releaseConnection();
-                System.out.println("User " + username + " not able to login to Geonetwork");
-                System.out.println("response code from login url is " + response.getStatusLine().getStatusCode());
+                log.warn("User " + username + " not able to login to Geonetwork");
+                log.warn("response code from login url is " + response.getStatusLine().getStatusCode());
             }
         } else {}
 
         if (jsessionidCookie != null) {
             connection.setJsessionidCookie(jsessionidCookie);
         } else {
-            throw new Exception("Error login in Geonetwork");
+            throw new GeoNetworkClientException("Error login in Geonetwork");
         }
     }
 }

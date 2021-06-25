@@ -1,5 +1,7 @@
 package com.geocat.ingester.geonetwork.client;
 
+import com.geocat.ingester.exception.GeoNetworkClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j(topic = "com.geocat.ingester.geonetwork.client")
 public class GeoNetworkClient {
 
     @Autowired
@@ -41,19 +44,31 @@ public class GeoNetworkClient {
     @Value("${geonetwork.baseUrl}")
     private String baseUrl;
 
-    @PostConstruct
-    public void init() throws Exception {
+    private boolean isInitialised = false;
+
+    public void init() throws GeoNetworkClientException {
         connection = new GNConnection();
         login.login(connection);
+
+        isInitialised = true;
     }
 
-    public void index(List<String> uuids) throws IOException {
+    public void index(List<String> uuids) throws GeoNetworkClientException {
+        if (!isInitialised) {
+            init();
+        }
+
         String url = baseUrl + "/srv/api/records/index?uuids=" +
                 uuids.stream()
                         .map(u -> encodeParam(u))
                         .collect(Collectors.joining(","));
 
-        doGet(connection, url, "application/json");
+        try {
+            doGet(connection, url, "application/json");
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            throw new GeoNetworkClientException(ex.getMessage(), ex);
+        }
     }
 
     protected String doGet(GNConnection connection, String url, String acceptHeader) throws IOException {
