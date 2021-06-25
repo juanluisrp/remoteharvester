@@ -9,7 +9,7 @@ job("Build, test and install project artifacts") {
     container(displayName = "Run mvn install", image = "maven:latest") {
         shellScript {
             content = """
-	            mvn clean install
+	            mvn clean install -DskipTests
             """
         }
     }
