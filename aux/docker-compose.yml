@@ -1,0 +1,77 @@
+version: '3.5'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    environment:
+      - cluster.name=jrc-inspire-geoportal
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    ports:
+      - "5601:5601"
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./init.db:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  geonetwork:
+    image: geonetwork:4
+    environment:
+      DATA_DIR: /catalogue-data
+      JAVA_OPTS: >
+        -Dorg.eclipse.jetty.annotations.AnnotationParser.LEVEL=OFF
+        -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true
+        -Xms512M -Xss512M -Xmx2G -XX:+UseConcMarkSweepGC
+        -Dgeonetwork.resources.dir=/catalogue-data/resources
+        -Dgeonetwork.data.dir=/catalogue-data
+        -Dgeonetwork.codeList.dir=/var/lib/jetty/webapps/geonetwork/WEB-INF/data/config/codelist
+        -Dgeonetwork.schema.dir=/var/lib/jetty/webapps/geonetwork/WEB-INF/data/config/schema_plugins
+
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+      KB_URL: http://kibana:5601
+
+      GEONETWORK_DB_TYPE: postgres
+      GEONETWORK_DB_HOST: db
+      GEONETWORK_DB_PORT: 5432
+      GEONETWORK_DB_NAME: gn4_jrc
+      GEONETWORK_DB_USERNAME: postgres
+      GEONETWORK_DB_PASSWORD: postgres
+    ports:
+    - "9090:8080"
+    volumes:
+      - gn_data:/catalogue-data
+    depends_on:
+      - elasticsearch
+      - db
+
+  activemq:
+    image: rmohr/activemq
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    volumes:
+      - activemq_data:/opt/activemq/data
+volumes:
+  db_data:
+  gn_data:
+  es_data:
+  activemq_data:
+
+
