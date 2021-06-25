@@ -25,7 +25,6 @@ job("Build, test and install project artifacts") {
             """
         }
     }
-    geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/myimage:latest
     
     job("Build and push Docker") {
         docker {
