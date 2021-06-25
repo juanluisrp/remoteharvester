@@ -25,29 +25,28 @@ job("Build, test and install project artifacts") {
             """
         }
     }
-    
-    job("Build and push Docker") {
-        docker {
-             beforeBuildScript {
-                // Create an env variable BRANCH,
-                // use env var to get full branch name,
-                // leave only the branch name without the 'refs/heads/' path
-                content = """
-                    export BRANCH=${'$'}(echo ${'$'}JB_SPACE_GIT_BRANCH | cut -d'/' -f 3)
-                """
-            }
-            build {
-                context = "."
-                file = "./Dockerfile"
-                labels["vendor"] = "GeoCat B.V."
-            }
 
-            push("geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester") {
-                // Use the BRANCH and JB_SPACE_EXECUTION_NUMBER env vars
-                tags("\$BRANCH", "\$BRANCH-\$JB_SPACE_EXECUTION_NUMBER")
-            }
+    docker {
+         beforeBuildScript {
+            // Create an env variable BRANCH,
+            // use env var to get full branch name,
+            // leave only the branch name without the 'refs/heads/' path
+            content = """
+                export BRANCH=${'$'}(echo ${'$'}JB_SPACE_GIT_BRANCH | cut -d'/' -f 3)
+            """
         }
-	}
+        build {
+            context = "."
+            file = "./Dockerfile"
+            labels["vendor"] = "GeoCat B.V."
+        }
+
+        push("geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/jrc-ingester") {
+            // Use the BRANCH and JB_SPACE_EXECUTION_NUMBER env vars
+            tags("\$BRANCH", "\$BRANCH-\$JB_SPACE_EXECUTION_NUMBER")
+        }
+    }
+
     
 
 }
