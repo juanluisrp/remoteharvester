@@ -13,6 +13,7 @@ job("Build, test and install project artifacts") {
 
         shellScript {
             content = """
+            	set -e
             	echo === Build artifacts... ===
 	            mvn -B clean install -DskipTests
                 echo === Run the tests... ===
