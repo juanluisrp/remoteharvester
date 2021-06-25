@@ -2,7 +2,9 @@
 
 ## Configuration
 
-The configuration is applied in the file `src/main/resources/application.properties`. The following properties should be configured:
+The configuration is applied in the file `src/main/resources/application.properties`. When using the Docker image the same properties can be set passing them as environment variables to the container. You just need to convert them to upper-case and replace the dots with underscores. For example, `harvester.jdbc.url` -> `HARVESTER_JDBC_URL`.
+
+The following properties should be configured:
 
 - `geonetwork.baseUrl`: Base url of the GeoNetwork application
 - `geonetwork.username`: GeoNetwork username for an administration user.
