@@ -20,4 +20,6 @@ RUN mkdir -p /opt/jrc-ingester
 COPY --from=builder target/*.jar /opt/jrc-ingester/ingester.jar
 WORKDIR /opt/jrc-ingester
 
+EXPOSE 9999
 CMD [ "java", "-jar", "ingester.jar" ]
+#ENTRYPOINT exec java $JAVA_OPTS -jar ingester.jar
