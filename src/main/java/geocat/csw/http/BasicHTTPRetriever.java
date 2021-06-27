@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import sun.misc.IOUtils;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             }
             // get response
             try (InputStream is = http.getInputStream()) {
-                response_bytes = IOUtils.readAllBytes(is);
+                response_bytes = IOUtils.toByteArray(is);
                 response = new String(response_bytes, StandardCharsets.UTF_8);
             }
         } catch (IOException ioException) {
