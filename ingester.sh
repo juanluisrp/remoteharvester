@@ -10,7 +10,7 @@ port=9999
 harvesterId=$1
 
 
-processId=$(curl -X POST "http://$host:$port/api/startIngest" -H "Content-Type: application/json"  -d '{"longTermTag":"$harvesterId"}' | sed -n '/ *"processID": *"/ { s///; s/".*//; p; }')
+processId=$(curl -X POST "http://$host:$port/api/startIngest" -H "Content-Type: application/json"  -d "{\"longTermTag\":\"$harvesterId\"}" | sed -n '/ *"processID": *"/ { s///; s/".*//; p; }')
 
 while sleep 1; 
 do  
