@@ -25,8 +25,5 @@ public class CustomDBAppender extends ch.qos.logback.classic.db.DBAppender {
         pstmt.setLong(2, eventId);
 
         int affectedRows = pstmt.executeUpdate();
-
-        // correlationOnlyMap.put("JMSCorrelationID",mergedMap.get("JMSCorrelationID"));
-        // super.insertProperties(correlationOnlyMap,connection,eventId);
     }
 }

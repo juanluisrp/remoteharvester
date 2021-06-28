@@ -16,6 +16,5 @@ public class MyUnitOfWork extends MDCUnitOfWork {
         String correlationId = (String) exchange.getMessage().getHeader("JMSCorrelationID");
         if ((correlationId != null) && (!correlationId.isEmpty()))
             MDC.put("JMSCorrelationID", correlationId);
-
     }
 }
