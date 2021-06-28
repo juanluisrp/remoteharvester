@@ -88,7 +88,7 @@ public class CatalogueService {
                 metadata = new Metadata();
                 metadata.setUuid(metadataRecord.getRecordIdentifier());
                 metadata.setHarvestUuid(harvesterConfiguration.getUuid());
-                metadata.setSource(jobId);
+                metadata.setSource(harvesterConfiguration.getUuid());
                 metadata.setCreateDate(datetime.format(DATE_PATTERN));
 
                 // TODO: Set owner
