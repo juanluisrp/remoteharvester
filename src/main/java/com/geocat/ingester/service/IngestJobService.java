@@ -44,11 +44,14 @@ public class IngestJobService {
         return ingestJobRepo.save(job);
     }
 
-    public IngestJob updateIngestJobStateInDBIngestedRecords(String guid, long totalIngestedRecords, long totalIndexedRecords, long totalRecordsToProcess) {
+    public IngestJob updateIngestJobStateInDBIngestedRecords(String guid, long totalIngestedRecords,
+                                                             long totalIndexedRecords, long totalDeletedRecords,
+                                                             long totalRecordsToProcess) {
         IngestJob job = ingestJobRepo.findById(guid).get();
         job.setState(IngestJobState.INGESTING_RECORDS);
         job.setTotalIngestedRecords(totalIngestedRecords);
         job.setTotalIngestedRecords(totalIndexedRecords);
+        job.setTotalDeletedRecords(totalDeletedRecords);
         job.setTotalRecords(totalRecordsToProcess);
         return ingestJobRepo.save(job);
     }
@@ -64,6 +67,13 @@ public class IngestJobService {
         IngestJob job = ingestJobRepo.findById(guid).get();
         job.setState(IngestJobState.INDEXING_RECORDS);
         job.setTotalIndexedRecords(totalIngestedRecords);
+        return ingestJobRepo.save(job);
+    }
+
+    public IngestJob updateIngestJobStateInDBDeletedRecords(String guid, long totalDeletedRecords) {
+        IngestJob job = ingestJobRepo.findById(guid).get();
+        job.setState(IngestJobState.DELETING_RECORDS);
+        job.setTotalDeletedRecords(totalDeletedRecords);
         return ingestJobRepo.save(job);
     }
 
