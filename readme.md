@@ -3,8 +3,8 @@
 ## Intro
 
 This service provides functionality to extract records from remote Catalog Service for the Web (CSW) interfaces providing iso19139 records.
-Documents are stored in a PostGreSQL database. The history of previous harvest runs is persisted. You can set up a process to include record 
-from federated catalogues, which are linke to from records in the harvested catalogue.
+Documents are stored in a PostGreSQL database. The history of previous harvest runs is persisted. You can set up a process to include records 
+from federated catalogues, which are linked from records in the harvested catalogue.
 
 Development of this program was sponsored by the European Commission - Joint Research Centre (JRC) within Service 
 Contract NUMBER – 941143 – IPR – 2021 with subject matter "Facilitating a sustainable evolution and maintenance of 
@@ -24,9 +24,10 @@ Contact:
 
 ```
 curl    -X POST "http://localhost:9999/api/startHarvest" 
-		-H "Content-Type: application/json"  
+		-H "Content-Type: application/json"
         -d '{"url":"https://msdi.data.gov.mt/geonetwork/srv/eng/csw","longTermTag":"MT","lookForNestedDiscoveryService":false}'
 ```
+
 ### GET /api/getstatus/{ProcessID}
 
 ```
@@ -43,6 +44,7 @@ curl -x PUT "http://localhost:9999/api/abortprocess/aaa-bbb-ccc"
 ## Installation
 
 Deploy as a war on tomcat/jetty.
+Software requires ActiveMQ and PostGreSQL. 
 
 ## Configuration
 
