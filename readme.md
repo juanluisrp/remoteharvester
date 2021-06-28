@@ -18,26 +18,39 @@ Contact:
 
 ## Methods
 
-### POST /api/startharvest 
-	Body: url, longTermTag, lookForNestedDiscoveryService
-    Returns: ProcessID
+### POST /api/startharvest (url, longTermTag, [lookForNestedDiscoveryService])
+
+Triggers a harvest process (returns ProcessID).
 
 ```
-curl    -X POST "http://localhost:9999/api/startHarvest" 
-		-H "Content-Type: application/json"
-        -d '{"url":"https://msdi.data.gov.mt/geonetwork/srv/eng/csw","longTermTag":"MT","lookForNestedDiscoveryService":false}'
+curl
+  -X POST "http://localhost:9999/api/startHarvest" 
+  -H "Content-Type: application/json"
+  -d '{"url":"https://msdi.data.gov.mt/geonetwork/srv/eng/csw","longTermTag":"MT","lookForNestedDiscoveryService":false}'
 ```
 
 ### GET /api/getstatus/{ProcessID}
+
+Retrieves the status of a running process.
 
 ```
 curl "http://localhost:9999/api/getstatus/aaa-bbb-ccc"
 ```
 
-###  /api/abortprocess/{ProcessID}
+###  GET /api/getlog/{ProcessID}
+
+Retrieves the logs of a process.
 
 ```
-curl -x PUT "http://localhost:9999/api/abortprocess/aaa-bbb-ccc"
+curl "http://localhost:9999/api/getlog/aaa-bbb-ccc"
+```
+
+###  GET /api/abortprocess/{ProcessID}
+
+Aborts a running process.
+
+```
+curl "http://localhost:9999/api/abortprocess/aaa-bbb-ccc"
 ```
 
 
