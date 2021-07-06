@@ -1,7 +1,7 @@
 package net.geocat.xml;
 
-import net.geocat.xml.helpers.DownloadServiceType;
-import net.geocat.xml.helpers.DownloadServiceTypeProbe;
+import net.geocat.xml.helpers.CapabilitiesType;
+import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
@@ -11,19 +11,35 @@ import javax.xml.xpath.XPathExpressionException;
 @Component
 public class XmlDocumentFactory {
 
+//    @Autowired
+//    DownloadServiceTypeProbe downloadServiceTypeProbe;
+
     @Autowired
-    DownloadServiceTypeProbe downloadServiceTypeProbe;
+    CapabilityDeterminer capabilityDeterminer;
 
     public XmlDoc create(String xml) throws Exception {
         XmlDoc doc = new XmlDoc(xml);
         if (isCSWServiceMetadataDocument(doc))
         {
             XmlServiceRecordDoc xmlServiceRecordDoc =  new XmlServiceRecordDoc(doc);
-
-                return xmlServiceRecordDoc;
-
+            return xmlServiceRecordDoc;
+        }
+        if (isCapabilitiesDoc(doc)) {
+            CapabilitiesType type = capabilityDeterminer.determineCapabilitiesType(doc);
+            return XmlCapabilitiesDocument.create(doc,type);
         }
         return doc;
+    }
+
+    private boolean isCapabilitiesDoc(XmlDoc doc) {
+        try{
+             CapabilitiesType type = capabilityDeterminer.determineCapabilitiesType(doc);
+             return true;
+        }
+        catch (Exception e){
+            return false;
+        }
+
     }
 
     public boolean isCSWMetadataDocument(XmlDoc xmlDoc){

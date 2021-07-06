@@ -84,4 +84,19 @@ public class OnlineResource {
             function = functionNode.getTextContent();
     }
 
+    public String getOperationName() {
+        return operationName;
+    }
+
+    public String getRawURL() {
+        return rawURL;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getFunction() {
+        return function;
+    }
 }

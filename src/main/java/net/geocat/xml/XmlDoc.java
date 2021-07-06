@@ -26,6 +26,12 @@ public class XmlDoc {
     String originalXmlString;
     Document parsedXml;
 
+    String rootTagName;
+
+
+
+    String rootNS;
+
 
     public XmlDoc (String xml) throws  Exception {
         this(xml,parseXML(xml));
@@ -44,7 +50,8 @@ public class XmlDoc {
     }
 
     public void setup_XmlDoc() throws   Exception {
-      //  Node n = xpath_node("/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue");
+        rootTagName = parsedXml.getFirstChild().getLocalName();
+        rootNS = parsedXml.getFirstChild().getNamespaceURI();
      }
 
     //again, to be consistent
@@ -96,6 +103,14 @@ public class XmlDoc {
 
         nsCtx.bindNamespaceUri("gmx", "http://www.isotc211.org/2005/gmx");
         nsCtx.bindNamespaceUri("srv", "http://www.isotc211.org/2005/srv");
+
+        nsCtx.bindNamespaceUri("inspire_common", "http://inspire.ec.europa.eu/schemas/common/1.0");
+        nsCtx.bindNamespaceUri("inspire_vs", "http://inspire.ec.europa.eu/schemas/inspire_vs/1.0");
+        nsCtx.bindNamespaceUri("inspire_dls", "http://inspire.ec.europa.eu/schemas/inspire_dls/1.0");
+
+        nsCtx.bindNamespaceUri("atom", "http://www.w3.org/2005/Atom");
+
+
         return xpath;
     }
 
@@ -120,6 +135,13 @@ public class XmlDoc {
         return value;
     }
 
+    public static   String xpath_attribute( Node doc, String xpathStr, String attname) throws XPathExpressionException {
+        XPath xpath = createXPath();
+
+        String value = ((org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE)).getAttributes().getNamedItem(attname).getNodeValue();
+        return value;
+    }
+
     public  Node xpath_node( String xpathStr) throws XPathExpressionException {
         XPath xpath = createXPath();
 
@@ -140,4 +162,11 @@ public class XmlDoc {
         return fullName.substring(idx+1);
     }
 
+    public String getRootTagName() {
+        return rootTagName;
+    }
+
+    public String getRootNS() {
+        return rootNS;
+    }
 }

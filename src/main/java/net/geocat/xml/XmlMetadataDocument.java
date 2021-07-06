@@ -40,4 +40,19 @@ public class XmlMetadataDocument extends XmlDoc {
         connectPoints = OnlineResource.create(nl);
     }
 
+    public String getMetadataDocumentType() {
+        return metadataDocumentType;
+    }
+
+    public String getFileIdentifier() {
+        return fileIdentifier;
+    }
+
+    public List<OnlineResource> getTransferOptions() {
+        return transferOptions;
+    }
+
+    public List<OnlineResource> getConnectPoints() {
+        return connectPoints;
+    }
 }
