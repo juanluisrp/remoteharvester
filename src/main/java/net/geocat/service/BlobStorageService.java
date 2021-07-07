@@ -1,6 +1,6 @@
 package net.geocat.service;
 
-import net.geocat.database.repos.BlobStorageRepo;
+import net.geocat.database.harvester.repos.BlobStorageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

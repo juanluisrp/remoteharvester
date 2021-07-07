@@ -1,5 +1,7 @@
 package net.geocat.runner;
 
+import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.repos.LinkRepo;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.BlobStorageService;
 import net.geocat.xml.XmlDoc;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NodeList;
+
+import java.util.Optional;
 
 @Component
 public class MyCommandLineRunner implements CommandLineRunner {
@@ -28,8 +32,13 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Qualifier("cookieAttachingRetriever")
     IHTTPRetriever retriever;
 
+    @Autowired
+    LinkRepo linkRepo;
+
     @Override
     public void run(String...args) throws Exception {
+
+        //Optional<Link> l = linkRepo.findById(1L);
 
         String sha2_wms = "65B3FFA90B5B277B34C7206D0283B7CD1FE89AE473998A566239992C4A59A417";
         String sha2_wfs = "8759C3E02840BC5DE3F81B23F4AF1D124821384252AC018A0BDEB0386B76E663";
