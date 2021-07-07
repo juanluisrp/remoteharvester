@@ -13,7 +13,7 @@ public class CapabilityDeterminer {
         return determineType(ns.toLowerCase(),tag);
     }
 
-    private CapabilitiesType determineType(String ns, String rootTagName) throws Exception {
+    public CapabilitiesType determineType(String ns, String rootTagName) throws Exception {
         if (rootTagName.equals("WMS_Capabilities") && (ns.equals("http://www.opengis.net/wms")) )
             return CapabilitiesType.WMS;
         if (rootTagName.equals("Capabilities") && (ns.equals("http://www.opengis.net/wmts/1.0")) )

@@ -25,6 +25,16 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
     int TIMEOUT_MS = 2 * 60 * 1000;
 
+    int initialReadSize = 1000;
+
+
+    public boolean shouldReadMore(byte[] tinyBuffer, IContinueReadingPredicate predicate)
+    {
+        if (predicate == null)
+            return true;
+        return predicate.continueReading(tinyBuffer);
+    }
+
     /**
      * @param verb     GET or POST
      * @param location url
@@ -33,7 +43,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public String retrieveXML(String verb, String location, String body, String cookie) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
         if (body == null)
             body = "";
@@ -74,8 +84,16 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             }
             // get response
             try (InputStream is = http.getInputStream()) {
-                response_bytes = IOUtils.toByteArray(is);
-                response = new String(response_bytes, StandardCharsets.UTF_8);
+                byte[] tinyBuffer = new byte[initialReadSize];
+                int ntinyRead = IOUtils.read(is,tinyBuffer);
+                byte[] bigBuffer = new byte[0];
+                if (shouldReadMore(tinyBuffer,predicate)) {
+                   bigBuffer = IOUtils.toByteArray(is);
+                }
+                response_bytes = new byte[ntinyRead + bigBuffer.length];
+                System.arraycopy(tinyBuffer,0,response_bytes,0, ntinyRead);
+                System.arraycopy(bigBuffer,0,response_bytes,ntinyRead, bigBuffer.length);
+                int t=0;
             }
         } catch (IOException ioException) {
             List<String> cookies = http.getHeaderFields().get("Set-Cookie");
@@ -91,7 +109,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             throw new RedirectException("redirect requested", newUrl);
         }
         //logger.debug("      * FINISHED " + verb + " to " + location + " with body " + body.replace("\n", ""));
-        return response;
+        return response_bytes;
     }
 
 }

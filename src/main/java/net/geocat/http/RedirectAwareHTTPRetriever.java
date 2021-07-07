@@ -26,21 +26,21 @@ public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
 
 
     @Override
-    public String retrieveXML(String verb, String location, String body, String cookie)
+    public byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS);
+        return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS, predicate);
     }
 
 
-    protected String _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining)
+    protected byte[] _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
         try {
-            return retriever.retrieveXML(verb, location, body, cookie);
+            return retriever.retrieveXML(verb, location, body, cookie, predicate);
         } catch (RedirectException re) {
             if (nRedirectsRemaining <= 0)
                 throw new IOException("too many redirects!");
             logger.debug("     REDIRECTED TO location=" + re.getNewLocation());
-            return _retrieveXML(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--);
+            return _retrieveXML(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--,predicate);
         }
     }
 }

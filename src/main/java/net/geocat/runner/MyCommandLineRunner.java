@@ -47,7 +47,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         {
             XmlServiceRecordDoc xmlServiceRecord = (XmlServiceRecordDoc) xmlDoc;
             String capURL = xmlServiceRecord.getConnectPoints().get(0).getRawURL();
-            String capXML = retriever.retrieveXML("GET",capURL,null,null);
+            String capXML = new String(retriever.retrieveXML("GET",capURL,null,null,null));
             XmlDoc capXMLDoc = xmlDocumentFactory.create(capXML);
             int t=0;
         }
