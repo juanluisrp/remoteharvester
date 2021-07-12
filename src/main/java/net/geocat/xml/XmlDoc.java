@@ -59,6 +59,7 @@ public class XmlDoc {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
+       // factory.setIgnoringElementContentWhitespace(true);
         factory.setFeature("http://xml.org/sax/features/namespaces", true);
         factory.setFeature("http://xml.org/sax/features/validation", false);
         factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
@@ -81,8 +82,9 @@ public class XmlDoc {
 
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+       // transformer.setOutputProperty(OutputKeys.INDENT, "no");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
         StringWriter writer = new StringWriter();
 
@@ -138,7 +140,11 @@ public class XmlDoc {
     public static   String xpath_attribute( Node doc, String xpathStr, String attname) throws XPathExpressionException {
         XPath xpath = createXPath();
 
-        String value = ((org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE)).getAttributes().getNamedItem(attname).getNodeValue();
+        Node n  =(org.w3c.dom.Node) xpath.evaluate(xpathStr, doc, XPathConstants.NODE);
+        Node att = n.getAttributes().getNamedItem(attname);
+        if (att == null)
+            return null;
+        String value = att.getNodeValue();
         return value;
     }
 
@@ -168,5 +174,13 @@ public class XmlDoc {
 
     public String getRootNS() {
         return rootNS;
+    }
+
+    public String getOriginalXmlString() {
+        return originalXmlString;
+    }
+
+    public Document getParsedXml() {
+        return parsedXml;
     }
 }

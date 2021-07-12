@@ -1,6 +1,7 @@
 package net.geocat.http;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -23,7 +25,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
     Logger logger = LoggerFactory.getLogger(BasicHTTPRetriever.class);
 
-    int TIMEOUT_MS = 2 * 60 * 1000;
+    int TIMEOUT_MS = 2 * 1 * 1000;
 
     int initialReadSize = 1000;
 
@@ -43,7 +45,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
         if (body == null)
             body = "";
@@ -74,7 +76,15 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             http.setRequestProperty("Cookie", cookie);
 
         String response;
-        http.connect();
+        try {
+            http.connect();
+        }
+        catch (IOException ioException){
+           throw ioException;
+        }
+        boolean fullyRead = false;
+        int responseCode = -1;
+        String responseMIME = "";
         try {
             // send body
             if (body_bytes.length > 0) {
@@ -82,13 +92,15 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
                     os.write(body_bytes);
                 }
             }
+
             // get response
             try (InputStream is = http.getInputStream()) {
                 byte[] tinyBuffer = new byte[initialReadSize];
                 int ntinyRead = IOUtils.read(is,tinyBuffer);
                 byte[] bigBuffer = new byte[0];
                 if (shouldReadMore(tinyBuffer,predicate)) {
-                   bigBuffer = IOUtils.toByteArray(is);
+                    fullyRead=true;
+                    bigBuffer = IOUtils.toByteArray(is);
                 }
                 response_bytes = new byte[ntinyRead + bigBuffer.length];
                 System.arraycopy(tinyBuffer,0,response_bytes,0, ntinyRead);
@@ -97,10 +109,30 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             }
         } catch (IOException ioException) {
             List<String> cookies = http.getHeaderFields().get("Set-Cookie");
+            InputStream errorStream = http.getErrorStream();
+            byte[] errorBuffer = new byte[0];
+            if (errorStream !=null){
+                errorBuffer = new byte[initialReadSize];
+                int nRead = IOUtils.read(errorStream,errorBuffer);
+                if (nRead != initialReadSize){
+                    errorBuffer = Arrays.copyOf(errorBuffer,nRead);
+                }
+            }
+            HttpResult errorResult = new HttpResult(errorBuffer);
+            errorResult.setFullyRead(false);
+            errorResult.setErrorOccurred(true);
+            errorResult.setHttpCode(http.getResponseCode());
+            errorResult.setContentType(http.getHeaderField("Content-Type"));
             if ((cookies == null) || (cookies.isEmpty()))
-                throw ioException;
-            throw new ExceptionWithCookies(ioException.getMessage(), cookies.get(0), ioException);
+                errorResult.setCookie(cookie);
+            return errorResult;
+
+//            if ((cookies == null) || (cookies.isEmpty()))
+//                throw ioException;
+//            throw new ExceptionWithCookies(ioException.getMessage(), cookies.get(0), ioException);
         } finally {
+            responseCode = http.getResponseCode();
+            responseMIME = http.getHeaderField("Content-Type");
             http.disconnect();
         }
 
@@ -109,7 +141,11 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             throw new RedirectException("redirect requested", newUrl);
         }
         //logger.debug("      * FINISHED " + verb + " to " + location + " with body " + body.replace("\n", ""));
-        return response_bytes;
+        HttpResult result =  new HttpResult(response_bytes);
+        result.setFullyRead(fullyRead);
+        result.setHttpCode(responseCode);
+        result.setContentType(responseMIME);
+        return result;
     }
 
 }

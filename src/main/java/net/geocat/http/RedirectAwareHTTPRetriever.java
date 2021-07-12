@@ -26,13 +26,13 @@ public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
 
 
     @Override
-    public byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
+    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
         return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS, predicate);
     }
 
 
-    protected byte[] _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate)
+    protected HttpResult _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
         try {
             return retriever.retrieveXML(verb, location, body, cookie, predicate);

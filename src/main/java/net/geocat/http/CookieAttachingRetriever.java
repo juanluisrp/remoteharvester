@@ -24,12 +24,12 @@ public class CookieAttachingRetriever implements IHTTPRetriever {
     }
 
     @Override
-    public byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        try {
-            return retriever.retrieveXML(verb, location, body, cookie, predicate);
-        } catch (ExceptionWithCookies eCookie) {
-            logger.debug("   RETRYING WITH ATTACHED COOKIE:" + eCookie.cookie);
-            return retriever.retrieveXML(verb, location, body, eCookie.cookie, predicate);
-        }
+    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+
+            HttpResult result= retriever.retrieveXML(verb, location, body, cookie, predicate);
+            if (result.isErrorOccurred()) {
+                return retriever.retrieveXML(verb, location, body, result.getCookie(), predicate);
+            }
+            return result;
     }
 }

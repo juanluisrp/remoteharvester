@@ -58,12 +58,28 @@ public class XmlCapabilitiesDocument extends XmlDoc{
     }
 
     private void setup_extendedcap(Node n) throws Exception {
-        if (n !=null)
-            this.metadataUrlRaw = n.getTextContent();
+        if (n !=null){
+            Node nn =  XmlDoc.xpath_node(n,"./inspire_common:MetadataUrl/inspire_common:URL");
+            if (nn != null)
+                this.metadataUrlRaw = nn.getTextContent().trim();
+        }
     }
 
     private void setup_inspire_atom(Node n) throws Exception {
-        if (n !=null)
-            this.metadataUrlRaw = n.getTextContent();
+        if (n !=null) {
+            this.metadataUrlRaw = n.getTextContent().trim();
+        }
+    }
+
+    public boolean isHasExtendedCapabilities() {
+        return hasExtendedCapabilities;
+    }
+
+    public String getMetadataUrlRaw() {
+        return metadataUrlRaw;
+    }
+
+    public CapabilitiesType getCapabilitiesType() {
+        return capabilitiesType;
     }
 }

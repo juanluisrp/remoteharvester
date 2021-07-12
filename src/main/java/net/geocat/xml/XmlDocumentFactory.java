@@ -4,8 +4,11 @@ import net.geocat.xml.helpers.CapabilitiesType;
 import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathExpressionException;
 
 @Component
@@ -19,6 +22,7 @@ public class XmlDocumentFactory {
 
     public XmlDoc create(String xml) throws Exception {
         XmlDoc doc = new XmlDoc(xml);
+        doc = simplify(doc);
         if (isCSWServiceMetadataDocument(doc))
         {
             XmlServiceRecordDoc xmlServiceRecordDoc =  new XmlServiceRecordDoc(doc);
@@ -27,6 +31,21 @@ public class XmlDocumentFactory {
         if (isCapabilitiesDoc(doc)) {
             CapabilitiesType type = capabilityDeterminer.determineCapabilitiesType(doc);
             return XmlCapabilitiesDocument.create(doc,type);
+        }
+        return doc;
+    }
+
+    private XmlDoc simplify(XmlDoc doc) throws  Exception {
+        if (doc.getRootTagName() .equals("GetRecordByIdResponse")) {
+            Node n = doc.xpath_node("//gmd:MD_Metadata");
+            if (n == null) // likely an empty response...
+                return doc;
+            Document d = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder().newDocument();
+            Node nn = d.importNode(n,true);
+
+            d.appendChild(nn);
+            return new XmlDoc(doc.getOriginalXmlString(),d);
         }
         return doc;
     }

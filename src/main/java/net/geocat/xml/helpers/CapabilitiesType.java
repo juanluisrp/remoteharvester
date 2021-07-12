@@ -5,4 +5,5 @@ public enum CapabilitiesType {
     WFS, Atom,     // WCS, SOS,  -- not required
     CSW
 
+
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface IHTTPRetriever {
 
-    byte[] retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
+    HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException;
 
 }
