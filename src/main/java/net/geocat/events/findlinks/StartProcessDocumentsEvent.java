@@ -30,4 +30,9 @@ public class StartProcessDocumentsEvent extends Event {
     public void setHarvestJobId(String harvestJobId) {
         this.harvestJobId = harvestJobId;
     }
+
+    @Override
+    public String toString(){
+        return "StartProcessDocumentsEvent - linkCheckJobId:"+linkCheckJobId+", harvestJobId:"+harvestJobId;
+    }
 }

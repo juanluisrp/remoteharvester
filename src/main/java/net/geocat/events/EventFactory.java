@@ -1,6 +1,12 @@
 package net.geocat.events;
 
+import net.geocat.database.harvester.entities.MetadataRecord;
+import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.events.findlinks.LinksFoundInAllDocuments;
+import net.geocat.events.findlinks.MetadataDocumentProcessedEvent;
+import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
+import net.geocat.events.processlinks.ProcessLinkEvent;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -16,4 +22,24 @@ public class EventFactory {
         return result;
     }
 
+    public ProcessMetadataDocumentEvent createProcessMetadataDocumentEvent(String linkCheckJobId,String harvestJobId, long endpointJobId,String sha2) {
+        ProcessMetadataDocumentEvent result = new ProcessMetadataDocumentEvent( linkCheckJobId,harvestJobId,endpointJobId,  sha2);
+        return result;
+    }
+
+    public MetadataDocumentProcessedEvent createMetadataDocumentProcessedEvent(ProcessMetadataDocumentEvent e  ) {
+        MetadataDocumentProcessedEvent result = new MetadataDocumentProcessedEvent(
+                e.getLinkCheckJobId(), e.getHarvestJobId(), e.getEndpointJobId(), e.getSha2() );
+        return result;
+    }
+
+    public LinksFoundInAllDocuments createLinksFoundInAllDocuments(ProcessMetadataDocumentEvent initiatingEvent) {
+        LinksFoundInAllDocuments result = new LinksFoundInAllDocuments(initiatingEvent.getLinkCheckJobId(),initiatingEvent.getHarvestJobId());
+        return result;
+    }
+
+    public ProcessLinkEvent createProcessLinkEvent(Link l) {
+        ProcessLinkEvent result = new ProcessLinkEvent(l.getLinkId());
+        return result;
+    }
 }

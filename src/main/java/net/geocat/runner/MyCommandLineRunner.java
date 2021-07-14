@@ -101,7 +101,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 String sha2 = record.getSha2();
                 String xml = blobStorageService.findXML(sha2);
 
-                List<Link> links = serviceDocLinkExtractor.extractLinks(xml, sha2, endpointJob.getHarvestJobId(), endpointJob.getEndpointJobId());
+                List<Link> links = serviceDocLinkExtractor.extractLinks(
+                        xml, sha2, endpointJob.getHarvestJobId(), endpointJob.getEndpointJobId(),"testcase");
                 for (Link ll : links) {
                     try {
                         ll = linkProcessor_simpleLinkRequest.process(ll);

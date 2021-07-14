@@ -1,11 +1,13 @@
 package net.geocat.routes.queuebased;
 
+
 import net.geocat.eventprocessor.MainLoopRouteCreator;
 import net.geocat.eventprocessor.RedirectEvent;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.findlinks.MetadataDocumentProcessedEvent;
 import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
+import net.geocat.events.processlinks.ProcessLinkEvent;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,9 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class FindLinksOrchestrator extends SpringRouteBuilder {
-
-    public static String myJMSQueueName = "linkCheck.FindLinksOrchestrator";
+public class ProcessLinksOrchestrator extends SpringRouteBuilder {
+    public static String myJMSQueueName = "linkCheck.ProcessLinksOrchestrator";
 
     @Autowired
     MainLoopRouteCreator mainLoopRouteCreator;
@@ -25,11 +26,11 @@ public class FindLinksOrchestrator extends SpringRouteBuilder {
 
         mainLoopRouteCreator.createEventProcessingLoop(this,
                 "activemq:" + myJMSQueueName,
-                new Class[]{StartProcessDocumentsEvent.class, ProcessMetadataDocumentEvent.class, MetadataDocumentProcessedEvent.class},
+                new Class[]{ProcessLinkEvent.class},
                 Arrays.asList(
-                        new RedirectEvent(LinksFoundInAllDocuments.class, "activemq:" + MainOrchestrator.myJMSQueueName)
+                       // new RedirectEvent(LinksFoundInAllDocuments.class, "activemq:" + MainOrchestrator.myJMSQueueName)
                 ),
                 Arrays.asList(new Class[0])
         );
     }
-}
+ }

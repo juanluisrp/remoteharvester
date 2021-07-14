@@ -15,6 +15,9 @@ public interface MetadataRecordRepo extends CrudRepository<MetadataRecord, Long>
 
     List<MetadataRecord> findBySha2(String sha2);
 
+    List<MetadataRecord> findByEndpointJobIdIn(List<Long> endpointjobIds);
+
+
     List<MetadataRecord> findByEndpointJobId(long endpointjobId);
 
     MetadataRecord findByEndpointJobIdAndRecordNumber(long endpointjobId, int recordNumber);

@@ -1,4 +1,4 @@
-package net.geocat.database.linkchecker;
+package net.geocat.database.linkchecker.service;
 
 
 import net.geocat.database.linkchecker.entities.LinkCheckJob;

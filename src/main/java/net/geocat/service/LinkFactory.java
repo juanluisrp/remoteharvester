@@ -16,7 +16,8 @@ public class LinkFactory {
                        XmlServiceRecordDoc doc,
                        String sha2,
                        String harvestId,
-                       long endpointJobId)
+                       long endpointJobId,
+                       String linkCheckJobId)
     throws Exception{
             Link result = new Link();
 
@@ -31,6 +32,7 @@ public class LinkFactory {
                 result.setLinkProtocol(onlineResource.getProtocol());
                 result.setLinkOperationName(onlineResource.getOperationName());
                 result.setLinkFunction(onlineResource.getFunction());
+                result.setLinkCheckJobId(linkCheckJobId);
 
             return result;
     }

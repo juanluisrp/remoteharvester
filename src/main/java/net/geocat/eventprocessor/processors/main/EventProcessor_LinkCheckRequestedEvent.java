@@ -6,7 +6,7 @@ import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.LinkCheckRequestedEvent;
-import net.geocat.service.LinkCheckJobService;
+import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

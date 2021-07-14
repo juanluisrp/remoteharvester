@@ -1,17 +1,18 @@
-package net.geocat.events;
+package net.geocat.events.findlinks;
 
-public class LinkCheckRequestedEvent extends Event {
+import net.geocat.events.Event;
 
+public class LinksFoundInAllDocuments extends Event {
     private String linkCheckJobId;
     private String harvestJobId;
 
-    public LinkCheckRequestedEvent( ) {
+    public LinksFoundInAllDocuments(){}
+
+    public LinksFoundInAllDocuments(String linkCheckJobId, String harvestJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+        this.harvestJobId = harvestJobId;
     }
 
-    public LinkCheckRequestedEvent( String linkCheckJobId,String harvestJobId ){
-        this.harvestJobId = harvestJobId;
-        this.linkCheckJobId = linkCheckJobId;
-     }
 
     public String getLinkCheckJobId() {
         return linkCheckJobId;
@@ -29,9 +30,8 @@ public class LinkCheckRequestedEvent extends Event {
         this.harvestJobId = harvestJobId;
     }
 
-
     @Override
-    public String toString() {
-        return "LinkCheckRequestedEvent - linkCheckJobId:"+getLinkCheckJobId()+", harvestJobId:"+getHarvestJobId() ;
+    public String toString(){
+        return "LinksFoundInAllDocuments - linkCheckJobId:"+linkCheckJobId+", harvestJobId:"+harvestJobId;
     }
 }

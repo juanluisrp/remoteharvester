@@ -28,23 +28,25 @@ public class ServiceDocLinkExtractor {
     public List<Link> extractLinks(String xml,
                                    String sha2,
                                    String harvestId,
-                                   long endpointId) throws Exception {
+                                   long endpointId,
+                                   String linkCheckJobId) throws Exception {
         XmlDoc doc = xmlDocumentFactory.create(xml);
         if (doc instanceof XmlServiceRecordDoc)
-            return extractLinks((XmlServiceRecordDoc)doc,sha2,harvestId,endpointId);
+            return extractLinks((XmlServiceRecordDoc)doc,sha2,harvestId,endpointId,linkCheckJobId);
         throw new NotServiceRecordException("trying to extract links from a non-service record");
      }
 
     public List<Link> extractLinks(XmlServiceRecordDoc xml,
                                    String sha2,
                                    String harvestId,
-                                   long endpointId) throws Exception{
+                                   long endpointId,
+                                   String linkCheckJobId) throws Exception{
         List<Link> result = new ArrayList<>();
 
         List<OnlineResource> docLinks = removeDuplicates(xml.getConnectPoints(),xml.getTransferOptions());
 
         for(OnlineResource onlineResource: docLinks){
-            Link link = linkFactory.create(onlineResource,xml,sha2, harvestId, endpointId);
+            Link link = linkFactory.create(onlineResource,xml,sha2, harvestId, endpointId,linkCheckJobId);
             result.add(link);
         }
         return result;

@@ -22,6 +22,10 @@ public class Link {
     @Column(nullable = false,columnDefinition = "varchar(40)")
     private String HarvestJobId ;
 
+
+    @Column(nullable = false,columnDefinition = "varchar(40)")
+    private String linkCheckJobId ;
+
     //link to the particular endpoint the service record (link) came from
     @Column(nullable = false)
     private long EndpointJobId;
@@ -433,6 +437,14 @@ public class Link {
         ResolveServiceMetadataLinkException = resolveServiceMetadataLinkException;
     }
 
+    public String getLinkCheckJobId() {
+        return linkCheckJobId;
+    }
+
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
+
     @PreUpdate
     private void onUpdate() {
         this.summary = this.toString();
@@ -449,6 +461,7 @@ public class Link {
         String result = "Link (id="+getLinkId()+")\n";
         result += "     +  Harvest Job: "+getHarvestJobId() +"\n";
         result += "     +  Endpoint Job: "+getEndpointJobId() +"\n";
+        result += "     +  LinkCheck Job: "+getLinkCheckJobId() +"\n";
         result += "     +  SHA2 of Service record this link came from: "+getOriginatingServiceRecordSHA2() +"\n";
         result += "     +  File Identifier of Service record this link came from: "+getOriginatingServiceRecordFileIdentifier() +"\n";
         result += "     +  Service Type of Service record this link came from: "+getOriginatingServiceRecordServiceType() +"\n";

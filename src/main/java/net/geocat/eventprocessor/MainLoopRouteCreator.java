@@ -1,7 +1,7 @@
 package net.geocat.eventprocessor;
 
 
-import net.geocat.database.linkchecker.DatabaseUpdateService;
+import net.geocat.database.linkchecker.service.DatabaseUpdateService;
 import net.geocat.events.Event;
 import org.apache.camel.BeanScope;
 import org.apache.camel.Exchange;

@@ -23,10 +23,14 @@ public class XmlDocumentFactory {
     public XmlDoc create(String xml) throws Exception {
         XmlDoc doc = new XmlDoc(xml);
         doc = simplify(doc);
+
         if (isCSWServiceMetadataDocument(doc))
         {
             XmlServiceRecordDoc xmlServiceRecordDoc =  new XmlServiceRecordDoc(doc);
             return xmlServiceRecordDoc;
+        }
+        if (isCSWMetadataDocument(doc)){
+            doc = new XmlMetadataDocument(doc);
         }
         if (isCapabilitiesDoc(doc)) {
             CapabilitiesType type = capabilityDeterminer.determineCapabilitiesType(doc);
@@ -63,7 +67,6 @@ public class XmlDocumentFactory {
 
     public boolean isCSWMetadataDocument(XmlDoc xmlDoc){
         return  xmlDoc.parsedXml.getFirstChild().getLocalName().equals("MD_Metadata");
-
     }
 
     public boolean isCSWServiceMetadataDocument(XmlDoc xmlDoc) throws XPathExpressionException {
