@@ -1,0 +1,41 @@
+<configuration>
+    <!-- read in properties from spring configuration -->
+<!--     <property resource="application.properties" />-->
+<!--    <include resource="org/springframework/boot/logging/logback/base.xml"/>-->
+
+    <springProperty scope="context" name="spring.datasource.url" source="spring.datasource.url"/>
+    <springProperty scope="context" name="spring.datasource.username" source="spring.datasource.username"/>
+    <springProperty scope="context" name="spring.datasource.password" source="spring.datasource.password"/>
+    <springProperty scope="context" name="spring.datasource.driver-class-name" source="spring.datasource.driver-class-name"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%X{JMSCorrelationID}] [%-5level] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+<!--    <appender name="DB" class="geocat.dblogging.logback.CustomDBAppender">-->
+<!--        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">-->
+<!--            <driverClass>${spring.datasource.driver-class-name}</driverClass>-->
+<!--            <url>${spring.datasource.url}</url>-->
+<!--            <user>${spring.datasource.username}</user>-->
+<!--            <password>${spring.datasource.password}</password>-->
+<!--        </connectionSource>-->
+<!--    </appender>-->
+    <!--    <logger name="org.hibernate" level="ERROR" />-->
+    <!--    <logger name="com.zaxxer" level="ERROR" />-->
+    <!--    <logger name="org.springframework" level="INFO" />-->
+    <!--    <logger name="_org.springframework" level="INFO" />-->
+    <!--    <logger name="org.eclipse" level="ERROR" />-->
+
+    <!--    <logger name="org.apache" level="ERROR" />-->
+
+    <logger name="net.geocat" level="TRACE"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+<!--        <appender-ref ref="DB"/>-->
+    </root>
+</configuration>

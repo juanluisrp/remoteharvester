@@ -64,6 +64,11 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String...args) throws Exception {
 
+    }
+
+        public void run2(String...args) throws Exception {
+
+        logger.debug("hi there");
 //       HttpResult r= retriever.retrieveXML("GET","https://google.com/badurl", null, null,null);
 //    int ut=0;
 
@@ -80,11 +85,11 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //        EndpointJob endpointJob = endpointJobRepo.findById(metadataRecord.getEndpointJobId()).get();
 //        String xml = blobStorageService.findXML(sha2);
 
-        EndpointJob endpointJob = endpointJobRepo.findById(7L).get();
+        EndpointJob endpointJob = endpointJobRepo.findById(40L).get();
         List<MetadataRecord> records = metadataRecordRepo.findByEndpointJobId(endpointJob.getEndpointJobId());
 
        // records = records.subList(34,40);
-       records = Arrays.asList( new MetadataRecord[]{records.get(66)});
+     //  records = Arrays.asList( new MetadataRecord[]{records.get(66)});
       //records = Arrays.asList( new MetadataRecord[]{records.get(424),records.get(501),records.get(446),records.get(448)});
       //  records = Arrays.asList( new MetadataRecord[]{records.get(446),records.get(448)});
      // records = Arrays.asList( new MetadataRecord[]{records.get(33),records.get(37)});
