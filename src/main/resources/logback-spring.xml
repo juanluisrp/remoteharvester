@@ -16,14 +16,14 @@
     </appender>
 
 
-<!--    <appender name="DB" class="geocat.dblogging.logback.CustomDBAppender">-->
-<!--        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">-->
-<!--            <driverClass>${spring.datasource.driver-class-name}</driverClass>-->
-<!--            <url>${spring.datasource.url}</url>-->
-<!--            <user>${spring.datasource.username}</user>-->
-<!--            <password>${spring.datasource.password}</password>-->
-<!--        </connectionSource>-->
-<!--    </appender>-->
+    <appender name="DB" class="net.geocat.dblogging.logback.CustomDBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+            <driverClass>${spring.datasource.driver-class-name}</driverClass>
+            <url>${spring.datasource.url}</url>
+            <user>${spring.datasource.username}</user>
+            <password>${spring.datasource.password}</password>
+        </connectionSource>
+    </appender>
     <!--    <logger name="org.hibernate" level="ERROR" />-->
     <!--    <logger name="com.zaxxer" level="ERROR" />-->
     <!--    <logger name="org.springframework" level="INFO" />-->
@@ -36,6 +36,6 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
-<!--        <appender-ref ref="DB"/>-->
+        <appender-ref ref="DB"/>
     </root>
 </configuration>

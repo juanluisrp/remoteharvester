@@ -1,6 +1,7 @@
 package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities.LinkState;
 import net.geocat.xml.XmlServiceRecordDoc;
 import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class LinkFactory {
                 result.setLinkOperationName(onlineResource.getOperationName());
                 result.setLinkFunction(onlineResource.getFunction());
                 result.setLinkCheckJobId(linkCheckJobId);
+
+                result.setLinkState(LinkState.CREATED);
 
             return result;
     }

@@ -23,14 +23,14 @@ import javax.persistence.Table;
 @IdClass(LogbackLoggingEventPropertyCompositeKey.class)
 public class LogbackLoggingEventProperty {
 
-    @Column(columnDefinition = "bigint")
+    @Column(name="event_id",columnDefinition = "bigint")
     @Id
     private long eventId;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="mapped_key",columnDefinition = "varchar(254)")
     @Id
     private String mappedKey;
 
-    @Column(columnDefinition = "varchar(1024)")
+    @Column(name="mapped_value",columnDefinition = "varchar(1024)")
     private String mappedValue;
 }

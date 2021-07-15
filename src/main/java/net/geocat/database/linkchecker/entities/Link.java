@@ -105,6 +105,13 @@ public class Link {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
+    private LinkState  linkState;
+
+     @Column(columnDefinition = "text")
+    private   String  linkErrorMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
     private IndicatorStatus  Indicator_LinkResolves;
 
     @Enumerated(EnumType.STRING)
@@ -445,6 +452,24 @@ public class Link {
         this.linkCheckJobId = linkCheckJobId;
     }
 
+    public LinkState getLinkState() {
+        return linkState;
+    }
+
+    public void setLinkState(LinkState linkState) {
+        this.linkState = linkState;
+    }
+
+    public String getLinkErrorMessage() {
+        return linkErrorMessage;
+    }
+
+    public void setLinkErrorMessage(String linkErrorMessage) {
+        this.linkErrorMessage = linkErrorMessage;
+    }
+
+    //-----
+
     @PreUpdate
     private void onUpdate() {
         this.summary = this.toString();
@@ -468,6 +493,9 @@ public class Link {
         result += "     +  Protocol of Service record this link came from:  "+getOriginatingServiceRecordProtocolHint() +"\n";
         result += "     +  Original URL of Link: "+getRawLinkURL() +"\n";
         result += "     +  'Fixed' URL of Link: "+getFixedLinkURL() +"\n";
+        result += "     +  Link State: "+getLinkState() +"\n";
+        if (getLinkErrorMessage() !=null)
+            result += "     +  Link Error Message: "+getLinkErrorMessage() +"\n";
 
         result += "\n";
 

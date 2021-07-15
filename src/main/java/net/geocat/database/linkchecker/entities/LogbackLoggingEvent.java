@@ -12,7 +12,7 @@ import javax.persistence.*;
         indexes = {
                 @Index(
                         name = "logging_correlationid_idx",
-                        columnList = "jmsCorrelationId",
+                        columnList = "jms_correlation_id",
                         unique = false
                 )
         }
@@ -22,19 +22,19 @@ public class LogbackLoggingEvent {
     @Column(columnDefinition = "bigint")
     public long timestmp;
 
-    @Column(columnDefinition = "text")
+    @Column(name="formatted_message",columnDefinition = "text")
     public String formattedMessage;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="logger_name",columnDefinition = "varchar(254)")
     public String loggerName;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="level_string",columnDefinition = "varchar(254)")
     public String levelString;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="thread_name",columnDefinition = "varchar(254)")
     public String threadName;
 
-    @Column(columnDefinition = "smallint")
+    @Column(name="reference_flag",columnDefinition = "smallint")
     public short referenceFlag;
 
     @Column(columnDefinition = "varchar(254)")
@@ -46,25 +46,25 @@ public class LogbackLoggingEvent {
     @Column(columnDefinition = "varchar(254)")
     public String arg3;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="caller_filename",columnDefinition = "varchar(254)")
     public String callerFilename;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="caller_class",columnDefinition = "varchar(254)")
     public String callerClass;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="caller_method",columnDefinition = "varchar(254)")
     public String callerMethod;
 
-    @Column(columnDefinition = "char(4)")
+    @Column(name="caller_line",columnDefinition = "char(4)")
     public String callerLine;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name="jms_correlation_id",columnDefinition = "varchar(254)")
     public String jmsCorrelationId;
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
+    @Column(name="event_id",columnDefinition = "BIGINT")
     public long eventId;
 
 

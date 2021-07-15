@@ -14,8 +14,7 @@ import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.MetadataDocumentProcessedEvent;
-import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
+ import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
 import net.geocat.service.BlobStorageService;
 import net.geocat.service.LinkFactory;
@@ -90,6 +89,7 @@ public class EventProcessor_ProcessMetadataDocumentEvent extends BaseEventProces
         if (!(doc instanceof XmlMetadataDocument)) {
             // this shouldn't happen
             metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+            logger.debug("this shouldn't happen - not an XML Metadata records: sha2:"+sha2);
             return this;
         }
         XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
@@ -99,6 +99,7 @@ public class EventProcessor_ProcessMetadataDocumentEvent extends BaseEventProces
         if (!(doc instanceof XmlServiceRecordDoc)) {
             // ignore - not a service record
             metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+            logger.debug("not a service record -ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+xmlMetadataDocument.getMetadataDocumentType());
             return this;
         }
 
@@ -109,18 +110,24 @@ public class EventProcessor_ProcessMetadataDocumentEvent extends BaseEventProces
 
         if (serviceType == null){
             metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+            logger.debug("service record has no service type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier());
+
             return this;
         }
         if (!serviceType.equalsIgnoreCase("view")
                 && !serviceType.equalsIgnoreCase("download")
                 && !serviceType.equalsIgnoreCase("discovery") ){
             metadataDocumentService.setState(metadataDocument, MetadataDocumentState.NOT_APPLICABLE);
+            logger.debug("service record not an appropriate type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+serviceType);
+
             return this;
         }
 
         List<Link> links= serviceDocLinkExtractor.extractLinks(xmlServiceRecordDoc,sha2,harvestJobId,endpointJobId,linkCheckJob);
 
         linkRepo.saveAll(links);
+
+        logger.debug("extracted "+links.size()+" links from fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
 
         metadataDocument.setNumberOfLinksFound(links.size());
         metadataDocumentService.setState(metadataDocument , MetadataDocumentState.LINKS_EXTRACTED);

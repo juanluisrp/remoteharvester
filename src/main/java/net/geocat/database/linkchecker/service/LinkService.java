@@ -17,4 +17,11 @@ public class LinkService {
     public List<Link> findLinks(String linkCheckJobId) {
         return linkRepo.findByLinkCheckJobId(linkCheckJobId);
     }
+
+    public boolean complete(String linkCheckJobId) {
+        long nTotal = linkRepo.countByLinkCheckJobId(linkCheckJobId);
+        long nComplete = linkRepo.countCompletedState(linkCheckJobId);
+        return nTotal == nComplete;
+    }
+
 }

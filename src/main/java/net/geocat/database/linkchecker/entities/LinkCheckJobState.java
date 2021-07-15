@@ -7,5 +7,7 @@ public enum LinkCheckJobState {
 
     CHECKING_LINKS, LINKS_CHECKED,
 
+    COMPLETE,
+
     ERROR, USERABORT
 }
