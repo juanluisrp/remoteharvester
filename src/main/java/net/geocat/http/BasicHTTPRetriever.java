@@ -1,13 +1,13 @@
 package net.geocat.http;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +29,18 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
     int TIMEOUT_MS = 2 * 60 * 1000;
 
     int initialReadSize = 1000;
+
+
+    private static final HostnameVerifier TRUST_ALL_HOSTNAME_VERIFIER  = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session) {
+            return true; // always good
+        }
+    };
+
+
+
+
+
 
 
     public boolean shouldReadMore(byte[] tinyBuffer, IContinueReadingPredicate predicate)
@@ -58,11 +71,25 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
         logger.debug("      * " + verb + " to " + location + " with body " + body.replace("\n", ""));
 
+        boolean isHTTPs =  url.getProtocol().equalsIgnoreCase("HTTPS");
+
         byte[] body_bytes = body.getBytes(StandardCharsets.UTF_8);
         byte[] response_bytes;
 
         URLConnection con = url.openConnection();
         HttpURLConnection http = (HttpURLConnection) con;
+
+        VerifyingTrustingX509TrustManager verifyingTrustingX509TrustManager = null;
+
+        if (http instanceof HttpsURLConnection) {
+            HttpsURLConnection https = (HttpsURLConnection) http;
+            verifyingTrustingX509TrustManager = VerifyingTrustingX509TrustManagerFactory.createVerifyingTrustingX509TrustManager();
+            https.setSSLSocketFactory(
+                    VerifyingTrustingX509TrustManagerFactory.getIndiscriminateSSLSocketFactory(verifyingTrustingX509TrustManager));
+            https.setHostnameVerifier(TRUST_ALL_HOSTNAME_VERIFIER);
+        }
+
+
         http.setConnectTimeout(TIMEOUT_MS);
         http.setReadTimeout(TIMEOUT_MS);
         http.setRequestMethod(verb);
@@ -119,12 +146,31 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
                 }
             }
             HttpResult errorResult = new HttpResult(errorBuffer);
+            errorResult.setHTTPS(isHTTPs);
+            errorResult.setSslTrusted(true);
+            if (verifyingTrustingX509TrustManager != null) {
+                if (!verifyingTrustingX509TrustManager.clientTrusted || !verifyingTrustingX509TrustManager.serverTrusted) {
+                    String error = "";
+                    if (verifyingTrustingX509TrustManager.clientTrustedException !=null) {
+                        error += "CLIENT: "+ verifyingTrustingX509TrustManager.clientTrustedException.getClass().getSimpleName() +" -- " + verifyingTrustingX509TrustManager.clientTrustedException.getMessage() +"\n";
+                    }
+                    if (verifyingTrustingX509TrustManager.serverTrustedException !=null) {
+                        error += "SERVER: "+ verifyingTrustingX509TrustManager.serverTrustedException.getClass().getSimpleName() +" -- " + verifyingTrustingX509TrustManager.serverTrustedException.getMessage() +"\n";
+                    }
+                    errorResult.setSslUnTrustedReason(error);
+                    errorResult.setSslTrusted(false);
+
+                }
+            }
+            errorResult.setFinalURL(url.toString());
+            errorResult.setReceivedCookie(cookies);
+            errorResult.setSentCookie(cookie);
             errorResult.setFullyRead(false);
             errorResult.setErrorOccurred(true);
             errorResult.setHttpCode(http.getResponseCode());
             errorResult.setContentType(http.getHeaderField("Content-Type"));
             if ((cookies == null) || (cookies.isEmpty()))
-                errorResult.setCookie(cookie);
+                errorResult.setSpecialToSendCookie(cookie);
             return errorResult;
 
 //            if ((cookies == null) || (cookies.isEmpty()))
@@ -141,7 +187,27 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
             throw new RedirectException("redirect requested", newUrl);
         }
         //logger.debug("      * FINISHED " + verb + " to " + location + " with body " + body.replace("\n", ""));
+        List<String> cookies = http.getHeaderFields().get("Set-Cookie");
+
         HttpResult result =  new HttpResult(response_bytes);
+        result.setHTTPS(isHTTPs);
+        result.setSslTrusted(true);
+        if (verifyingTrustingX509TrustManager != null) {
+            if (!verifyingTrustingX509TrustManager.clientTrusted || !verifyingTrustingX509TrustManager.serverTrusted) {
+                String error = "";
+                if (verifyingTrustingX509TrustManager.clientTrustedException !=null) {
+                    error += "CLIENT: "+ verifyingTrustingX509TrustManager.clientTrustedException.getClass().getSimpleName() +" -- " + verifyingTrustingX509TrustManager.clientTrustedException.getMessage() +"\n";
+                }
+                if (verifyingTrustingX509TrustManager.serverTrustedException !=null) {
+                    error += "SERVER: "+ verifyingTrustingX509TrustManager.serverTrustedException.getClass().getSimpleName() +" -- " + verifyingTrustingX509TrustManager.serverTrustedException.getMessage() +"\n";
+                }
+                result.setSslUnTrustedReason(error);
+                result.setSslTrusted(false);
+            }
+        }
+        result.setReceivedCookie(cookies);
+        result.setSentCookie(cookie);
+        result.setFinalURL(url.toString());
         result.setFullyRead(fullyRead);
         result.setHttpCode(responseCode);
         result.setContentType(responseMIME);

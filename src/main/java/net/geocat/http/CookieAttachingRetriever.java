@@ -28,7 +28,7 @@ public class CookieAttachingRetriever implements IHTTPRetriever {
 
             HttpResult result= retriever.retrieveXML(verb, location, body, cookie, predicate);
             if (result.isErrorOccurred()) {
-                return retriever.retrieveXML(verb, location, body, result.getCookie(), predicate);
+                return retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
             }
             return result;
     }

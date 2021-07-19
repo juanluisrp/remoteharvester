@@ -55,6 +55,12 @@ public class LinkProcessor_SimpleLinkRequest implements  ILinkProcessor {
 
         link.setLinkHTTPStatusCode(data.getHttpCode());
         link.setLinkMIMEType(data.getContentType());
+        link.setActualLinkURL(data.getFinalURL());
+        link.setLinkIsHTTS(data.isHTTPS());
+        if (data.isHTTPS()) {
+            link.setLinkSSLTrustedByJava(data.isSslTrusted());
+            link.setLinkSSLUntrustedByJavaReason(data.getSslUnTrustedReason());
+        }
 
         byte[] headData = Arrays.copyOf(data.getData(),Math.min(1000,data.getData().length) );
         link.setLinkContentHead(headData);

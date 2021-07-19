@@ -63,7 +63,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String...args) throws Exception {
-
+//        HttpResult r = retriever.retrieveXML("GET","https://wms.mapama.gob.es/sig/Agua/PHC/MasasAguaSupL2021/wms.aspx",null,null,null);
+//        int t=9;
     }
 
         public void run2(String...args) throws Exception {

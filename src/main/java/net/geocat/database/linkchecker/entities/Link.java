@@ -67,6 +67,16 @@ public class Link {
     // (original link's URL)
     private String  RawLinkURL;
 
+    @Column(columnDefinition = "text")
+    // (actual URL - after redirects)
+    private String  actualLinkURL;
+
+    private Boolean linkIsHTTS;
+    private Boolean linkSSLTrustedByJava;
+
+    @Column(columnDefinition = "text")
+    private String linkSSLUntrustedByJavaReason;
+
 
     @Column(columnDefinition = "text")
     // i.e. connecttimeout
@@ -468,6 +478,38 @@ public class Link {
         this.linkErrorMessage = linkErrorMessage;
     }
 
+    public String getActualLinkURL() {
+        return actualLinkURL;
+    }
+
+    public void setActualLinkURL(String actualLinkURL) {
+        this.actualLinkURL = actualLinkURL;
+    }
+
+    public Boolean getLinkIsHTTS() {
+        return linkIsHTTS;
+    }
+
+    public void setLinkIsHTTS(Boolean linkIsHTTS) {
+        this.linkIsHTTS = linkIsHTTS;
+    }
+
+    public Boolean getLinkSSLTrustedByJava() {
+        return linkSSLTrustedByJava;
+    }
+
+    public void setLinkSSLTrustedByJava(Boolean linkSSLTrustedByJava) {
+        this.linkSSLTrustedByJava = linkSSLTrustedByJava;
+    }
+
+    public String getLinkSSLUntrustedByJavaReason() {
+        return linkSSLUntrustedByJavaReason;
+    }
+
+    public void setLinkSSLUntrustedByJavaReason(String linkSSLUntrustedByJavaReason) {
+        this.linkSSLUntrustedByJavaReason = linkSSLUntrustedByJavaReason;
+    }
+
     //-----
 
     @PreUpdate
@@ -493,6 +535,8 @@ public class Link {
         result += "     +  Protocol of Service record this link came from:  "+getOriginatingServiceRecordProtocolHint() +"\n";
         result += "     +  Original URL of Link: "+getRawLinkURL() +"\n";
         result += "     +  'Fixed' URL of Link: "+getFixedLinkURL() +"\n";
+        result += "     +  actual URL of Link (after redirects): "+getActualLinkURL() +"\n";
+
         result += "     +  Link State: "+getLinkState() +"\n";
         if (getLinkErrorMessage() !=null)
             result += "     +  Link Error Message: "+getLinkErrorMessage() +"\n";
@@ -501,6 +545,13 @@ public class Link {
 
         if (getLinkHTTPException() != null)
             result += "     +  URL threw exception: "+getLinkHTTPException() +"\n";
+
+        if (getLinkIsHTTS() != null)
+            result += "     +  link Is HTTPS: "+getLinkIsHTTS() +"\n";
+        if (getLinkSSLTrustedByJava() != null)
+            result += "     +  link SSL Trusted by java: "+getLinkSSLTrustedByJava() +"\n";
+        if (getLinkSSLUntrustedByJavaReason() != null)
+            result += "     +  Reason link ssl not trusted by Java: "+getLinkSSLUntrustedByJavaReason() +"\n";
 
         if (getLinkHTTPStatusCode() !=null)
              result += "     +  Status Code of HTTP request getting the link: "+getLinkHTTPStatusCode() +"\n";
