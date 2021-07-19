@@ -67,6 +67,7 @@ public class MetadataExploderService {
         Map<String, String> extraNamespaces = extractNamespace(xml_getRecords);
         for (int t = 0; t < metadataRecords.getLength(); t++) {
             Node metadataRecord = metadataRecords.item(t);
+            stripEmptyElements(metadataRecord);
             addNamespaces(metadataRecord, extraNamespaces);
             String xmlStr = writeXML(metadataRecord);
             String identifier = extractIdentifier(metadataRecord);
@@ -125,4 +126,20 @@ public class MetadataExploderService {
 
         return writer.getBuffer().toString();
     }
+
+    public static void stripEmptyElements(Node node)
+    {
+        NodeList children = node.getChildNodes();
+        for(int i = 0; i < children.getLength(); ++i) {
+            Node child = children.item(i);
+            if(child.getNodeType() == Node.TEXT_NODE) {
+                if (child.getTextContent().trim().length() == 0) {
+                    child.getParentNode().removeChild(child);
+                    i--;
+                }
+            }
+            stripEmptyElements(child);
+        }
+    }
+
 }

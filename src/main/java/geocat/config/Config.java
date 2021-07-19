@@ -72,10 +72,11 @@ public class Config {
     public ActiveMQComponent activemq(ActiveMQConnectionFactory connectionFactory) {
 
         PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(connectionFactory);
-        pooledConnectionFactory.setMaxConnections(50);
+        pooledConnectionFactory.setMaxConnections(100);
 
          JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
         jmsTransactionManager.setConnectionFactory(pooledConnectionFactory);
+        jmsTransactionManager.setFailEarlyOnGlobalRollbackOnly(true);
 
         ActiveMQComponent activeMQComponent = new ActiveMQComponent();
         activeMQComponent.setConnectionFactory(pooledConnectionFactory);

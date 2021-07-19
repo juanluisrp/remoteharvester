@@ -81,7 +81,7 @@ public class GetRecordsResponseEvaluator {
                                      RecordSet recordSet,
                                      ProblematicResultsConfiguration problematicResultsConfiguration) throws Exception {
         if (recordSet.isLastSet()) {
-            if (info.getNextRecordNumber() == 0)
+            if ((info.getNextRecordNumber() ==null) || (info.getNextRecordNumber() == 0))
                 return; //all good
 
             if (problematicResultsConfiguration.errorIfLastRecordIsNotZero())
@@ -92,7 +92,7 @@ public class GetRecordsResponseEvaluator {
 
         //not the last record set
         int computedNextRecord = recordSet.getStartRecordNumber() + info.getNrecords();
-        if ((info.getNextRecordNumber() != computedNextRecord) && (problematicResultsConfiguration.errorIfNextRecordComputedWrong())) {
+        if ((info.getNextRecordNumber() != null) && (info.getNextRecordNumber() != computedNextRecord) && (problematicResultsConfiguration.errorIfNextRecordComputedWrong())) {
             throw new Exception("GetRecord response - computed NextRecord != received NextRecordNumber - " + computedNextRecord + " != " + info.getNextRecordNumber());
         }
     }

@@ -9,7 +9,7 @@ public class GetRecordsResponseInfo {
     CSWGetRecordsHandler cswGetRecordsHandler;
 
     int nrecords;  // number of records returned in GetRecords document
-    int nextRecordNumber;  // CSW reported next record number
+    Integer nextRecordNumber;  // CSW reported next record number
     int totalExpectedResults; // total number of records that the GetRecords document reports
 
     Document xmlParsed;
@@ -39,11 +39,11 @@ public class GetRecordsResponseInfo {
         this.nrecords = nrecords;
     }
 
-    public int getNextRecordNumber() {
+    public Integer getNextRecordNumber() {
         return nextRecordNumber;
     }
 
-    public void setNextRecordNumber(int nextRecordNumber) {
+    public void setNextRecordNumber(Integer nextRecordNumber) {
         this.nextRecordNumber = nextRecordNumber;
     }
 

@@ -25,14 +25,19 @@ public class CSWGetRecordsHandler {
         return Integer.parseInt(nrecordsString);
     }
 
-    public int extractNextRecordNumber(String getRecordsResponseXML) throws Exception {
+    public Integer extractNextRecordNumber(String getRecordsResponseXML) throws Exception {
         Document doc = XMLTools.parseXML(getRecordsResponseXML);
         return extractNextRecordNumber(doc);
     }
 
-    public int extractNextRecordNumber(Document getRecordsResponseXML) throws Exception {
-        String nextRecordString = XMLTools.xpath_attribute(getRecordsResponseXML, "/GetRecordsResponse/SearchResults", "nextRecord");
-        return Integer.parseInt(nextRecordString);
+    public Integer extractNextRecordNumber(Document getRecordsResponseXML) throws Exception {
+        try {
+            String nextRecordString = XMLTools.xpath_attribute(getRecordsResponseXML, "/GetRecordsResponse/SearchResults", "nextRecord");
+            return Integer.parseInt(nextRecordString);
+        }
+        catch(Exception e){
+            return null; // this can happen if there's no "nextRecord" in the response...
+        }
     }
 
 //    //this is MUCH faster than parsing the xml
