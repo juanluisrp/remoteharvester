@@ -33,6 +33,8 @@
     <!--    <logger name="org.apache" level="ERROR" />-->
 
     <logger name="net.geocat" level="TRACE"/>
+<!--    <logger name="org.hibernate.type" level="TRACE"/>-->
+
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

@@ -1,21 +1,17 @@
 package net.geocat.eventprocessor.processors.findlinks;
 
 
-import net.geocat.database.harvester.entities.EndpointJob;
-import net.geocat.database.harvester.entities.MetadataRecord;
-import net.geocat.database.harvester.repos.BlobStorageRepo;
-import net.geocat.database.linkchecker.entities.Link;
-import net.geocat.database.linkchecker.entities.MetadataDocument;
-import net.geocat.database.linkchecker.entities.MetadataDocumentState;
-import net.geocat.database.linkchecker.repos.LinkRepo;
-import net.geocat.database.linkchecker.repos.MetadataDocumentRepo;
+import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.entities2.MetadataDocument;
+import net.geocat.database.linkchecker.entities2.MetadataDocumentState;
+import net.geocat.database.linkchecker.repos2.LinkRepo;
+import net.geocat.database.linkchecker.repos2.MetadataDocumentRepo;
 import net.geocat.database.linkchecker.service.MetadataDocumentService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
  import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
-import net.geocat.events.findlinks.StartProcessDocumentsEvent;
 import net.geocat.service.BlobStorageService;
 import net.geocat.service.LinkFactory;
 import net.geocat.service.ServiceDocLinkExtractor;
@@ -31,8 +27,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -80,57 +74,57 @@ public class EventProcessor_ProcessMetadataDocumentEvent extends BaseEventProces
 
     @Override
     public EventProcessor_ProcessMetadataDocumentEvent internalProcessing() throws Exception {
-        String sha2 = getInitiatingEvent().getSha2();
-        long endpointJobId = getInitiatingEvent().getEndpointJobId();
-        String harvestJobId = getInitiatingEvent().getHarvestJobId();
-        String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
-
-        MetadataDocument metadataDocument = metadataDocumentService.find(linkCheckJob,sha2);
-        if (!(doc instanceof XmlMetadataDocument)) {
-            // this shouldn't happen
-            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
-            logger.debug("this shouldn't happen - not an XML Metadata records: sha2:"+sha2);
-            return this;
-        }
-        XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
-        metadataDocument.setMetadataRecordType(xmlMetadataDocument.getMetadataDocumentType());
-        metadataDocument.setRecordIdentifier(xmlMetadataDocument.getFileIdentifier());
-
-        if (!(doc instanceof XmlServiceRecordDoc)) {
-            // ignore - not a service record
-            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
-            logger.debug("not a service record -ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+xmlMetadataDocument.getMetadataDocumentType());
-            return this;
-        }
-
-        XmlServiceRecordDoc xmlServiceRecordDoc = (XmlServiceRecordDoc) doc;
-
-        String serviceType = xmlServiceRecordDoc.getServiceType();
-        metadataDocument.setMetadataServiceType(serviceType);
-
-        if (serviceType == null){
-            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
-            logger.debug("service record has no service type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier());
-
-            return this;
-        }
-        if (!serviceType.equalsIgnoreCase("view")
-                && !serviceType.equalsIgnoreCase("download")
-                && !serviceType.equalsIgnoreCase("discovery") ){
-            metadataDocumentService.setState(metadataDocument, MetadataDocumentState.NOT_APPLICABLE);
-            logger.debug("service record not an appropriate type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+serviceType);
-
-            return this;
-        }
-
-        List<Link> links= serviceDocLinkExtractor.extractLinks(xmlServiceRecordDoc,sha2,harvestJobId,endpointJobId,linkCheckJob);
-
-        linkRepo.saveAll(links);
-
-        logger.debug("extracted "+links.size()+" links from fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
-
-        metadataDocument.setNumberOfLinksFound(links.size());
-        metadataDocumentService.setState(metadataDocument , MetadataDocumentState.LINKS_EXTRACTED);
+//        String sha2 = getInitiatingEvent().getSha2();
+//        long endpointJobId = getInitiatingEvent().getEndpointJobId();
+//        String harvestJobId = getInitiatingEvent().getHarvestJobId();
+//        String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
+//
+//        MetadataDocument metadataDocument = metadataDocumentService.find(linkCheckJob,sha2);
+//        if (!(doc instanceof XmlMetadataDocument)) {
+//            // this shouldn't happen
+//            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+//            logger.debug("this shouldn't happen - not an XML Metadata records: sha2:"+sha2);
+//            return this;
+//        }
+//        XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
+//        metadataDocument.setMetadataRecordType(xmlMetadataDocument.getMetadataDocumentType());
+//        metadataDocument.setRecordIdentifier(xmlMetadataDocument.getFileIdentifier());
+//
+//        if (!(doc instanceof XmlServiceRecordDoc)) {
+//            // ignore - not a service record
+//            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+//            logger.debug("not a service record -ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+xmlMetadataDocument.getMetadataDocumentType());
+//            return this;
+//        }
+//
+//        XmlServiceRecordDoc xmlServiceRecordDoc = (XmlServiceRecordDoc) doc;
+//
+//        String serviceType = xmlServiceRecordDoc.getServiceType();
+//        metadataDocument.setMetadataServiceType(serviceType);
+//
+//        if (serviceType == null){
+//            metadataDocumentService.setState(metadataDocument , MetadataDocumentState.NOT_APPLICABLE);
+//            logger.debug("service record has no service type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier());
+//
+//            return this;
+//        }
+//        if (!serviceType.equalsIgnoreCase("view")
+//                && !serviceType.equalsIgnoreCase("download")
+//                && !serviceType.equalsIgnoreCase("discovery") ){
+//            metadataDocumentService.setState(metadataDocument, MetadataDocumentState.NOT_APPLICABLE);
+//            logger.debug("service record not an appropriate type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+serviceType);
+//
+//            return this;
+//        }
+//
+//        List<Link> links= serviceDocLinkExtractor.extractLinks(xmlServiceRecordDoc,sha2,harvestJobId,endpointJobId,linkCheckJob);
+//
+//        linkRepo.saveAll(links);
+//
+//        logger.debug("extracted "+links.size()+" links from fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
+//
+//        metadataDocument.setNumberOfLinksFound(links.size());
+//        metadataDocumentService.setState(metadataDocument , MetadataDocumentState.LINKS_EXTRACTED);
         return this;
     }
 

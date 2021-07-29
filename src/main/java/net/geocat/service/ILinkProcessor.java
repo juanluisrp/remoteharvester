@@ -1,6 +1,6 @@
 package net.geocat.service;
 
-import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities2.Link;
 
 public interface ILinkProcessor {
 

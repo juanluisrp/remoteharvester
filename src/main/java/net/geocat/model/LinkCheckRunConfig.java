@@ -2,8 +2,7 @@ package net.geocat.model;
 
 import net.geocat.database.harvester.entities.HarvestJob;
 import net.geocat.database.harvester.repos.HarvestJobRepo;
-import net.geocat.database.linkchecker.entities.LinkCheckJob;
-import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos2.LinkCheckJobRepo;
 
 import java.util.Optional;
 

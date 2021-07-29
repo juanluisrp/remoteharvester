@@ -1,21 +1,17 @@
 package net.geocat.service;
 
-import net.geocat.database.linkchecker.entities.IndicatorStatus;
-import net.geocat.database.linkchecker.entities.Link;
-import net.geocat.database.linkchecker.repos.LinkRepo;
-import net.geocat.http.ExceptionWithCookies;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.http.HttpResult;
 import net.geocat.http.IHTTPRetriever;
-import net.geocat.http.RedirectException;
 import net.geocat.xml.XmlDoc;
-import net.geocat.xml.helpers.CapabilitiesContinueReadingPredicate;
+import net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate;
 import net.geocat.xml.helpers.CapabilitiesType;
 import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 @Component
@@ -34,8 +30,8 @@ public class LinkProcessor_SimpleLinkRequest implements  ILinkProcessor {
     @Autowired
     BlobStorageService blobStorageService;
 
-    @Autowired
-    LinkRepo linkRepo;
+//    @Autowired
+//    LinkRepo linkRepo;
 
     public Link process(Link link) throws  Exception {
         HttpResult data = null;

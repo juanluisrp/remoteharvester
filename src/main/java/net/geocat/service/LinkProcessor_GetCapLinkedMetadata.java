@@ -1,15 +1,15 @@
 package net.geocat.service;
 
 
-import net.geocat.database.linkchecker.entities.IndicatorStatus;
-import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.http.HttpResult;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlMetadataDocument;
 import net.geocat.xml.XmlServiceRecordDoc;
-import net.geocat.xml.helpers.CapabilitiesContinueReadingPredicate;
+import net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -20,12 +20,6 @@ import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
 import org.xmlunit.diff.Difference;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 

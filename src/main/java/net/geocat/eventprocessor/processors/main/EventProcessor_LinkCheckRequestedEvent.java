@@ -1,7 +1,7 @@
 package net.geocat.eventprocessor.processors.main;
 
-import net.geocat.database.linkchecker.entities.LinkCheckJob;
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities2.LinkCheckJob;
+import net.geocat.database.linkchecker.entities2.LinkCheckJobState;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;

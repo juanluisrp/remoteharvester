@@ -1,7 +1,7 @@
 package net.geocat.events;
 
 import net.geocat.database.harvester.repos.HarvestJobRepo;
-import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos2.LinkCheckJobRepo;
 import net.geocat.model.LinkCheckRunConfig;
 import org.apache.camel.Message;
 import org.springframework.beans.factory.annotation.Autowired;

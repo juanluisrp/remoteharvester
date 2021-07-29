@@ -1,8 +1,8 @@
 package net.geocat.dblogging.service;
 
 
-import net.geocat.database.linkchecker.entities.LogbackLoggingEvent;
-import net.geocat.database.linkchecker.entities.LogbackLoggingEventException;
+import net.geocat.database.linkchecker.entities.helper.LogbackLoggingEvent;
+import net.geocat.database.linkchecker.entities.helper.LogbackLoggingEventException;
 import net.geocat.database.linkchecker.repos.LogbackLoggingEventExceptionRepo;
 import net.geocat.database.linkchecker.repos.LogbackLoggingEventRepo;
 import org.springframework.beans.factory.annotation.Autowired;

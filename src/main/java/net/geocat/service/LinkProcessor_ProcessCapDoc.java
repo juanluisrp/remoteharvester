@@ -1,9 +1,8 @@
 package net.geocat.service;
 
-import net.geocat.database.linkchecker.entities.IndicatorStatus;
-import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.xml.XmlCapabilitiesDocument;
-import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -3,6 +3,7 @@ package net.geocat.xml;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +21,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 public class XmlDoc {
 
@@ -112,6 +115,9 @@ public class XmlDoc {
 
         nsCtx.bindNamespaceUri("atom", "http://www.w3.org/2005/Atom");
 
+        nsCtx.bindNamespaceUri("wms", "http://www.opengis.net/wms");
+
+
 
         return xpath;
     }
@@ -167,6 +173,37 @@ public class XmlDoc {
             return fullName;
         return fullName.substring(idx+1);
     }
+
+    public String computeSHA2(XmlDoc doc) throws Exception {
+        Document d = doc.getParsedXml();
+        //stripEmptyElements(d);  //this modifies document
+        String s = XmlDoc.writeXML(d);
+        String sha2 = computeSHA2(s);
+        return sha2;
+    }
+
+    public String computeSHA2(String xml) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(xml.getBytes(StandardCharsets.UTF_8));
+        String hexHash = javax.xml.bind.DatatypeConverter.printHexBinary(hash);
+        return hexHash;
+    }
+
+    public static void stripEmptyElements(Node node)
+    {
+        NodeList children = node.getChildNodes();
+        for(int i = 0; i < children.getLength(); ++i) {
+            Node child = children.item(i);
+            if(child.getNodeType() == Node.TEXT_NODE) {
+                if (child.getTextContent().trim().length() == 0) {
+                    child.getParentNode().removeChild(child);
+                    i--;
+                }
+            }
+            stripEmptyElements(child);
+        }
+    }
+
 
     public String getRootTagName() {
         return rootTagName;

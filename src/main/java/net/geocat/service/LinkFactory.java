@@ -1,7 +1,8 @@
 package net.geocat.service;
 
-import net.geocat.database.linkchecker.entities.Link;
-import net.geocat.database.linkchecker.entities.LinkState;
+import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.entities2.LinkState;
+import net.geocat.service.capabilities.CapabilitiesLinkFixer;
 import net.geocat.xml.XmlServiceRecordDoc;
 import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.beans.factory.annotation.Autowired;

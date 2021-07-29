@@ -1,7 +1,6 @@
 package net.geocat.events;
 
-import net.geocat.database.harvester.entities.MetadataRecord;
-import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
  import net.geocat.events.findlinks.ProcessMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;

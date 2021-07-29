@@ -18,7 +18,7 @@ public class XmlDocumentFactory {
 //    DownloadServiceTypeProbe downloadServiceTypeProbe;
 
     @Autowired
-    CapabilityDeterminer capabilityDeterminer;
+    public CapabilityDeterminer capabilityDeterminer;
 
     public XmlDoc create(String xml) throws Exception {
         XmlDoc doc = new XmlDoc(xml);
@@ -31,7 +31,13 @@ public class XmlDocumentFactory {
         }
         if (isCSWMetadataDocument(doc)){
             doc = new XmlMetadataDocument(doc);
-        }
+            XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
+            if (xmlMetadataDocument.getMetadataDocumentType().equals("dataset")) {
+                XmlDatasetMetadataDocument xmlDatasetMetadataDocument = new XmlDatasetMetadataDocument(xmlMetadataDocument);
+                return xmlDatasetMetadataDocument;
+            }
+            return xmlMetadataDocument;
+         }
         if (isCapabilitiesDoc(doc)) {
             CapabilitiesType type = capabilityDeterminer.determineCapabilitiesType(doc);
             return XmlCapabilitiesDocument.create(doc,type);

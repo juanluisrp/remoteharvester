@@ -1,11 +1,8 @@
 package net.geocat.simple;
 
-import junit.framework.Assert;
-import net.geocat.xml.helpers.CapabilitiesContinueReadingPredicate;
+import net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate;
 import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.junit.Test;
-
-import java.nio.charset.StandardCharsets;
 
 import static junit.framework.TestCase.*;
 

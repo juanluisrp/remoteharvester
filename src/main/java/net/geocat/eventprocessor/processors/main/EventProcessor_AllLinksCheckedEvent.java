@@ -1,12 +1,11 @@
 package net.geocat.eventprocessor.processors.main;
 
 
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities2.LinkCheckJobState;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.processlinks.AllLinksCheckedEvent;
-import net.geocat.events.processlinks.ProcessLinkEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

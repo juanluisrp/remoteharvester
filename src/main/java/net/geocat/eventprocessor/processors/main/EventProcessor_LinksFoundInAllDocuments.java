@@ -1,14 +1,12 @@
 package net.geocat.eventprocessor.processors.main;
 
-import net.geocat.database.linkchecker.entities.Link;
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.entities2.LinkCheckJobState;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.LinkService;
-import net.geocat.database.linkchecker.service.MetadataDocumentService;
 import net.geocat.eventprocessor.BaseEventProcessor;
  import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.LinkCheckRequestedEvent;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.processlinks.ProcessLinkEvent;
 import org.slf4j.Logger;
@@ -52,6 +50,7 @@ public class EventProcessor_LinksFoundInAllDocuments extends BaseEventProcessor<
     @Override
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
+        linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.CHECKING_LINKS);
 
         List<Link> links = linkService.findLinks(getInitiatingEvent().getLinkCheckJobId());
         for(Link link : links){

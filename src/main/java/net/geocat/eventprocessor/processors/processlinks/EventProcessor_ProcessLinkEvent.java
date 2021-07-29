@@ -1,17 +1,15 @@
 package net.geocat.eventprocessor.processors.processlinks;
 
 
-import net.geocat.database.linkchecker.entities.Link;
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
-import net.geocat.database.linkchecker.entities.LinkState;
-import net.geocat.database.linkchecker.repos.LinkRepo;
+import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.entities2.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities2.LinkState;
+import net.geocat.database.linkchecker.repos2.LinkRepo;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.LinkService;
 import net.geocat.eventprocessor.BaseEventProcessor;
-import net.geocat.eventprocessor.processors.main.EventProcessor_LinksFoundInAllDocuments;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.processlinks.ProcessLinkEvent;
 import net.geocat.service.LinkProcessor_GetCapLinkedMetadata;
 import net.geocat.service.LinkProcessor_ProcessCapDoc;
@@ -61,29 +59,29 @@ public class EventProcessor_ProcessLinkEvent extends BaseEventProcessor<ProcessL
     @Override
     public EventProcessor_ProcessLinkEvent internalProcessing() throws Exception {
 
-        Link link = linkRepo.findById(this.getInitiatingEvent().getLinkId()).get();
-        link.setLinkState(LinkState.IN_PROGRESS);
-        linkRepo.save(link);
-        try {
-
-            link = linkProcessor_simpleLinkRequest.process(link);
-            linkRepo.save(link);
-
-            link = linkProcessor_processCapDoc.process(link);
-            linkRepo.save(link);
-
-            link = linkProcessor_getCapLinkedMetadata.process(link);
-
-            link.setLinkState(LinkState.COMPLETE);
-            linkRepo.save(link);
-        }
-        catch (Exception e){
-            link.setLinkState(LinkState.ERROR);
-            link.setLinkErrorMessage(e.getMessage());
-            linkRepo.save(link);
-            logger.error("error occurred processing link "+link.getLinkId(), e);
-            throw e;
-        }
+//        Link link = linkRepo.findById(this.getInitiatingEvent().getLinkId()).get();
+//        link.setLinkState(LinkState.IN_PROGRESS);
+//        linkRepo.save(link);
+//        try {
+//
+//            link = linkProcessor_simpleLinkRequest.process(link);
+//            linkRepo.save(link);
+//
+//            link = linkProcessor_processCapDoc.process(link);
+//            linkRepo.save(link);
+//
+//            link = linkProcessor_getCapLinkedMetadata.process(link);
+//
+//            link.setLinkState(LinkState.COMPLETE);
+//            linkRepo.save(link);
+//        }
+//        catch (Exception e){
+//            link.setLinkState(LinkState.ERROR);
+//            link.setLinkErrorMessage(e.getMessage());
+//            linkRepo.save(link);
+//            logger.error("error occurred processing link "+link.getLinkId(), e);
+//            throw e;
+//        }
 
          return this;
     }

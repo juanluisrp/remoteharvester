@@ -1,8 +1,8 @@
 package net.geocat.database.linkchecker.service;
 
 
-import net.geocat.database.linkchecker.entities.LinkCheckJob;
-import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.entities2.LinkCheckJob;
+import net.geocat.database.linkchecker.repos2.LinkCheckJobRepo;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -66,22 +64,22 @@ public class DatabaseUpdateService {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     //synchronized so other threads cannot update while we are writing...
     public synchronized void errorOccurred(Exchange exchange) {
-        Exception e = (Exception) exchange.getMessage().getHeader("exception");
-        if (e == null)
-            return;
-        String processId = (String) exchange.getMessage().getHeader("processID");
-        Optional<LinkCheckJob> _job = linkCheckJobRepo.findById(processId);
-        if (!_job.isPresent())
-            return; // cannot update database.  Likely DB issue or very very early exception
-        LinkCheckJob job = _job.get();
-        if (job.getMessages() == null)
-            job.setMessages("");
-        String thisMessage = "\n--------------------------------------\n";
-        thisMessage += "WHEN:" + Instant.now().toString() + "\n\n";
-        thisMessage += convertToString(e);
-        thisMessage += "\n--------------------------------------\n";
-        job.setMessages(job.getMessages() + thisMessage);
-        LinkCheckJob j2 = linkCheckJobRepo.save(job);
+//        Exception e = (Exception) exchange.getMessage().getHeader("exception");
+//        if (e == null)
+//            return;
+//        String processId = (String) exchange.getMessage().getHeader("processID");
+//        Optional<LinkCheckJob> _job = linkCheckJobRepo.findById(processId);
+//        if (!_job.isPresent())
+//            return; // cannot update database.  Likely DB issue or very very early exception
+//        LinkCheckJob job = _job.get();
+//        if (job.getMessages() == null)
+//            job.setMessages("");
+//        String thisMessage = "\n--------------------------------------\n";
+//        thisMessage += "WHEN:" + Instant.now().toString() + "\n\n";
+//        thisMessage += convertToString(e);
+//        thisMessage += "\n--------------------------------------\n";
+//        job.setMessages(job.getMessages() + thisMessage);
+//        LinkCheckJob j2 = linkCheckJobRepo.save(job);
     }
 
 

@@ -1,9 +1,8 @@
 package net.geocat.database.linkchecker.service;
 
-import net.geocat.database.harvester.repos.MetadataRecordRepo;
-import net.geocat.database.linkchecker.entities.MetadataDocument;
-import net.geocat.database.linkchecker.entities.MetadataDocumentState;
-import net.geocat.database.linkchecker.repos.MetadataDocumentRepo;
+import net.geocat.database.linkchecker.entities2.MetadataDocument;
+import net.geocat.database.linkchecker.entities2.MetadataDocumentState;
+import net.geocat.database.linkchecker.repos2.MetadataDocumentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,15 +15,16 @@ public class MetadataDocumentService {
     public MetadataDocumentRepo metadataDocumentRepo;
 
     public MetadataDocument create(String linkCheckJobId, String sha2, Long harvesterMetadataRecordId){
-        MetadataDocument doc = metadataDocumentRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId,sha2);
-        if (doc != null)
-            return doc;
-        doc = new MetadataDocument();
-        doc.setLinkCheckJobId(linkCheckJobId);
-        doc.setSha2(sha2);
-        doc.setHarvesterMetadataRecordId(harvesterMetadataRecordId);
-        doc.setState(MetadataDocumentState.IN_PROGRESS);
-        return metadataDocumentRepo.save(doc);
+//        MetadataDocument doc = metadataDocumentRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId,sha2);
+//        if (doc != null)
+//            return doc;
+//        doc = new MetadataDocument();
+//        doc.setLinkCheckJobId(linkCheckJobId);
+//        doc.setSha2(sha2);
+//        doc.setHarvesterMetadataRecordId(harvesterMetadataRecordId);
+//        doc.setState(MetadataDocumentState.IN_PROGRESS);
+//        return metadataDocumentRepo.save(doc);
+        return null;
     }
 
     public MetadataDocument find(String linkCheckJobId, String sha2)
@@ -40,9 +40,10 @@ public class MetadataDocumentService {
 //    }
 
     public MetadataDocument setState(MetadataDocument doc, MetadataDocumentState state){
-       // MetadataDocument doc = metadataDocumentRepo.findById(metadataDocumentId).get();
-        doc.setState(state);
-        return metadataDocumentRepo.save(doc);
+//       // MetadataDocument doc = metadataDocumentRepo.findById(metadataDocumentId).get();
+//        doc.setState(state);
+//        return metadataDocumentRepo.save(doc);
+        return null;
     }
 
     public boolean complete(String linkCheckJobId) {

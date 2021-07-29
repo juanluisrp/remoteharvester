@@ -1,7 +1,7 @@
 package net.geocat.service;
 
 
-import net.geocat.database.linkchecker.entities.Link;
+import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.service.helper.NotServiceRecordException;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
@@ -10,7 +10,6 @@ import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,6 +49,13 @@ public class ServiceDocLinkExtractor {
             result.add(link);
         }
         return result;
+    }
+
+
+    public List<OnlineResource> extractOnlineResource(XmlServiceRecordDoc xml) throws Exception{
+
+        List<OnlineResource> docLinks = removeDuplicates(xml.getConnectPoints(),xml.getTransferOptions());
+        return docLinks;
     }
 
     public boolean badURL(String rawUrl)  {

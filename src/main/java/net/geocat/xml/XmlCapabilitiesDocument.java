@@ -1,15 +1,20 @@
 package net.geocat.xml;
 
+import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.util.List;
 
 public class XmlCapabilitiesDocument extends XmlDoc{
 
     boolean hasExtendedCapabilities;
     String metadataUrlRaw;
     CapabilitiesType capabilitiesType;
+
+    List<DatasetLink> datasetLinksList;
+
 
     public static XmlCapabilitiesDocument create(XmlDoc doc, CapabilitiesType type) throws Exception {
         switch (type){
@@ -59,7 +64,7 @@ public class XmlCapabilitiesDocument extends XmlDoc{
 
     private void setup_extendedcap(Node n) throws Exception {
         if (n !=null){
-            Node nn =  XmlDoc.xpath_node(n,"./inspire_common:MetadataUrl/inspire_common:URL");
+            Node nn =  XmlDoc.xpath_node(n,"//inspire_common:MetadataUrl/inspire_common:URL");
             if (nn != null)
                 this.metadataUrlRaw = nn.getTextContent().trim();
         }
@@ -81,5 +86,25 @@ public class XmlCapabilitiesDocument extends XmlDoc{
 
     public CapabilitiesType getCapabilitiesType() {
         return capabilitiesType;
+    }
+
+    public void setHasExtendedCapabilities(boolean hasExtendedCapabilities) {
+        this.hasExtendedCapabilities = hasExtendedCapabilities;
+    }
+
+    public void setMetadataUrlRaw(String metadataUrlRaw) {
+        this.metadataUrlRaw = metadataUrlRaw;
+    }
+
+    public void setCapabilitiesType(CapabilitiesType capabilitiesType) {
+        this.capabilitiesType = capabilitiesType;
+    }
+
+    public List<DatasetLink> getDatasetLinksList() {
+        return datasetLinksList;
+    }
+
+    public void setDatasetLinksList(List<DatasetLink> datasetLinksList) {
+        this.datasetLinksList = datasetLinksList;
     }
 }

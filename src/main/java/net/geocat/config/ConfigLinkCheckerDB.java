@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @EnableJpaRepositories(
         entityManagerFactoryRef = "entityManagerFactory",
-        basePackages = { "net.geocat.database.linkchecker.repos" }
+        basePackages = {"net.geocat.database.linkchecker.repos"}
 )
 public class ConfigLinkCheckerDB {
 
