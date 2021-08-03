@@ -1,3 +1,36 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.database.linkchecker.entities2;
 
 import javax.persistence.*;
@@ -5,37 +38,27 @@ import javax.persistence.*;
 @Entity
 public class MetadataDocument {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long metadataDocumentId;
-
-    @Column(columnDefinition = "varchar(40)")
-    private String linkCheckJobId;
-
-    @Column(columnDefinition = "varchar(64)")
-    private String sha2;
-
-    @Column(columnDefinition = "text")
-    private String recordIdentifier;
-
-
-    private long harvesterMetadataRecordId;
-
-    @Column(columnDefinition = "text" )
-    //i.e. service/dataset
-    private String metadataRecordType;
-
-    @Column(columnDefinition = "text" )
-    //i.e. view/download/discovery
-    private String metadataServiceType;
-
-    private Integer numberOfLinksFound;
-    private Integer numberOfOperatesOnFound;
-
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
     MetadataDocumentState state;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long metadataDocumentId;
+    @Column(columnDefinition = "varchar(40)")
+    private String linkCheckJobId;
+    @Column(columnDefinition = "varchar(64)")
+    private String sha2;
+    @Column(columnDefinition = "text")
+    private String recordIdentifier;
+    private long harvesterMetadataRecordId;
+    @Column(columnDefinition = "text")
+    //i.e. service/dataset
+    private String metadataRecordType;
+    @Column(columnDefinition = "text")
+    //i.e. view/download/discovery
+    private String metadataServiceType;
+    private Integer numberOfLinksFound;
+    private Integer numberOfOperatesOnFound;
 
     public long getMetadataDocumentId() {
         return metadataDocumentId;
@@ -119,21 +142,21 @@ public class MetadataDocument {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         String result = "MetadataDocument {\n";
-        result+= "     metadataDocumentId:"+metadataDocumentId+"\n";
-        result+= "     linkCheckJobId:"+linkCheckJobId+"\n";
-        result+= "     sha2:"+sha2+"\n";
-        result+= "     harvesterMetadataRecordId:"+harvesterMetadataRecordId+"\n";
-        result+= "     state:"+state+"\n";
+        result += "     metadataDocumentId:" + metadataDocumentId + "\n";
+        result += "     linkCheckJobId:" + linkCheckJobId + "\n";
+        result += "     sha2:" + sha2 + "\n";
+        result += "     harvesterMetadataRecordId:" + harvesterMetadataRecordId + "\n";
+        result += "     state:" + state + "\n";
 
-        result+= "     recordIdentifier:"+recordIdentifier+"\n";
-        result+= "     metadataRecordType:"+metadataRecordType+"\n";
-        result+= "     metadataServiceType:"+metadataServiceType+"\n";
+        result += "     recordIdentifier:" + recordIdentifier + "\n";
+        result += "     metadataRecordType:" + metadataRecordType + "\n";
+        result += "     metadataServiceType:" + metadataServiceType + "\n";
         if (numberOfLinksFound != null)
-            result+= "     numberOfLinksFound:"+numberOfLinksFound+"\n";
+            result += "     numberOfLinksFound:" + numberOfLinksFound + "\n";
         if (numberOfOperatesOnFound != null)
-            result+= "     numberOfOperatesOnFound:"+numberOfOperatesOnFound+"\n";
+            result += "     numberOfOperatesOnFound:" + numberOfOperatesOnFound + "\n";
 
         result += "}";
         return result;

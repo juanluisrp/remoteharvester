@@ -1,3 +1,36 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.runner;
 
 import net.geocat.database.harvester.entities.MetadataRecord;
@@ -10,10 +43,8 @@ import net.geocat.database.linkchecker.service.ServiceDocumentLinkService;
 import net.geocat.database.linkchecker.service.ServiceMetadataRecordService;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
-import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlServiceRecordDoc;
-import net.geocat.xml.helpers.OnlineResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +55,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MyCommandLineRunner implements CommandLineRunner {
-    private static final Logger logger =    LoggerFactory.getLogger(MyCommandLineRunner.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyCommandLineRunner.class);
 
 
     @Autowired
@@ -101,8 +131,84 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     RetrieveCapabilitiesDatasetMetadataLink retrieveCapabilitiesDatasetMetadataLink;
 
+
+    public String getHumanReadable(LocalServiceMetadataRecord serviceMetadataRecord) {
+        String result = "Summary of LocalServiceMetadataRecord\n";
+        result += "----------------------------------------------\n\n";
+        result += serviceMetadataRecord.toString() + "\n";
+        result += "----------------------------------------------\n\n";
+        result += "There are " + serviceMetadataRecord.getNumberOfLinksFound() + " links in the service document:\n\n";
+
+        for (int idx = 0; idx < serviceMetadataRecord.getNumberOfLinksFound(); idx++) {
+            ServiceDocumentLink link = serviceMetadataRecord.getServiceDocumentLinks().get(idx);
+            result += "Link #" + idx + "\n";
+            result += "--------\n\n";
+            result += link.toString() + "\n\n";
+            if (link.getCapabilitiesDocument() != null) {
+                CapabilitiesDocument capabilitiesDocument = link.getCapabilitiesDocument();
+                result += "\nCAPABILITIES DOCUMENT\n";
+                result += "---------------------\n\n";
+                result += capabilitiesDocument.toString() + "\n\n";
+                if (capabilitiesDocument.getRemoteServiceMetadataRecordLink() != null) {
+                    RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink = capabilitiesDocument.getRemoteServiceMetadataRecordLink();
+                    result += "Capabilities Document link to Service Record\n";
+                    result += "--------------------------------------------\n\n";
+                    result += remoteServiceMetadataRecordLink.toString() + "\n\n";
+                    if (remoteServiceMetadataRecordLink.getRemoteServiceMetadataRecord() != null) {
+                        RemoteServiceMetadataRecord remoteServiceMetadataRecord = remoteServiceMetadataRecordLink.getRemoteServiceMetadataRecord();
+                        result += "Capabilities Document Service Record\n";
+                        result += "------------------------------------\n\n";
+                        result += remoteServiceMetadataRecord.toString() + "\n\n";
+
+                    }
+                }
+                if (!capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList().isEmpty()) {
+                    result += "Capabilities Document links to Datasets\n";
+                    result += "--------------------------------------------\n\n";
+                    List<CapabilitiesDatasetMetadataLink> list = capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList();
+                    for (int idx2 = 0; idx2 < list.size(); idx2++) {
+                        CapabilitiesDatasetMetadataLink link2 = list.get(idx2);
+                        result += "Capabilities document Link #" + idx2 + " to dataset MD\n";
+                        result += "------------------------------------------------\n\n";
+                        result += link2.toString() + "\n\n";
+                        if (link2.getCapabilitiesRemoteDatasetMetadataDocument() != null) {
+                            CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument = link2.getCapabilitiesRemoteDatasetMetadataDocument();
+                            result += "Capabilities Document Dataset MD Record\n";
+                            result += "----------------------------------------\n\n";
+                            result += capabilitiesRemoteDatasetMetadataDocument.toString() + "\n\n";
+                        }
+                    }
+                }
+            }
+        }
+
+        result += "\n\n";
+        result += "=================================================\n\n";
+        result += "There are " + serviceMetadataRecord.getNumberOfOperatesOnFound() + " OperatesOn links in the service document:\n\n";
+
+        for (int idx = 0; idx < serviceMetadataRecord.getNumberOfOperatesOnFound(); idx++) {
+            OperatesOnLink link = serviceMetadataRecord.getOperatesOnLinks().get(idx);
+            result += "OperatesOn Link #" + idx + "\n";
+            result += "-------------------\n\n";
+            result += link.toString() + "\n\n";
+            if (link.getDatasetMetadataRecord() != null) {
+                OperatesOnRemoteDatasetMetadataRecord operatesOnRemoteDatasetMetadataRecord = link.getDatasetMetadataRecord();
+                result += "OperatesOn Dataset MD Record\n";
+                result += "----------------------------------------\n\n";
+                result += operatesOnRemoteDatasetMetadataRecord.toString() + "\n\n";
+            }
+        }
+        result += "=================================================\n\n";
+
+        return result;
+    }
+
     @Override
-    public void run(String...args) throws Exception {
+    public void run(String... args) throws Exception {
+        // run3(args);
+    }
+
+    public void run3(String... args) throws Exception {
         String sha2_wmts = "49D36EFBA4B7A2541D31E44FC9557A8BEB0A7E275F1F22AAA00EEE953C41FF70";
 
         String sha2_atom = "76ABB39998E3EF07307059CC3B703A3959A48447DB98203FBF686856E0C6D4E3";
@@ -115,14 +221,14 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
         String sha2 = "0E75379A7CA9984B6AEFDEBCFA5AC92A0FE1D3BB47F2D1919BC318F49A7AB91C";
 
-         MetadataRecord metadataRecord = metadataRecordRepo.findBySha2(sha2).get(0);
+        MetadataRecord metadataRecord = metadataRecordRepo.findBySha2(sha2).get(0);
         String xml = blobStorageService.findXML(sha2);
 
 
         XmlServiceRecordDoc doc = (XmlServiceRecordDoc) xmlDocumentFactory.create(xml);
 
         LocalServiceMetadataRecord localServiceMetadataRecord =
-                metadataDocumentFactory.createLocalServiceMetadataRecord(doc,metadataRecord.getMetadataRecordId(),"TESTCASE",sha2);
+                metadataDocumentFactory.createLocalServiceMetadataRecord(doc, metadataRecord.getMetadataRecordId(), "TESTCASE", sha2);
 
 //        List<OnlineResource> links = serviceDocLinkExtractor.extractOnlineResource(doc);
 //
@@ -133,72 +239,73 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //                                .map(x->operatesOnLinkService.create(localServiceMetadataRecord,x))
 //                .collect(Collectors.toList());
 //
-    //    localServiceMetadataRecord.setOperatesOnLinks(operatesOnLinks);
+        //    localServiceMetadataRecord.setOperatesOnLinks(operatesOnLinks);
 
         LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(1L).get();
         CapabilitiesDocument cd = sm11.getServiceDocumentLinks().get(1).getCapabilitiesDocument();
         RemoteServiceMetadataRecordLink cd_rsmrl = cd.getRemoteServiceMetadataRecord();
         String ss = cd_rsmrl.toString();
-        List<OperatesOnLink> ll =  sm11.getOperatesOnLinks();
+        List<OperatesOnLink> ll = sm11.getOperatesOnLinks();
         int t6t = ll.size();
+        String human = getHumanReadable(sm11);
 
-        LocalServiceMetadataRecord smr =   localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
+        LocalServiceMetadataRecord smr = localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
 
-        List<LocalServiceMetadataRecord> list = Arrays.asList(new LocalServiceMetadataRecord[] {smr} );
-        for(LocalServiceMetadataRecord record : list){
+        List<LocalServiceMetadataRecord> list = Arrays.asList(new LocalServiceMetadataRecord[]{smr});
+        for (LocalServiceMetadataRecord record : list) {
 
             List<RemoteServiceMetadataRecordLink> remoteLinks = new ArrayList<>();
             List<CapabilitiesDatasetMetadataLink> capabilitiesDatasetMetadataLinkList = new ArrayList<>();
 
             //process servicedocumentlinks
-            for (ServiceDocumentLink link: record.getServiceDocumentLinks()){
+            for (ServiceDocumentLink link : record.getServiceDocumentLinks()) {
                 link = serviceDocumentLinkRepo.findById(link.getServiceMetadataLinkId()).get();// make sure we re-load
                 ServiceDocumentLink link2 = retrieveServiceDocumentLink.process(link);
                 link2 = serviceDocumentLinkRepo.save(link2); //re-save
-                if (link2.getCapabilitiesDocument() !=null) {
+                if (link2.getCapabilitiesDocument() != null) {
                     CapabilitiesDocument capabilitiesDocument = link2.getCapabilitiesDocument();
                     RemoteServiceMetadataRecordLink rsmrl = capabilitiesDocument.getRemoteServiceMetadataRecord();
                     if (rsmrl != null) {
                         remoteLinks.add(rsmrl);
                     }
-                    for(CapabilitiesDatasetMetadataLink capabilitiesDatasetMetadataLink: capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList()){
+                    for (CapabilitiesDatasetMetadataLink capabilitiesDatasetMetadataLink : capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList()) {
                         capabilitiesDatasetMetadataLinkList.add(capabilitiesDatasetMetadataLink);
                     }
                 }
-                int t=0;
+                int t = 0;
             }
 
             //process resulting remoteMetadataRecordLinks
-            for (RemoteServiceMetadataRecordLink link: remoteLinks){
+            for (RemoteServiceMetadataRecordLink link : remoteLinks) {
                 RemoteServiceMetadataRecordLink link2 = remoteServiceMetadataRecordLinkRepo.findById(link.getRemoteServiceMetadataRecordLinkId()).get();
-             //   CapabilitiesDocument cd = link2.getCapabilitiesDocument();
+                //   CapabilitiesDocument cd = link2.getCapabilitiesDocument();
                 RemoteServiceMetadataRecordLink rsmrl = remoteServiceMetadataRecordLinkRetriever.process(link2);
                 RemoteServiceMetadataRecordLink rsmrl2 = remoteServiceMetadataRecordLinkRepo.save(rsmrl);
-                int t=0;
+                int t = 0;
             }
 
             //process resulting capabilities doc dataset links
-            for (CapabilitiesDatasetMetadataLink link: capabilitiesDatasetMetadataLinkList){
+            for (CapabilitiesDatasetMetadataLink link : capabilitiesDatasetMetadataLinkList) {
                 CapabilitiesDatasetMetadataLink link2 = capabilitiesDatasetMetadataLinkRepo.findById(link.getCapabilitiesDatasetMetadataLinkId()).get();
                 //   CapabilitiesDocument cd = link2.getCapabilitiesDocument();
                 CapabilitiesDatasetMetadataLink cdml = retrieveCapabilitiesDatasetMetadataLink.process(link2);
                 CapabilitiesDatasetMetadataLink cdml2 = capabilitiesDatasetMetadataLinkRepo.save(cdml);
-                int t=0;
+                int t = 0;
             }
 
 
-            for(OperatesOnLink operatesOnLink : record.getOperatesOnLinks()) {
+            for (OperatesOnLink operatesOnLink : record.getOperatesOnLinks()) {
                 operatesOnLink = operatesOnLinkRepo.findById(operatesOnLink.getOperatesOnLinkId()).get(); //reload
                 OperatesOnLink operatesOnLink2 = retrieveOperatesOnLink.process(operatesOnLink);
                 operatesOnLink2 = operatesOnLinkRepo.save(operatesOnLink2);
-                int tt=0;
+                int tt = 0;
             }
         }
 
-        int t=0;
+        int t = 0;
     }
 
-        public void run2(String...args) throws Exception {
+    public void run2(String... args) throws Exception {
 
         logger.debug("hi there");
 //       HttpResult r= retriever.retrieveXML("GET","https://google.com/badurl", null, null,null);
@@ -220,11 +327,11 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //        EndpointJob endpointJob = endpointJobRepo.findById(40L).get();
 //        List<MetadataRecord> records = metadataRecordRepo.findByEndpointJobId(endpointJob.getEndpointJobId());
 
-       // records = records.subList(34,40);
-     //  records = Arrays.asList( new MetadataRecord[]{records.get(66)});
-      //records = Arrays.asList( new MetadataRecord[]{records.get(424),records.get(501),records.get(446),records.get(448)});
-      //  records = Arrays.asList( new MetadataRecord[]{records.get(446),records.get(448)});
-     // records = Arrays.asList( new MetadataRecord[]{records.get(33),records.get(37)});
+        // records = records.subList(34,40);
+        //  records = Arrays.asList( new MetadataRecord[]{records.get(66)});
+        //records = Arrays.asList( new MetadataRecord[]{records.get(424),records.get(501),records.get(446),records.get(448)});
+        //  records = Arrays.asList( new MetadataRecord[]{records.get(446),records.get(448)});
+        // records = Arrays.asList( new MetadataRecord[]{records.get(33),records.get(37)});
 
         // MetadataRecord record = records.get(6);
 

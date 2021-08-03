@@ -1,3 +1,36 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.database.harvester.entities;
 
 import javax.persistence.*;
@@ -9,32 +42,32 @@ import java.time.ZonedDateTime;
 @Table(name = "harvest_job")
 public class HarvestJob {
 
-    @Column(name="initial_url")
+    @Column(name = "initial_url")
     public String initialUrl;
 
-    @Column(name="nrecords_per_request")
+    @Column(name = "nrecords_per_request")
     int nrecordsPerRequest;
 
-    @Column(name="get_record_queue_hint")
+    @Column(name = "get_record_queue_hint")
     String getRecordQueueHint;
-    @Column(name="create_time_utc", columnDefinition = "timestamp with time zone")
+    @Column(name = "create_time_utc", columnDefinition = "timestamp with time zone")
     ZonedDateTime createTimeUTC;
-    @Column(name="last_update_utc",columnDefinition = "timestamp with time zone")
+    @Column(name = "last_update_utc", columnDefinition = "timestamp with time zone")
     ZonedDateTime lastUpdateUTC;
     @Id
-    @Column(name="job_id",columnDefinition = "varchar(40)")
+    @Column(name = "job_id", columnDefinition = "varchar(40)")
     private String jobId;
-    @Column(name="message",columnDefinition = "text")
+    @Column(name = "message", columnDefinition = "text")
     private String messages;
-    @Column(name="long_term_tag")
+    @Column(name = "long_term_tag")
     private String longTermTag;
-    @Column(name="look_for_nested_discovery_service")
+    @Column(name = "look_for_nested_discovery_service")
     private boolean lookForNestedDiscoveryService;
     @Column(columnDefinition = "text")
     private String filter;
     @Enumerated(EnumType.STRING)
     private HarvestJobState state;
-    @Column(name="problematic_results_configuration_json",columnDefinition = "text")
+    @Column(name = "problematic_results_configuration_json", columnDefinition = "text")
     private String problematicResultsConfigurationJSON;
 
     @PrePersist

@@ -1,3 +1,36 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.database.linkchecker.service;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
@@ -35,14 +68,14 @@ public class CapabilitiesDocumentService {
     @Autowired
     CapabilitiesDatasetMetadataLinkService capabilitiesDatasetMetadataLinkService;
 
-    public CapabilitiesDocument create(ServiceDocumentLink link ) throws Exception {
+    public CapabilitiesDocument create(ServiceDocumentLink link) throws Exception {
         String xmlStr = new String(link.getFullData());
         XmlCapabilitiesDocument xml = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlStr);
 
-        xmlStr =  XmlDoc.writeXML(xml.getParsedXml());
-        String sha2= xml.computeSHA2(xmlStr);
+        xmlStr = XmlDoc.writeXML(xml.getParsedXml());
+        String sha2 = xml.computeSHA2(xmlStr);
 
-        linkCheckBlobStorageService.ensureBlobExists(xmlStr,sha2); //write
+        linkCheckBlobStorageService.ensureBlobExists(xmlStr, sha2); //write
 
         CapabilitiesDocument doc = new CapabilitiesDocument();
         doc.setSha2(sha2);
@@ -50,28 +83,26 @@ public class CapabilitiesDocumentService {
         doc.setCapabilitiesDocumentType(xml.getCapabilitiesType());
 
 
-
         if (xml.isHasExtendedCapabilities()) {
             doc.setIndicator_HasExtendedCapabilities(IndicatorStatus.PASS);
-        }
-        else {
+        } else {
             doc.setIndicator_HasExtendedCapabilities(IndicatorStatus.FAIL);
             return doc;
         }
 
         String metadataUrl = xml.getMetadataUrlRaw();
-        if ( (metadataUrl == null) || (metadataUrl.isEmpty()) ) {
+        if ((metadataUrl == null) || (metadataUrl.isEmpty())) {
             doc.setIndicator_HasServiceMetadataLink(IndicatorStatus.FAIL);
             return doc;
         }
 
         doc.setIndicator_HasServiceMetadataLink(IndicatorStatus.PASS);
 
-        RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink = remoteServiceMetadataRecordService.create(doc,metadataUrl);
+        RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink = remoteServiceMetadataRecordService.create(doc, metadataUrl);
         doc.setRemoteServiceMetadataRecord(remoteServiceMetadataRecordLink);
 
 
-        List<CapabilitiesDatasetMetadataLink> dslinks= capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc,xml);
+        List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);
         doc.setCapabilitiesDatasetMetadataLinkList(dslinks);
 
         return doc;

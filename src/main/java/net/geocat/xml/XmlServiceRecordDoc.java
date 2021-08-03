@@ -1,11 +1,42 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.xml;
 
 import net.geocat.xml.helpers.OperatesOn;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +46,6 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
     String serviceType;
     String serviceTypeVersion;
     List<OperatesOn> operatesOns = new ArrayList<>();
-
 
 
     public XmlServiceRecordDoc(XmlDoc doc) throws Exception {
@@ -28,10 +58,7 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
     }
 
 
-
-
-
-    public void setup_XmlServiceRecordDoc() throws  Exception {
+    public void setup_XmlServiceRecordDoc() throws Exception {
         populateServiceType();
         populateOperatesOn();
     }
@@ -41,12 +68,12 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
         operatesOns = OperatesOn.create(nl);
     }
 
-    public void populateServiceType()  throws  Exception{
+    public void populateServiceType() throws Exception {
         Node n = xpath_node("//srv:serviceType/gco:LocalName");
         serviceType = n.getTextContent();
         n = xpath_node("//srv:serviceTypeVersion/gco:CharacterString");
         if (n != null)
-         serviceTypeVersion = n.getTextContent();
+            serviceTypeVersion = n.getTextContent();
     }
 
     public String getServiceTypeVersion() {

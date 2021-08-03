@@ -1,5 +1,39 @@
+/*
+ *  =============================================================================
+ *  ===  Copyright (C) 2021 Food and Agriculture Organization of the
+ *  ===  United Nations (FAO-UN), United Nations World Food Programme (WFP)
+ *  ===  and United Nations Environment Programme (UNEP)
+ *  ===
+ *  ===  This program is free software; you can redistribute it and/or modify
+ *  ===  it under the terms of the GNU General Public License as published by
+ *  ===  the Free Software Foundation; either version 2 of the License, or (at
+ *  ===  your option) any later version.
+ *  ===
+ *  ===  This program is distributed in the hope that it will be useful, but
+ *  ===  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  ===  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  ===  General Public License for more details.
+ *  ===
+ *  ===  You should have received a copy of the GNU General Public License
+ *  ===  along with this program; if not, write to the Free Software
+ *  ===  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ *  ===
+ *  ===  Contact: Jeroen Ticheler - FAO - Viale delle Terme di Caracalla 2,
+ *  ===  Rome - Italy. email: geonetwork@osgeo.org
+ *  ===
+ *  ===  Development of this program was financed by the European Union within
+ *  ===  Service Contract NUMBER – 941143 – IPR – 2021 with subject matter
+ *  ===  "Facilitating a sustainable evolution and maintenance of the INSPIRE
+ *  ===  Geoportal", performed in the period 2021-2023.
+ *  ===
+ *  ===  Contact: JRC Unit B.6 Digital Economy, Via Enrico Fermi 2749,
+ *  ===  21027 Ispra, Italy. email: JRC-INSPIRE-SUPPORT@ec.europa.eu
+ *  ==============================================================================
+ */
+
 package net.geocat.database.linkchecker.entities2;
 
+import net.geocat.xml.MetadataDocumentType;
 import net.geocat.xml.helpers.CapabilitiesType;
 
 import javax.persistence.*;
@@ -17,18 +51,18 @@ public class Link {
     private String summary;
 
     //link to harvest run by the harvester
-    @Column(nullable = false,columnDefinition = "varchar(40)")
-    private String HarvestJobId ;
+    @Column(nullable = false, columnDefinition = "varchar(40)")
+    private String HarvestJobId;
 
 
-    @Column(nullable = false,columnDefinition = "varchar(40)")
-    private String linkCheckJobId ;
+    @Column(nullable = false, columnDefinition = "varchar(40)")
+    private String linkCheckJobId;
 
     //link to the particular endpoint the service record (link) came from
     @Column(nullable = false)
     private long EndpointJobId;
 
-     @Column(columnDefinition = "varchar(64)")
+    @Column(columnDefinition = "varchar(64)")
     //(link to actual service record text)
     private String OriginatingServiceRecordSHA2;
 
@@ -37,13 +71,13 @@ public class Link {
     private String OriginatingServiceRecordFileIdentifier;
 
     @Column(columnDefinition = "text")
-     //(view, download, or discovery)
+    //(view, download, or discovery)
     private String OriginatingServiceRecordServiceType;
 
     @Column(columnDefinition = "text")
     // (WMS, WFS, WMTS, ATOM, WCS, or null)
     //Best guess by looking at the service record
-    private String  OriginatingServiceRecordProtocolHint;
+    private String OriginatingServiceRecordProtocolHint;
 
     @Column(columnDefinition = "text")
     // if link came from a containsOperation
@@ -59,15 +93,15 @@ public class Link {
 
     @Column(columnDefinition = "text")
     // original link, but fixed (i.e. request=getmap to request=getcapabilities)
-    private String  FixedLinkURL;
+    private String FixedLinkURL;
 
     @Column(columnDefinition = "text")
     // (original link's URL)
-    private String  RawLinkURL;
+    private String RawLinkURL;
 
     @Column(columnDefinition = "text")
     // (actual URL - after redirects)
-    private String  actualLinkURL;
+    private String actualLinkURL;
 
     private Boolean linkIsHTTS;
     private Boolean linkSSLTrustedByJava;
@@ -78,23 +112,23 @@ public class Link {
 
     @Column(columnDefinition = "text")
     // i.e. connecttimeout
-    private String  LinkHTTPException ;
+    private String LinkHTTPException;
 
     @Column(columnDefinition = "text")
     // i.e. connecttimeout
-    private String  ResolveServiceMetadataLinkException;
+    private String ResolveServiceMetadataLinkException;
 
     // (i.e. 200)
-    private Integer  LinkHTTPStatusCode ;
+    private Integer LinkHTTPStatusCode;
 
 
     @Column(columnDefinition = "text")
     // (i.e. application/xml) from HTTP response
-    private String  LinkMIMEType ;
+    private String LinkMIMEType;
 
     @Column(columnDefinition = "bytea")
     //(first 1000 bytes of request - might be able to determine what file type from this)
-    private byte[] LinkContentHead ;
+    private byte[] LinkContentHead;
 
     // (is the link an XML document - i.e. starts with "<?xml")
     private Boolean LinkIsXML;
@@ -106,71 +140,72 @@ public class Link {
 
     @Column(columnDefinition = "varchar(64)")
     //(link to another table with actual text XML data in it - only if LinkCapabilitiesType is not null
-    private String     LinkContentSHA2 ;
+    private String LinkContentSHA2;
 
     @Column(columnDefinition = "text")
-    private String  ServiceMetadataLinkURL;
+    private String ServiceMetadataLinkURL;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
-    private LinkState  linkState;
-
-     @Column(columnDefinition = "text")
-    private   String  linkErrorMessage;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_LinkResolves;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_CapabilitiesResolves;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_DetectProtocol;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_HasExtendedCapabilities;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_HasServiceMetadataLink;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_ResolveServiceMetadataLink;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_MetadataLinkIsXML;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_MetadataLinkIsMD_METADATA;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_MetadataLinkIsServiceRecord;
+    private LinkState linkState;
 
     @Column(columnDefinition = "text")
+    private String linkErrorMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_LinkResolves;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_CapabilitiesResolves;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_DetectProtocol;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_HasExtendedCapabilities;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_HasServiceMetadataLink;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_ResolveServiceMetadataLink;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_MetadataLinkIsXML;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_MetadataLinkIsMD_METADATA;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(20)")
+    private IndicatorStatus Indicator_MetadataLinkIsServiceRecord;
+
+    @Column(columnDefinition = "varchar(20)")
     // should be service
-    private String  MetadataLinkMetadataType ;
+    @Enumerated(EnumType.STRING)
+    private MetadataDocumentType MetadataLinkMetadataType;
 
     @Column(columnDefinition = "text")
-    private String  MetadataLinkFileIdentifier ;
+    private String MetadataLinkFileIdentifier;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_CompareServiceMetadataLink_Full;
+    private IndicatorStatus Indicator_CompareServiceMetadataLink_Full;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
-    private IndicatorStatus  Indicator_CompareServiceMetadataLink_FileIdentifier;
+    private IndicatorStatus Indicator_CompareServiceMetadataLink_FileIdentifier;
 
     @Column(columnDefinition = "text")
-    private String  MetadataRecordDifferences ;
+    private String MetadataRecordDifferences;
 
     public long getLinkId() {
         return linkId;
@@ -412,11 +447,11 @@ public class Link {
         Indicator_MetadataLinkIsServiceRecord = indicator_MetadataLinkIsServiceRecord;
     }
 
-    public String getMetadataLinkMetadataType() {
+    public MetadataDocumentType getMetadataLinkMetadataType() {
         return MetadataLinkMetadataType;
     }
 
-    public void setMetadataLinkMetadataType(String metadataLinkMetadataType) {
+    public void setMetadataLinkMetadataType(MetadataDocumentType metadataLinkMetadataType) {
         MetadataLinkMetadataType = metadataLinkMetadataType;
     }
 
@@ -523,111 +558,111 @@ public class Link {
 
     @Override
     public String toString() {
-        String result = "Link (id="+getLinkId()+")\n";
-        result += "     +  Harvest Job: "+getHarvestJobId() +"\n";
-        result += "     +  Endpoint Job: "+getEndpointJobId() +"\n";
-        result += "     +  LinkCheck Job: "+getLinkCheckJobId() +"\n";
-        result += "     +  SHA2 of Service record this link came from: "+getOriginatingServiceRecordSHA2() +"\n";
-        result += "     +  File Identifier of Service record this link came from: "+getOriginatingServiceRecordFileIdentifier() +"\n";
-        result += "     +  Service Type of Service record this link came from: "+getOriginatingServiceRecordServiceType() +"\n";
-        result += "     +  Protocol of Service record this link came from:  "+getOriginatingServiceRecordProtocolHint() +"\n";
-        result += "     +  Original URL of Link: "+getRawLinkURL() +"\n";
-        result += "     +  'Fixed' URL of Link: "+getFixedLinkURL() +"\n";
-        result += "     +  actual URL of Link (after redirects): "+getActualLinkURL() +"\n";
+        String result = "Link (id=" + getLinkId() + ")\n";
+        result += "     +  Harvest Job: " + getHarvestJobId() + "\n";
+        result += "     +  Endpoint Job: " + getEndpointJobId() + "\n";
+        result += "     +  LinkCheck Job: " + getLinkCheckJobId() + "\n";
+        result += "     +  SHA2 of Service record this link came from: " + getOriginatingServiceRecordSHA2() + "\n";
+        result += "     +  File Identifier of Service record this link came from: " + getOriginatingServiceRecordFileIdentifier() + "\n";
+        result += "     +  Service Type of Service record this link came from: " + getOriginatingServiceRecordServiceType() + "\n";
+        result += "     +  Protocol of Service record this link came from:  " + getOriginatingServiceRecordProtocolHint() + "\n";
+        result += "     +  Original URL of Link: " + getRawLinkURL() + "\n";
+        result += "     +  'Fixed' URL of Link: " + getFixedLinkURL() + "\n";
+        result += "     +  actual URL of Link (after redirects): " + getActualLinkURL() + "\n";
 
-        result += "     +  Link State: "+getLinkState() +"\n";
-        if (getLinkErrorMessage() !=null)
-            result += "     +  Link Error Message: "+getLinkErrorMessage() +"\n";
+        result += "     +  Link State: " + getLinkState() + "\n";
+        if (getLinkErrorMessage() != null)
+            result += "     +  Link Error Message: " + getLinkErrorMessage() + "\n";
 
         result += "\n";
 
         if (getLinkHTTPException() != null)
-            result += "     +  URL threw exception: "+getLinkHTTPException() +"\n";
+            result += "     +  URL threw exception: " + getLinkHTTPException() + "\n";
 
         if (getLinkIsHTTS() != null)
-            result += "     +  link Is HTTPS: "+getLinkIsHTTS() +"\n";
+            result += "     +  link Is HTTPS: " + getLinkIsHTTS() + "\n";
         if (getLinkSSLTrustedByJava() != null)
-            result += "     +  link SSL Trusted by java: "+getLinkSSLTrustedByJava() +"\n";
+            result += "     +  link SSL Trusted by java: " + getLinkSSLTrustedByJava() + "\n";
         if (getLinkSSLUntrustedByJavaReason() != null)
-            result += "     +  Reason link ssl not trusted by Java: "+getLinkSSLUntrustedByJavaReason() +"\n";
+            result += "     +  Reason link ssl not trusted by Java: " + getLinkSSLUntrustedByJavaReason() + "\n";
 
-        if (getLinkHTTPStatusCode() !=null)
-             result += "     +  Status Code of HTTP request getting the link: "+getLinkHTTPStatusCode() +"\n";
-        if (getLinkMIMEType() !=null)
-            result += "     +  ContentType of HTTP request getting the link: "+getLinkMIMEType() +"\n";
+        if (getLinkHTTPStatusCode() != null)
+            result += "     +  Status Code of HTTP request getting the link: " + getLinkHTTPStatusCode() + "\n";
+        if (getLinkMIMEType() != null)
+            result += "     +  ContentType of HTTP request getting the link: " + getLinkMIMEType() + "\n";
         if (getLinkContentHead() != null) {
             result += "     +  Initial Data from request: " + Arrays.copyOf(getLinkContentHead(), 10) + "\n";
-            result += "     +  Initial Data from request (text): " + new String(Arrays.copyOf(getLinkContentHead(), Math.min(100,getLinkContentHead().length))) + "\n";
+            result += "     +  Initial Data from request (text): " + new String(Arrays.copyOf(getLinkContentHead(), Math.min(100, getLinkContentHead().length))) + "\n";
         }
         if (getLinkIsXML() != null) {
-            result += "     +  Link is XML: "+getLinkIsXML() +"\n";
+            result += "     +  Link is XML: " + getLinkIsXML() + "\n";
         }
         if (getLinkCapabilitiesType() != null) {
-            result += "     +  Link Capabilities Type: "+getLinkCapabilitiesType() +"\n";
+            result += "     +  Link Capabilities Type: " + getLinkCapabilitiesType() + "\n";
         }
         if (getLinkContentSHA2() != null) {
-            result += "     +  Link SHA2 of content: "+getLinkContentSHA2() +"\n";
+            result += "     +  Link SHA2 of content: " + getLinkContentSHA2() + "\n";
         }
         if (getIndicator_LinkResolves() != null) {
-            result += "     +  Indicator_LinkResolves: "+getIndicator_LinkResolves() +"\n";
+            result += "     +  Indicator_LinkResolves: " + getIndicator_LinkResolves() + "\n";
         }
         if (getIndicator_CapabilitiesResolves() != null) {
-            result += "     +  Indicator_CapabilitiesResolves: "+getIndicator_CapabilitiesResolves() +"\n";
+            result += "     +  Indicator_CapabilitiesResolves: " + getIndicator_CapabilitiesResolves() + "\n";
         }
         if (getIndicator_DetectProtocol() != null) {
-            result += "     +  Indicator_DetectProtocol: "+getIndicator_DetectProtocol() +"\n";
+            result += "     +  Indicator_DetectProtocol: " + getIndicator_DetectProtocol() + "\n";
         }
         result += "\n";
 
 
         if (getIndicator_HasExtendedCapabilities() != null) {
-            result += "     +  Indicator_HasExtendedCapabilities: "+getIndicator_HasExtendedCapabilities() +"\n";
+            result += "     +  Indicator_HasExtendedCapabilities: " + getIndicator_HasExtendedCapabilities() + "\n";
         }
         if (getIndicator_HasServiceMetadataLink() != null) {
-            result += "     +  Indicator_HasServiceMetadataLink: "+getIndicator_HasServiceMetadataLink() +"\n";
+            result += "     +  Indicator_HasServiceMetadataLink: " + getIndicator_HasServiceMetadataLink() + "\n";
         }
         if (getServiceMetadataLinkURL() != null) {
-            result += "     +  ServiceMetadataLinkURL: "+getServiceMetadataLinkURL() +"\n";
+            result += "     +  ServiceMetadataLinkURL: " + getServiceMetadataLinkURL() + "\n";
         }
         result += "\n";
 
         if (getIndicator_ResolveServiceMetadataLink() != null) {
-            result += "     +  Indicator_ResolveServiceMetadataLink: "+getIndicator_ResolveServiceMetadataLink() +"\n";
+            result += "     +  Indicator_ResolveServiceMetadataLink: " + getIndicator_ResolveServiceMetadataLink() + "\n";
         }
 
         if (getResolveServiceMetadataLinkException() != null) {
-            result += "     +  ResolveServiceMetadataLinkException: "+getResolveServiceMetadataLinkException() +"\n";
+            result += "     +  ResolveServiceMetadataLinkException: " + getResolveServiceMetadataLinkException() + "\n";
         }
 
 
         if (getIndicator_MetadataLinkIsXML() != null) {
-            result += "     +  Indicator_MetadataLinkIsXML: "+getIndicator_MetadataLinkIsXML() +"\n";
+            result += "     +  Indicator_MetadataLinkIsXML: " + getIndicator_MetadataLinkIsXML() + "\n";
         }
 
         if (getIndicator_MetadataLinkIsMD_METADATA() != null) {
-            result += "     +  Indicator_MetadataLinkIsMD_METADATA: "+getIndicator_MetadataLinkIsMD_METADATA() +"\n";
+            result += "     +  Indicator_MetadataLinkIsMD_METADATA: " + getIndicator_MetadataLinkIsMD_METADATA() + "\n";
         }
 
         if (getMetadataLinkMetadataType() != null) {
-            result += "     +  MetadataLinkMetadataType: "+getMetadataLinkMetadataType() +"\n";
+            result += "     +  MetadataLinkMetadataType: " + getMetadataLinkMetadataType() + "\n";
         }
 
         if (getIndicator_MetadataLinkIsServiceRecord() != null) {
-            result += "     +  Indicator_MetadataLinkIsServiceRecord: "+getIndicator_MetadataLinkIsServiceRecord() +"\n";
+            result += "     +  Indicator_MetadataLinkIsServiceRecord: " + getIndicator_MetadataLinkIsServiceRecord() + "\n";
         }
 
         if (getMetadataLinkFileIdentifier() != null) {
-            result += "     +  MetadataLinkFileIdentifier: "+getMetadataLinkFileIdentifier() +"\n";
+            result += "     +  MetadataLinkFileIdentifier: " + getMetadataLinkFileIdentifier() + "\n";
         }
 
         if (getIndicator_CompareServiceMetadataLink_FileIdentifier() != null) {
-            result += "     +  Indicator_CompareServiceMetadataLink_FileIdentifier: "+getIndicator_CompareServiceMetadataLink_FileIdentifier() +"\n";
+            result += "     +  Indicator_CompareServiceMetadataLink_FileIdentifier: " + getIndicator_CompareServiceMetadataLink_FileIdentifier() + "\n";
         }
         if (getIndicator_CompareServiceMetadataLink_Full() != null) {
-            result += "     +  Indicator_CompareServiceMetadataLink_Full: "+getIndicator_CompareServiceMetadataLink_Full() +"\n";
+            result += "     +  Indicator_CompareServiceMetadataLink_Full: " + getIndicator_CompareServiceMetadataLink_Full() + "\n";
         }
         if (getMetadataRecordDifferences() != null) {
-            result += "     +  MetadataRecordDifferences: "+getMetadataRecordDifferences() +"\n";
+            result += "     +  MetadataRecordDifferences: " + getMetadataRecordDifferences() + "\n";
         }
 
         result += "=========================================================================";
