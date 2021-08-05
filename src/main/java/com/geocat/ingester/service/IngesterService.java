@@ -3,6 +3,7 @@ package com.geocat.ingester.service;
 import com.geocat.ingester.dao.harvester.EndpointJobRepo;
 import com.geocat.ingester.dao.harvester.HarvestJobRepo;
 import com.geocat.ingester.dao.harvester.MetadataRecordRepo;
+import com.geocat.ingester.exception.GeoNetworkClientException;
 import com.geocat.ingester.geonetwork.client.GeoNetworkClient;
 import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
@@ -17,9 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 //@Transactional("metadataTransactionManager")
@@ -79,10 +82,10 @@ public class IngesterService {
             totalMetadataToProcess = totalMetadataToProcess + metadataRecordRepo.countMetadataRecordByEndpointJobId(job.getEndpointJobId());
         }
 
-        ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, 0, 0, totalMetadataToProcess);
+        ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, 0, 0, 0, totalMetadataToProcess);
 
         //List<Integer> metadataIds = new ArrayList<>();
-        List<String> metadataIds = new ArrayList<>();
+        Map<String, Boolean> metadataIds = new HashMap<>();
 
         for (EndpointJob job : endpointJobList) {
             Boolean pagesAvailable = true;
@@ -108,7 +111,7 @@ public class IngesterService {
 
                 total = total + metadataRecordList.getNumberOfElements();
 
-                metadataIds.addAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
+                metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
 
                 ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
 
@@ -116,14 +119,47 @@ public class IngesterService {
             }
         }
 
+        // Index added/updated records
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
+        List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        geoNetworkClient.init();
+        indexRecords(metadataIdsToIndex, processId);
 
+        // Delete old harvested records no longer in the harvester server
+        List<String> remoteHarvesterUuids = metadataIds.entrySet().stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        List<String> localHarvesterUuids =
+                catalogueService.retrieveLocalUuidsForHarvester(harvesterConfigurationOptional.get().getUuid());
+
+        List<String> metadataIdsToDelete = localHarvesterUuids.stream()
+                .distinct()
+                .filter(s -> !remoteHarvesterUuids.contains(s))
+                .collect(Collectors.toList());
+
+        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.DELETING_RECORDS);
+        deleteRecords(metadataIdsToDelete, processId);
+
+        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.RECORDS_PROCESSED);
+
+        log.info("Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
+    }
+
+
+    /**
+     * Calls GeoNetwork index process for a set of metadata records.
+     *
+     * @param metadataIds
+     * @param processId
+     * @throws GeoNetworkClientException
+     */
+    private void indexRecords(List<String> metadataIds, String processId) {
         int batchSize = 50;
 
-        // Index records
-        int totalPages = Math.toIntExact(Math.round(metadataIds.size() * 1.0 / batchSize));
-
-        geoNetworkClient.init();
+        int totalPages = (int) Math.ceil(metadataIds.size() * 1.0 / batchSize * 1.0);
 
         int total = 0;
 
@@ -141,14 +177,46 @@ public class IngesterService {
 
                 ingestJobService.updateIngestJobStateInDBIndexedRecords(processId, total);
 
-            } catch (Exception ex) {
+            } catch (GeoNetworkClientException ex) {
                 // TODO: Handle exception
-                ex.printStackTrace();
+                log.error(ex.getMessage(), ex);
             }
         }
+    }
 
-        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.RECORDS_PROCESSED);
+    /**
+     * Calls GeoNetwork delete process for a set of metadata records.
+     *
+     * @param metadataIds
+     * @param processId
+     * @throws GeoNetworkClientException
+     */
+    private void deleteRecords(List<String> metadataIds, String processId) {
+        int batchSize = 50;
 
-        log.info("Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
+        int totalPages = (int) Math.ceil(metadataIds.size() * 1.0 / batchSize * 1.0);
+
+        int total = 0;
+
+        for (int i = 0; i < totalPages; i++) {
+            try {
+                int from = i * batchSize;
+                int to = Math.min(((i+1) * batchSize), metadataIds.size());
+
+                int toR = (i == totalPages - 1)?metadataIds.size():(to-1);
+                log.info("Indexing harvested metadata records from " +  Math.max(1, i * batchSize) + " to " + toR + " of " + metadataIds.size());
+
+                geoNetworkClient.delete(metadataIds.subList(from , to));
+
+                total = total + (to-from);
+
+                ingestJobService.updateIngestJobStateInDBDeletedRecords(processId, total);
+
+            } catch (Exception ex) {
+                // TODO: Handle exception
+                log.error(ex.getMessage(), ex);
+
+            }
+        }
     }
 }

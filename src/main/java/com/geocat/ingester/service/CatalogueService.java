@@ -18,8 +18,10 @@ import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,11 +52,11 @@ public class CatalogueService {
                                                     HarvesterConfiguration harvesterConfiguration,
                                                     String jobId) throws Exception {*/
 
-    public List<String> addOrUpdateMetadataRecords(List<MetadataRecordXml> metadataRecords,
+    public Map<String, Boolean> addOrUpdateMetadataRecords(List<MetadataRecordXml> metadataRecords,
                 HarvesterConfiguration harvesterConfiguration,
                 String jobId) throws Exception {
         List<Integer> metadataIdList = new ArrayList<>();
-        List<String> metadataUuidList = new ArrayList<>();
+        Map<String, Boolean> metadataUuidList = new HashMap<>();
         List<Metadata> metadataList = new ArrayList<>();
         List<OperationAllowed> operationAllowedList = new ArrayList<>();
 
@@ -81,6 +83,7 @@ public class CatalogueService {
                 String sha2 = computeSHA2(metadata.getData());
                 if (sha2.equalsIgnoreCase(metadataRecord.getSha2())) {
                     // Don't process the record, it doesn't have changes
+                    metadataUuidList.put(metadataUuid, Boolean.FALSE);
                     continue;
                 }
                 // TODO: Check about harvester uuid
@@ -109,7 +112,7 @@ public class CatalogueService {
 
         metadataList.forEach(metadata -> {
             metadataIdList.add(metadata.getId());
-            metadataUuidList.add(metadata.getUuid());
+            metadataUuidList.put(metadata.getUuid(), Boolean.TRUE);
         });
 
         List<OperationAllowed> operationAllowedInDb =
@@ -184,6 +187,10 @@ public class CatalogueService {
         return Optional.ofNullable(harvesterConfiguration);
     }
 
+
+    public List<String> retrieveLocalUuidsForHarvester(String harvesterUuid) {
+        return metadataRepo.findAllUuidsBySource(harvesterUuid);
+    }
 
     public void deleteMetadata(Set<Integer> metadataIds) {
         metadataRepo.deleteAll();

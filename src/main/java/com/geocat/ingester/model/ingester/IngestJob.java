@@ -24,6 +24,7 @@ public class IngestJob {
     private Long totalRecords;
     private Long totalIngestedRecords;
     private Long totalIndexedRecords;
+    private Long totalDeletedRecords;
     @Column(columnDefinition = "timestamp with time zone")
     ZonedDateTime createTimeUTC;
     @Column(columnDefinition = "timestamp with time zone")
@@ -102,5 +103,13 @@ public class IngestJob {
 
     public void setTotalIndexedRecords(Long totalIndexedRecords) {
         this.totalIndexedRecords = totalIndexedRecords;
+    }
+
+    public Long getTotalDeletedRecords() {
+        return totalDeletedRecords;
+    }
+
+    public void setTotalDeletedRecords(Long totalDeletedRecords) {
+        this.totalDeletedRecords = totalDeletedRecords;
     }
 }

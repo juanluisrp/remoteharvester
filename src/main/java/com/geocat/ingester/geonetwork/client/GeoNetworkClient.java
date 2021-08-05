@@ -71,6 +71,26 @@ public class GeoNetworkClient {
         }
     }
 
+
+    public void delete(List<String> uuids) throws GeoNetworkClientException {
+        if (!isInitialised) {
+            init();
+        }
+
+        String url = baseUrl + "/srv/api/records?uuids=" +
+                uuids.stream()
+                        .map(u -> encodeParam(u))
+                        .collect(Collectors.joining(","));
+
+        try {
+            doDelete(connection, url, "", "application/json", "application/json");
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            throw new GeoNetworkClientException(ex.getMessage(), ex);
+        }
+    }
+
+
     protected String doGet(GNConnection connection, String url, String acceptHeader) throws IOException {
         Cookie jsessionidCookie = connection.getJsessionidCookie();
         CloseableHttpClient closeableHttpClient = connection.getCloseableHttpClient();
