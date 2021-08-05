@@ -49,7 +49,7 @@ job("Build, test and install project artifacts") {
         }
     }
     
-    /*
+
     container("Push Docker image in GeoCat Docker repository", "golang:1.16") {
         env["GEOCAT_DOCKER_REGISTRY_URL"] = "docker-registry.geocat.net:5000"
         env["GEOCAT_DOCKER_REGISTRY_USER"] = Params("geocat_docker_registry_user")
@@ -66,7 +66,7 @@ job("Build, test and install project artifacts") {
 			"""
         }
     }
-    */
+
     
 
 }
