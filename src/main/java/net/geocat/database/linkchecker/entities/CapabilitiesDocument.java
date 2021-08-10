@@ -39,6 +39,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -57,7 +58,7 @@ public class CapabilitiesDocument {
     //
 //    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 //    @JoinColumn(name = "serviceDocumentLinkId" )
-    @OneToOne(mappedBy = "capabilitiesDocument")
+    @OneToOne(mappedBy = "capabilitiesDocument",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private ServiceDocumentLink serviceDocumentLink;
 
     @Enumerated(EnumType.STRING)
@@ -68,7 +69,7 @@ public class CapabilitiesDocument {
     @Column(columnDefinition = "varchar(20)")
     private IndicatorStatus Indicator_HasServiceMetadataLink;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn(name = "capabilitiesDocumentId")
     private RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink;
 
@@ -81,6 +82,11 @@ public class CapabilitiesDocument {
 
     @Column(columnDefinition = "text")
     private String summary;
+
+
+    public CapabilitiesDocument(){
+        this.capabilitiesDatasetMetadataLinkList = new ArrayList<>();
+    }
 
     //---------------------------------------------------------------------------
 
@@ -132,13 +138,6 @@ public class CapabilitiesDocument {
         Indicator_HasServiceMetadataLink = indicator_HasServiceMetadataLink;
     }
 
-    public RemoteServiceMetadataRecordLink getRemoteServiceMetadataRecord() {
-        return remoteServiceMetadataRecordLink;
-    }
-
-    public void setRemoteServiceMetadataRecord(RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink) {
-        this.remoteServiceMetadataRecordLink = remoteServiceMetadataRecordLink;
-    }
 
     public RemoteServiceMetadataRecordLink getRemoteServiceMetadataRecordLink() {
         return remoteServiceMetadataRecordLink;

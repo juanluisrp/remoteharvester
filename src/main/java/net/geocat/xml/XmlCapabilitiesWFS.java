@@ -33,13 +33,14 @@
 
 package net.geocat.xml;
 
+import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
-    private String SpatialDataSetIdentifier_metadataURL;
-    private String SpatialDataSetIdentifier_Code;
+
 
     public XmlCapabilitiesWFS(XmlDoc doc) throws Exception {
         super(doc, CapabilitiesType.WFS);
@@ -47,12 +48,23 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
     }
 
     private void setup_XmlCapabilitiesWFS() throws Exception {
-        Node sdi = xpath_node("//*[local-name()='ExtendedCapabilities']/inspire_dls:SpatialDataSetIdentifier");
-        if (sdi != null) {
-            SpatialDataSetIdentifier_metadataURL = this.xpath_attribute(sdi, ".", "metadataURL");
-            Node code = xpath_node(sdi, "./inspire_common:Code");
-            if (code != null)
-                SpatialDataSetIdentifier_Code = code.getTextContent();
+        NodeList sdi = xpath_nodeset("//inspire_dls:SpatialDataSetIdentifier");
+        if (sdi == null)
+            return;
+        for(int idx=0; idx<sdi.getLength();idx++){
+            Node n = sdi.item(idx);
+            Node urlNode = n.getAttributes().getNamedItem("metadataURL");
+            String url =null;
+            if (urlNode != null)
+               url = urlNode.getNodeValue();
+            Node codeNode = xpath_node(n,"./inspire_common:Code");
+            String identity = null;
+            if (codeNode != null)
+                identity = codeNode.getTextContent();
+            if ( (url != null) || (identity !=null)){
+                DatasetLink datasetLink = new DatasetLink(identity,url);
+                datasetLinksList.add(datasetLink);
+            }
         }
     }
 

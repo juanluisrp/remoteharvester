@@ -31,35 +31,39 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.entities;
+package net.geocat.events.findlinks;
 
-import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
-import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
+import net.geocat.events.Event;
+import net.geocat.xml.MetadataDocumentType;
 
-import javax.persistence.*;
+public class ProcessLocalMetadataDocumentEvent extends Event {
 
-@Entity
-@DiscriminatorValue("LocalServiceMetadataRecord")
-public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    ServiceMetadataDocumentState state;
-
-    @Column(columnDefinition = "varchar(40)")
     private String linkCheckJobId;
+    private String sha2;
+    private String harvestJobId;
+    private Long underlyingHarvestMetadataRecordId;
 
-    private long harvesterMetadataRecordId;
-
-    @Column(columnDefinition = "text")
-    private String summary;
-
-
-
-    public LocalServiceMetadataRecord(){
-        super();
+    public ProcessLocalMetadataDocumentEvent() {
     }
 
+    public ProcessLocalMetadataDocumentEvent(String linkCheckJobId,
+                                             String harvestJobId,
+                                             //  long endpointJobId,
+                                             String sha2,
+                                             Long underlyingHarvestMetadataRecordId) {
+        this.linkCheckJobId = linkCheckJobId;
+        this.sha2 = sha2;
+        this.harvestJobId = harvestJobId;
+        this.underlyingHarvestMetadataRecordId = underlyingHarvestMetadataRecordId;
+    }
+
+    public Long getUnderlyingHarvestMetadataRecordId() {
+        return underlyingHarvestMetadataRecordId;
+    }
+
+    public void setUnderlyingHarvestMetadataRecordId(Long underlyingHarvestMetadataRecordId) {
+        this.underlyingHarvestMetadataRecordId = underlyingHarvestMetadataRecordId;
+    }
 
     public String getLinkCheckJobId() {
         return linkCheckJobId;
@@ -69,55 +73,25 @@ public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
         this.linkCheckJobId = linkCheckJobId;
     }
 
-
-    public long getHarvesterMetadataRecordId() {
-        return harvesterMetadataRecordId;
+    public String getSha2() {
+        return sha2;
     }
 
-    public void setHarvesterMetadataRecordId(long harvesterMetadataRecordId) {
-        this.harvesterMetadataRecordId = harvesterMetadataRecordId;
-    }
-
-
-    public ServiceMetadataDocumentState getState() {
-        return state;
-    }
-
-    public void setState(ServiceMetadataDocumentState state) {
-        this.state = state;
+    public void setSha2(String sha2) {
+        this.sha2 = sha2;
     }
 
 
-    //---------------------------------------------------------------------------
-
-    @PreUpdate
-    protected void onUpdate() {
-        summary = toString();
-        super.onUpdate();
+    public String getHarvestJobId() {
+        return harvestJobId;
     }
 
-    @PrePersist
-    protected void onInsert() {
-        summary = toString();
-        super.onInsert();
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
-
-    //---------------------------------------------------------------------------
 
     @Override
     public String toString() {
-        String result = "ServiceMetadataDocument {\n";
-        result += "     serviceMetadataDocumentId: " + getServiceMetadataDocumentId() + "\n";
-        result += "     linkCheckJobId: " + linkCheckJobId + "\n";
-        result += "     harvesterMetadataRecordId: " + harvesterMetadataRecordId + "\n";
-        result += "     state: " + state + "\n";
-
-
-        result += super.toString();
-
-        result += "\n";
-
-        result += " }";
-        return result;
+        return "ProcessServiceMetadataDocumentEvent - linkCheckJobId:" + linkCheckJobId + ",harvestJobId:" + harvestJobId + ", sha2:" + sha2+", underlyingHarvestMetadataRecordId="+underlyingHarvestMetadataRecordId;
     }
 }

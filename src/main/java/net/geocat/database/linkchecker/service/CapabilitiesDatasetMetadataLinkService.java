@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.service;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.XmlCapabilitiesDocument;
 import org.springframework.context.annotation.Scope;
@@ -53,7 +54,7 @@ public class CapabilitiesDatasetMetadataLinkService {
         for (DatasetLink link : doc.getDatasetLinksList()) {
 
             CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-
+            item.setLinkState(LinkState.Created);
             item.setRawURL(link.getRawUrl());
             item.setIdentity(link.getIdentifier());
 

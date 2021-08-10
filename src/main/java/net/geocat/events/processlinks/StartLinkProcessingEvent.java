@@ -35,37 +35,27 @@ package net.geocat.events.processlinks;
 
 import net.geocat.events.Event;
 
-public class ProcessOperatesOnLinkEvent extends Event {
+public class StartLinkProcessingEvent extends Event {
 
-        private long operatesOnLinkId;
-        private String linkCheckJobId;
+     private String linkCheckJobId;
 
-    public ProcessOperatesOnLinkEvent() {
+    public StartLinkProcessingEvent() {
     }
 
-    public ProcessOperatesOnLinkEvent(long linkId, String linkCheckJobId) {
-            this.operatesOnLinkId = linkId;
-            this.linkCheckJobId = linkCheckJobId;
-    }
-
-    public long getOperatesOnLinkId() {
-        return operatesOnLinkId;
-    }
-
-    public void setOperatesOnLinkId(long operatesOnLinkId) {
-        this.operatesOnLinkId = operatesOnLinkId;
+    public StartLinkProcessingEvent(  String linkCheckJobId) {
+         this.linkCheckJobId = linkCheckJobId;
     }
 
     public String getLinkCheckJobId() {
-            return linkCheckJobId;
-        }
+        return linkCheckJobId;
+    }
 
-        public void setLinkCheckJobId(String linkCheckJobId) {
-            this.linkCheckJobId = linkCheckJobId;
-        }
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
 
-        @Override
-        public String toString() {
-            return "ProcessOperatesOnLinkEvent  - operatesOnLinkId:" + operatesOnLinkId + ", linkcheckJobId:" + linkCheckJobId;
-        }
+    @Override
+    public String toString() {
+        return "StartLinkProcessingEvent - linkcheckJobId:" + linkCheckJobId;
+    }
 }

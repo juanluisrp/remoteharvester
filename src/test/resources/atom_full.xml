@@ -1,0 +1,28 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss" xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0">
+    <title xml:lang="nl">title</title>
+    <subtitle xml:lang="nl">subtitle</subtitle>
+     <link rel="describedby" href="describedbyURL" type="application/xml"/>
+    <link rel="self" href="selfURL" type="application/atom+xml" hreflang="nl"/>
+     <link rel="search" href="searchURL" type="application/opensearchdescription+xml" title="Verwijzing naar de metadata van de download service"/>
+    <id>idURL</id>
+    <rights>Copyright</rights>
+    <updated>2020-01-01T01:00:00Z</updated>
+    <author>
+        <name>authorname</name>
+        <email>authoremail</email>
+    </author>
+    <entry>
+        <id>entry1ID</id>
+        <title xml:lang="eng">entry1Title</title>
+         <inspire_dls:spatial_dataset_identifier_code>spatial_dataset_identifier_code1</inspire_dls:spatial_dataset_identifier_code>
+        <inspire_dls:spatial_dataset_identifier_namespace>spatial_dataset_identifier_namespace1</inspire_dls:spatial_dataset_identifier_namespace>
+        <link rel="describedby" href="describedbyURL" type="application/xml" hreflang="en"/>
+        <link rel="alternate" href="hrefALT" type="application/atom+xml" hreflang="nl" title="Oppervlakte geologie"/>
+        <rights>Copyright</rights>
+        <summary>ds summary</summary>
+        <updated>2020-01-01T02:00:00Z</updated>
+        <georss:point>1.0 1.0</georss:point>
+        <category term="http://www.opengis.net/def/crs/EPSG:4258" label="EPSG:4258"/>
+    </entry>
+
+</feed>

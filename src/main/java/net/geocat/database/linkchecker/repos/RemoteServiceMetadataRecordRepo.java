@@ -31,25 +31,11 @@
  *  ==============================================================================
  */
 
-package net.geocat.events.findlinks;
+package net.geocat.database.linkchecker.repos;
 
-import net.geocat.xml.MetadataDocumentType;
+import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
+import org.springframework.data.repository.CrudRepository;
 
-public class ProcessDatasetMetadataDocumentEvent extends ProcessServiceMetadataDocumentEvent{
-
-    public ProcessDatasetMetadataDocumentEvent() {
-        super();
-    }
-
-    public ProcessDatasetMetadataDocumentEvent(String linkCheckJobId,
-                                               String harvestJobId,
-                                               //  long endpointJobId,
-                                               String sha2,
-                                               MetadataDocumentType documentType) {
-       super(linkCheckJobId,harvestJobId,sha2,documentType);
-    }
-    @Override
-    public String toString() {
-        return "ProcessDatasetMetadataDocumentEvent - linkCheckJobId:" + getLinkCheckJobId() + ",harvestJobId:" + getHarvestJobId() + ", sha2:" + getSha2();
-    }
+public interface RemoteServiceMetadataRecordRepo extends CrudRepository<RemoteServiceMetadataRecord, Long> {
 }

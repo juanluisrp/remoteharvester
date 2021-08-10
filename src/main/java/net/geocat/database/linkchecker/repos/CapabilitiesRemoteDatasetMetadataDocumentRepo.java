@@ -31,41 +31,16 @@
  *  ==============================================================================
  */
 
-package net.geocat.events.processlinks;
+package net.geocat.database.linkchecker.repos;
 
-import net.geocat.events.Event;
+import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.CapabilitiesRemoteDatasetMetadataDocument;
+import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 
-public class ProcessServiceDocLinkEvent extends Event {
 
-    private long serviceMetadataLinkId;
-    private String linkCheckJobId;
-
-    public ProcessServiceDocLinkEvent() {
-    }
-
-    public ProcessServiceDocLinkEvent(long linkId, String linkCheckJobId) {
-        this.serviceMetadataLinkId = linkId;
-        this.linkCheckJobId = linkCheckJobId;
-    }
-
-    public long getServiceMetadataLinkId() {
-        return serviceMetadataLinkId;
-    }
-
-    public void setServiceMetadataLinkId(long serviceMetadataLinkId) {
-        this.serviceMetadataLinkId = serviceMetadataLinkId;
-    }
-
-    public String getLinkCheckJobId() {
-        return linkCheckJobId;
-    }
-
-    public void setLinkCheckJobId(String linkCheckJobId) {
-        this.linkCheckJobId = linkCheckJobId;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessServiceDocLinkEvent  - serviceMetadataLinkId:" + serviceMetadataLinkId + ", linkcheckJobId:" + linkCheckJobId;
-    }
+@Component
+@Scope("prototype")
+public interface CapabilitiesRemoteDatasetMetadataDocumentRepo extends CrudRepository<CapabilitiesRemoteDatasetMetadataDocument, Long> {
 }

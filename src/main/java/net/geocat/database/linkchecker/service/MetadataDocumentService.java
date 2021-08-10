@@ -33,12 +33,15 @@
 
 package net.geocat.database.linkchecker.service;
 
+import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.entities2.MetadataDocument;
 import net.geocat.database.linkchecker.entities2.MetadataDocumentState;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.LocalNotProcessedMetadataRecordRepo;
 import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -53,6 +56,12 @@ public class MetadataDocumentService {
 
     @Autowired
     LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
+
+    @Autowired
+    LocalNotProcessedMetadataRecordRepo localNotProcessedMetadataRecordRepo;
+
+    @Autowired
+    LinkCheckJobService linkCheckJobService;
 
 //    @Autowired
 //    public MetadataDocumentRepo metadataDocumentRepo;
@@ -75,7 +84,7 @@ public class MetadataDocumentService {
         return doc;
     }
 
-    public LocalServiceMetadataRecord findLocalProcess(String linkCheckJobId, String sha2) {
+    public LocalServiceMetadataRecord findLocalServiceDoc(String linkCheckJobId, String sha2) {
         LocalServiceMetadataRecord doc = localServiceMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId,sha2);
         return doc;
     }
@@ -92,6 +101,12 @@ public class MetadataDocumentService {
         return localServiceMetadataRecordRepo.save(doc);
     }
 
+    public LocalNotProcessedMetadataRecord setState(LocalNotProcessedMetadataRecord localServiceMetadataRecord, ServiceMetadataDocumentState state) {
+        LocalNotProcessedMetadataRecord doc = localNotProcessedMetadataRecordRepo.findById(localServiceMetadataRecord.getLocalNotProcessedMetadataRecordId()).get();
+        doc.setState(state);
+        return localNotProcessedMetadataRecordRepo.save(doc);
+    }
+
     public LocalDatasetMetadataRecord setState(LocalDatasetMetadataRecord localServiceMetadataRecord, ServiceMetadataDocumentState state) {
         LocalDatasetMetadataRecord doc = localDatasetMetadataRecordRepo.findById(localServiceMetadataRecord.getDatasetMetadataDocumentId()).get();
         doc.setState(state);
@@ -99,12 +114,16 @@ public class MetadataDocumentService {
     }
 
     public boolean completeLinkExtract(String linkCheckJobId) {
-        long nrecordsService = localServiceMetadataRecordRepo.countByLinkCheckJobId(linkCheckJobId);
+        LinkCheckJob job = linkCheckJobService.find(linkCheckJobId);
+        if (job.getNumberOfDocumentsInBatch() ==null)
+            return false;
+
+        long nRecords = job.getNumberOfDocumentsInBatch();
+
         long nrecordsServiceComplete = localServiceMetadataRecordRepo.countCompletedState(linkCheckJobId);
-
-        long nrecordsDataset = localDatasetMetadataRecordRepo.countByLinkCheckJobId(linkCheckJobId);
         long nrecordsDatasetComplete = localDatasetMetadataRecordRepo.countCompletedState(linkCheckJobId);
+        long nrecordWillNotProcess = localNotProcessedMetadataRecordRepo.countCompletedState(linkCheckJobId);
 
-        return (nrecordsService+nrecordsDataset ) == (nrecordsServiceComplete+nrecordsDatasetComplete);
+        return (nRecords ) == (nrecordsServiceComplete+nrecordsDatasetComplete+nrecordWillNotProcess);
      }
 }

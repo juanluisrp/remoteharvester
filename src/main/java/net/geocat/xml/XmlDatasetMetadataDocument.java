@@ -48,8 +48,16 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 
     private void setup_XmlDatasetMetadataDocument() throws XPathExpressionException {
         Node n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
-        if (n != null)
+        if (n != null) {
             datasetIdentifier = n.getTextContent();
+            return;
+        }
+        n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gmx:Anchor");
+        if (n != null) {
+            n = n.getAttributes().getNamedItem("xlink:href");
+            datasetIdentifier = n.getNodeValue();
+            return;
+        }
     }
 
     public String getDatasetIdentifier() {

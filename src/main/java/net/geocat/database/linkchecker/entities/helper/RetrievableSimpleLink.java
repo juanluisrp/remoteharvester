@@ -36,10 +36,15 @@ package net.geocat.database.linkchecker.entities.helper;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 
 import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 @MappedSuperclass
 public class RetrievableSimpleLink {
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(40)")
+    private LinkState linkState;
 
     @Column(columnDefinition = "text")
     String rawURL;
@@ -79,6 +84,15 @@ public class RetrievableSimpleLink {
     private PartialDownloadHint partialDownloadHint;
 
     //---------------------------------------------------------------------------
+
+
+    public LinkState getLinkState() {
+        return linkState;
+    }
+
+    public void setLinkState(LinkState linkState) {
+        this.linkState = linkState;
+    }
 
     public String getRawURL() {
         return rawURL;
@@ -220,6 +234,8 @@ public class RetrievableSimpleLink {
             result += "      fixedURL: " + fixedURL + "\n";
         if ((finalURL != null) && (!finalURL.isEmpty()))
             result += "      finalURL: " + finalURL + "\n";
+
+        result += "      linkstate: " + linkState + "\n";
         result += "\n";
 
         if ((partialDownloadHint == null))
@@ -246,7 +262,13 @@ public class RetrievableSimpleLink {
             result += "     +  ContentType of HTTP request getting the link: " + getLinkMIMEType() + "\n";
         if (getLinkContentHead() != null) {
             result += "     +  Initial Data from request: " + Arrays.copyOf(getLinkContentHead(), 10) + "\n";
-            result += "     +  Initial Data from request (text): " + new String(Arrays.copyOf(getLinkContentHead(), Math.min(100, getLinkContentHead().length))) + "\n";
+            try {
+                String info = "     +  Initial Data from request (text): " + new String(Arrays.copyOf(getLinkContentHead(), Math.min(100, getLinkContentHead().length)),"UTF-8") + "\n";
+                info = info.replaceAll("\u0000",""); // bad UTF-8 chars
+                result += info;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
         if (getLinkIsXML() != null) {
             result += "     +  Link is XML: " + getLinkIsXML() + "\n";

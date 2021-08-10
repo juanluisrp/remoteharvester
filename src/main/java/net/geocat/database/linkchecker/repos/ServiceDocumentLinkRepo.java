@@ -38,9 +38,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 @Scope("prototype")
 public interface ServiceDocumentLinkRepo extends CrudRepository<ServiceDocumentLink, Long> {
 
-}
+ }

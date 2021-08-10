@@ -31,23 +31,15 @@
  *  ==============================================================================
  */
 
-package net.geocat.eventprocessor.processors.findlinks;
+package net.geocat.eventprocessor.processors.processlinks;
 
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
-import net.geocat.database.linkchecker.service.MetadataDocumentService;
+import net.geocat.database.linkchecker.repos.*;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessDatasetMetadataDocumentEvent;
-import net.geocat.events.findlinks.ProcessServiceMetadataDocumentEvent;
-import net.geocat.service.BlobStorageService;
-import net.geocat.service.LinkFactory;
-import net.geocat.service.ServiceDocLinkExtractor;
-import net.geocat.xml.XmlDoc;
-import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.events.processlinks.StartLinkProcessingEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,67 +51,51 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_ProcessDatasetMetadataDocumentEvent extends BaseEventProcessor<ProcessDatasetMetadataDocumentEvent> {
+public class EventProcessor_StartLinkProcessingEvent extends BaseEventProcessor<StartLinkProcessingEvent> {
 
-    Logger logger = LoggerFactory.getLogger(ProcessServiceMetadataDocumentEvent.class);
-
-    @Autowired
-    LinkFactory linkFactory;
-
-    @Autowired
-    BlobStorageService blobStorageService;
-
-    @Autowired
-    XmlDocumentFactory xmlDocumentFactory;
-
-    @Autowired
-    ServiceDocLinkExtractor serviceDocLinkExtractor;
-
-    @Autowired
-    MetadataDocumentService metadataDocumentService;
+    Logger logger = LoggerFactory.getLogger(EventProcessor_ProcessServiceDocLinksEvent.class);
 
     @Autowired
     EventFactory eventFactory;
 
-    String xml;
-    XmlDoc doc;
-    LocalDatasetMetadataRecord metadataDocument;
+    @Autowired
+    LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
+
+    @Autowired
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
 
 
     @Override
-    public EventProcessor_ProcessDatasetMetadataDocumentEvent externalProcessing() throws Exception {
-        String sha2 = getInitiatingEvent().getSha2();
-        // long endpointJobId = getInitiatingEvent().getEndpointJobId();
-        xml = blobStorageService.findXML(sha2);
-        doc = xmlDocumentFactory.create(xml);
+    public EventProcessor_StartLinkProcessingEvent externalProcessing() throws Exception {
         return this;
     }
 
 
     @Override
-    public EventProcessor_ProcessDatasetMetadataDocumentEvent internalProcessing() throws Exception {
-        String sha2 = getInitiatingEvent().getSha2();
-        String harvestJobId = getInitiatingEvent().getHarvestJobId();
-        String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
-
-        metadataDocument = metadataDocumentService.findLocalDataset(linkCheckJob,sha2);
-
-        metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.LINKS_EXTRACTED);
-
+    public EventProcessor_StartLinkProcessingEvent internalProcessing() throws Exception {
         return this;
     }
 
 
     @Override
     public List<Event> newEventProcessing() {
-        List<Event> result = new ArrayList<>();
-        String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
 
-        if (metadataDocumentService.completeLinkExtract(linkCheckJob)) {
-            LinksFoundInAllDocuments e = eventFactory.createLinksFoundInAllDocuments(initiatingEvent);
+        List<Event> result = new ArrayList<>();
+
+        for(LocalServiceMetadataRecord record : localServiceMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
+            long id = record.getServiceMetadataDocumentId();
+            Event e = eventFactory.createProcessServiceDocLinksEvent(id,linkCheckJobId);
             result.add(e);
         }
+
+        for(LocalDatasetMetadataRecord record : localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
+            long id = record.getDatasetMetadataDocumentId();
+            Event e = eventFactory.createProcessDatasetDocLinksEvent(id,linkCheckJobId);
+            result.add(e);
+        }
+
         return result;
     }
 }

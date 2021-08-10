@@ -93,7 +93,7 @@ public class MainLoopRouteCreator {
         ;
 
         ChoiceDefinition choice = routeBuilder
-                .from(from + "?concurrentConsumers=5")
+                .from(from )// + "?concurrentConsumers=5")
                 .routeId(mainRouteName + ".eventprocessor")
                 .transacted("txPolicyName")
                 .unmarshal(jsonDefHarvesterConfig)

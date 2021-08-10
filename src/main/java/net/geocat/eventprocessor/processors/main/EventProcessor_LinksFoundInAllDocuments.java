@@ -33,15 +33,16 @@
 
 package net.geocat.eventprocessor.processors.main;
 
+import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LinkCheckJobState;
-import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
-import net.geocat.database.linkchecker.service.LinkService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.processlinks.ProcessServiceDocLinkEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,16 @@ public class EventProcessor_LinksFoundInAllDocuments extends BaseEventProcessor<
     LinkCheckJobService linkCheckJobService;
 
     @Autowired
-    LinkService linkService;
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
+
+    @Autowired
+    LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
+
+    @Autowired
+    LinkCheckJobRepo linkCheckJobRepo;
+
+//    @Autowired
+//    LinkService linkService;
 
     @Autowired
     EventFactory eventFactory;
@@ -75,7 +85,18 @@ public class EventProcessor_LinksFoundInAllDocuments extends BaseEventProcessor<
 
     @Override
     public EventProcessor_LinksFoundInAllDocuments internalProcessing() throws Exception {
-        linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.LINKS_FOUND);
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
+        linkCheckJobService.updateLinkCheckJobStateInDB(linkCheckJobId, LinkCheckJobState.LINKS_FOUND);
+        LinkCheckJob job = linkCheckJobService.find(linkCheckJobId);
+
+        long nService = localServiceMetadataRecordRepo.countByLinkCheckJobId(linkCheckJobId);
+        long nData = localDatasetMetadataRecordRepo.countByLinkCheckJobId(linkCheckJobId);
+
+        job.setNumberOfLocalDatasetRecords(nData);
+        job.setNumberOfLocalServiceRecords(nService);
+
+        job = linkCheckJobRepo.save(job);
+
         return this;
     }
 
@@ -84,6 +105,9 @@ public class EventProcessor_LinksFoundInAllDocuments extends BaseEventProcessor<
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
         linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.CHECKING_LINKS);
+
+        Event e = eventFactory.createStartLinkProcessingEvent(getInitiatingEvent().getLinkCheckJobId());
+        result.add(e);
 //
 //        List<Link> links = linkService.findLinks(getInitiatingEvent().getLinkCheckJobId());
 //        for (Link link : links) {

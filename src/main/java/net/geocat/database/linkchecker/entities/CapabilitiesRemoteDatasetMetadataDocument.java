@@ -41,7 +41,7 @@ import javax.persistence.*;
 @DiscriminatorValue("CapabilitiesRemoteDSMDDocument")
 public class CapabilitiesRemoteDatasetMetadataDocument extends DatasetMetadataRecord {
 
-    @OneToOne(mappedBy = "capabilitiesRemoteDatasetMetadataDocument", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "capabilitiesRemoteDatasetMetadataDocument", fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
     // @JoinColumn(name="capabilitiesDatasetMetadataLinkId")
     private CapabilitiesDatasetMetadataLink capabilitiesRemoteDatasetMetadataDocumentLink;
 

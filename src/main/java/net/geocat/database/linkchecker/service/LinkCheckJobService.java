@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @Scope("prototype")
 public class LinkCheckJobService {
@@ -48,30 +50,40 @@ public class LinkCheckJobService {
     @Autowired
     LinkCheckJobRepo linkCheckJobRepo;
 
+    public LinkCheckJob updateNumberofDocumentsInBatch(String linkCheckJobId, Long number) {
+        LinkCheckJob job =  linkCheckJobRepo.findById(linkCheckJobId).get();
+        job.setNumberOfDocumentsInBatch( number );
+        return linkCheckJobRepo.save(job);
+    }
 
     public LinkCheckJob updateLinkCheckJobStateInDBToError(String guid) throws Exception {
         return updateLinkCheckJobStateInDB(guid, LinkCheckJobState.ERROR);
     }
 
     public LinkCheckJob updateLinkCheckJobStateInDB(String guid, LinkCheckJobState state) {
-//        LinkCheckJob job = linkCheckJobRepo.findById(guid).get();
-//        job.setState(state);
-//        return linkCheckJobRepo.save(job);
-        return null;
+        LinkCheckJob job = linkCheckJobRepo.findById(guid).get();
+        job.setState(state);
+        return linkCheckJobRepo.save(job);
+     }
+
+    public LinkCheckJob find(String guid ) {
+        LinkCheckJob job = linkCheckJobRepo.findById(guid).get();
+        return job;
     }
 
+
+
     public LinkCheckJob createLinkCheckJobInDB(LinkCheckRequestedEvent event) {
-//        Optional<LinkCheckJob> job = linkCheckJobRepo.findById(event.getLinkCheckJobId());
-//        if (job.isPresent()) //2nd attempt
-//        {
-//            job.get().setState(LinkCheckJobState.CREATING);
-//            return linkCheckJobRepo.save(job.get());
-//        }
-//        LinkCheckJob newJob = new LinkCheckJob();
-//        newJob.setJobId(event.getLinkCheckJobId());
-//        newJob.setHarvestJobId(event.getHarvestJobId());
-//        return linkCheckJobRepo.save(newJob);
-        return null;
-    }
+        Optional<LinkCheckJob> job = linkCheckJobRepo.findById(event.getLinkCheckJobId());
+        if (job.isPresent()) //2nd attempt
+        {
+            job.get().setState(LinkCheckJobState.CREATING);
+            return linkCheckJobRepo.save(job.get());
+        }
+        LinkCheckJob newJob = new LinkCheckJob();
+        newJob.setJobId(event.getLinkCheckJobId());
+        newJob.setHarvestJobId(event.getHarvestJobId());
+        return linkCheckJobRepo.save(newJob);
+     }
 
 }

@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
@@ -42,13 +43,15 @@ import javax.persistence.*;
 @Entity
 public class ServiceDocumentLink extends RetrievableSimpleLink {
 
+
+
     @Column(columnDefinition = "text")
     String operationName;
     @Column(columnDefinition = "text")
     String protocol;
     @Column(columnDefinition = "text")
     String function;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 //    @JoinColumn(name="serviceMetadataId")
     ServiceMetadataRecord serviceMetadataRecord;
     @Column(columnDefinition = "text")
@@ -66,6 +69,12 @@ public class ServiceDocumentLink extends RetrievableSimpleLink {
 
 
     //---------------------------------------------------------------------------
+
+
+
+    public ServiceMetadataRecord getServiceMetadataRecord() {
+        return serviceMetadataRecord;
+    }
 
     public long getServiceMetadataLinkId() {
         return serviceMetadataLinkId;

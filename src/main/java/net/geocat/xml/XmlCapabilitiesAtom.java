@@ -33,11 +33,54 @@
 
 package net.geocat.xml;
 
+import com.sun.org.apache.xpath.internal.NodeSet;
+import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
+import org.springframework.data.annotation.Persistent;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPathExpressionException;
 
 public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
 
     public XmlCapabilitiesAtom(XmlDoc doc) throws Exception {
         super(doc, CapabilitiesType.Atom);
+        setup_XmlCapabilitiesAtom();
     }
+
+    private void setup_XmlCapabilitiesAtom() throws  Exception {
+        NodeList ns = xpath_nodeset("//atom:entry");
+        for(int idx=0;idx<ns.getLength();idx++) {
+            String identity = null;
+            String url = null;
+            Node entryNode = ns.item(idx);
+            Node spatial_dataset_identifier_codeNode = xpath_node(entryNode,"inspire_dls:spatial_dataset_identifier_code");
+            Node urlNode = xpath_node(entryNode,"atom:link[@rel='describedby']");
+
+            if (spatial_dataset_identifier_codeNode != null) {
+                identity = spatial_dataset_identifier_codeNode.getTextContent();
+                if (identity.isEmpty())
+                    identity = null;
+            }
+            if (urlNode != null) {
+                Node hrefNode = urlNode.getAttributes().getNamedItem("href");
+                if (hrefNode != null) {
+                    url = hrefNode.getNodeValue();
+                    if (url.isEmpty())
+                        url = null;
+                }
+            }
+            if ( (url !=null) || (identity !=null)) {
+                DatasetLink dl = new DatasetLink(identity,url);
+                this.getDatasetLinksList().add(dl);
+            }
+
+        }
+    }
+
+//    Extract the dataset authority:identifier from service feed
+///feed/entry/nspire_dls:spatial_dataset_identifier_code
+///feed/entry/inspire_dls:spatial_dataset_identifier_namespace
+
 }

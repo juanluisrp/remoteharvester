@@ -35,13 +35,12 @@ package net.geocat.events;
 
 import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessDatasetMetadataDocumentEvent;
-import net.geocat.events.findlinks.ProcessServiceMetadataDocumentEvent;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
 import net.geocat.events.processlinks.AllLinksCheckedEvent;
-import net.geocat.events.processlinks.ProcessOperatesOnLinkEvent;
-import net.geocat.events.processlinks.ProcessServiceDocLinkEvent;
-import net.geocat.xml.MetadataDocumentType;
+import net.geocat.events.processlinks.ProcessDatasetDocLinksEvent;
+import net.geocat.events.processlinks.ProcessServiceDocLinksEvent;
+import net.geocat.events.processlinks.StartLinkProcessingEvent;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -57,12 +56,11 @@ public class EventFactory {
         return result;
     }
 
-    public ProcessServiceMetadataDocumentEvent createProcessServiceMetadataDocumentEvent(String linkCheckJobId,
-                                                                                  String harvestJobId,
-                                                                                  //  long endpointJobId,
-                                                                                  String sha2,
-                                                                                  MetadataDocumentType documentType) {
-        ProcessServiceMetadataDocumentEvent result = new ProcessServiceMetadataDocumentEvent(linkCheckJobId, harvestJobId, sha2, documentType);
+    public ProcessLocalMetadataDocumentEvent createProcessServiceMetadataDocumentEvent(String linkCheckJobId,
+                                                                                       String harvestJobId,
+                                                                                       String sha2,
+                                                                                       Long underlyingHarvestMetadataRecordId) {
+        ProcessLocalMetadataDocumentEvent result = new ProcessLocalMetadataDocumentEvent(linkCheckJobId, harvestJobId, sha2,underlyingHarvestMetadataRecordId);
         return result;
     }
 
@@ -72,13 +70,13 @@ public class EventFactory {
 //        return result;
 //    }
 
-    public LinksFoundInAllDocuments createLinksFoundInAllDocuments(ProcessServiceMetadataDocumentEvent initiatingEvent) {
+    public LinksFoundInAllDocuments createLinksFoundInAllDocuments(ProcessLocalMetadataDocumentEvent initiatingEvent) {
         LinksFoundInAllDocuments result = new LinksFoundInAllDocuments(initiatingEvent.getLinkCheckJobId(), initiatingEvent.getHarvestJobId());
         return result;
     }
 
-    public ProcessServiceDocLinkEvent createProcessLinkEvent(Link l) {
-        ProcessServiceDocLinkEvent result = new ProcessServiceDocLinkEvent(l.getLinkId(), l.getLinkCheckJobId());
+    public ProcessServiceDocLinksEvent createProcessLinkEvent(Link l) {
+        ProcessServiceDocLinksEvent result = new ProcessServiceDocLinksEvent(l.getLinkId(), l.getLinkCheckJobId());
         return result;
     }
 
@@ -86,20 +84,34 @@ public class EventFactory {
         AllLinksCheckedEvent event = new AllLinksCheckedEvent(linkcheckJobId);
         return event;
     }
+//
+//    public ProcessDatasetMetadataDocumentEvent createProcessDatasetMetadataDocumentEvent(String linkCheckJobId, String harvestJobId, String sha2, MetadataDocumentType metadataRecordType) {
+//        ProcessDatasetMetadataDocumentEvent result = new ProcessDatasetMetadataDocumentEvent(linkCheckJobId, harvestJobId, sha2, metadataRecordType);
+//        return result;
+//    }
 
-    public ProcessDatasetMetadataDocumentEvent createProcessDatasetMetadataDocumentEvent(String linkCheckJobId, String harvestJobId, String sha2, MetadataDocumentType metadataRecordType) {
-        ProcessDatasetMetadataDocumentEvent result = new ProcessDatasetMetadataDocumentEvent(linkCheckJobId, harvestJobId, sha2, metadataRecordType);
+    public ProcessServiceDocLinksEvent createProcessServiceDocLinkEvent(long linkId, String linkCheckJobId){
+        ProcessServiceDocLinksEvent result = new ProcessServiceDocLinksEvent(linkId,linkCheckJobId);
         return result;
     }
 
-    public ProcessServiceDocLinkEvent createProcessServiceDocLinkEvent(long linkId, String linkCheckJobId){
-        ProcessServiceDocLinkEvent result = new ProcessServiceDocLinkEvent(linkId,linkCheckJobId);
+//    public ProcessDatasetDocLinksEvent createProcessOperatesOnLinkEvent(long linkId, String linkCheckJobId){
+//        ProcessDatasetDocLinksEvent result = new ProcessDatasetDocLinksEvent(linkId,linkCheckJobId);
+//        return result;
+//    }
+
+    public ProcessServiceDocLinksEvent createProcessServiceDocLinksEvent(long serviceMetadataId, String linkCheckJobId){
+        ProcessServiceDocLinksEvent result = new ProcessServiceDocLinksEvent(serviceMetadataId,linkCheckJobId);
         return result;
     }
 
-    public ProcessOperatesOnLinkEvent createProcessOperatesOnLinkEvent(long linkId, String linkCheckJobId){
-        ProcessOperatesOnLinkEvent result = new ProcessOperatesOnLinkEvent(linkId,linkCheckJobId);
+    public ProcessDatasetDocLinksEvent createProcessDatasetDocLinksEvent(long serviceMetadataId, String linkCheckJobId){
+        ProcessDatasetDocLinksEvent result = new ProcessDatasetDocLinksEvent(serviceMetadataId,linkCheckJobId);
         return result;
     }
 
+    public StartLinkProcessingEvent createStartLinkProcessingEvent(String linkCheckJobId) {
+        StartLinkProcessingEvent result = new StartLinkProcessingEvent(linkCheckJobId);
+        return result;
+    }
 }

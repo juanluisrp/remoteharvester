@@ -31,36 +31,41 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.events.processlinks;
 
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+import net.geocat.events.Event;
 
-import java.util.List;
+public class ProcessServiceDocLinksEvent extends Event {
 
+    private long serviceMetadataId;
+    private String linkCheckJobId;
 
-@Component
-@Scope("prototype")
-public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServiceMetadataRecord, Long> {
+    public ProcessServiceDocLinksEvent() {
+    }
 
-    LocalServiceMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
+    public ProcessServiceDocLinksEvent(long serviceMetadataId, String linkCheckJobId) {
+        this.serviceMetadataId = serviceMetadataId;
+        this.linkCheckJobId = linkCheckJobId;
+    }
 
-    List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
+    public long getServiceMetadataId() {
+        return serviceMetadataId;
+    }
 
+    public void setServiceMetadataId(long serviceMetadataId) {
+        this.serviceMetadataId = serviceMetadataId;
+    }
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
+    public String getLinkCheckJobId() {
+        return linkCheckJobId;
+    }
 
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
 
-
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state  in ?2",
-            nativeQuery = true
-    )
-    long countInStates(String LinkCheckJobId, List<String> states);
+    @Override
+    public String toString() {
+        return "ProcessServiceDocEvent  - serviceMetadataId:" + serviceMetadataId + ", linkcheckJobId:" + linkCheckJobId;
+    }
 }

@@ -39,6 +39,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -70,6 +71,14 @@ public class ServiceMetadataRecord extends MetadataRecord {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<OperatesOnLink> operatesOnLinks;
 
+
+
+
+    public ServiceMetadataRecord(){
+        super();
+        serviceDocumentLinks = new ArrayList<>();
+        operatesOnLinks = new ArrayList<>();
+    }
 
     //---------------------------------------------------------------------------
 

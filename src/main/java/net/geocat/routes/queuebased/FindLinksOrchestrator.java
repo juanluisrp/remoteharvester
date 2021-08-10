@@ -36,9 +36,11 @@ package net.geocat.routes.queuebased;
 import net.geocat.eventprocessor.MainLoopRouteCreator;
 import net.geocat.eventprocessor.RedirectEvent;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessDatasetMetadataDocumentEvent;
-import net.geocat.events.findlinks.ProcessServiceMetadataDocumentEvent;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
+import net.geocat.events.processlinks.ProcessDatasetDocLinksEvent;
+import net.geocat.events.processlinks.ProcessServiceDocLinksEvent;
+import net.geocat.events.processlinks.StartLinkProcessingEvent;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +60,7 @@ public class FindLinksOrchestrator extends SpringRouteBuilder {
 
         mainLoopRouteCreator.createEventProcessingLoop(this,
                 "activemq:" + myJMSQueueName,
-                new Class[]{StartProcessDocumentsEvent.class, ProcessServiceMetadataDocumentEvent.class, ProcessDatasetMetadataDocumentEvent.class},
+                new Class[]{StartProcessDocumentsEvent.class,ProcessLocalMetadataDocumentEvent.class},
                 Arrays.asList(
                         new RedirectEvent(LinksFoundInAllDocuments.class, "activemq:" + MainOrchestrator.myJMSQueueName)
                 ),

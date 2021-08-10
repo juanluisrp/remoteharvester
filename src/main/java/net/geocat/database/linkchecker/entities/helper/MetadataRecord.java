@@ -36,6 +36,8 @@ package net.geocat.database.linkchecker.entities.helper;
 import net.geocat.xml.MetadataDocumentType;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
@@ -47,11 +49,28 @@ public class MetadataRecord {
     @Column(columnDefinition = "text")
     private String fileIdentifier;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "varchar(22)")
+    @Enumerated(EnumType.STRING)
     //i.e. will be service
     private MetadataDocumentType metadataRecordType;
 
+    @Column(columnDefinition = "text")
+    private String humanReadable;
+
+    public MetadataRecord()
+    {
+
+    }
+
     //---------------------------------------------------------------------------
+
+    public String getHumanReadable() {
+        return humanReadable;
+    }
+
+    public void setHumanReadable(String humanReadable) {
+        this.humanReadable = humanReadable;
+    }
 
     public String getSha2() {
         return sha2;

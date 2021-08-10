@@ -31,67 +31,41 @@
  *  ==============================================================================
  */
 
-package net.geocat.events.findlinks;
+package net.geocat.events.processlinks;
 
 import net.geocat.events.Event;
-import net.geocat.xml.MetadataDocumentType;
 
-public class ProcessServiceMetadataDocumentEvent extends Event {
+public class ProcessDatasetDocLinksEvent extends Event {
 
-    private String linkCheckJobId;
-    private String sha2;
-    //private long endpointJobId;
-    private String harvestJobId;
-    private MetadataDocumentType documentType;
+        private long datasetDocumentId;
+        private String linkCheckJobId;
 
-    public ProcessServiceMetadataDocumentEvent() {
+    public ProcessDatasetDocLinksEvent() {
     }
 
-    public ProcessServiceMetadataDocumentEvent(String linkCheckJobId,
-                                               String harvestJobId,
-                                               //  long endpointJobId,
-                                               String sha2,
-                                               MetadataDocumentType documentType) {
-        this.linkCheckJobId = linkCheckJobId;
-        this.sha2 = sha2;
-        this.harvestJobId = harvestJobId;
-        this.documentType = documentType;
+    public ProcessDatasetDocLinksEvent(long datasetDocumentId, String linkCheckJobId) {
+            this.datasetDocumentId = datasetDocumentId;
+            this.linkCheckJobId = linkCheckJobId;
+    }
+
+    public long getDatasetDocumentId() {
+        return datasetDocumentId;
+    }
+
+    public void setDatasetDocumentId(long datasetDocumentId) {
+        this.datasetDocumentId = datasetDocumentId;
     }
 
     public String getLinkCheckJobId() {
-        return linkCheckJobId;
-    }
+            return linkCheckJobId;
+        }
 
-    public void setLinkCheckJobId(String linkCheckJobId) {
-        this.linkCheckJobId = linkCheckJobId;
-    }
+        public void setLinkCheckJobId(String linkCheckJobId) {
+            this.linkCheckJobId = linkCheckJobId;
+        }
 
-    public String getSha2() {
-        return sha2;
-    }
-
-    public void setSha2(String sha2) {
-        this.sha2 = sha2;
-    }
-
-//    public long getEndpointJobId() {
-//        return endpointJobId;
-//    }
-//
-//    public void setEndpointJobId(long endpointJobId) {
-//        this.endpointJobId = endpointJobId;
-//    }
-
-    public String getHarvestJobId() {
-        return harvestJobId;
-    }
-
-    public void setHarvestJobId(String harvestJobId) {
-        this.harvestJobId = harvestJobId;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessServiceMetadataDocumentEvent - linkCheckJobId:" + linkCheckJobId + ",harvestJobId:" + harvestJobId + ", sha2:" + sha2;
-    }
+        @Override
+        public String toString() {
+            return "ProcessDatasetDocLinksEvent  - datasetDocumentId:" + datasetDocumentId + ", linkcheckJobId:" + linkCheckJobId;
+        }
 }

@@ -33,14 +33,20 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.MetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 
 import javax.persistence.*;
 
+
 @Entity
-@DiscriminatorValue("LocalServiceMetadataRecord")
-public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
+@DiscriminatorValue("NoProcessedMetadataRecord")
+public class LocalNotProcessedMetadataRecord extends MetadataRecord {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long localNotProcessedMetadataRecordId;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
@@ -55,11 +61,13 @@ public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
     private String summary;
 
 
-
-    public LocalServiceMetadataRecord(){
-        super();
+    public long getLocalNotProcessedMetadataRecordId() {
+        return localNotProcessedMetadataRecordId;
     }
 
+    public void setLocalNotProcessedMetadataRecordId(long localNotProcessedMetadataRecordId) {
+        this.localNotProcessedMetadataRecordId = localNotProcessedMetadataRecordId;
+    }
 
     public String getLinkCheckJobId() {
         return linkCheckJobId;
@@ -93,21 +101,21 @@ public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
     @PreUpdate
     protected void onUpdate() {
         summary = toString();
-        super.onUpdate();
+
     }
 
     @PrePersist
     protected void onInsert() {
         summary = toString();
-        super.onInsert();
+
     }
 
     //---------------------------------------------------------------------------
 
     @Override
     public String toString() {
-        String result = "ServiceMetadataDocument {\n";
-        result += "     serviceMetadataDocumentId: " + getServiceMetadataDocumentId() + "\n";
+        String result = "LocalNotProcessedMetadataRecord {\n";
+        result += "      NOT PROCESSED Metadata Document Id: " + localNotProcessedMetadataRecordId+ "\n";
         result += "     linkCheckJobId: " + linkCheckJobId + "\n";
         result += "     harvesterMetadataRecordId: " + harvesterMetadataRecordId + "\n";
         result += "     state: " + state + "\n";

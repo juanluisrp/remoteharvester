@@ -33,18 +33,20 @@
 
 package net.geocat.eventprocessor.processors.processlinks;
 
-
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
+import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.database.linkchecker.repos2.LinkRepo;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.LinkService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.processlinks.ProcessServiceDocLinkEvent;
+import net.geocat.events.processlinks.ProcessDatasetDocLinksEvent;
 import net.geocat.service.LinkProcessor_GetCapLinkedMetadata;
 import net.geocat.service.LinkProcessor_ProcessCapDoc;
 import net.geocat.service.LinkProcessor_SimpleLinkRequest;
+import net.geocat.service.MetadataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,76 +58,53 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_ProcessServiceDocLinkEvent extends BaseEventProcessor<ProcessServiceDocLinkEvent> {
+public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcessor<ProcessDatasetDocLinksEvent> {
 
-    Logger logger = LoggerFactory.getLogger(EventProcessor_ProcessServiceDocLinkEvent.class);
+    Logger logger = LoggerFactory.getLogger(EventProcessor_ProcessServiceDocLinksEvent.class);
 
-    @Autowired
-    LinkProcessor_SimpleLinkRequest linkProcessor_simpleLinkRequest;
 
-    @Autowired
-    LinkProcessor_ProcessCapDoc linkProcessor_processCapDoc;
 
     @Autowired
-    LinkProcessor_GetCapLinkedMetadata linkProcessor_getCapLinkedMetadata;
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
     @Autowired
-    LinkCheckJobService linkCheckJobService;
-
-    @Autowired
-    LinkRepo linkRepo;
-
-    @Autowired
-    LinkService linkService;
+    MetadataService metadataService;
 
     @Autowired
     EventFactory eventFactory;
 
+    LocalDatasetMetadataRecord localDatasetMetadataRecord;
+
     @Override
-    public EventProcessor_ProcessServiceDocLinkEvent externalProcessing() throws Exception {
+    public EventProcessor_ProcessDatasetDocLinksEvent externalProcessing() throws Exception {
         return this;
     }
 
 
     @Override
-    public EventProcessor_ProcessServiceDocLinkEvent internalProcessing() throws Exception {
+    public EventProcessor_ProcessDatasetDocLinksEvent internalProcessing() throws Exception {
+        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
 
-//        Link link = linkRepo.findById(this.getInitiatingEvent().getLinkId()).get();
-//        link.setLinkState(LinkState.IN_PROGRESS);
-//        linkRepo.save(link);
-//        try {
-//
-//            link = linkProcessor_simpleLinkRequest.process(link);
-//            linkRepo.save(link);
-//
-//            link = linkProcessor_processCapDoc.process(link);
-//            linkRepo.save(link);
-//
-//            link = linkProcessor_getCapLinkedMetadata.process(link);
-//
-//            link.setLinkState(LinkState.COMPLETE);
-//            linkRepo.save(link);
-//        }
-//        catch (Exception e){
-//            link.setLinkState(LinkState.ERROR);
-//            link.setLinkErrorMessage(e.getMessage());
-//            linkRepo.save(link);
-//            logger.error("error occurred processing link "+link.getLinkId(), e);
-//            throw e;
-//        }
-
+        localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+         save();
         return this;
     }
-
+    public void save(){
+        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
+    }
 
     @Override
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
-//        if (linkService.complete(getInitiatingEvent().getLinkCheckJobId())) {
-//            linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.LINKS_FOUND);
-//            Event e = eventFactory.createAllLinksCheckedEvent(getInitiatingEvent().getLinkCheckJobId());
-//            result.add(e);
-//        }
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
+
+        if (metadataService.linkProcessingComplete(linkCheckJobId))
+        {
+            //done
+            Event e = eventFactory.createAllLinksCheckedEvent(linkCheckJobId);
+            result.add(e);
+        }
         return result;
     }
+
 }

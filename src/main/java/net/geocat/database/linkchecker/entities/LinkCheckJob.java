@@ -55,6 +55,10 @@ public class LinkCheckJob {
     @Column(columnDefinition = "text")
     private String messages;
 
+    Long numberOfDocumentsInBatch;
+    Long numberOfLocalServiceRecords;
+    Long numberOfLocalDatasetRecords;
+
     @PrePersist
     private void onInsert() {
         this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -64,6 +68,31 @@ public class LinkCheckJob {
     @PreUpdate
     private void onUpdate() {
         this.lastUpdateUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+    }
+
+
+    public Long getNumberOfLocalServiceRecords() {
+        return numberOfLocalServiceRecords;
+    }
+
+    public void setNumberOfLocalServiceRecords(Long numberOfLocalServiceRecords) {
+        this.numberOfLocalServiceRecords = numberOfLocalServiceRecords;
+    }
+
+    public Long getNumberOfLocalDatasetRecords() {
+        return numberOfLocalDatasetRecords;
+    }
+
+    public void setNumberOfLocalDatasetRecords(Long numberOfLocalDatasetRecords) {
+        this.numberOfLocalDatasetRecords = numberOfLocalDatasetRecords;
+    }
+
+    public Long getNumberOfDocumentsInBatch() {
+        return numberOfDocumentsInBatch;
+    }
+
+    public void setNumberOfDocumentsInBatch(Long numberOfDocumentsInBatch) {
+        this.numberOfDocumentsInBatch = numberOfDocumentsInBatch;
     }
 
     public String getJobId() {

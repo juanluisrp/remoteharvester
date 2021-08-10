@@ -33,34 +33,26 @@
 
 package net.geocat.database.linkchecker.repos;
 
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 
 @Component
 @Scope("prototype")
-public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServiceMetadataRecord, Long> {
-
-    LocalServiceMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
-
-    List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
+public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
+    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
 
 
     long countByLinkCheckJobId(String LinkCheckJobId);
 
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",
+    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
             nativeQuery = true
     )
     long countCompletedState(String LinkCheckJobId);
 
-
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state  in ?2",
-            nativeQuery = true
-    )
-    long countInStates(String LinkCheckJobId, List<String> states);
 }

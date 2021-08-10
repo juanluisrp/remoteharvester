@@ -69,6 +69,8 @@ public class RetrievableSimpleLinkDownloader {
             HttpResult data = null;
 
             String url = (link.getFixedURL() == null) ? link.getRawURL() : link.getFixedURL();
+            if (url !=null)
+                url = url.trim(); // several links have a " " at the end of them
 
             IContinueReadingPredicate continueReadingPredicate = partialDownloadPredicateFactory.create(link);
 
@@ -77,6 +79,7 @@ public class RetrievableSimpleLinkDownloader {
             } catch (Exception e) {
                 link.setIndicator_LinkResolves(IndicatorStatus.FAIL);
                 link.setLinkHTTPException(e.getClass().getSimpleName() + " - " + e.getMessage());
+                link.setUrlFullyRead(false);
                 return link;
             }
             if ((data.getHttpCode() == 200))

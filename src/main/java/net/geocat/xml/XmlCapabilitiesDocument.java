@@ -37,6 +37,7 @@ import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class XmlCapabilitiesDocument extends XmlDoc {
@@ -50,6 +51,7 @@ public class XmlCapabilitiesDocument extends XmlDoc {
 
     public XmlCapabilitiesDocument(XmlDoc doc, CapabilitiesType type) throws Exception {
         super(doc);
+        datasetLinksList = new ArrayList<>();
         this.capabilitiesType = type;
         setup_XmlCapabilitiesDocument();
     }

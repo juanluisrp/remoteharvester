@@ -36,6 +36,7 @@ package net.geocat.database.linkchecker.service;
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.MetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.service.ServiceDocLinkExtractor;
 import net.geocat.xml.XmlDatasetMetadataDocument;
@@ -115,6 +116,25 @@ public class MetadataDocumentFactory {
                                                                        String linkCheckJobId,
                                                                        String sha2) throws Exception {
         LocalDatasetMetadataRecord result = remoteDatasetMetadataRecordService.createLocalServiceMetadataRecord(doc, underlyingHarvestMetadataRecordId, linkCheckJobId, sha2);
+        augment(result, doc);
+        return result;
+    }
+
+    public LocalNotProcessedMetadataRecord createLocalNotProcessedMetadataRecord(XmlMetadataDocument doc,
+                                                                       Long underlyingHarvestMetadataRecordId,
+                                                                       String linkCheckJobId,
+                                                                       String sha2) throws Exception {
+        LocalNotProcessedMetadataRecord result =  new LocalNotProcessedMetadataRecord();
+        result.setHarvesterMetadataRecordId(underlyingHarvestMetadataRecordId);
+        result.setLinkCheckJobId(linkCheckJobId);
+        result.setSha2(sha2);
+
+
+        result.setFileIdentifier(doc.getFileIdentifier());
+        result.setMetadataRecordType(doc.getMetadataDocumentType()); // dataset
+
+        result.setState(ServiceMetadataDocumentState.CREATED);
+
         augment(result, doc);
         return result;
     }

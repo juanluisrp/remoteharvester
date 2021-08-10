@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -47,6 +48,7 @@ import java.util.List;
 public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalDatasetMetadataRecord, Long> {
     LocalDatasetMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
 
+    List<LocalDatasetMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
 
     long countByLinkCheckJobId(String LinkCheckJobId);
 
@@ -54,5 +56,10 @@ public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalData
             nativeQuery = true
     )
     long countCompletedState(String LinkCheckJobId);
+
+    @Query(value = "Select count(*) from datasetmetadatarecord   where linkcheckjobid = ?1 and dataset_record_type = 'LocalDatasetMetadataRecord' and state  in ?2",
+            nativeQuery = true
+    )
+    long countInStates(String LinkCheckJobId, List<String> states);
 
 }

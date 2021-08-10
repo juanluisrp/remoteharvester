@@ -37,22 +37,20 @@ import net.geocat.database.harvester.entities.EndpointJob;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.EndpointJobRepo;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
+import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
+import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.findlinks.ProcessDatasetMetadataDocumentEvent;
-import net.geocat.events.findlinks.ProcessServiceMetadataDocumentEvent;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
 import net.geocat.service.BlobStorageService;
-import net.geocat.xml.XmlDatasetMetadataDocument;
-import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
-import net.geocat.xml.XmlServiceRecordDoc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +58,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,8 +92,11 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
     @Autowired
     LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
 
+    @Autowired
+    LinkCheckJobService linkCheckJobService;
 
-    List<net.geocat.database.linkchecker.entities.helper.MetadataRecord> metadataRecords;
+
+    List<net.geocat.database.harvester.entities.MetadataRecord> metadataRecords;
 
     @Override
     public EventProcessor_StartProcessDocumentsEvent externalProcessing() {
@@ -105,58 +107,24 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
     @Override
     public EventProcessor_StartProcessDocumentsEvent internalProcessing() throws Exception {
 
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
+
         List<EndpointJob> endpointJobs = endpointJobRepo.findByHarvestJobId(getInitiatingEvent().getHarvestJobId());
         List<Long> endpointIds = endpointJobs.stream().map(x -> x.getEndpointJobId()).collect(Collectors.toList());
 
-        List<MetadataRecord> records = metadataRecordRepo.findByEndpointJobIdIn(endpointIds);
+        metadataRecords = metadataRecordRepo.findByEndpointJobIdIn(endpointIds);
 
-        metadataRecords = new ArrayList<>();
-        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
-        for (MetadataRecord record : records) {
-            net.geocat.database.linkchecker.entities.helper.MetadataRecord metadataRecord = getDoc(record, linkCheckJobId);
-            if (metadataRecord != null)
-                metadataRecords.add(metadataRecord);
-            else
-                logger.debug("sha2=" + record.getSha2() + " - not a service or dataset record.");
-        }
+        metadataRecords = metadataRecords.stream().filter(x->x.getSha2().equals("EE4EED5D2C77F6289DD28CFF209F4A14E7FA2B923C07FD959CFC696FFC268654")).collect(Collectors.toList());
+
+        //metadataRecords= metadataRecords.subList(0,10);
+
+        LinkCheckJob job = linkCheckJobService.updateNumberofDocumentsInBatch(linkCheckJobId, (long) metadataRecords.size());
+
 
         return this;
     }
 
-    public net.geocat.database.linkchecker.entities.helper.MetadataRecord getDoc(MetadataRecord record, String linkCheckJobId) throws Exception {
-        String sha2 = record.getSha2();
-        List<MetadataRecord> metadataRecord = metadataRecordRepo.findBySha2(sha2);
-        if (metadataRecord.isEmpty())
-            return null;
-        String xml = blobStorageService.findXML(sha2);
 
-
-        XmlDoc doc = xmlDocumentFactory.create(xml);
-
-        if (doc instanceof XmlServiceRecordDoc) {
-            XmlServiceRecordDoc xmlServiceRecordDoc = (XmlServiceRecordDoc) doc;
-            LocalServiceMetadataRecord localServiceMetadataRecord =
-                    metadataDocumentFactory.createLocalServiceMetadataRecord(xmlServiceRecordDoc, record.getMetadataRecordId(), linkCheckJobId, sha2);
-            LocalServiceMetadataRecord existing = localServiceMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, sha2);
-            if (existing != null)
-                return existing;
-            else
-                return localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
-        } else if (doc instanceof XmlDatasetMetadataDocument) {
-            XmlDatasetMetadataDocument xmlDatasetMetadataDocument = (XmlDatasetMetadataDocument) doc;
-            LocalDatasetMetadataRecord localDatasetMetadataRecord =
-                    metadataDocumentFactory.createLocalDatasetMetadataRecord(xmlDatasetMetadataDocument, record.getMetadataRecordId(), linkCheckJobId, sha2);
-
-            LocalDatasetMetadataRecord existing = localDatasetMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, sha2);
-            if (existing == null)
-                return localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
-            else
-                return existing;
-        } else {
-            return null;
-        }
-
-    }
 
 
     @Override
@@ -167,23 +135,23 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
         logger.debug("There are "+metadataRecords.size()+" records to process.");
 
-        for (net.geocat.database.linkchecker.entities.helper.MetadataRecord record : metadataRecords) {
-            if (record instanceof  LocalServiceMetadataRecord) {
-                ProcessServiceMetadataDocumentEvent e =
-                        eventFactory.createProcessServiceMetadataDocumentEvent(linkCheckJobId,
-                                harvestJobId,
-                                record.getSha2(),
-                                record.getMetadataRecordType());
-                result.add(e);
-            } else if (record instanceof  LocalDatasetMetadataRecord) {
-                ProcessDatasetMetadataDocumentEvent e =
-                        eventFactory.createProcessDatasetMetadataDocumentEvent(linkCheckJobId,
-                                harvestJobId,
-                                record.getSha2(),
-                                record.getMetadataRecordType());
-                result.add(e);
-            }
+//        long nService = metadataRecords.stream().filter(x->x instanceof LocalServiceMetadataRecord).count();
+//        long nDataset = metadataRecords.stream().filter(x->x instanceof LocalDatasetMetadataRecord).count();
+//
+//        logger.debug("There are "+nService+" service records and "+nDataset+" dataset records to process.");
+
+
+        for (net.geocat.database.harvester.entities.MetadataRecord record : metadataRecords) {
+            ProcessLocalMetadataDocumentEvent e =
+                    eventFactory.createProcessServiceMetadataDocumentEvent(linkCheckJobId,
+                            harvestJobId,
+                            record.getSha2(),
+                            record.getMetadataRecordId());
+            result.add(e);
+
         }
+        logger.debug("Finished sending to-process-document messages for "+metadataRecords.size()+" records.");
+
         return result;
     }
 }

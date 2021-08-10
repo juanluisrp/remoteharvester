@@ -31,36 +31,56 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.simple;
 
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
+import net.geocat.xml.XmlCapabilitiesAtom;
+import net.geocat.xml.XmlCapabilitiesWMS;
+import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.helpers.CapabilityDeterminer;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.Scanner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@Component
-@Scope("prototype")
-public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServiceMetadataRecord, Long> {
-
-    LocalServiceMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
-
-    List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
+public class TestAtomCapabilities {
 
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
-
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
+    XmlDocumentFactory xmlDocumentFactory;
+    WMSCapabilitiesDatasetLinkExtractor wmsCapabilitiesDatasetLinkExtractor;
 
 
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state  in ?2",
-            nativeQuery = true
-    )
-    long countInStates(String LinkCheckJobId, List<String> states);
+    @Test
+    public void test_atomFull() throws Exception {
+        XmlCapabilitiesAtom xmlCapabilitiesDocument = read("atom_full.xml");
+        assertNotNull(xmlCapabilitiesDocument);
+
+
+        assertEquals(1, xmlCapabilitiesDocument.getDatasetLinksList().size());
+
+        assertEquals("spatial_dataset_identifier_code1",xmlCapabilitiesDocument.getDatasetLinksList().get(0).getIdentifier());
+        assertEquals("describedbyURL",xmlCapabilitiesDocument.getDatasetLinksList().get(0).getRawUrl());
+
+    }
+
+
+
+    public XmlCapabilitiesAtom read(String fname) throws Exception {
+        String text = new Scanner(TestWMSCapabilitiesDatasetLinkExtractor.class.getClassLoader().getResourceAsStream(fname), "UTF-8")
+                .useDelimiter("\\A").next();
+        return (XmlCapabilitiesAtom)xmlDocumentFactory.create(text);
+    }
+
+
+    @Before
+    public void setup(){
+        xmlDocumentFactory = new XmlDocumentFactory();
+        xmlDocumentFactory.capabilityDeterminer = new CapabilityDeterminer();
+
+        wmsCapabilitiesDatasetLinkExtractor =  new WMSCapabilitiesDatasetLinkExtractor();
+    }
+
 }

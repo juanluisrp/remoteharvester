@@ -44,7 +44,7 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "datasetMetadataRecordId")
     CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
     CapabilitiesDocument capabilitiesDocument;
     @Column(columnDefinition = "text")
     String identity;

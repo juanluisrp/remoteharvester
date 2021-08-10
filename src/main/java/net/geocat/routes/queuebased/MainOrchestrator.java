@@ -41,7 +41,8 @@ import net.geocat.events.LinkCheckRequestedEvent;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
 import net.geocat.events.processlinks.AllLinksCheckedEvent;
-import net.geocat.events.processlinks.ProcessServiceDocLinkEvent;
+import net.geocat.events.processlinks.ProcessServiceDocLinksEvent;
+import net.geocat.events.processlinks.StartLinkProcessingEvent;
 import org.apache.camel.BeanScope;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -67,7 +68,7 @@ public class MainOrchestrator extends SpringRouteBuilder {
                 new Class[]{LinkCheckRequestedEvent.class, LinksFoundInAllDocuments.class, AllLinksCheckedEvent.class},
                 Arrays.asList(
                         new RedirectEvent(StartProcessDocumentsEvent.class, "activemq:" + FindLinksOrchestrator.myJMSQueueName)
-                        , new RedirectEvent(ProcessServiceDocLinkEvent.class, "activemq:" + ProcessLinksOrchestrator.myJMSQueueName)
+                        , new RedirectEvent(StartLinkProcessingEvent.class, "activemq:" + ProcessLinksOrchestrator.myJMSQueueName)
                 ),
                 Arrays.asList(new Class[0])
         );

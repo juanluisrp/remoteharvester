@@ -38,6 +38,7 @@ public enum ServiceMetadataDocumentState {
     NOT_APPLICABLE, //ie. not a service document
     CREATED, // unprocessed
     LINKS_EXTRACTED,
+    LINKS_PROCESSED,
 
     ERROR
 }

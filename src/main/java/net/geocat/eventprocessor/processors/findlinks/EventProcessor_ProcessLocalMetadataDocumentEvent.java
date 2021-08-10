@@ -34,26 +34,23 @@
 package net.geocat.eventprocessor.processors.findlinks;
 
 
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.OperatesOnLink;
-import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.harvester.entities.MetadataRecord;
+import net.geocat.database.harvester.repos.MetadataRecordRepo;
+import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
-import net.geocat.database.linkchecker.entities2.MetadataDocumentState;
-import net.geocat.database.linkchecker.repos2.LinkRepo;
-import net.geocat.database.linkchecker.repos2.MetadataDocumentRepo;
+import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.LocalNotProcessedMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
+import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.database.linkchecker.service.MetadataDocumentService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessServiceMetadataDocumentEvent;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.service.BlobStorageService;
-import net.geocat.service.LinkFactory;
 import net.geocat.service.ServiceDocLinkExtractor;
-import net.geocat.xml.XmlDoc;
-import net.geocat.xml.XmlDocumentFactory;
-import net.geocat.xml.XmlMetadataDocument;
-import net.geocat.xml.XmlServiceRecordDoc;
+import net.geocat.xml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +62,9 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEventProcessor<ProcessServiceMetadataDocumentEvent> {
+public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventProcessor<ProcessLocalMetadataDocumentEvent> {
 
-    Logger logger = LoggerFactory.getLogger(ProcessServiceMetadataDocumentEvent.class);
+    Logger logger = LoggerFactory.getLogger(ProcessLocalMetadataDocumentEvent.class);
 
 
     @Autowired
@@ -91,19 +88,27 @@ public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEven
     @Autowired
     ServiceDocLinkExtractor serviceDocLinkExtractor;
 
-//    @Autowired
-//    LinkRepo linkRepo;
+    @Autowired
+    MetadataRecordRepo metadataRecordRepo;
 
-//    @Autowired
-//    EventFactory eventFactory;
+    @Autowired
+    MetadataDocumentFactory metadataDocumentFactory;
 
+    @Autowired
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
+
+    @Autowired
+    LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
+
+    @Autowired
+    LocalNotProcessedMetadataRecordRepo localNotProcessedMetadataRecordRepo;
 
     String xml;
     XmlDoc doc;
-    LocalServiceMetadataRecord metadataDocument;
+    net.geocat.database.linkchecker.entities.helper.MetadataRecord metadataRecord;
 
     @Override
-    public EventProcessor_ProcessServiceMetadataDocumentEvent externalProcessing() throws Exception {
+    public EventProcessor_ProcessLocalMetadataDocumentEvent externalProcessing() throws Exception {
         String sha2 = getInitiatingEvent().getSha2();
         // long endpointJobId = getInitiatingEvent().getEndpointJobId();
         xml = blobStorageService.findXML(sha2);
@@ -113,24 +118,45 @@ public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEven
 
 
     @Override
-    public EventProcessor_ProcessServiceMetadataDocumentEvent internalProcessing() throws Exception {
+    public EventProcessor_ProcessLocalMetadataDocumentEvent internalProcessing() throws Exception {
         String sha2 = getInitiatingEvent().getSha2();
         String harvestJobId = getInitiatingEvent().getHarvestJobId();
         String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
+        Long underlyingHarvestMetadataRecordId = getInitiatingEvent().getUnderlyingHarvestMetadataRecordId();
 
-        metadataDocument = metadataDocumentService.findLocalProcess(linkCheckJob,sha2);
+        metadataRecord = getDoc(sha2,underlyingHarvestMetadataRecordId,linkCheckJob);
+
+        if (metadataRecord instanceof LocalServiceMetadataRecord){
+            handleService((LocalServiceMetadataRecord)metadataRecord);
+        } else if (metadataRecord instanceof  LocalDatasetMetadataRecord) {
+            handleDataset((LocalDatasetMetadataRecord)metadataRecord);
+        } else if (metadataRecord instanceof  LocalNotProcessedMetadataRecord) {
+            handleWillNotProcess((LocalNotProcessedMetadataRecord)metadataRecord);
+        }
+
+        return this;
+    }
+
+    private void handleWillNotProcess(LocalNotProcessedMetadataRecord metadataRecord) {
+        metadataDocumentService.setState(metadataRecord , ServiceMetadataDocumentState.NOT_APPLICABLE);
+        logger.debug("not a processable record type:"+metadataRecord.getMetadataRecordType()+", fileIdentifier:"+metadataRecord.getFileIdentifier());
+    }
+
+    private void handleService(LocalServiceMetadataRecord metadataDocument) {
+        String sha2 = getInitiatingEvent().getSha2();
+
         if (!(doc instanceof XmlMetadataDocument)) {
             // this shouldn't happen
             metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.NOT_APPLICABLE);
             logger.debug("this shouldn't happen - not an XML Metadata records: sha2:"+sha2);
-            return this;
+            return;
         }
         XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
-         if (!(doc instanceof XmlServiceRecordDoc)) {
+        if (!(doc instanceof XmlServiceRecordDoc)) {
             // ignore - not a service record
             metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.NOT_APPLICABLE);
             logger.debug("not a service record -ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+xmlMetadataDocument.getMetadataDocumentType());
-            return this;
+            return;
         }
 
         XmlServiceRecordDoc xmlServiceRecordDoc = (XmlServiceRecordDoc) doc;
@@ -141,7 +167,7 @@ public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEven
             metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.NOT_APPLICABLE);
             logger.debug("service record has no service type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier());
 
-            return this;
+            return ;
         }
         if (!serviceType.equalsIgnoreCase("view")
                 && !serviceType.equalsIgnoreCase("download")
@@ -149,7 +175,7 @@ public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEven
             metadataDocumentService.setState(metadataDocument, ServiceMetadataDocumentState.NOT_APPLICABLE);
             logger.debug("service record not an appropriate type - ignored, fileIdentifier:"+xmlMetadataDocument.getFileIdentifier()+", type:"+serviceType);
 
-            return this;
+            return;
         }
 
         List<ServiceDocumentLink> serviceLinks = metadataDocument.getServiceDocumentLinks();
@@ -157,10 +183,58 @@ public class EventProcessor_ProcessServiceMetadataDocumentEvent extends BaseEven
         logger.debug("extracted "+serviceLinks.size()+" service links and "+operatesOnsLinks.size()+" operatesOn links from Service Record with fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
 
         metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.LINKS_EXTRACTED);
-
-        return this;
     }
 
+    private void handleDataset(LocalDatasetMetadataRecord metadataRecord) {
+        metadataDocumentService.setState(metadataRecord , ServiceMetadataDocumentState.LINKS_EXTRACTED);
+
+    }
+
+
+    public net.geocat.database.linkchecker.entities.helper.MetadataRecord getDoc(String sha2,Long underlyingHarvestMetadataRecordId, String linkCheckJobId)
+            throws Exception {
+        List<MetadataRecord> metadataRecord = metadataRecordRepo.findBySha2(sha2);
+        if (metadataRecord.isEmpty())
+            return null;
+        String xml = blobStorageService.findXML(sha2);
+
+
+        XmlDoc doc = xmlDocumentFactory.create(xml);
+
+        if (doc instanceof XmlServiceRecordDoc) {
+            XmlServiceRecordDoc xmlServiceRecordDoc = (XmlServiceRecordDoc) doc;
+            LocalServiceMetadataRecord localServiceMetadataRecord =
+                    metadataDocumentFactory.createLocalServiceMetadataRecord(xmlServiceRecordDoc, underlyingHarvestMetadataRecordId, linkCheckJobId, sha2);
+            LocalServiceMetadataRecord existing = localServiceMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, sha2);
+            if (existing != null)
+                return existing;
+            else
+                return localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
+        } else if (doc instanceof XmlDatasetMetadataDocument) {
+            XmlDatasetMetadataDocument xmlDatasetMetadataDocument = (XmlDatasetMetadataDocument) doc;
+            LocalDatasetMetadataRecord localDatasetMetadataRecord =
+                    metadataDocumentFactory.createLocalDatasetMetadataRecord(xmlDatasetMetadataDocument, underlyingHarvestMetadataRecordId, linkCheckJobId, sha2);
+
+            LocalDatasetMetadataRecord existing = localDatasetMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, sha2);
+            if (existing == null)
+                return localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
+            else
+                return existing;
+        } else if (doc instanceof XmlMetadataDocument) {
+            XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
+            LocalNotProcessedMetadataRecord localNotProcessedMetadataRecord =
+                    metadataDocumentFactory.createLocalNotProcessedMetadataRecord(xmlMetadataDocument, underlyingHarvestMetadataRecordId, linkCheckJobId, sha2);
+
+            LocalNotProcessedMetadataRecord existing = localNotProcessedMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, sha2);
+            if (existing == null)
+                return localNotProcessedMetadataRecordRepo.save(localNotProcessedMetadataRecord);
+            else
+                return existing;
+        } else {
+            return null; //should never happen
+        }
+
+    }
 
     @Override
     public List<Event> newEventProcessing() {

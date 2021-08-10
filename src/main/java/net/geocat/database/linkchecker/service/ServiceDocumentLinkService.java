@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.service;
 
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.context.annotation.Scope;
@@ -47,6 +48,7 @@ public class ServiceDocumentLinkService {
     public ServiceDocumentLink create(ServiceMetadataRecord localServiceMetadataRecord, OnlineResource onlineResource) {
         ServiceDocumentLink result = new ServiceDocumentLink();
 
+        result.setLinkState(LinkState.Created);
         result.setServiceMetadataRecord(localServiceMetadataRecord);
         result.setFunction(onlineResource.getFunction());
         result.setOperationName(onlineResource.getOperationName());

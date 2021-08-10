@@ -52,10 +52,12 @@ import java.util.List;
 @Scope("prototype")
 public class EventProcessor_AllLinksCheckedEvent extends BaseEventProcessor<AllLinksCheckedEvent> {
 
-    Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinkEvent.class);
+    Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent.class);
 
     @Autowired
     LinkCheckJobService linkCheckJobService;
+
+
 
     @Override
     public EventProcessor_AllLinksCheckedEvent externalProcessing() {

@@ -99,7 +99,7 @@ public class CapabilitiesDocumentService {
         doc.setIndicator_HasServiceMetadataLink(IndicatorStatus.PASS);
 
         RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink = remoteServiceMetadataRecordService.create(doc, metadataUrl);
-        doc.setRemoteServiceMetadataRecord(remoteServiceMetadataRecordLink);
+        doc.setRemoteServiceMetadataRecordLink(remoteServiceMetadataRecordLink);
 
 
         List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);

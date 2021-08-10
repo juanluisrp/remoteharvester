@@ -36,6 +36,7 @@ package net.geocat.database.linkchecker.service;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
+import net.geocat.database.linkchecker.entities.helper.LinkState;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +46,7 @@ public class RemoteServiceMetadataRecordService {
 
     public RemoteServiceMetadataRecordLink create(CapabilitiesDocument capabilitiesDocument, String rawURL) {
         RemoteServiceMetadataRecordLink result = new RemoteServiceMetadataRecordLink();
+        result.setLinkState(LinkState.Created);
         result.setRawURL(rawURL);
         result.setCapabilitiesDocument(capabilitiesDocument);
         return result;
