@@ -171,4 +171,17 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+        <id>space-maven</id>
+        <url>https://maven.pkg.jetbrains.space/geocat/p/jrc-inspire-portal/maven</url>
+    </repository>
+</repositories>
+<distributionManagement>
+    <repository>
+        <id>space-maven</id>
+        <url>https://maven.pkg.jetbrains.space/geocat/p/jrc-inspire-portal/maven</url>
+    </repository>
+</distributionManagement>
+
 </project>
