@@ -31,33 +31,12 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+public interface StatusQueryItem {
 
-import java.util.List;
+    ServiceMetadataDocumentState getState();
 
+    Long getNumberOfRecords();
 
-@Component
-@Scope("prototype")
-public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
-    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
-
-
-    long countByLinkCheckJobId(String LinkCheckJobId);
-
-    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
-
-    @Query(value = "select state as state,count(*) as numberOfRecords from localnotprocessedmetadatarecord where linkcheckjobid = ?1    group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
 }

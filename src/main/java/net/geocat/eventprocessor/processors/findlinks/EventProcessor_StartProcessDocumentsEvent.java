@@ -114,9 +114,9 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
         metadataRecords = metadataRecordRepo.findByEndpointJobIdIn(endpointIds);
 
-        metadataRecords = metadataRecords.stream().filter(x->x.getSha2().equals("EE4EED5D2C77F6289DD28CFF209F4A14E7FA2B923C07FD959CFC696FFC268654")).collect(Collectors.toList());
-
-        //metadataRecords= metadataRecords.subList(0,10);
+     //   metadataRecords = metadataRecords.stream().filter(x->x.getSha2().equals("EE4EED5D2C77F6289DD28CFF209F4A14E7FA2B923C07FD959CFC696FFC268654")).collect(Collectors.toList());
+    //    metadataRecords= metadataRecords.subList(0,10); //todo - remove
+    //   metadataRecords = metadataRecords.stream().filter(x-> x.getMetadataRecordId() == 84).collect(Collectors.toList());
 
         LinkCheckJob job = linkCheckJobService.updateNumberofDocumentsInBatch(linkCheckJobId, (long) metadataRecords.size());
 

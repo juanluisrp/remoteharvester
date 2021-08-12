@@ -36,6 +36,7 @@ package net.geocat.runner;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
+import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.database.linkchecker.service.OperatesOnLinkService;
@@ -52,6 +53,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,19 +146,34 @@ public class MyCommandLineRunner implements CommandLineRunner {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-       //     run4(args);
+           // run6(args);
         }
         catch(Exception e){
             int t=0;
         }
     }
 
-    public void run4(String... args) throws Exception {
-        LocalServiceMetadataRecord localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(15858L).get();
+    public void run6(String... args) throws Exception {
+        List<StatusQueryItem> items = localServiceMetadataRecordRepo.getStatus("6da77404-7427-4c88-80a3-0e8eb83966ea");
+        int t=0;
+    }
+        public void run5(String... args) throws Exception {
+        List<LocalServiceMetadataRecord> localServiceMetadataRecords = localServiceMetadataRecordRepo.findByLinkCheckJobId("6da77404-7427-4c88-80a3-0e8eb83966ea");
+        for(LocalServiceMetadataRecord record : localServiceMetadataRecords){
+            String human = record.getHumanReadable();
+            String id = record.getFileIdentifier();
+            try (PrintStream out = new PrintStream(new FileOutputStream(id+".txt"))) {
+                out.print(human);
+            }
+        }
+    }
+
+        public void run4(String... args) throws Exception {
+        LocalServiceMetadataRecord localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(1132L).get();
         LocalServiceMetadataRecord smr = localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
 
         List<LocalServiceMetadataRecord> list = Arrays.asList(new LocalServiceMetadataRecord[]{smr});
-        process(list);
+
     }
 
 

@@ -31,33 +31,43 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
-
-import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+package net.geocat.model;
 
 import java.util.List;
 
+public class DocumentTypeStatus {
+    String documentType;
+    Long nTotalDocuments;
 
-@Component
-@Scope("prototype")
-public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
-    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
+    List<StatusType> statusTypes;
 
+    public DocumentTypeStatus(String documentType, Long nTotalDocuments, List<StatusType> statusTypes) {
+        this.documentType = documentType;
+        this.nTotalDocuments = nTotalDocuments;
+        this.statusTypes = statusTypes;
+    }
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
+    public String getDocumentType() {
+        return documentType;
+    }
 
-    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
-    @Query(value = "select state as state,count(*) as numberOfRecords from localnotprocessedmetadatarecord where linkcheckjobid = ?1    group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+    public Long getnTotalDocuments() {
+        return nTotalDocuments;
+    }
+
+    public void setnTotalDocuments(Long nTotalDocuments) {
+        this.nTotalDocuments = nTotalDocuments;
+    }
+
+    public List<StatusType> getStatusTypes() {
+        return statusTypes;
+    }
+
+    public void setStatusTypes(List<StatusType> statusTypes) {
+        this.statusTypes = statusTypes;
+    }
 }

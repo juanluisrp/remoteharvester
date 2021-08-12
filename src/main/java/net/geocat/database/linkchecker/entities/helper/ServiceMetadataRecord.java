@@ -136,11 +136,14 @@ public class ServiceMetadataRecord extends MetadataRecord {
 
 
     protected void onUpdate() {
+
+        super.onUpdate();
         update();
     }
 
 
     protected void onInsert() {
+        super.onInsert();
         update();
     }
 

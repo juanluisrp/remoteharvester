@@ -33,18 +33,17 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.UpdateCreateDateTimeEntity;
+
 import javax.persistence.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
 
-public class LinkCheckJob {
+public class LinkCheckJob extends UpdateCreateDateTimeEntity  {
 
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime createTimeUTC;
-    @Column(columnDefinition = "timestamp with time zone")
-    ZonedDateTime lastUpdateUTC;
+
     @Id
     @Column(columnDefinition = "varchar(40)")
     private String jobId;
@@ -60,14 +59,13 @@ public class LinkCheckJob {
     Long numberOfLocalDatasetRecords;
 
     @PrePersist
-    private void onInsert() {
-        this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
-        this.lastUpdateUTC = this.createTimeUTC;
+    protected void onInsert() {
+      super.onInsert();
     }
 
     @PreUpdate
-    private void onUpdate() {
-        this.lastUpdateUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+    protected void onUpdate() {
+        super.onUpdate();
     }
 
 
@@ -127,19 +125,26 @@ public class LinkCheckJob {
         this.messages = messages;
     }
 
-    public ZonedDateTime getCreateTimeUTC() {
-        return createTimeUTC;
+    @Override
+    public String toString() {
+        String result = "LinkCheckJob {";
+
+        result += "        jobId="+jobId+"\n";
+        if (state !=null)
+            result += "        state="+state+"\n";
+        if (harvestJobId !=null)
+            result += "        harvestJobId="+harvestJobId+"\n";
+
+        if (numberOfDocumentsInBatch !=null)
+            result += "        numberOfDocumentsInBatch="+numberOfDocumentsInBatch+"\n";
+        if (numberOfLocalServiceRecords !=null)
+            result += "        numberOfLocalServiceRecords="+numberOfLocalServiceRecords+"\n";
+        if (numberOfLocalDatasetRecords !=null)
+            result += "        numberOfLocalDatasetRecords="+numberOfLocalDatasetRecords+"\n";
+
+        result += "}\n";
+
+        return result;
     }
 
-    public void setCreateTimeUTC(ZonedDateTime createTimeUTC) {
-        this.createTimeUTC = createTimeUTC;
-    }
-
-    public ZonedDateTime getLastUpdateUTC() {
-        return lastUpdateUTC;
-    }
-
-    public void setLastUpdateUTC(ZonedDateTime lastUpdateUTC) {
-        this.lastUpdateUTC = lastUpdateUTC;
-    }
 }

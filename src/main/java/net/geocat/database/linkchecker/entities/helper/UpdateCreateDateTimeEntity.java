@@ -33,82 +33,61 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.xml.MetadataDocumentType;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public class MetadataRecord extends UpdateCreateDateTimeEntity {
+public class UpdateCreateDateTimeEntity {
 
-    @Column(columnDefinition = "varchar(64)")
-    private String sha2;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime createTimeUTC;
+    @Column(columnDefinition = "timestamp with time zone")
+    ZonedDateTime lastUpdateUTC;
 
-    @Column(columnDefinition = "text")
-    private String fileIdentifier;
+    //--------------------------------------------------------------
 
-    @Column(columnDefinition = "varchar(22)")
-    @Enumerated(EnumType.STRING)
-    //i.e. will be service
-    private MetadataDocumentType metadataRecordType;
 
-    @Column(columnDefinition = "text")
-    private String humanReadable;
-
-    public MetadataRecord()
-    {
-
+    protected void onInsert() {
+        this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+        this.lastUpdateUTC = this.createTimeUTC;
     }
 
-    //---------------------------------------------------------------------------
 
-    public String getHumanReadable() {
-        return humanReadable;
+    protected void onUpdate() {
+        this.lastUpdateUTC = ZonedDateTime.now(ZoneId.of("UTC"));
     }
 
-    public void setHumanReadable(String humanReadable) {
-        this.humanReadable = humanReadable;
+    //--------------------------------------------------------------
+
+
+    public ZonedDateTime getCreateTimeUTC() {
+        return createTimeUTC;
     }
 
-    public String getSha2() {
-        return sha2;
+    public void setCreateTimeUTC(ZonedDateTime createTimeUTC) {
+        this.createTimeUTC = createTimeUTC;
     }
 
-    public void setSha2(String sha2) {
-        this.sha2 = sha2;
+    public ZonedDateTime getLastUpdateUTC() {
+        return lastUpdateUTC;
     }
 
-    public String getFileIdentifier() {
-        return fileIdentifier;
+    public void setLastUpdateUTC(ZonedDateTime lastUpdateUTC) {
+        this.lastUpdateUTC = lastUpdateUTC;
     }
 
-    public void setFileIdentifier(String recordIdentifier) {
-        this.fileIdentifier = recordIdentifier;
-    }
-
-    public MetadataDocumentType getMetadataRecordType() {
-        return metadataRecordType;
-    }
-
-    public void setMetadataRecordType(MetadataDocumentType metadataRecordType) {
-        this.metadataRecordType = metadataRecordType;
-    }
-
-     protected void onUpdate() {
-        super.onUpdate();
-     }
-
-     protected void onInsert() {
-        super.onInsert();
-     }
-
-    //---------------------------------------------------------------------------
 
     @Override
     public String toString() {
-        String result = super.toString();
-        result += "     sha2: " + sha2 + "\n";
-        result += "     fileIdentifier: " + fileIdentifier + "\n";
-        result += "     metadataRecordType: " + metadataRecordType + "\n";
+        String result = "";
+        if (createTimeUTC !=null)
+            result += "    createTimeUTC="+createTimeUTC+"\n";
+        if (lastUpdateUTC !=null)
+            result += "    lastUpdateUTC="+lastUpdateUTC+"\n";
         return result;
     }
 }

@@ -31,33 +31,55 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.model;
 
-import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+import net.geocat.database.linkchecker.entities.LinkCheckJobState;
 
-import java.util.List;
+public class LinkCheckStatus {
 
+    String processID;
+    String linkCheckJobState;
 
-@Component
-@Scope("prototype")
-public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
-    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
+    DocumentTypeStatus serviceRecordStatus;
+    DocumentTypeStatus datasetRecordStatus;
 
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
 
-    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
+    public LinkCheckStatus(String processID, LinkCheckJobState linkCheckJobState) {
+        this.processID = processID;
+        this.linkCheckJobState = linkCheckJobState.toString();
+    }
 
-    @Query(value = "select state as state,count(*) as numberOfRecords from localnotprocessedmetadatarecord where linkcheckjobid = ?1    group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+
+    public String getProcessID() {
+        return processID;
+    }
+
+    public void setProcessID(String processID) {
+        this.processID = processID;
+    }
+
+    public String getLinkCheckJobState() {
+        return linkCheckJobState;
+    }
+
+    public void setLinkCheckJobState(String linkCheckJobState) {
+        this.linkCheckJobState = linkCheckJobState;
+    }
+
+    public DocumentTypeStatus getServiceRecordStatus() {
+        return serviceRecordStatus;
+    }
+
+    public void setServiceRecordStatus(DocumentTypeStatus serviceRecordStatus) {
+        this.serviceRecordStatus = serviceRecordStatus;
+    }
+
+    public DocumentTypeStatus getDatasetRecordStatus() {
+        return datasetRecordStatus;
+    }
+
+    public void setDatasetRecordStatus(DocumentTypeStatus datasetRecordStatus) {
+        this.datasetRecordStatus = datasetRecordStatus;
+    }
 }

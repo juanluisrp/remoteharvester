@@ -31,33 +31,50 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.eventprocessor.processors.main;
 
-import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
+import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.service.LinkCheckJobService;
+import net.geocat.eventprocessor.BaseEventProcessor;
+import net.geocat.events.Event;
+import net.geocat.events.LinkCheckAbortEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 @Component
 @Scope("prototype")
-public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
-    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
+public class EventProcessor_LinkCheckAbortEvent extends BaseEventProcessor<LinkCheckAbortEvent> {
+
+    Logger logger = LoggerFactory.getLogger(EventProcessor_LinkCheckAbortEvent.class);
+
+    @Autowired
+    LinkCheckJobService linkCheckJobService;
+
+    @Override
+    public EventProcessor_LinkCheckAbortEvent externalProcessing() {
+        return this;
+    }
 
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
+    @Override
+    public EventProcessor_LinkCheckAbortEvent internalProcessing() {
+        String processID = getInitiatingEvent().getProcessID();
+        logger.warn("attempting to user abort for " + processID);
+        linkCheckJobService.updateLinkCheckJobStateInDB(processID, LinkCheckJobState.USERABORT);
+        logger.warn("user abort processed for " + processID);
+        return this;
+    }
 
-    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
 
-    @Query(value = "select state as state,count(*) as numberOfRecords from localnotprocessedmetadatarecord where linkcheckjobid = ?1    group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+    @Override
+    public List<Event> newEventProcessing() {
+        List<Event> result = new ArrayList<>();
+        return result;
+    }
 }

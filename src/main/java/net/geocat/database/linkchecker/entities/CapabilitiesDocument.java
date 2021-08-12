@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.UpdateCreateDateTimeEntity;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.hibernate.annotations.Fetch;
@@ -43,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class CapabilitiesDocument {
+public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
 
 
     @Id
@@ -158,12 +159,14 @@ public class CapabilitiesDocument {
     //---------------------------------------------------------------------------
 
     @PreUpdate
-    private void onUpdate() {
+    protected void onUpdate() {
+        super.onUpdate();
         this.summary = this.toString();
     }
 
     @PrePersist
-    private void onInsert() {
+    protected void onInsert() {
+        super.onInsert();
         this.summary = this.toString();
     }
 
@@ -178,6 +181,9 @@ public class CapabilitiesDocument {
         String indent = "                                                     ".substring(0, indentSpaces);
         String result = indent + "CapabilitiesDocument {\n";
         result += indent + "      capabilitiesDocumentId: " + capabilitiesDocumentId + "\n";
+
+        result+= super.toString();
+
         if ((sha2 != null) && (!sha2.isEmpty()))
             result += indent + "      sha2: " + sha2 + "\n";
         if (capabilitiesDocumentType != null)

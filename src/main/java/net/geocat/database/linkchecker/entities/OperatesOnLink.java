@@ -100,12 +100,14 @@ public class OperatesOnLink extends RetrievableSimpleLink {
 //---------------------------------------------------------------------------
 
     @PreUpdate
-    private void onUpdate() {
+    protected void onUpdate() {
+        super.onUpdate();
         this.summary = this.toString();
     }
 
     @PrePersist
-    private void onInsert() {
+    protected void onInsert() {
+        super.onInsert();
         this.summary = this.toString();
     }
 

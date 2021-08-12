@@ -31,33 +31,42 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.routes.rest;
 
-import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import net.geocat.dblogging.service.GetLogService;
+import net.geocat.service.GetStatusService;
+import org.apache.camel.BeanScope;
+import org.apache.camel.builder.RouteBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 
 @Component
-@Scope("prototype")
-public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<LocalNotProcessedMetadataRecord, Long> {
-    LocalNotProcessedMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
+public class GetStatus extends RouteBuilder  {
+
+    @Value("${geocat.jettyHost}")
+    public String jettyHost;
+
+    @Value("${geocat.jettyPort}")
+    public Integer jettyPort;
 
 
-    long countByLinkCheckJobId(String LinkCheckJobId);
+    @Override
+    public void configure() throws Exception {
+        restConfiguration().component("jetty").host(jettyHost).port(jettyPort);
 
-    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
+        // JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(HarvesterConfig.class);
 
-    @Query(value = "select state as state,count(*) as numberOfRecords from localnotprocessedmetadatarecord where linkcheckjobid = ?1    group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+        //--- incoming start process request (HTTP)
+        rest("/api/getstatus/")
+                .get("/{processID}")
+                .route()
+                .routeId("rest.rest.getstatus")
+                .bean(GetStatusService.class, "getStatus( ${header.processID} )", BeanScope.Request)
+
+                .setHeader("content-type", constant("application/json"))
+                .marshal().json()
+
+        ;
+    }
 }

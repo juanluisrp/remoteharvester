@@ -72,10 +72,12 @@ public class DatasetMetadataRecord extends MetadataRecord {
 
 
     protected void onUpdate() {
+        super.onUpdate();
     }
 
 
     protected void onInsert() {
+        super.onInsert();
     }
 
     //---------------------------------------------------------------------------
@@ -84,6 +86,7 @@ public class DatasetMetadataRecord extends MetadataRecord {
         String result = super.toString();
 
         result += "     dataset Identifier: " + datasetIdentifier + "\n";
+
 
         return result;
     }

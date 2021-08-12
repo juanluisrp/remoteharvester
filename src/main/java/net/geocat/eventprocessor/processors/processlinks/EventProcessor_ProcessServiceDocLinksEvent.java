@@ -121,6 +121,10 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         prune(); // remove any previous work (if this is being re-run)
 
         try {
+            int nlinksCap = localServiceMetadataRecord.getServiceDocumentLinks().size();
+            int nlinksOperates = localServiceMetadataRecord.getOperatesOnLinks().size();
+            logger.debug("processing  documentid="+getInitiatingEvent().getServiceMetadataId()+" that has "+nlinksCap+" document links, and "+nlinksOperates+" operates on links");
+
             processDocumentLinks();
             save();
             processOperatesOnLinks();
@@ -129,6 +133,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
             localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
             save();
+            logger.debug("finished processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
+
         }
         catch(Exception e){
             logger.error("exception for serviceMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
@@ -183,11 +189,22 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
 
     private void processOperatesOnLinks() {
-        logger.debug("processing operates on links for documentid="+getInitiatingEvent().getServiceMetadataId());
-
+        int nlinks = localServiceMetadataRecord.getOperatesOnLinks().size();
+        int linkIdx = 0;
+        logger.debug("processing  "+nlinks+ " operates on links for documentid="+getInitiatingEvent().getServiceMetadataId());
         for (OperatesOnLink link : localServiceMetadataRecord.getOperatesOnLinks()) {
+            logger.debug("processing operates on link "+linkIdx+" of "+nlinks+" links");
+            linkIdx++;
             handleOperatesOnLink(link);
+            if (link.getDatasetMetadataRecord() !=null) {
+                logger.debug("link returned a Dataset Metadata Record");
+            }
+            else {
+                logger.debug("link DID NOT return a Dataset Metadata Record");
+
+            }
         }
+        logger.debug("FINISHED processing  "+nlinks+ " operates on links for documentid="+getInitiatingEvent().getServiceMetadataId());
     }
 
     private void handleOperatesOnLink(OperatesOnLink link) {
@@ -204,10 +221,15 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
     }
 
     private void processDocumentLinks() {
-        logger.debug("processing service document links for documentid="+getInitiatingEvent().getServiceMetadataId());
+        int nlinks = localServiceMetadataRecord.getServiceDocumentLinks().size();
+        int linkIdx = 0;
+        logger.debug("processing "+nlinks+" service document links for documentid="+getInitiatingEvent().getServiceMetadataId());
         for (ServiceDocumentLink link : localServiceMetadataRecord.getServiceDocumentLinks()) {
+            logger.debug("processing service document link "+linkIdx+" of "+nlinks+" links");
+            linkIdx++;
             handleSingleDocumentLink(link);
         }
+        logger.debug("FINISHED processing "+nlinks+" service document links for documentid="+getInitiatingEvent().getServiceMetadataId());
     }
 
     // should retrieve a capabilities document
@@ -218,20 +240,37 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         getCapabilitiesDoc(link);
         if (link.getCapabilitiesDocument() != null) {
             CapabilitiesDocument capabilitiesDocument = link.getCapabilitiesDocument();
+            int nlinks =  capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList().size();
             RemoteServiceMetadataRecordLink rsmrl = capabilitiesDocument.getRemoteServiceMetadataRecordLink();
+            logger.debug("link produced a capabilities document has Service Metadata Link="+(rsmrl!=null)+", and "+nlinks+" dataset links.");
+
             if (rsmrl != null) {
+                logger.debug("getting Capabilities Document's remote service metadata record...");
                 getRemoteServiceMetadataRecordLink(rsmrl);
                 if (rsmrl.getRemoteServiceMetadataRecord() !=null) {
                     RemoteServiceMetadataRecord remoteServiceMetadataRecord=  rsmrl.getRemoteServiceMetadataRecord();
 
                 }
             }
+            int linkIdx = 0;
+            logger.debug("processing "+nlinks+" dataset links from the capabilities document");
+
             for (CapabilitiesDatasetMetadataLink capabilitiesDatasetMetadataLink : capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList()) {
+                logger.debug("processing link "+linkIdx+" of "+nlinks+" dataset links from the capabilities document");
+                linkIdx++;
                 handleLayerDatasetLink(capabilitiesDatasetMetadataLink);
                 if (capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument() !=null) {
+                    logger.debug("link produced a Dataset Metadata Document");
                     CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument =capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument();
                 }
+                else {
+                    logger.debug("link DID NOT produce a Dataset Metadata Document");
+                }
             }
+        }
+        else {
+            logger.debug("link DID NOT produced a capabilities document");
+
         }
         return link;
     }

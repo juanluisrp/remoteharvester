@@ -33,7 +33,9 @@
 
 package net.geocat.events;
 
+import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities2.Link;
+import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.events.findlinks.StartProcessDocumentsEvent;
@@ -41,13 +43,18 @@ import net.geocat.events.processlinks.AllLinksCheckedEvent;
 import net.geocat.events.processlinks.ProcessDatasetDocLinksEvent;
 import net.geocat.events.processlinks.ProcessServiceDocLinksEvent;
 import net.geocat.events.processlinks.StartLinkProcessingEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @Scope("prototype")
 public class EventFactory {
 
+    @Autowired
+    LinkCheckJobRepo linkCheckJobRepo;
 
     public StartProcessDocumentsEvent createStartProcessDocumentsEvent(LinkCheckRequestedEvent linkCheckRequestedEvent) {
         StartProcessDocumentsEvent result = new StartProcessDocumentsEvent(
@@ -112,6 +119,15 @@ public class EventFactory {
 
     public StartLinkProcessingEvent createStartLinkProcessingEvent(String linkCheckJobId) {
         StartLinkProcessingEvent result = new StartLinkProcessingEvent(linkCheckJobId);
+        return result;
+    }
+
+    public LinkCheckAbortEvent createLinkCheckAbortEvent( String processID  ) throws Exception {
+        Optional<LinkCheckJob> job = linkCheckJobRepo.findById(processID);
+        if (!job.isPresent())
+            throw new Exception("could not find processID="+processID);
+        LinkCheckAbortEvent result = new LinkCheckAbortEvent();
+        result.setProcessID(processID);
         return result;
     }
 }

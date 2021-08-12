@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -63,4 +64,8 @@ public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServ
             nativeQuery = true
     )
     long countInStates(String LinkCheckJobId, List<String> states);
+
+    @Query(value = "select state as state,count(*) as numberOfRecords from servicemetadatarecord where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord'   group by state",
+            nativeQuery = true)
+    List<StatusQueryItem> getStatus(String LinkCheckJobId);
 }

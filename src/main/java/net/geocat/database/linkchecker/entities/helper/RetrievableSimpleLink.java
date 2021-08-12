@@ -40,7 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 @MappedSuperclass
-public class RetrievableSimpleLink {
+public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(40)")
@@ -224,9 +224,20 @@ public class RetrievableSimpleLink {
 
     //---------------------------------------------------------------------------
 
+    protected void onInsert() {
+        super.onInsert();
+    }
+
+     protected void onUpdate() {
+        super.onUpdate();
+    }
+    //---------------------------------------------------------------------------
+
     @Override
     public String toString() {
         String result = "";
+
+        result += super.toString();
 
         if ((rawURL != null) && (!rawURL.isEmpty()))
             result += "      rawURL: " + rawURL + "\n";
@@ -261,7 +272,7 @@ public class RetrievableSimpleLink {
         if (getLinkMIMEType() != null)
             result += "     +  ContentType of HTTP request getting the link: " + getLinkMIMEType() + "\n";
         if (getLinkContentHead() != null) {
-            result += "     +  Initial Data from request: " + Arrays.copyOf(getLinkContentHead(), 10) + "\n";
+          //  result += "     +  Initial Data from request: " + Arrays.copyOf(getLinkContentHead(), 10) + "\n";
             try {
                 String info = "     +  Initial Data from request (text): " + new String(Arrays.copyOf(getLinkContentHead(), Math.min(100, getLinkContentHead().length)),"UTF-8") + "\n";
                 info = info.replaceAll("\u0000",""); // bad UTF-8 chars
