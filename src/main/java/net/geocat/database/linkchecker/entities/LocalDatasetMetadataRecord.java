@@ -54,6 +54,10 @@ public class LocalDatasetMetadataRecord extends DatasetMetadataRecord {
     @Column(columnDefinition = "text")
     private String summary;
 
+    public LocalDatasetMetadataRecord() {
+        super();
+    }
+
 
     public String getLinkCheckJobId() {
         return linkCheckJobId;

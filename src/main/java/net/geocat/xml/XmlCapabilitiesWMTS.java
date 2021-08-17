@@ -33,11 +33,26 @@
 
 package net.geocat.xml;
 
+import net.geocat.service.capabilities.DatasetLink;
+import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
+import net.geocat.service.capabilities.WMTSCapabilitiesDatasetLinkExtractor;
 import net.geocat.xml.helpers.CapabilitiesType;
+
+import java.util.List;
 
 public class XmlCapabilitiesWMTS extends XmlCapabilitiesDocument {
 
+    static WMTSCapabilitiesDatasetLinkExtractor wmtsCapabilitiesDatasetLinkExtractor = new WMTSCapabilitiesDatasetLinkExtractor();
+
+
     public XmlCapabilitiesWMTS(XmlDoc doc) throws Exception {
         super(doc, CapabilitiesType.WMTS);
+        setup_XmlCapabilitiesWMTS();
     }
-}
+
+
+    private void setup_XmlCapabilitiesWMTS() throws Exception {
+        datasetLinksList = wmtsCapabilitiesDatasetLinkExtractor.findLinks(this);
+    }
+
+ }

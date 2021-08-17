@@ -79,7 +79,8 @@ public class XmlCapabilitiesDocument extends XmlDoc {
     private void setupExtendedCap() throws Exception {
         //we use this notation because of issues with NS accross servers
         Node n = xpath_node("//*[local-name()='ExtendedCapabilities']");
-        Node nnn = xpath_node("//*[local-name()='feed']/*[local-name()='link'][@rel=\"describedby\"]/@href");
+        Node nn = xpath_node("//*[local-name()='feed']/*[local-name()='link'][@rel=\"describedby\"]/@href");
+        Node nnn = xpath_node("//wmts:ServiceMetadataURL/@xlink:href");
 
         hasExtendedCapabilities = (n != null) || (nnn != null);
         if (!hasExtendedCapabilities)
@@ -90,9 +91,20 @@ public class XmlCapabilitiesDocument extends XmlDoc {
             return;
         }
 
-        if (nnn != null) {
-            setup_inspire_atom(nnn);
+        if (nn != null) {
+            setup_inspire_atom(nn);
             return;
+        }
+
+        if (nnn !=null) {
+            setup_wmts_extended(nnn);
+            return;
+        }
+    }
+
+    private void setup_wmts_extended(Node serviceMetadataURL) {
+        if (serviceMetadataURL != null) {
+            this.metadataUrlRaw = serviceMetadataURL.getTextContent().trim();
         }
     }
 
@@ -117,6 +129,7 @@ public class XmlCapabilitiesDocument extends XmlDoc {
     public void setHasExtendedCapabilities(boolean hasExtendedCapabilities) {
         this.hasExtendedCapabilities = hasExtendedCapabilities;
     }
+
 
     public String getMetadataUrlRaw() {
         return metadataUrlRaw;

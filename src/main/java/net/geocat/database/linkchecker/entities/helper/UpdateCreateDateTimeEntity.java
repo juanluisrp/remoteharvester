@@ -48,6 +48,9 @@ public class UpdateCreateDateTimeEntity {
     @Column(columnDefinition = "timestamp with time zone")
     ZonedDateTime lastUpdateUTC;
 
+    @Column(columnDefinition = "text")
+    String errorMessage;
+
     //--------------------------------------------------------------
 
 
@@ -63,6 +66,13 @@ public class UpdateCreateDateTimeEntity {
 
     //--------------------------------------------------------------
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     public ZonedDateTime getCreateTimeUTC() {
         return createTimeUTC;
@@ -88,6 +98,8 @@ public class UpdateCreateDateTimeEntity {
             result += "    createTimeUTC="+createTimeUTC+"\n";
         if (lastUpdateUTC !=null)
             result += "    lastUpdateUTC="+lastUpdateUTC+"\n";
+        if (errorMessage!=null)
+            result += "     ERROR MESSAGE:"+errorMessage+"\n";
         return result;
     }
 }

@@ -36,6 +36,7 @@ package net.geocat.database.linkchecker.service;
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.xml.XmlDatasetMetadataDocument;
+import net.geocat.xml.XmlServiceRecordDoc;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,8 +49,21 @@ public class RemoteDatasetMetadataRecordService {
         return result;
     }
 
-    public LocalDatasetMetadataRecord createLocalDatasetMetadataRecord() {
+    public LocalDatasetMetadataRecord createLocalDatasetMetadataRecord(XmlDatasetMetadataDocument doc,
+                                                                       Long underlyingHarvestMetadataRecordId,
+                                                                       String linkCheckJobId,
+                                                                       String sha2) {
         LocalDatasetMetadataRecord result = new LocalDatasetMetadataRecord();
+        result.setHarvesterMetadataRecordId(underlyingHarvestMetadataRecordId);
+        result.setLinkCheckJobId(linkCheckJobId);
+        result.setSha2(sha2);
+
+        //metadataDocumentFactory.augment(result,doc);
+
+        result.setFileIdentifier(doc.getFileIdentifier());
+        result.setMetadataRecordType(doc.getMetadataDocumentType()); // ds
+
+        result.setState(ServiceMetadataDocumentState.CREATED);
         return result;
     }
 
@@ -60,7 +74,7 @@ public class RemoteDatasetMetadataRecordService {
     }
 
     public LocalDatasetMetadataRecord createLocalServiceMetadataRecord(XmlDatasetMetadataDocument doc, Long underlyingHarvestMetadataRecordId, String linkCheckJobId, String sha2) {
-        LocalDatasetMetadataRecord result = createLocalDatasetMetadataRecord();
+        LocalDatasetMetadataRecord result = createLocalDatasetMetadataRecord(doc,underlyingHarvestMetadataRecordId,linkCheckJobId,sha2);
         result.setHarvesterMetadataRecordId(underlyingHarvestMetadataRecordId);
         result.setLinkCheckJobId(linkCheckJobId);
         result.setSha2(sha2);

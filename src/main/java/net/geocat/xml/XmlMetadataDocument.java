@@ -51,7 +51,7 @@ public class XmlMetadataDocument extends XmlDoc {
 
     public XmlMetadataDocument(XmlDoc doc) throws Exception {
         super(doc);
-        if (!parsedXml.getFirstChild().getLocalName().equals("MD_Metadata"))
+        if (!getRootTagName().equals("MD_Metadata"))
             throw new Exception("XmlMetadataDocument -- root node should be MD_Metadata");
         setup_XmlMetadataDocument();
 

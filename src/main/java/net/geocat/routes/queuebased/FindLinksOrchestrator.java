@@ -64,7 +64,8 @@ public class FindLinksOrchestrator extends SpringRouteBuilder {
                 Arrays.asList(
                         new RedirectEvent(LinksFoundInAllDocuments.class, "activemq:" + MainOrchestrator.myJMSQueueName)
                 ),
-                Arrays.asList(new Class[0])
+                Arrays.asList(new Class[0]),
+                5
         );
     }
 }

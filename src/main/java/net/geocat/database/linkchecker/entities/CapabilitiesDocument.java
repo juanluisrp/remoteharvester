@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.UpdateCreateDateTimeEntity;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.xml.helpers.CapabilitiesType;
@@ -62,6 +63,9 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     @OneToOne(mappedBy = "capabilitiesDocument",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private ServiceDocumentLink serviceDocumentLink;
 
+    @OneToOne(mappedBy = "capabilitiesDocument",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    private DatasetDocumentLink datasetDocumentLink;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
     private IndicatorStatus Indicator_HasExtendedCapabilities;
@@ -90,6 +94,21 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     }
 
     //---------------------------------------------------------------------------
+
+    public DatasetDocumentLink getDatasetDocumentLink() {
+        return datasetDocumentLink;
+    }
+
+    public void setDatasetDocumentLink(DatasetDocumentLink datasetDocumentLink) {
+        this.datasetDocumentLink = datasetDocumentLink;
+    }
+
+    public void setParent(DocumentLink link) {
+        if (link instanceof ServiceDocumentLink)
+            setServiceDocumentLink( (ServiceDocumentLink) link);
+        if (link instanceof  DatasetDocumentLink)
+            setDatasetDocumentLink((DatasetDocumentLink) link);
+    }
 
     public long getCapabilitiesDocumentId() {
         return capabilitiesDocumentId;

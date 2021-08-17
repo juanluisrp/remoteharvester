@@ -111,9 +111,9 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
     }
 
     public static String getNS(String prefix, String tag) {
-        String pattern = "xmlns=\"([^\"]+)\"";
+        String pattern = "xmlns=[\"']([^\"']+)[\"']";
         if (prefix != null)
-            pattern = "xmlns:" + prefix + "=\"([^\"]+)\"";
+            pattern = "xmlns:" + prefix + "=[\"']([^\"']+)[\"']";
         Pattern ns = Pattern.compile(pattern, Pattern.MULTILINE);
         Matcher matcher = ns.matcher(tag);
         boolean find = matcher.find();

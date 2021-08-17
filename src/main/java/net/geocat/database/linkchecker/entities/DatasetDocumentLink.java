@@ -33,23 +33,26 @@
 
 package net.geocat.database.linkchecker.entities;
 
-import net.geocat.database.linkchecker.entities.helper.*;
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
+import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
+import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 
 import javax.persistence.*;
-import javax.swing.plaf.basic.BasicToolBarUI;
+
 
 @Entity
-public class ServiceDocumentLink extends DocumentLink {
+public class DatasetDocumentLink extends DocumentLink {
 
 
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 //    @JoinColumn(name="serviceMetadataId")
-    ServiceMetadataRecord serviceMetadataRecord;
+    DatasetMetadataRecord datasetMetadataRecord;
     @Column(columnDefinition = "text")
     String summary;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long serviceMetadataLinkId;
+    private long datasetMetadataLinkId;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "capabilitiesDocumentId")
     private CapabilitiesDocument capabilitiesDocument;
@@ -58,7 +61,7 @@ public class ServiceDocumentLink extends DocumentLink {
 
     //---------------------------------------------------------------------------
 
-    public ServiceDocumentLink() {
+    public DatasetDocumentLink() {
         super();
         this.setPartialDownloadHint(PartialDownloadHint.CAPABILITIES_ONLY);
     }
@@ -67,26 +70,20 @@ public class ServiceDocumentLink extends DocumentLink {
     //---------------------------------------------------------------------------
 
 
-
-    public ServiceMetadataRecord getServiceMetadataRecord() {
-        return serviceMetadataRecord;
+    public DatasetMetadataRecord getDatasetMetadataRecord() {
+        return datasetMetadataRecord;
     }
 
-    public long getServiceMetadataLinkId() {
-        return serviceMetadataLinkId;
+    public void setDatasetMetadataRecord(DatasetMetadataRecord datasetMetadataRecord) {
+        this.datasetMetadataRecord = datasetMetadataRecord;
     }
 
-    public void setServiceMetadataLinkId(long serviceMetadataLinkId) {
-        this.serviceMetadataLinkId = serviceMetadataLinkId;
+    public long getDatasetMetadataLinkId() {
+        return datasetMetadataLinkId;
     }
 
-
-    public ServiceMetadataRecord getLocalServiceMetadataRecord() {
-        return serviceMetadataRecord;
-    }
-
-    public void setServiceMetadataRecord(ServiceMetadataRecord localServiceMetadataRecord) {
-        this.serviceMetadataRecord = localServiceMetadataRecord;
+    public void setDatasetMetadataLinkId(long datasetMetadataLinkId) {
+        this.datasetMetadataLinkId = datasetMetadataLinkId;
     }
 
     public CapabilitiesDocument getCapabilitiesDocument() {
@@ -116,8 +113,8 @@ public class ServiceDocumentLink extends DocumentLink {
 
     @Override
     public String toString() {
-        String result = "ServiceDocumentLink {\n";
-        result += "      serviceMetadataLinkId: " + serviceMetadataLinkId + "\n";
+        String result = "DatasetDocumentLink {\n";
+        result += "      datasetMetadataLinkId: " + datasetMetadataLinkId + "\n";
 
 
 //        if ( (serviceMetadataRecord != null)   )

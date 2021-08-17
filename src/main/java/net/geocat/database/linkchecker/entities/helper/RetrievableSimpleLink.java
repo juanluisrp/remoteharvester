@@ -83,7 +83,10 @@ public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
     @Column(columnDefinition = "varchar(20)")
     private PartialDownloadHint partialDownloadHint;
 
+
+
     //---------------------------------------------------------------------------
+
 
 
     public LinkState getLinkState() {
@@ -286,6 +289,7 @@ public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
         }
         if ((sha2 != null) && (!sha2.isEmpty()))
             result += "     +  SHA2: " + getSha2() + "\n";
+
 
         return result;
 

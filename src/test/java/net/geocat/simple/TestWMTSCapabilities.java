@@ -31,26 +31,54 @@
  *  ==============================================================================
  */
 
-package net.geocat.xml;
+package net.geocat.simple;
 
-import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
-import net.geocat.xml.helpers.CapabilitiesType;
+import net.geocat.service.capabilities.WMTSCapabilitiesDatasetLinkExtractor;
+import net.geocat.xml.XmlCapabilitiesAtom;
+import net.geocat.xml.XmlCapabilitiesWMTS;
+import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.helpers.CapabilityDeterminer;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.Scanner;
 
-public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-    static WMSCapabilitiesDatasetLinkExtractor wmsCapabilitiesDatasetLinkExtractor = new WMSCapabilitiesDatasetLinkExtractor();
+public class TestWMTSCapabilities {
+
+    XmlDocumentFactory xmlDocumentFactory;
+    WMTSCapabilitiesDatasetLinkExtractor wmtsCapabilitiesDatasetLinkExtractor;
+
+    @Test
+    public void testSimple() throws Exception {
+        XmlCapabilitiesWMTS xmlCapabilitiesDocument = read("wmts_simple.xml");
+        assertNotNull(xmlCapabilitiesDocument);
+
+        assertEquals("serviceMetadataURL", xmlCapabilitiesDocument.getMetadataUrlRaw());
 
 
-    public XmlCapabilitiesWMS(XmlDoc doc) throws Exception {
-        super(doc, CapabilitiesType.WMS);
-        setup_XmlCapabilitiesWMS();
+         assertEquals(1, xmlCapabilitiesDocument.getDatasetLinksList().size());
+
+         assertEquals("layer1ID",xmlCapabilitiesDocument.getDatasetLinksList().get(0).getIdentifier());
+         assertEquals("layerMetadataURL",xmlCapabilitiesDocument.getDatasetLinksList().get(0).getRawUrl());
+
     }
 
-    private void setup_XmlCapabilitiesWMS() throws Exception {
-        datasetLinksList = wmsCapabilitiesDatasetLinkExtractor.findLinks(this);
+
+    public XmlCapabilitiesWMTS read(String fname) throws Exception {
+        String text = new Scanner(TestWMSCapabilitiesDatasetLinkExtractor.class.getClassLoader().getResourceAsStream(fname), "UTF-8")
+                .useDelimiter("\\A").next();
+        return (XmlCapabilitiesWMTS)xmlDocumentFactory.create(text);
     }
 
+
+    @Before
+    public void setup(){
+        xmlDocumentFactory = new XmlDocumentFactory();
+        xmlDocumentFactory.capabilityDeterminer = new CapabilityDeterminer();
+        wmtsCapabilitiesDatasetLinkExtractor = new WMTSCapabilitiesDatasetLinkExtractor();
+    }
 }

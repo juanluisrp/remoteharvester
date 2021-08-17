@@ -31,26 +31,28 @@
  *  ==============================================================================
  */
 
-package net.geocat.xml;
+package net.geocat.service.capabilities;
 
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
-import net.geocat.xml.helpers.CapabilitiesType;
+import net.geocat.xml.XmlDoc;
+import org.w3c.dom.Node;
 
-import java.util.List;
-
-public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
-
-    static WMSCapabilitiesDatasetLinkExtractor wmsCapabilitiesDatasetLinkExtractor = new WMSCapabilitiesDatasetLinkExtractor();
+public class WMTSCapabilitiesDatasetLinkExtractor extends WMSCapabilitiesDatasetLinkExtractor {
 
 
-    public XmlCapabilitiesWMS(XmlDoc doc) throws Exception {
-        super(doc, CapabilitiesType.WMS);
-        setup_XmlCapabilitiesWMS();
+    public WMTSCapabilitiesDatasetLinkExtractor() {
+        namespace="wmts";
+        namespaceIdentifier="ows";
+        namespaceMetadataURL="ows";
     }
 
-    private void setup_XmlCapabilitiesWMS() throws Exception {
-        datasetLinksList = wmsCapabilitiesDatasetLinkExtractor.findLinks(this);
+    @Override
+    protected String findMetadataURL(Node layer) throws Exception {
+        Node n = XmlDoc.xpath_node(layer, "ows:Metadata");
+        if (n == null)
+            return null;
+        Node att = n.getAttributes().getNamedItem("xlink:href");
+        if (att == null)
+            return null;
+        return att.getTextContent().trim();
     }
-
 }

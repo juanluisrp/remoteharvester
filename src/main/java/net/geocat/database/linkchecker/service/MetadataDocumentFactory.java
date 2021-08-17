@@ -81,9 +81,15 @@ public class MetadataDocumentFactory {
         metadataRecord.setFileIdentifier(xml.getFileIdentifier());
     }
 
-    public void augment(DatasetMetadataRecord datasetMetadataRecord, XmlDatasetMetadataDocument xml) {
+    public void augment(DatasetMetadataRecord datasetMetadataRecord, XmlDatasetMetadataDocument xml) throws Exception {
         augment((MetadataRecord) datasetMetadataRecord, (XmlMetadataDocument) xml);
         datasetMetadataRecord.setDatasetIdentifier(xml.getDatasetIdentifier());
+
+         List<OnlineResource> links = serviceDocLinkExtractor.extractOnlineResource(xml);
+
+        List<DatasetDocumentLink> links2 = links.stream().map(x -> serviceDocumentLinkService.create(datasetMetadataRecord, x)).collect(Collectors.toList());
+        datasetMetadataRecord.setDocumentLinks(links2);
+
     }
 
     public void augment(ServiceMetadataRecord serviceMetadataRecord, XmlServiceRecordDoc xml) throws Exception {
@@ -147,7 +153,7 @@ public class MetadataDocumentFactory {
         return result;
     }
 
-    public OperatesOnRemoteDatasetMetadataRecord createRemoteDatasetMetadataRecord(OperatesOnLink link, XmlDatasetMetadataDocument doc) {
+    public OperatesOnRemoteDatasetMetadataRecord createRemoteDatasetMetadataRecord(OperatesOnLink link, XmlDatasetMetadataDocument doc) throws Exception {
         OperatesOnRemoteDatasetMetadataRecord result = remoteDatasetMetadataRecordService.createRemoteDatasetMetadataRecord(link);
         augment(result, doc);
         result.setOperatesOnLink(link);
@@ -155,7 +161,7 @@ public class MetadataDocumentFactory {
     }
 
     public CapabilitiesRemoteDatasetMetadataDocument createCapabilitiesRemoteDatasetMetadataDocument(
-            CapabilitiesDatasetMetadataLink link, XmlDatasetMetadataDocument doc) {
+            CapabilitiesDatasetMetadataLink link, XmlDatasetMetadataDocument doc) throws Exception {
         CapabilitiesRemoteDatasetMetadataDocument result = remoteDatasetMetadataRecordService.createCapabilitiesRemoteDatasetMetadataDocument(link);
         augment(result, doc);
         result.setCapabilitiesDatasetMetadataLink(link);

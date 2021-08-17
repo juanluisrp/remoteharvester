@@ -102,7 +102,7 @@ public class XmlDocumentFactory {
     }
 
     public boolean isCSWMetadataDocument(XmlDoc xmlDoc) {
-        return xmlDoc.parsedXml.getFirstChild().getLocalName().equals("MD_Metadata");
+        return xmlDoc.getRootTagName().equals("MD_Metadata");
     }
 
     public boolean isCSWServiceMetadataDocument(XmlDoc xmlDoc) throws XPathExpressionException {

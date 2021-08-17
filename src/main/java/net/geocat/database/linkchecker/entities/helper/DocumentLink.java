@@ -31,79 +31,80 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.capabilities;
+package net.geocat.database.linkchecker.entities.helper;
 
-import java.util.Objects;
+import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 
-public class DatasetLink {
+import javax.persistence.*;
 
-    String identifier;
-    String rawUrl;
-    String authority; //for wms
+@MappedSuperclass
+public abstract class DocumentLink extends  RetrievableSimpleLink {
 
-    //---------------------------------------------------------------------------
 
-    public DatasetLink(String identifier, String rawUrl) {
-        this.identifier = identifier;
-        this.rawUrl = rawUrl;
+    @Column(columnDefinition = "text")
+    String operationName;
+    @Column(columnDefinition = "text")
+    String protocol;
+    @Column(columnDefinition = "text")
+    String function;
+
+    @Transient
+    private CapabilitiesDocument capabilitiesDocument;
+
+    public abstract void setCapabilitiesDocument(CapabilitiesDocument document);
+    public abstract CapabilitiesDocument getCapabilitiesDocument();
+
+
+    public DocumentLink(){
+        super();
+    }
+
+    public String getOperationName() {
+        return operationName;
+    }
+
+    public void setOperationName(String operationName) {
+        this.operationName = operationName;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
     }
 
 
-    //---------------------------------------------------------------------------
+    protected void onUpdate() {
+        super.onUpdate();
+     }
 
 
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getRawUrl() {
-        return rawUrl;
-    }
-
-    public void setRawUrl(String rawUrl) {
-        this.rawUrl = rawUrl;
-    }
-
-    //---------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DatasetLink that = (DatasetLink) o;
-        return Objects.equals(identifier, that.identifier)
-                && Objects.equals(rawUrl, that.rawUrl)
-                && Objects.equals(authority, that.authority) ;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(identifier, rawUrl);
-    }
-
-    //---------------------------------------------------------------------------
+    protected void onInsert() {
+        super.onInsert();
+     }
 
     @Override
     public String toString() {
-        String result= "DatasetLink {" +
-                "identifier='" + identifier + '\'' +
-                ", rawUrl='" + rawUrl + '\''  ;
-        if (authority != null)
-            result +=", authority="+authority;
-        result += "}";
-        return result;
+        String result = "";
+        if ((operationName != null) && (!operationName.isEmpty()))
+            result += "      operationName: " + operationName + "\n";
 
+        if ((protocol != null) && (!protocol.isEmpty()))
+            result += "      protocol: " + protocol + "\n";
+        if ((function != null) && (!function.isEmpty()))
+            result += "      function: " + function + "\n";
+
+        result += super.toString();
+        return result;
     }
 }

@@ -49,6 +49,10 @@ public class RemoteServiceMetadataRecord extends ServiceMetadataRecord {
     @Column(columnDefinition = "text")
     private String summary;
 
+    public RemoteServiceMetadataRecord(){
+        super();
+    }
+
     //---------------------------------------------------------------------------
 
     public RemoteServiceMetadataRecordLink getRemoteServiceMetadataRecordLink() {

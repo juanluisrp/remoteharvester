@@ -34,7 +34,13 @@
 package net.geocat.database.linkchecker.entities.helper;
 
 
+import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -48,8 +54,37 @@ public class DatasetMetadataRecord extends MetadataRecord {
 
     private String datasetIdentifier;
 
+    private Integer numberOfLinksFound;
+
+    @OneToMany(mappedBy = "datasetMetadataRecord",
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<DatasetDocumentLink> documentLinks;
+
+
 
     //---------------------------------------------------------------------------
+
+    public DatasetMetadataRecord() {
+        super();
+        documentLinks = new ArrayList<>();
+    }
+
+    public List<DatasetDocumentLink> getDocumentLinks() {
+        return documentLinks;
+    }
+
+    public void setDocumentLinks(List<DatasetDocumentLink> documentLinks) {
+        this.documentLinks = documentLinks;
+    }
+
+    public Integer getNumberOfLinksFound() {
+        return numberOfLinksFound;
+    }
+
+    public void setNumberOfLinksFound(Integer numberOfLinksFound) {
+        this.numberOfLinksFound = numberOfLinksFound;
+    }
 
     public long getDatasetMetadataDocumentId() {
         return datasetMetadataDocumentId;
@@ -73,11 +108,18 @@ public class DatasetMetadataRecord extends MetadataRecord {
 
     protected void onUpdate() {
         super.onUpdate();
+        update();
     }
 
 
     protected void onInsert() {
         super.onInsert();
+        update();
+    }
+
+    protected void update() {
+        if (documentLinks != null)
+            numberOfLinksFound = documentLinks.size();
     }
 
     //---------------------------------------------------------------------------
@@ -86,7 +128,8 @@ public class DatasetMetadataRecord extends MetadataRecord {
         String result = super.toString();
 
         result += "     dataset Identifier: " + datasetIdentifier + "\n";
-
+        if (numberOfLinksFound != null)
+            result += "     number of links found: "+ numberOfLinksFound+"\n";
 
         return result;
     }

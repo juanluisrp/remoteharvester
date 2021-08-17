@@ -65,8 +65,12 @@ public class TestWMSCapabilitiesDatasetLinkExtractor {
         XmlCapabilitiesWMS xmlCapabilitiesDocument = read("wms_cap_full_nested.xml");
         List<DatasetLink> links = wmsCapabilitiesDatasetLinkExtractor.findLinks(xmlCapabilitiesDocument);
         assertEquals(1,links.size());
-        int t=0;
-    }
+
+        assertEquals("authority", links.get(0).getAuthority());
+        assertEquals("layer2identifierDSURL", links.get(0).getRawUrl());
+        assertEquals("layer2identifier", links.get(0).getIdentifier());
+
+     }
 
     @Test
     public void info_fully_in_single_nested_layer_parent() throws Exception {
@@ -74,7 +78,11 @@ public class TestWMSCapabilitiesDatasetLinkExtractor {
         List<DatasetLink> links = wmsCapabilitiesDatasetLinkExtractor.findLinks(xmlCapabilitiesDocument);
 
         assertEquals(1,links.size()); // 1 because the will both be the same
-        int t=0;
+
+        assertEquals("authority", links.get(0).getAuthority());
+        assertEquals("layer2identifierDSURL", links.get(0).getRawUrl());
+        assertEquals("layer2identifier", links.get(0).getIdentifier());
+
     }
 
     public XmlCapabilitiesWMS read(String fname) throws Exception {

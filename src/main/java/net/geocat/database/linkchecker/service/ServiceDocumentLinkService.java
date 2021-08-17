@@ -33,7 +33,9 @@
 
 package net.geocat.database.linkchecker.service;
 
+import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.xml.helpers.OnlineResource;
@@ -50,6 +52,19 @@ public class ServiceDocumentLinkService {
 
         result.setLinkState(LinkState.Created);
         result.setServiceMetadataRecord(localServiceMetadataRecord);
+        result.setFunction(onlineResource.getFunction());
+        result.setOperationName(onlineResource.getOperationName());
+        result.setRawURL(onlineResource.getRawURL());
+        result.setProtocol(onlineResource.getProtocol());
+
+        return result;
+    }
+
+    public DatasetDocumentLink create(DatasetMetadataRecord datasetMetadataRecord, OnlineResource onlineResource) {
+        DatasetDocumentLink result = new DatasetDocumentLink();
+
+        result.setLinkState(LinkState.Created);
+        result.setDatasetMetadataRecord(datasetMetadataRecord);
         result.setFunction(onlineResource.getFunction());
         result.setOperationName(onlineResource.getOperationName());
         result.setRawURL(onlineResource.getRawURL());

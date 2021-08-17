@@ -71,7 +71,8 @@ public class MainOrchestrator extends SpringRouteBuilder {
                         new RedirectEvent(StartProcessDocumentsEvent.class, "activemq:" + FindLinksOrchestrator.myJMSQueueName)
                         , new RedirectEvent(StartLinkProcessingEvent.class, "activemq:" + ProcessLinksOrchestrator.myJMSQueueName)
                 ),
-                Arrays.asList(new Class[0])
+                Arrays.asList(new Class[0]),
+                2
         );
 
         from("activemq:ActiveMQ.DLQ")

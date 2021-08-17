@@ -38,6 +38,7 @@ import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.service.helper.NotServiceRecordException;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.XmlMetadataDocument;
 import net.geocat.xml.XmlServiceRecordDoc;
 import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class ServiceDocLinkExtractor {
     }
 
 
-    public List<OnlineResource> extractOnlineResource(XmlServiceRecordDoc xml) throws Exception {
+    public List<OnlineResource> extractOnlineResource(XmlMetadataDocument xml) throws Exception {
 
         List<OnlineResource> docLinks = removeDuplicates(xml.getConnectPoints(), xml.getTransferOptions());
         return docLinks;

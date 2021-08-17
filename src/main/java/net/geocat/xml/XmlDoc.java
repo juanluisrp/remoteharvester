@@ -144,6 +144,10 @@ public class XmlDoc {
 
         nsCtx.bindNamespaceUri("wms", "http://www.opengis.net/wms");
 
+        nsCtx.bindNamespaceUri("wmts", "http://www.opengis.net/wmts/1.0");
+        nsCtx.bindNamespaceUri("xlink", "http://www.w3.org/1999/xlink");
+        nsCtx.bindNamespaceUri("ows", "http://www.opengis.net/ows/1.1");
+
 
         return xpath;
     }
@@ -194,8 +198,12 @@ public class XmlDoc {
     }
 
     public void setup_XmlDoc() throws Exception {
-        rootTagName = parsedXml.getFirstChild().getLocalName();
-        rootNS = parsedXml.getFirstChild().getNamespaceURI();
+        rootTagName = getFirstNode().getLocalName();
+        rootNS = getFirstNode().getNamespaceURI();
+    }
+
+    public Node getFirstNode() throws  Exception {
+        return xpath_node("/*");
     }
 
     public org.w3c.dom.NodeList xpath_nodeset(String xpathStr) throws XPathExpressionException {

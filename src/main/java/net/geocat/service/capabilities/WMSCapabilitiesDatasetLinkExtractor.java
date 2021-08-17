@@ -48,6 +48,12 @@ import java.util.List;
 @Scope("prototype")
 public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDatasetLinkExtractor {
 
+    public String namespace="wms";
+    public String namespaceIdentifier="wms";
+    public String namespaceMetadataURL="wms";
+
+
+
     public static List<DatasetLink> unique(List<DatasetLink> list) {
         HashSet hs = new HashSet();
         hs.addAll(list);
@@ -59,7 +65,7 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
     @Override
     public List<DatasetLink> findLinks(XmlCapabilitiesDocument doc) throws Exception {
         List<DatasetLink> result = new ArrayList<>();
-        NodeList layers = doc.xpath_nodeset("//wms:Layer");
+        NodeList layers = doc.xpath_nodeset("//"+namespace+":Layer");
         for (int idx = 0; idx < layers.getLength(); idx++) {
             Node layer = layers.item(idx);
             DatasetLink link = processLayer(doc, layer);
@@ -73,13 +79,18 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
     public DatasetLink processLayer(XmlCapabilitiesDocument doc, Node layer) throws Exception {
         String identifier = searchIdentifier(doc, layer);
         String metadataUrl = searchMetadataUrl(doc, layer);
+        String authority = searchAuthority(doc,layer);
 
-        if ((identifier != null) || (metadataUrl != null))
-            return new DatasetLink(identifier, metadataUrl);
+        if ((identifier != null) || (metadataUrl != null)) {
+            DatasetLink result= new DatasetLink(identifier, metadataUrl);
+            if ((authority != null) && (!authority.isEmpty()) )
+                result.setAuthority(authority);
+            return result;
+        }
         return null;
     }
 
-    private String findMetadataURL(Node layer) throws Exception {
+    protected String findMetadataURL(Node layer) throws Exception {
         Node n = XmlDoc.xpath_node(layer, "wms:MetadataURL/wms:OnlineResource");
         if (n == null)
             return null;
@@ -101,10 +112,10 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
     }
 
     private String findIdentifier(Node layer) throws Exception {
-        Node n = XmlDoc.xpath_node(layer, "wms:Identifier");
+        Node n = XmlDoc.xpath_node(layer, namespaceIdentifier+":Identifier");
         if (n == null)
             return null;
-        return n.getTextContent();
+        return n.getTextContent().trim();
     }
 
 
@@ -115,6 +126,29 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         Node parentLayer = layer.getParentNode();
         if (parentLayer.getLocalName().equals("Layer"))
             return searchIdentifier(doc, parentLayer);
+        return null;
+    }
+
+    private String findAuthority(Node layer) throws Exception {
+        Node n = XmlDoc.xpath_node(layer, namespace+":Identifier");
+        if (n == null)
+            return null;
+        Node authorityNode = n.getAttributes().getNamedItem("authority");
+        if (authorityNode == null)
+            return null;
+        String authority  = authorityNode.getNodeValue();
+        if (!authority.isEmpty())
+            return authority;
+        return null;
+    }
+
+    public String searchAuthority(XmlCapabilitiesDocument doc, Node layer) throws Exception {
+        String localAuthority = findAuthority(layer);
+        if ((localAuthority != null) && (!localAuthority.isEmpty()))
+            return localAuthority;
+        Node parentLayer = layer.getParentNode();
+        if (parentLayer.getLocalName().equals("Layer"))
+            return searchAuthority(doc, parentLayer);
         return null;
     }
 

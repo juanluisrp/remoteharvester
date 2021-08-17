@@ -55,6 +55,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.geocat.database.linkchecker.service.DatabaseUpdateService.convertToString;
+
 @Component
 @Scope("prototype")
 public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcessor<ProcessServiceDocLinksEvent> {
@@ -123,7 +125,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         try {
             int nlinksCap = localServiceMetadataRecord.getServiceDocumentLinks().size();
             int nlinksOperates = localServiceMetadataRecord.getOperatesOnLinks().size();
-            logger.debug("processing  documentid="+getInitiatingEvent().getServiceMetadataId()+" that has "+nlinksCap+" document links, and "+nlinksOperates+" operates on links");
+            logger.debug("processing SERVICE documentid="+getInitiatingEvent().getServiceMetadataId()+" that has "+nlinksCap+" document links, and "+nlinksOperates+" operates on links");
 
             processDocumentLinks();
             save();
@@ -139,6 +141,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         catch(Exception e){
             logger.error("exception for serviceMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
             localServiceMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+            localServiceMetadataRecord.setErrorMessage(  convertToString(e) );
+            save();
         }
 
 
@@ -217,6 +221,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             logger.error("error occurred while processing ServiceMetadataDocumentId="+localServiceMetadataRecord.getServiceMetadataDocumentId()
                     +", OperatesOnLink="+link+", error="+e.getMessage());
             link.setLinkState(LinkState.ERROR);
+            link.setErrorMessage(  convertToString(e) );
+
         }
     }
 
@@ -285,6 +291,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             logger.error("error occurred while processing ServiceMetadataDocumentId="+localServiceMetadataRecord.getServiceMetadataDocumentId()
                     +", CapabilitiesDatasetMetadataLink="+capabilitiesDatasetMetadataLink+", error="+e.getMessage(),e);
             capabilitiesDatasetMetadataLink.setLinkState(LinkState.ERROR);
+            capabilitiesDatasetMetadataLink.setErrorMessage(  convertToString(e) );
         }
     }
 
@@ -299,12 +306,13 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             logger.error("error occurred while processing ServiceMetadataDocumentId="+localServiceMetadataRecord.getServiceMetadataDocumentId()
                     +", RemoteServiceMetadataRecordLink="+rsmrl+", error="+e.getMessage(),e);
             rsmrl.setLinkState(LinkState.ERROR);
+            rsmrl.setErrorMessage(  convertToString(e) );
         }
     }
 
     private ServiceDocumentLink getCapabilitiesDoc(ServiceDocumentLink link) {
         try {
-            link = retrieveServiceDocumentLink.process(link);
+            link = (ServiceDocumentLink) retrieveServiceDocumentLink.process(link);
 
             link.setLinkState(LinkState.Complete);
         }
@@ -312,6 +320,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             logger.error("error occurred while processing ServiceMetadataDocumentId="+localServiceMetadataRecord.getServiceMetadataDocumentId()
                +", ServiceDocumentLink="+link+", error="+e.getMessage(),e);
             link.setLinkState(LinkState.ERROR);
+            link.setErrorMessage(  convertToString(e) );
         }
 
         return link;
@@ -339,4 +348,6 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         }
          return result;
     }
+
+
 }

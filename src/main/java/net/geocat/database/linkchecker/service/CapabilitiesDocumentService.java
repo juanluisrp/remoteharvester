@@ -37,6 +37,7 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.service.BlobStorageService;
 import net.geocat.service.LinkCheckBlobStorageService;
@@ -68,7 +69,7 @@ public class CapabilitiesDocumentService {
     @Autowired
     CapabilitiesDatasetMetadataLinkService capabilitiesDatasetMetadataLinkService;
 
-    public CapabilitiesDocument create(ServiceDocumentLink link) throws Exception {
+    public CapabilitiesDocument create(DocumentLink link) throws Exception {
         String xmlStr = new String(link.getFullData());
         XmlCapabilitiesDocument xml = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlStr);
 
@@ -79,7 +80,8 @@ public class CapabilitiesDocumentService {
 
         CapabilitiesDocument doc = new CapabilitiesDocument();
         doc.setSha2(sha2);
-        doc.setServiceDocumentLink(link);
+
+        doc.setParent(link);
         doc.setCapabilitiesDocumentType(xml.getCapabilitiesType());
 
 

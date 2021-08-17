@@ -72,6 +72,14 @@ public class RetrievableSimpleLinkDownloader {
             if (url !=null)
                 url = url.trim(); // several links have a " " at the end of them
 
+            if ( (url == null) || (url.isEmpty()) )
+            {
+                link.setIndicator_LinkResolves(IndicatorStatus.FAIL);
+                link.setLinkHTTPException("URL is null/empty - nothing to retrieve.");
+                link.setUrlFullyRead(false);
+                return link;
+            }
+
             IContinueReadingPredicate continueReadingPredicate = partialDownloadPredicateFactory.create(link);
 
             try {

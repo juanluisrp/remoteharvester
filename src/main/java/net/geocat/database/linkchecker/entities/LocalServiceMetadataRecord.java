@@ -54,12 +54,21 @@ public class LocalServiceMetadataRecord extends ServiceMetadataRecord {
     @Column(columnDefinition = "text")
     private String summary;
 
+    @Column(columnDefinition = "text")
+    private String errorMessage;
 
 
     public LocalServiceMetadataRecord(){
         super();
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     public String getLinkCheckJobId() {
         return linkCheckJobId;

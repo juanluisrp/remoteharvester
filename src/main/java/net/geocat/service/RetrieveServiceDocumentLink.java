@@ -35,6 +35,7 @@ package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.service.CapabilitiesDocumentService;
 import net.geocat.http.HttpResult;
 import net.geocat.http.IHTTPRetriever;
@@ -75,10 +76,10 @@ public class RetrieveServiceDocumentLink {
     @Autowired
     RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
 
-    public ServiceDocumentLink process(ServiceDocumentLink link) throws Exception {
+    public DocumentLink process(DocumentLink link) throws Exception {
 
 
-        link = (ServiceDocumentLink) retrievableSimpleLinkDownloader.process(link);
+        link = (DocumentLink) retrievableSimpleLinkDownloader.process(link);
 
         if (!link.getUrlFullyRead())
             return link;

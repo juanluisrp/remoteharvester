@@ -34,11 +34,17 @@
 package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.xml.helpers.CapabilitiesType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Scope("prototype")
 public interface CapabilitiesDocumentRepo extends CrudRepository<CapabilitiesDocument, Long> {
+
+    List<CapabilitiesDocument> findByCapabilitiesDocumentType(CapabilitiesType type);
+
 }
