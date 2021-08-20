@@ -254,7 +254,8 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
         for (DatasetDocumentLink link : localDatasetMetadataRecord.getDocumentLinks()) {
             CapabilitiesDocument capDoc = link.getCapabilitiesDocument();
             if (capDoc != null) {
-                capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
+                if (capDoc.getServiceDocumentLink() != null)
+                    capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
                 capDoc.setServiceDocumentLink(null);
                 capDocuments.add(capDoc); // to be deleted
             }

@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 
 import javax.persistence.*;
 
@@ -53,7 +54,48 @@ public class RemoteServiceMetadataRecord extends ServiceMetadataRecord {
         super();
     }
 
+
+    //when comparing this to a local service record, do they have the same file identifiers?
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    private IndicatorStatus Indicator_CompareServiceMetadataLink_FileIdentifier;
+
+    //when comparing this to a local service record, are there no real XML differences?
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    private IndicatorStatus Indicator_CompareServiceMetadataLink_Full;
+
+    // cf. Indicator_CompareServiceMetadataLink_Full
+    // this is a PARTIAL semi-human readable summary of xml difference
+    @Column(columnDefinition = "text")
+    private String metadataRecordDifferences;
+
     //---------------------------------------------------------------------------
+
+
+    public IndicatorStatus getIndicator_CompareServiceMetadataLink_FileIdentifier() {
+        return Indicator_CompareServiceMetadataLink_FileIdentifier;
+    }
+
+    public void setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus indicator_CompareServiceMetadataLink_FileIdentifier) {
+        Indicator_CompareServiceMetadataLink_FileIdentifier = indicator_CompareServiceMetadataLink_FileIdentifier;
+    }
+
+    public IndicatorStatus getIndicator_CompareServiceMetadataLink_Full() {
+        return Indicator_CompareServiceMetadataLink_Full;
+    }
+
+    public void setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus indicator_CompareServiceMetadataLink_Full) {
+        Indicator_CompareServiceMetadataLink_Full = indicator_CompareServiceMetadataLink_Full;
+    }
+
+    public String getMetadataRecordDifferences() {
+        return metadataRecordDifferences;
+    }
+
+    public void setMetadataRecordDifferences(String metadataRecordDifferences) {
+        this.metadataRecordDifferences = metadataRecordDifferences;
+    }
 
     public RemoteServiceMetadataRecordLink getRemoteServiceMetadataRecordLink() {
         return remoteServiceMetadataRecordLink;

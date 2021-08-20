@@ -75,7 +75,7 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     private IndicatorStatus Indicator_HasServiceMetadataLink;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    @JoinColumn(name = "capabilitiesDocumentId")
+    @JoinColumn(name = "remoteServiceMetadataRecordLinkId")
     private RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink;
 
 

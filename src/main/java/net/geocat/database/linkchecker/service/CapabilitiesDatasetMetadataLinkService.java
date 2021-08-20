@@ -37,7 +37,9 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.service.capabilities.DatasetLink;
+import net.geocat.service.capabilities.DatasetLinkFixer;
 import net.geocat.xml.XmlCapabilitiesDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,14 +50,17 @@ import java.util.List;
 @Scope("prototype")
 public class CapabilitiesDatasetMetadataLinkService {
 
+    @Autowired
+    DatasetLinkFixer datasetLinkFixer;
 
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) {
+    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
         List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
         for (DatasetLink link : doc.getDatasetLinksList()) {
 
             CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
             item.setLinkState(LinkState.Created);
             item.setRawURL(link.getRawUrl());
+            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
             item.setIdentity(link.getIdentifier());
 
             item.setCapabilitiesDocument(cap);

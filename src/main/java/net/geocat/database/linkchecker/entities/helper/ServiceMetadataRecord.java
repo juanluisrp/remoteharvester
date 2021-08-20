@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.entities.helper;
 
 import net.geocat.database.linkchecker.entities.OperatesOnLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -72,7 +73,45 @@ public class ServiceMetadataRecord extends MetadataRecord {
     private List<OperatesOnLink> operatesOnLinks;
 
 
+    //PASS if ANY linked capabilities document has a link to a Service Metadata Record that resolves to a Service Metadata Record.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE;
 
+    //PASS if ANY linked capabilities document's Service Metadata Record has the same file identifier and the XML documents are the same as our starting service metadata record.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES;
+
+    //PASS if ANY linked capabilities document's Service Metadata Record has the same file identifier as our starting service metadata record.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES;
+
+    //PASS if ALL the Capabilities Layer links resolve to a Dataset Metadata record.
+    //
+    //NOTE:
+    //It's OK if a layer does NOT have a metadata link
+    //At least one layer must have a DS link
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE;
+
+    //PASS if ALL of the OperatesOnLinks resolve to a Dataset Metadata document.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_ALL_OPERATES_ON_RESOLVE;
+
+    //PASS if ALL of the OperatesOnLinks Dataset Metadata documents match a document linked from the Capabilities Layers.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES;
 
     public ServiceMetadataRecord(){
         super();
@@ -82,6 +121,54 @@ public class ServiceMetadataRecord extends MetadataRecord {
 
     //---------------------------------------------------------------------------
 
+
+    public IndicatorStatus getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() {
+        return INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES;
+    }
+
+    public void setINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES(IndicatorStatus INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES) {
+        this.INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES = INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES;
+    }
+
+    public IndicatorStatus getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() {
+        return INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE;
+    }
+
+    public void setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE) {
+        this.INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE = INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE;
+    }
+
+    public IndicatorStatus getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES() {
+        return INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES;
+    }
+
+    public void setINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES(IndicatorStatus INDICATOR_CAPABILITIES_SERVICE_MATCHES) {
+        this.INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES = INDICATOR_CAPABILITIES_SERVICE_MATCHES;
+    }
+
+    public IndicatorStatus getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() {
+        return INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE;
+    }
+
+    public void setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE) {
+        this.INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE = INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE;
+    }
+
+    public IndicatorStatus getINDICATOR_ALL_OPERATES_ON_RESOLVE() {
+        return INDICATOR_ALL_OPERATES_ON_RESOLVE;
+    }
+
+    public void setINDICATOR_ALL_OPERATES_ON_RESOLVE(IndicatorStatus INDICATOR_ALL_OPERATES_ON_RESOLVE) {
+        this.INDICATOR_ALL_OPERATES_ON_RESOLVE = INDICATOR_ALL_OPERATES_ON_RESOLVE;
+    }
+
+    public IndicatorStatus getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES() {
+        return INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES;
+    }
+
+    public void setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES) {
+        this.INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES = INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES;
+    }
 
     public long getServiceMetadataDocumentId() {
         return serviceMetadataDocumentId;

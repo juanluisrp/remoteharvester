@@ -31,38 +31,67 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.eventprocessor.processors.processlinks.postprocessing;
 
+import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @Scope("prototype")
-public class RemoteServiceMetadataRecordService {
+public class CapabilitiesDatasetLinksResolveIndicators {
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
+    public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record) {
+        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
 
-    public RemoteServiceMetadataRecordLink create(CapabilitiesDocument capabilitiesDocument, String rawURL) throws Exception {
-        RemoteServiceMetadataRecordLink result = new RemoteServiceMetadataRecordLink();
-        result.setLinkState(LinkState.Created);
-        result.setRawURL(rawURL);
-        result.setFixedURL(datasetLinkFixer.fix(rawURL));
-        result.setCapabilitiesDocument(capabilitiesDocument);
-        return result;
+
+        List<CapabilitiesDocument>  capDocs =  links.stream()
+                .map(x->x.getCapabilitiesDocument())
+                .filter(x-> x != null).collect(Collectors.toList());
+
+        boolean result = false;
+
+        for(CapabilitiesDocument doc  : capDocs) {
+            result = result || process(doc);
+        }
+
+        if (result)
+            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.PASS);
+        else
+            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.FAIL);
+
+        return record;
     }
 
-    public RemoteServiceMetadataRecord create(RemoteServiceMetadataRecordLink link) {
-        RemoteServiceMetadataRecord result = new RemoteServiceMetadataRecord();
-        result.setRemoteServiceMetadataRecordLink(link);
-        link.setRemoteServiceMetadataRecord(result);
+    private boolean process(CapabilitiesDocument doc) {
+        List<CapabilitiesDatasetMetadataLink> dsLinks = doc.getCapabilitiesDatasetMetadataLinkList();
 
-        return result;
+        //get rid of null links (i.e. no url)
+        dsLinks = dsLinks.stream().filter(x->x.getRawURL() != null && !x.getRawURL().isEmpty()).collect(Collectors.toList());
+
+        int nExpect = dsLinks.size();
+
+        dsLinks =  dsLinks.stream().filter(x-> x.getCapabilitiesRemoteDatasetMetadataDocument() != null).collect(Collectors.toList());
+
+        if (dsLinks.isEmpty())
+            return false; // must have at least one
+
+        if (nExpect != dsLinks.size())
+            return false;
+
+        return true;
+    }
+
+    private void process(CapabilitiesDatasetMetadataLink link) {
+
     }
 }

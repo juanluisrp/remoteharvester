@@ -31,38 +31,56 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.service.capabilities;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import net.geocat.service.ILinkFixer;
+ import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("prototype")
-public class RemoteServiceMetadataRecordService {
+public class DatasetLinkFixer implements ILinkFixer {
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
 
-    public RemoteServiceMetadataRecordLink create(CapabilitiesDocument capabilitiesDocument, String rawURL) throws Exception {
-        RemoteServiceMetadataRecordLink result = new RemoteServiceMetadataRecordLink();
-        result.setLinkState(LinkState.Created);
-        result.setRawURL(rawURL);
-        result.setFixedURL(datasetLinkFixer.fix(rawURL));
-        result.setCapabilitiesDocument(capabilitiesDocument);
-        return result;
+    public static String getQueryParam(String link, String name) throws Exception {
+        name = name.toLowerCase();
+        URIBuilder uriBuilder = new URIBuilder(link);
+
+        for (NameValuePair param : uriBuilder.getQueryParams()) {
+            if (param.getName().equals(name))
+                return param.getValue();
+        }
+        return null;
     }
 
-    public RemoteServiceMetadataRecord create(RemoteServiceMetadataRecordLink link) {
-        RemoteServiceMetadataRecord result = new RemoteServiceMetadataRecord();
-        result.setRemoteServiceMetadataRecordLink(link);
-        link.setRemoteServiceMetadataRecord(result);
+    @Override
+    public String fix(String link) throws Exception {
+        try {
+            if (link == null)
+                return link;
 
-        return result;
+            String requestParam = CapabilitiesLinkFixer.findQueryParmName(link, "request");
+            if (requestParam == null)
+                return link;
+
+            String request = getQueryParam(link, requestParam);
+            if (!request.equalsIgnoreCase("GetRecordById"))
+                return link; //only process GetRecordById requests
+
+            String outputSchemaParam = CapabilitiesLinkFixer.findQueryParmName(link, "outputSchema");
+            String elementSetNameParam = CapabilitiesLinkFixer.findQueryParmName(link, "elementSetName");
+
+
+            URIBuilder uriBuilder = new URIBuilder(link);
+            if (outputSchemaParam == null)
+                uriBuilder.setParameter("outputSchema", "http://www.isotc211.org/2005/gmd");
+            if (elementSetNameParam == null)
+                uriBuilder.setParameter("elementSetName", "full");
+            return uriBuilder.build().toString();
+        }
+        catch(Exception e){
+            return link;
+        }
     }
+
 }

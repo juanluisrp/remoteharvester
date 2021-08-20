@@ -82,7 +82,7 @@ public class XmlCapabilitiesDocument extends XmlDoc {
         Node nn = xpath_node("//*[local-name()='feed']/*[local-name()='link'][@rel=\"describedby\"]/@href");
         Node nnn = xpath_node("//wmts:ServiceMetadataURL/@xlink:href");
 
-        hasExtendedCapabilities = (n != null) || (nnn != null);
+        hasExtendedCapabilities = (n != null) || (nn != null) || (nnn != null);
         if (!hasExtendedCapabilities)
             return;
 

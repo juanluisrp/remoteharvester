@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 
 import javax.persistence.*;
 
@@ -49,7 +50,23 @@ public class OperatesOnRemoteDatasetMetadataRecord extends DatasetMetadataRecord
     @Column(columnDefinition = "text")
     private String summary;
 
+
+    //PASS if you can find a cap doc with a layer DS record with the same fileID and datasetID
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_MATCHES_A_CAP_DATASET_LAYER;
+
     //---------------------------------------------------------------------------
+
+
+    public IndicatorStatus getINDICATOR_MATCHES_A_CAP_DATASET_LAYER() {
+        return INDICATOR_MATCHES_A_CAP_DATASET_LAYER;
+    }
+
+    public void setINDICATOR_MATCHES_A_CAP_DATASET_LAYER(IndicatorStatus INDICATOR_MATCHES_A_CAP_DATASET_LAYER) {
+        this.INDICATOR_MATCHES_A_CAP_DATASET_LAYER = INDICATOR_MATCHES_A_CAP_DATASET_LAYER;
+    }
 
     public OperatesOnLink getOperatesOnLink() {
         return operatesOnLink;

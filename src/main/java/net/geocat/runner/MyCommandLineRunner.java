@@ -38,11 +38,13 @@ import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.database.linkchecker.service.OperatesOnLinkService;
 import net.geocat.database.linkchecker.service.ServiceDocumentLinkService;
 import net.geocat.database.linkchecker.service.ServiceMetadataRecordService;
+import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
 import net.geocat.xml.XmlDoc;
@@ -152,19 +154,135 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
+    @Autowired
+    CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
+
+    @Autowired
+    CapabilitiesServiceLinkIndicators capabilitiesServiceLinkIndicators;
+
+    @Autowired
+    CapabilitiesServiceMatchesLocalServiceIndicators capabilitiesServiceMatchesLocalServiceIndicators;
+
+    @Autowired
+    CapabilitiesDatasetLinksResolveIndicators capabilitiesDatasetLinksResolveIndicators;
+
+    @Autowired
+    ServiceOperatesOnIndicators serviceOperatesOnIndicators;
+
+
+
+
+
     @Override
     public void run(String... args) throws Exception {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-         //  run5(args);
+    run11(args);
         }
         catch(Exception e){
             int t=0;
         }
+        logger.debug("DONE!");
     }
 
-    public void run8(String... args) throws Exception {
+    public void run11(String... args) throws Exception {
+       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("d725299f-82a3-4fd6-98c9-021638045a23");
+       int total =records.size();
+       int cap_resolves = 0;
+       int cap_resolves_to_service = 0;
+        int cap_link_to_service_fileId = 0;
+        int cap_link_to_service_full_match = 0;
+        int cap_ds_links_resolve = 0;
+        int all_opson_match = 0;
+
+        for(LocalServiceMetadataRecord r:records){
+
+//            String xml = blobStorageService.findXML(r.getSha2());
+//            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
+//
+//
+//            String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
+//            XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
+
+
+            capabilitiesServiceMatchesLocalServiceIndicators.process(r);
+           capabilitiesDatasetLinksResolveIndicators.process(r);
+            serviceOperatesOnIndicators.process(r);
+
+            if (r.getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES() == IndicatorStatus.PASS)
+                all_opson_match++;
+            else {
+
+//            String xml = blobStorageService.findXML(r.getSha2());
+//            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
+//
+              if (r.getServiceDocumentLinks().get(0).getCapabilitiesDocument() != null) {
+                  String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
+                  XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
+
+                  int tta=1;
+              }
+
+                int tttt=0;
+            }
+
+           if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() >0)
+                cap_resolves++;
+
+           if (r.getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() == IndicatorStatus.PASS)
+               cap_resolves_to_service++;
+           else {
+               int ttttt = 0;
+           }
+
+           if (r.getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() == IndicatorStatus.PASS)
+               cap_link_to_service_fileId++;
+           if (r.getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES() == IndicatorStatus.PASS)
+               cap_link_to_service_full_match++;
+
+           if (r.getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() == IndicatorStatus.PASS)
+               cap_ds_links_resolve++;
+
+           int ttt=0;
+       }
+
+       double percent_cap_resolves = ((double) cap_resolves)/total * 100.0;
+       double percent_cap_resolves_to_service = ((double) cap_resolves_to_service)/total * 100.0;
+
+       double percent_cap_to_service_fileID = ((double) cap_link_to_service_fileId)/total * 100.0;
+       double percent_cap_to_service_full = ((double) cap_link_to_service_full_match)/total * 100.0;
+
+       double percent_cap_ds_links_resolve = ((double) cap_ds_links_resolve)/total * 100.0;
+        double percent_all_ops_on_matches = ((double) all_opson_match)/total * 100.0;
+
+        int t=0;
+    }
+
+        public void run10(String... args) throws Exception {
+        LocalServiceMetadataRecord r =localServiceMetadataRecordRepo.findById(1L).get();
+        String xml = blobStorageService.findXML(r.getSha2());
+        XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
+
+
+         String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
+        XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
+
+        capabilitiesServiceLinkIndicators.process(r);
+
+    }
+
+        public void run9(String... args) throws Exception {
+        for(LocalServiceMetadataRecord localServiceMetadataRecord : localServiceMetadataRecordRepo.findAll()){
+            capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord);
+        }
+//        for(LocalDatasetMetadataRecord localDatasetMetadataRecord : localDatasetMetadataRecordRepo.findAll()){
+//            capabilitiesResolvesIndicators.process(localDatasetMetadataRecord);
+//        }
+
+    }
+
+        public void run8(String... args) throws Exception {
         Iterable<LocalDatasetMetadataRecord> records =  localDatasetMetadataRecordRepo.findAll();
 
         for (LocalDatasetMetadataRecord r:records){

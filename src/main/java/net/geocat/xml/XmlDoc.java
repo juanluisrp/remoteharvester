@@ -143,6 +143,8 @@ public class XmlDoc {
         nsCtx.bindNamespaceUri("atom", "http://www.w3.org/2005/Atom");
 
         nsCtx.bindNamespaceUri("wms", "http://www.opengis.net/wms");
+        nsCtx.bindNamespaceUri("wfs", "http://www.opengis.net/wfs/2.0");
+
 
         nsCtx.bindNamespaceUri("wmts", "http://www.opengis.net/wmts/1.0");
         nsCtx.bindNamespaceUri("xlink", "http://www.w3.org/1999/xlink");

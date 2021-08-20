@@ -42,6 +42,7 @@ import net.geocat.database.linkchecker.repos2.LinkRepo;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.LinkService;
 import net.geocat.eventprocessor.BaseEventProcessor;
+import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.processlinks.ProcessServiceDocLinksEvent;
@@ -109,7 +110,22 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
    EventFactory eventFactory;
 
    @Autowired
-           MetadataService metadataService;
+   MetadataService metadataService;
+
+   @Autowired
+   CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
+
+   @Autowired
+   CapabilitiesServiceLinkIndicators capabilitiesServiceLinkIndicators;
+
+   @Autowired
+   CapabilitiesServiceMatchesLocalServiceIndicators capabilitiesServiceMatchesLocalServiceIndicators;
+
+   @Autowired
+   CapabilitiesDatasetLinksResolveIndicators capabilitiesDatasetLinksResolveIndicators;
+
+   @Autowired
+   ServiceOperatesOnIndicators serviceOperatesOnIndicators;
 
     LocalServiceMetadataRecord localServiceMetadataRecord;
 
@@ -158,7 +174,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         for(ServiceDocumentLink link : localServiceMetadataRecord.getServiceDocumentLinks()) {
             CapabilitiesDocument capDoc = link.getCapabilitiesDocument();
             if (capDoc != null) {
-                capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
+                if (capDoc.getServiceDocumentLink() != null)
+                    capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
                 capDoc.setServiceDocumentLink(null);
                 capDocuments.add(capDoc); // to be deleted
             }
@@ -185,6 +202,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         for(OperatesOnRemoteDatasetMetadataRecord record : opsOnDocuments) {
             operatesOnRemoteDatasetMetadataRecordRepo.delete(record);
         }
+
+        save();
     }
 
     public void save(){
@@ -329,8 +348,13 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
     @Override
     public EventProcessor_ProcessServiceDocLinksEvent internalProcessing() throws Exception {
-
-
+        //handle post-procssing
+        capabilitiesResolvesIndicators.process(localServiceMetadataRecord); // simple record->cap indicators
+        capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord); // see if caps' service record matches local service record
+        capabilitiesServiceMatchesLocalServiceIndicators.process(localServiceMetadataRecord); // see if cap links back to original service records
+        capabilitiesDatasetLinksResolveIndicators.process(localServiceMetadataRecord); // looks at the cap's DS layers
+        serviceOperatesOnIndicators.process(localServiceMetadataRecord); // check the operates on links
+        save();
         return this;
     }
 

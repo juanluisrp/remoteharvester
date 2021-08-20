@@ -33,12 +33,18 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.xml.MetadataDocumentType;
+import net.geocat.xml.helpers.CapabilitiesType;
 
 import javax.persistence.*;
 
 @MappedSuperclass
 public class MetadataRecord extends UpdateCreateDateTimeEntity {
+
+
+    @Transient
+    public String actualXML; //not saved to DB - use the SHA2 link
 
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
@@ -54,12 +60,40 @@ public class MetadataRecord extends UpdateCreateDateTimeEntity {
     @Column(columnDefinition = "text")
     private String humanReadable;
 
+    //Number of documents links that resolve to a capabilities document.
+    // null = not evaluated
+    Integer INDICATOR_RESOLVES_TO_CAPABILITIES;
+
+    //If >1 capabilities, then the most common type (WMS/WFS/WMTS/ATOM).  If there is an equal number, then choose any one.
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    CapabilitiesType INDICATOR_CAPABILITIES_TYPE;
+
+
     public MetadataRecord()
     {
-
+        super();
     }
 
     //---------------------------------------------------------------------------
+
+
+    public Integer getINDICATOR_RESOLVES_TO_CAPABILITIES() {
+        return INDICATOR_RESOLVES_TO_CAPABILITIES;
+    }
+
+    public void setINDICATOR_RESOLVES_TO_CAPABILITIES(Integer INDICATOR_RESOLVES_TO_CAPABILITIES) {
+        this.INDICATOR_RESOLVES_TO_CAPABILITIES = INDICATOR_RESOLVES_TO_CAPABILITIES;
+    }
+
+    public CapabilitiesType getINDICATOR_CAPABILITIES_TYPE() {
+        return INDICATOR_CAPABILITIES_TYPE;
+    }
+
+    public void setINDICATOR_CAPABILITIES_TYPE(CapabilitiesType INDICATOR_CAPABILITIES_TYPE) {
+        this.INDICATOR_CAPABILITIES_TYPE = INDICATOR_CAPABILITIES_TYPE;
+    }
 
     public String getHumanReadable() {
         return humanReadable;

@@ -53,12 +53,20 @@ public class CapabilitiesLinkFixer implements ILinkFixer {
     @Override
     public String fix(String link) throws Exception {
 
-        String requestParam = findQueryParmName(link, "request");
-        if (requestParam == null)
-            return link;
+        try {
+            if (link == null)
+                return link;
 
-        URIBuilder uriBuilder = new URIBuilder(link);
-        uriBuilder.setParameter(requestParam, "GetCapabilities");
-        return uriBuilder.build().toString();
+            String requestParam = findQueryParmName(link, "request");
+            if (requestParam == null)
+                return link;
+
+            URIBuilder uriBuilder = new URIBuilder(link);
+            uriBuilder.setParameter(requestParam, "GetCapabilities");
+            return uriBuilder.build().toString();
+        }
+        catch(Exception e){
+            return link;
+        }
     }
 }

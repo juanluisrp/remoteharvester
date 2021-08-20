@@ -38,6 +38,8 @@ import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
 
@@ -47,16 +49,26 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
         setup_XmlCapabilitiesWFS();
     }
 
+    private String getLayerMetadataURL() throws  Exception {
+        NodeList nl = xpath_nodeset("//wfs:FeatureType/wfs:MetadataURL/@xlink:href");
+        for(int idx=0;idx<nl.getLength();idx++){
+            Node n = nl.item(idx);
+            String value = n.getNodeValue();
+            if  (  (value == null) || ( value.isEmpty()) )
+                continue;
+            return value.trim();
+        }
+        return null;
+    }
+
     private void setup_XmlCapabilitiesWFS() throws Exception {
         NodeList sdi = xpath_nodeset("//inspire_dls:SpatialDataSetIdentifier");
         if (sdi == null)
             return;
         for(int idx=0; idx<sdi.getLength();idx++){
             Node n = sdi.item(idx);
-            Node urlNode = n.getAttributes().getNamedItem("metadataURL");
-            String url =null;
-            if (urlNode != null)
-               url = urlNode.getNodeValue();
+            String url =getLayerMetadataURL();
+
             Node codeNode = xpath_node(n,"./inspire_common:Code");
             String identity = null;
             if (codeNode != null)
