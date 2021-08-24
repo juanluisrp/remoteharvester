@@ -35,7 +35,7 @@ package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.database.linkchecker.entities2.Link;
-import net.geocat.http.HttpResult;
+import net.geocat.database.linkchecker.entities.HttpResult;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate;
 import net.geocat.xml.XmlDoc;

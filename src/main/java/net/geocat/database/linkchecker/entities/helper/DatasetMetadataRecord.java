@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.entities.helper;
 
 
 import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
+import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -61,13 +62,25 @@ public class DatasetMetadataRecord extends MetadataRecord {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<DatasetDocumentLink> documentLinks;
 
-
+    //PASS if ANY of the capabilities documents has a layer link (dataset) that matches this document (file id and dataset id).
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_LAYER_MATCHES;
 
     //---------------------------------------------------------------------------
 
     public DatasetMetadataRecord() {
         super();
         documentLinks = new ArrayList<>();
+    }
+
+    public IndicatorStatus getINDICATOR_LAYER_MATCHES() {
+        return INDICATOR_LAYER_MATCHES;
+    }
+
+    public void setINDICATOR_LAYER_MATCHES(IndicatorStatus INDICATOR_LAYER_MATCHES) {
+        this.INDICATOR_LAYER_MATCHES = INDICATOR_LAYER_MATCHES;
     }
 
     public List<DatasetDocumentLink> getDocumentLinks() {

@@ -31,15 +31,15 @@
  *  ==============================================================================
  */
 
-package net.geocat.http;
+package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.HttpResult;
+import net.geocat.database.linkchecker.entities.LinkCheckBlobStorage;
+import org.springframework.data.repository.CrudRepository;
 
-import java.io.IOException;
+public interface HttpResultRepo extends CrudRepository<HttpResult, Long>  {
 
-public interface IHTTPRetriever {
+    HttpResult findByLinkCheckJobIdAndURL(String linkCheckJobId, String URL);
 
-    HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException;
-
+    boolean existsByLinkCheckJobIdAndURL(String linkCheckJobId, String URL);
 }

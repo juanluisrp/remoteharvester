@@ -33,6 +33,7 @@
 
 package net.geocat.http;
 
+import net.geocat.database.linkchecker.entities.HttpResult;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,6 +169,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
                 }
             }
             HttpResult errorResult = new HttpResult(errorBuffer);
+            errorResult.setURL(location);
             errorResult.setHTTPS(isHTTPs);
             errorResult.setSslTrusted(true);
             if (verifyingTrustingX509TrustManager != null) {
@@ -185,7 +187,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
                 }
             }
             errorResult.setFinalURL(url.toString());
-            errorResult.setReceivedCookie(cookies);
+            if (cookies != null)
+                errorResult.setReceivedCookie(String.join("\n",cookies));
             errorResult.setSentCookie(cookie);
             errorResult.setFullyRead(false);
             errorResult.setErrorOccurred(true);
@@ -212,6 +215,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         List<String> cookies = http.getHeaderFields().get("Set-Cookie");
 
         HttpResult result = new HttpResult(response_bytes);
+        result.setURL(location);
+
         result.setHTTPS(isHTTPs);
         result.setSslTrusted(true);
         if (verifyingTrustingX509TrustManager != null) {
@@ -227,7 +232,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
                 result.setSslTrusted(false);
             }
         }
-        result.setReceivedCookie(cookies);
+        if (cookies != null)
+            result.setReceivedCookie(String.join("\n",cookies));
         result.setSentCookie(cookie);
         result.setFinalURL(url.toString());
         result.setFullyRead(fullyRead);

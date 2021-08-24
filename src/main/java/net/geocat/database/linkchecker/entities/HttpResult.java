@@ -31,29 +31,133 @@
  *  ==============================================================================
  */
 
-package net.geocat.http;
+package net.geocat.database.linkchecker.entities;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name = "HttpResultCache"
+        ,indexes = {
+//                @Index(
+//                        name = "idx_httpresultcache_url",
+//                        columnList = "URL",
+//                        unique = false
+//                ),
+        @Index(
+                name = "idx_httpresultcache_job_url",
+                columnList = "linkCheckJobId,URL",
+                unique = true
+        ),
+} )
 public class HttpResult {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long httpResultId;
+
+    @Column(columnDefinition = "varchar(40)")
+    String linkCheckJobId;
+
+    @Column(columnDefinition = "bytea")
     byte[] data;
+
     boolean fullyRead;
-    int httpCode;
+    Integer httpCode;
+
+    @Column(columnDefinition = "text")
     String contentType;
+
+    @Column(columnDefinition = "text")
     String specialToSendCookie;
+
     boolean errorOccurred;
     boolean isHTTPS;
+
+
+    @Column(columnDefinition = "text")
+    String URL;
+
+    @Column(columnDefinition = "text")
     String finalURL;
 
+    @Column(columnDefinition = "text")
     String sentCookie;
-    List<String> receivedCookie;
+
+    @Column(columnDefinition = "text")
+    String  receivedCookie;
 
     boolean sslTrusted;
+
+    @Column(columnDefinition = "text")
     String sslUnTrustedReason;
 
+    public HttpResult() {
+
+    }
 
     public HttpResult(byte[] data) {
         this.data = data;
+    }
+
+    public long getHttpResultId() {
+        return httpResultId;
+    }
+
+    public void setHttpResultId(long httpResultId) {
+        this.httpResultId = httpResultId;
+    }
+
+    public String getLinkCheckJobId() {
+        return linkCheckJobId;
+    }
+
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
+
+    public Boolean getFullyRead() {
+        return fullyRead;
+    }
+
+    public void setFullyRead(Boolean fullyRead) {
+        this.fullyRead = fullyRead;
+    }
+
+    public void setHttpCode(Integer httpCode) {
+        this.httpCode = httpCode;
+    }
+
+    public Boolean getErrorOccurred() {
+        return errorOccurred;
+    }
+
+    public void setErrorOccurred(Boolean errorOccurred) {
+        this.errorOccurred = errorOccurred;
+    }
+
+    public Boolean getHTTPS() {
+        return isHTTPS;
+    }
+
+    public void setHTTPS(Boolean HTTPS) {
+        isHTTPS = HTTPS;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public Boolean getSslTrusted() {
+        return sslTrusted;
+    }
+
+    public void setSslTrusted(Boolean sslTrusted) {
+        this.sslTrusted = sslTrusted;
     }
 
     public byte[] getData() {
@@ -128,11 +232,11 @@ public class HttpResult {
         this.sentCookie = sentCookie;
     }
 
-    public List<String> getReceivedCookie() {
+    public  String  getReceivedCookie() {
         return receivedCookie;
     }
 
-    public void setReceivedCookie(List<String> receivedCookie) {
+    public void setReceivedCookie( String receivedCookie) {
         this.receivedCookie = receivedCookie;
     }
 

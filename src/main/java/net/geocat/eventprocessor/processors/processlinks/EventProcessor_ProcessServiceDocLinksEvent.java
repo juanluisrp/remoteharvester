@@ -148,10 +148,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             processOperatesOnLinks();
             save();
 
-            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
-            localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
-            save();
-            logger.debug("finished processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
+             logger.debug("finished initial processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
 
         }
         catch(Exception e){
@@ -349,12 +346,25 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
     @Override
     public EventProcessor_ProcessServiceDocLinksEvent internalProcessing() throws Exception {
         //handle post-procssing
-        capabilitiesResolvesIndicators.process(localServiceMetadataRecord); // simple record->cap indicators
-        capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord); // see if caps' service record matches local service record
-        capabilitiesServiceMatchesLocalServiceIndicators.process(localServiceMetadataRecord); // see if cap links back to original service records
-        capabilitiesDatasetLinksResolveIndicators.process(localServiceMetadataRecord); // looks at the cap's DS layers
-        serviceOperatesOnIndicators.process(localServiceMetadataRecord); // check the operates on links
-        save();
+        try {
+            capabilitiesResolvesIndicators.process(localServiceMetadataRecord); // simple record->cap indicators
+            capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord); // see if caps' service record matches local service record
+            capabilitiesServiceMatchesLocalServiceIndicators.process(localServiceMetadataRecord); // see if cap links back to original service records
+            capabilitiesDatasetLinksResolveIndicators.process(localServiceMetadataRecord); // looks at the cap's DS layers
+            serviceOperatesOnIndicators.process(localServiceMetadataRecord); // check the operates on links
+
+            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+            localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
+            save();
+            logger.debug("finished post processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
+        }
+        catch(Exception e){
+            logger.error("post processing exception for serviceMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
+            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+            localServiceMetadataRecord.setErrorMessage(  convertToString(e) );
+            save();
+        }
+
         return this;
     }
 

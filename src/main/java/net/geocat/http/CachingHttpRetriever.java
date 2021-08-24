@@ -33,9 +33,10 @@
 
 package net.geocat.http;
 
+
 import net.geocat.database.linkchecker.entities.HttpResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.geocat.database.linkchecker.repos.HttpResultRepo;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -45,25 +46,51 @@ import java.io.IOException;
 
 @Component
 @Scope("prototype")
-@Qualifier("cookieAttachingRetriever")
-public class CookieAttachingRetriever implements IHTTPRetriever {
+@Qualifier("cachingHttpRetriever")
+ public class CachingHttpRetriever implements IHTTPRetriever {
 
     @Autowired
-    @Qualifier("redirectAwareHTTPRetriever")
-    public RedirectAwareHTTPRetriever retriever; // public for testing
-    Logger logger = LoggerFactory.getLogger(CookieAttachingRetriever.class);
+    HttpResultRepo httpResultRepo;
 
-    public CookieAttachingRetriever() {
+    @Autowired
+    @Qualifier("cookieAttachingRetriever")
+    public CookieAttachingRetriever retriever; // public for testing
 
+    String linkCheckJobId;
+
+    public CachingHttpRetriever() {
+        linkCheckJobId = MDC.get("JMSCorrelationID");
     }
 
     @Override
     public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
-        HttpResult result = retriever.retrieveXML(verb, location, body, cookie, predicate);
-        if (result.isErrorOccurred()) {
-            return retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
+        if ( (linkCheckJobId == null) || (linkCheckJobId.isEmpty()) )
+            return retriever.retrieveXML( verb,  location,  body,  cookie,  predicate);
+
+        HttpResult result = getCached(location);
+        if (result != null)
+            return result;
+
+        result = retriever.retrieveXML( verb,  location,  body,  cookie,  predicate);
+        result.setLinkCheckJobId(linkCheckJobId);
+        result = saveResult(result);
+
+        return result;
+
         }
+
+    //chance that this throws...
+    private synchronized  HttpResult saveResult(HttpResult result) {
+        //could be parallel processes that did this...
+        if (httpResultRepo.existsByLinkCheckJobIdAndURL(linkCheckJobId,result.getURL()) )
+            return result;
+
+        return httpResultRepo.save(result);
+    }
+
+    private HttpResult getCached(String location) {
+        HttpResult result = httpResultRepo.findByLinkCheckJobIdAndURL(linkCheckJobId,location);
         return result;
     }
 }

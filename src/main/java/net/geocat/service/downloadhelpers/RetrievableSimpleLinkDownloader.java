@@ -35,7 +35,7 @@ package net.geocat.service.downloadhelpers;
 
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
-import net.geocat.http.HttpResult;
+import net.geocat.database.linkchecker.entities.HttpResult;
 import net.geocat.http.IContinueReadingPredicate;
 import net.geocat.http.IHTTPRetriever;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class RetrievableSimpleLinkDownloader {
 
 
     @Autowired
-    @Qualifier("cookieAttachingRetriever")
+    @Qualifier("cachingHttpRetriever")
     IHTTPRetriever retriever;
 
     @Autowired

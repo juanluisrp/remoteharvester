@@ -59,6 +59,9 @@ public class DatasetLinkFixer implements ILinkFixer {
             if (link == null)
                 return link;
 
+            link = link.replace("&amp;","&"); // this seems to happen a lot
+
+
             String requestParam = CapabilitiesLinkFixer.findQueryParmName(link, "request");
             if (requestParam == null)
                 return link;

@@ -85,6 +85,9 @@ public class CapabilitiesDocumentService {
         doc.setCapabilitiesDocumentType(xml.getCapabilitiesType());
 
 
+        List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);
+        doc.setCapabilitiesDatasetMetadataLinkList(dslinks);
+
         if (xml.isHasExtendedCapabilities()) {
             doc.setIndicator_HasExtendedCapabilities(IndicatorStatus.PASS);
         } else {
@@ -104,8 +107,6 @@ public class CapabilitiesDocumentService {
         doc.setRemoteServiceMetadataRecordLink(remoteServiceMetadataRecordLink);
 
 
-        List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);
-        doc.setCapabilitiesDatasetMetadataLinkList(dslinks);
 
         return doc;
     }

@@ -42,6 +42,8 @@ import net.geocat.database.linkchecker.repos2.LinkRepo;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.database.linkchecker.service.LinkService;
 import net.geocat.eventprocessor.BaseEventProcessor;
+import net.geocat.eventprocessor.processors.processlinks.postprocessing.CapabilitiesResolvesIndicators;
+import net.geocat.eventprocessor.processors.processlinks.postprocessing.DatasetToLayerIndicators;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.processlinks.ProcessDatasetDocLinksEvent;
@@ -86,19 +88,42 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
     @Autowired
     RetrieveServiceDocumentLink retrieveServiceDocumentLink;
 
+    @Autowired
+    CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
+
+    @Autowired
+    DatasetToLayerIndicators datasetToLayerIndicators;
+
     LocalDatasetMetadataRecord localDatasetMetadataRecord;
 
 
 
 
     @Override
-    public EventProcessor_ProcessDatasetDocLinksEvent externalProcessing() throws Exception {
+    public EventProcessor_ProcessDatasetDocLinksEvent internalProcessing() throws Exception {
+        try{
+
+            capabilitiesResolvesIndicators.process(localDatasetMetadataRecord);
+            datasetToLayerIndicators.process(localDatasetMetadataRecord);
+
+            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+            // localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
+            save();
+            logger.debug("finished post processing documentid="+getInitiatingEvent().getDatasetDocumentId()  );
+
+        }
+            catch(Exception e){
+            logger.error("exception for datasetMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
+            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+            localDatasetMetadataRecord.setErrorMessage(  convertToString(e) );
+            save();
+        }
         return this;
     }
 
 
     @Override
-    public EventProcessor_ProcessDatasetDocLinksEvent internalProcessing() throws Exception {
+    public EventProcessor_ProcessDatasetDocLinksEvent externalProcessing () throws Exception {
         localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
 
         prune();
@@ -110,15 +135,11 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
             processDocumentLinks();
             save();
 
-
-            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
-           // localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
-            save();
-            logger.debug("finished processing documentid="+getInitiatingEvent().getDatasetDocumentId()  );
+            logger.debug("finished initial processing documentid="+getInitiatingEvent().getDatasetDocumentId()  );
 
         }
         catch(Exception e){
-            logger.error("exception for serviceMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
+            logger.error("exception for datasetMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
             localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
             localDatasetMetadataRecord.setErrorMessage(  convertToString(e) );
             save();

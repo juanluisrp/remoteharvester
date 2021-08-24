@@ -57,6 +57,8 @@ public class CapabilitiesLinkFixer implements ILinkFixer {
             if (link == null)
                 return link;
 
+            link = link.replace("&amp;","&"); // this seems to happen a lot
+
             String requestParam = findQueryParmName(link, "request");
             if (requestParam == null)
                 return link;

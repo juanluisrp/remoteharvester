@@ -40,13 +40,11 @@ import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.*;
-import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
-import net.geocat.database.linkchecker.service.OperatesOnLinkService;
-import net.geocat.database.linkchecker.service.ServiceDocumentLinkService;
-import net.geocat.database.linkchecker.service.ServiceMetadataRecordService;
+import net.geocat.database.linkchecker.service.*;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
+import net.geocat.xml.XmlCapabilitiesDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlServiceRecordDoc;
@@ -64,6 +62,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -169,6 +168,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     ServiceOperatesOnIndicators serviceOperatesOnIndicators;
 
+    @Autowired
+    CapabilitiesDatasetMetadataLinkService capabilitiesDatasetMetadataLinkService;
 
 
 
@@ -179,6 +180,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
     run11(args);
+      run12(args);
         }
         catch(Exception e){
             int t=0;
@@ -186,8 +188,78 @@ public class MyCommandLineRunner implements CommandLineRunner {
         logger.debug("DONE!");
     }
 
+
+    public CapabilitiesDocument createCap(XmlCapabilitiesDocument xml) throws Exception {
+        String sha2 ="test case";
+        CapabilitiesDocument doc = new CapabilitiesDocument();
+        doc.setSha2(sha2);
+
+       // doc.setParent(link);
+        doc.setCapabilitiesDocumentType(xml.getCapabilitiesType());
+
+
+        if (xml.isHasExtendedCapabilities()) {
+            doc.setIndicator_HasExtendedCapabilities(IndicatorStatus.PASS);
+        } else {
+            doc.setIndicator_HasExtendedCapabilities(IndicatorStatus.FAIL);
+            return doc;
+        }
+
+        String metadataUrl = xml.getMetadataUrlRaw();
+        if ((metadataUrl == null) || (metadataUrl.isEmpty())) {
+            doc.setIndicator_HasServiceMetadataLink(IndicatorStatus.FAIL);
+            return doc;
+        }
+
+        doc.setIndicator_HasServiceMetadataLink(IndicatorStatus.PASS);
+
+
+
+        List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);
+        doc.setCapabilitiesDatasetMetadataLinkList(dslinks);
+
+        return doc;
+    }
+    public void run12(String... args) throws Exception {
+        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
+        int total =records.size();
+        int cap_resolves =0;
+        int layer_matches = 0;
+
+        for(LocalDatasetMetadataRecord r:records) {
+            if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() > 0)
+                cap_resolves++;
+            if (r.getINDICATOR_LAYER_MATCHES() == IndicatorStatus.PASS)
+                layer_matches++;
+            else {
+                Optional<DatasetDocumentLink> doc = r.getDocumentLinks().stream()
+                        .filter(x->x.getCapabilitiesDocument() != null).findFirst();
+                if (doc.isPresent()){
+                    CapabilitiesDocument capdoc = doc.get().getCapabilitiesDocument();
+                     String xmlCap = linkCheckBlobStorageRepo.findById(capdoc.getSha2()).get().getTextValue();
+                     XmlCapabilitiesDocument xmlCapDoc = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlCap);
+                    List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(capdoc, xmlCapDoc);
+
+                    CapabilitiesDocument cd = createCap(xmlCapDoc);
+                    cd= capabilitiesDocumentRepo.save(cd);
+                    CapabilitiesDocument cd2=capabilitiesDocumentRepo.findById(cd.getCapabilitiesDocumentId()).get();
+
+                    if (!capdoc.getCapabilitiesDatasetMetadataLinkList().isEmpty()) {
+                         CapabilitiesDatasetMetadataLink dd = capdoc.getCapabilitiesDatasetMetadataLinkList().get(0);
+                         int uu=0;
+                     }
+                    int ttt=0;
+                }
+            }
+        }
+
+        double percent_cap_resolves = ((double) cap_resolves)/total * 100.0;
+        double percent_layer_matches = ((double) layer_matches)/total * 100.0;
+
+        int tt=0;
+    }
     public void run11(String... args) throws Exception {
-       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("d725299f-82a3-4fd6-98c9-021638045a23");
+       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
        int total =records.size();
        int cap_resolves = 0;
        int cap_resolves_to_service = 0;
@@ -205,10 +277,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //            String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
 //            XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
 
-
-            capabilitiesServiceMatchesLocalServiceIndicators.process(r);
-           capabilitiesDatasetLinksResolveIndicators.process(r);
-            serviceOperatesOnIndicators.process(r);
+//
+//            capabilitiesServiceMatchesLocalServiceIndicators.process(r);
+//           capabilitiesDatasetLinksResolveIndicators.process(r);
+//            serviceOperatesOnIndicators.process(r);
 
             if (r.getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES() == IndicatorStatus.PASS)
                 all_opson_match++;
