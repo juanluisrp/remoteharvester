@@ -3,8 +3,8 @@ FROM maven:3-adoptopenjdk-8 as builder
 COPY ./pom.xml ./pom.xml
 COPY ./src ./src
 
-RUN mvn dependency:go-offline -B
-RUN mvn package -DskipTests
+RUN mvn -B dependency:go-offline
+RUN mvn -B package -DskipTests
 
 
 FROM adoptopenjdk:8-jre-hotspot
