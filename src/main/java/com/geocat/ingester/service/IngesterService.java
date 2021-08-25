@@ -3,12 +3,16 @@ package com.geocat.ingester.service;
 import com.geocat.ingester.dao.harvester.EndpointJobRepo;
 import com.geocat.ingester.dao.harvester.HarvestJobRepo;
 import com.geocat.ingester.dao.harvester.MetadataRecordRepo;
+import com.geocat.ingester.dao.linkchecker.LocalDatasetMetadataRecordRepo;
+import com.geocat.ingester.dao.linkchecker.LocalServiceMetadataRecordRepo;
 import com.geocat.ingester.exception.GeoNetworkClientException;
 import com.geocat.ingester.geonetwork.client.GeoNetworkClient;
 import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
 import com.geocat.ingester.model.harvester.MetadataRecordXml;
 import com.geocat.ingester.model.ingester.IngestJobState;
+import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
+import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +49,12 @@ public class IngesterService {
 
     @Autowired
     private IngestJobService ingestJobService;
+
+    @Autowired
+    private LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
+
+    @Autowired
+    private LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
     /**
      * Executes the ingester process.
@@ -87,36 +96,97 @@ public class IngesterService {
         //List<Integer> metadataIds = new ArrayList<>();
         Map<String, Boolean> metadataIds = new HashMap<>();
 
-        for (EndpointJob job : endpointJobList) {
-            Boolean pagesAvailable = true;
+        try {
+            for (EndpointJob job : endpointJobList) {
+                Boolean pagesAvailable = true;
 
-            int page = 0;
-            int size = 200;
+                int page = 0;
+                int size = 200;
 
-            long total = 0;
+                long total = 0;
 
-            while (pagesAvailable) {
-                Pageable pageableRequest = PageRequest.of(page++, size);
+                while (pagesAvailable) {
+                    Pageable pageableRequest = PageRequest.of(page++, size);
 
-                Page<MetadataRecordXml> metadataRecordList =
-                        metadataRecordRepo.findMetadataRecordWithXmlByEndpointJobId(job.getEndpointJobId(), pageableRequest);
+                    Page<MetadataRecordXml> metadataRecordList =
+                            metadataRecordRepo.findMetadataRecordWithXmlByEndpointJobId(job.getEndpointJobId(), pageableRequest);
 
-                if (page == 1) {
-                    log.info("Total harvested records to process: " + metadataRecordList.getTotalElements());
+                    if (page == 1) {
+                        log.info("Total harvested records to process: " + metadataRecordList.getTotalElements());
+                    }
+
+                    long from = (size * (page - 1) ) + 1;
+                    long to =  Math.min((size * page) - 1, metadataRecordList.getTotalElements());
+                    log.info("Adding harvested metadata records to the catalogue from " +  from + " to " + to + " of " + metadataRecordList.getTotalElements());
+
+                    total = total + metadataRecordList.getNumberOfElements();
+
+                    metadataRecordList.forEach(r -> {
+                        // TODO: Filter by linkcheckerjobid related to the harvest job
+                        List<LocalServiceMetadataRecord> localServiceMetadataRecord = localServiceMetadataRecordRepo.findAllByFileIdentifier(r.getRecordIdentifier());
+
+                        if (!localServiceMetadataRecord.isEmpty()) {
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() != null) {
+                                r.addIndicator("INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE() != null) {
+                                r.addIndicator("INDICATOR_ALL_OPERATES_ON_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES() != null) {
+                                r.addIndicator("INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE() != null) {
+                                r.addIndicator("INDICATOR_CAPABILITIES_TYPE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() != null) {
+                                r.addIndicator("INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() != null) {
+                                r.addIndicator("INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES() != null) {
+                                r.addIndicator("INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES().toString());
+                            }
+
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE() != null) {
+                                r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE().toString());
+                            }
+                        } else {
+                            List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifier(r.getRecordIdentifier());
+
+                            if (!localDatasetMetadataRecord.isEmpty()) {
+                                if (localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE() != null) {
+                                    r.addIndicator("INDICATOR_CAPABILITIES_TYPE", localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE().toString());
+                                }
+
+                                if (localDatasetMetadataRecord.get(0).getINDICATOR_LAYER_MATCHES() != null) {
+                                    r.addIndicator("INDICATOR_LAYER_MATCHES", localDatasetMetadataRecord.get(0).getINDICATOR_LAYER_MATCHES().toString());
+                                }
+
+                                if (localDatasetMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES() != null) {
+                                    r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localDatasetMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES().toString());
+                                }
+                            }
+
+                        }
+
+                    });
+                    metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
+
+                    ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
+
+                    pagesAvailable = !metadataRecordList.isLast();
                 }
-
-                long from = (size * (page - 1) ) + 1;
-                long to =  Math.min((size * page) - 1, metadataRecordList.getTotalElements());
-                log.info("Adding harvested metadata records to the catalogue from " +  from + " to " + to + " of " + metadataRecordList.getTotalElements());
-
-                total = total + metadataRecordList.getNumberOfElements();
-
-                metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
-
-                ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
-
-                pagesAvailable = !metadataRecordList.isLast();
             }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         // Index added/updated records

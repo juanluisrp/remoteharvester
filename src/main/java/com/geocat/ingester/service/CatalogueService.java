@@ -7,6 +7,7 @@ import com.geocat.ingester.model.harvester.MetadataRecordXml;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import com.geocat.ingester.model.metadata.HarvesterSetting;
 import com.geocat.ingester.model.metadata.Metadata;
+import com.geocat.ingester.model.metadata.MetadataIndicator;
 import com.geocat.ingester.model.metadata.OperationAllowed;
 import com.geocat.ingester.model.metadata.OperationAllowedId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,16 @@ public class CatalogueService {
 
             // TODO: Get from XML
             metadata.setChangeDate(datetime.format(DATE_PATTERN));
+
+            metadata.getIndicators().clear();
+
+            metadataRecord.getIndicators().forEach((k, v) -> {
+                MetadataIndicator metadataIndicator = new MetadataIndicator();
+                metadataIndicator.setName(k);
+                metadataIndicator.setValue(v);
+                metadata.getIndicators().add(metadataIndicator);
+
+            });
 
             metadataList.add(metadata);
         }

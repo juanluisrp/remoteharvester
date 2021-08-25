@@ -32,16 +32,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
 @Entity
 @Table(name = "Metadata")
 @Data
-public class Metadata {
+public class Metadata implements Serializable {
     private static final String ID_SEQ_NAME = "metadata_id_seq";
 
     @Id
@@ -64,7 +69,11 @@ public class Metadata {
     private int groupOwner;
 
     @OneToMany(mappedBy="id.metadataId",  fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<OperationAllowed> privileges;
+    private Set<OperationAllowed> privileges = new HashSet<OperationAllowed>();
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="metadata_id", nullable=false)
+    private Set<MetadataIndicator> indicators = new HashSet<MetadataIndicator>();
 
     public Metadata() {
         super();
