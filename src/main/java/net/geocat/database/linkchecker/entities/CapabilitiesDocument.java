@@ -37,6 +37,7 @@ import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.UpdateCreateDateTimeEntity;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.xml.helpers.CapabilitiesType;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -82,6 +83,7 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     @OneToMany(mappedBy = "capabilitiesDocument",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+   // @BatchSize(size=200)
     private List<CapabilitiesDatasetMetadataLink> capabilitiesDatasetMetadataLinkList;
 
 

@@ -36,6 +36,7 @@ package net.geocat.runner;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import net.geocat.database.linkchecker.entities2.IndicatorStatus;
@@ -55,14 +56,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jws.Oneway;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -220,36 +219,70 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
         return doc;
     }
+
+
     public void run12(String... args) throws Exception {
-        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
+        long startTime;
+        long endTime;
+//        LocalDatasetMetadataRecord rr1 =   localDatasetMetadataRecordRepo.findById( 39316L).get();
+//
+//        CapabilitiesDocument cdd = rr1.getDocumentLinks().get(1).getCapabilitiesDocument();
+////     Optional<LocalDatasetMetadataRecord> rr =   localDatasetMetadataRecordRepo.findById_( 39316L);
+//
+//
+//       startTime = System.currentTimeMillis();
+//       List<CapabilitiesDatasetMetadataLink> abc = rr1.getDocumentLinks().get(1).getCapabilitiesDocument().getCapabilitiesDatasetMetadataLinkList();
+//        startTime = System.currentTimeMillis();
+//        CapabilitiesRemoteDatasetMetadataDocument def = abc.get(10).getCapabilitiesRemoteDatasetMetadataDocument();
+//        startTime = System.currentTimeMillis();
+//        startTime = System.currentTimeMillis();
+
+//
+//        List<LocalDatasetMetadataRecord> records2 =   localDatasetMetadataRecordRepo.partialByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
+//
+//        endTime = System.currentTimeMillis();
+//        System.out.println("records2 total execution time: " + (endTime - startTime));
+
+//        startTime = System.currentTimeMillis();
+//        List<LocalDatasetMetadataRecord> records3 =   localDatasetMetadataRecordRepo.fullByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
+//        endTime = System.currentTimeMillis();
+//        System.out.println("records3 total execution time: " + (endTime - startTime));
+
+        startTime = System.currentTimeMillis();
+        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("adbacca7-e13c-4d7d-9a56-ff81092477dd");
+        endTime = System.currentTimeMillis();
+        System.out.println("records  total execution time: " + (endTime - startTime));
+
         int total =records.size();
         int cap_resolves =0;
         int layer_matches = 0;
 
         for(LocalDatasetMetadataRecord r:records) {
+//            CapabilitiesDocument cc = r.getDocumentLinks().get(1).getCapabilitiesDocument();
+//            String s = cc.toString();
             if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() > 0)
                 cap_resolves++;
             if (r.getINDICATOR_LAYER_MATCHES() == IndicatorStatus.PASS)
                 layer_matches++;
             else {
-                Optional<DatasetDocumentLink> doc = r.getDocumentLinks().stream()
-                        .filter(x->x.getCapabilitiesDocument() != null).findFirst();
-                if (doc.isPresent()){
-                    CapabilitiesDocument capdoc = doc.get().getCapabilitiesDocument();
-                     String xmlCap = linkCheckBlobStorageRepo.findById(capdoc.getSha2()).get().getTextValue();
-                     XmlCapabilitiesDocument xmlCapDoc = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlCap);
-                    List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(capdoc, xmlCapDoc);
-
-                    CapabilitiesDocument cd = createCap(xmlCapDoc);
-                    cd= capabilitiesDocumentRepo.save(cd);
-                    CapabilitiesDocument cd2=capabilitiesDocumentRepo.findById(cd.getCapabilitiesDocumentId()).get();
-
-                    if (!capdoc.getCapabilitiesDatasetMetadataLinkList().isEmpty()) {
-                         CapabilitiesDatasetMetadataLink dd = capdoc.getCapabilitiesDatasetMetadataLinkList().get(0);
-                         int uu=0;
-                     }
-                    int ttt=0;
-                }
+//                Optional<DatasetDocumentLink> doc = r.getDocumentLinks().stream()
+//                        .filter(x->x.getCapabilitiesDocument() != null).findFirst();
+//                if (doc.isPresent()){
+//                    CapabilitiesDocument capdoc = doc.get().getCapabilitiesDocument();
+//                     String xmlCap = linkCheckBlobStorageRepo.findById(capdoc.getSha2()).get().getTextValue();
+//                     XmlCapabilitiesDocument xmlCapDoc = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlCap);
+//                    List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(capdoc, xmlCapDoc);
+//
+//                    CapabilitiesDocument cd = createCap(xmlCapDoc);
+//                    cd= capabilitiesDocumentRepo.save(cd);
+//                    CapabilitiesDocument cd2=capabilitiesDocumentRepo.findById(cd.getCapabilitiesDocumentId()).get();
+//
+//                    if (!capdoc.getCapabilitiesDatasetMetadataLinkList().isEmpty()) {
+//                         CapabilitiesDatasetMetadataLink dd = capdoc.getCapabilitiesDatasetMetadataLinkList().get(0);
+//                         int uu=0;
+//                     }
+//                    int ttt=0;
+//                }
             }
         }
 
@@ -259,7 +292,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         int tt=0;
     }
     public void run11(String... args) throws Exception {
-       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("ef19f12a-14a9-4a71-8c79-6d1d178a3768");
+       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("adbacca7-e13c-4d7d-9a56-ff81092477dd");
        int total =records.size();
        int cap_resolves = 0;
        int cap_resolves_to_service = 0;
@@ -289,9 +322,9 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //            String xml = blobStorageService.findXML(r.getSha2());
 //            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
 //
-              if (r.getServiceDocumentLinks().get(0).getCapabilitiesDocument() != null) {
-                  String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
-                  XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
+              if (r.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument() != null) {
+//                  String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument().getSha2()).get().getTextValue();
+//                  XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
 
                   int tta=1;
               }
@@ -305,7 +338,25 @@ public class MyCommandLineRunner implements CommandLineRunner {
            if (r.getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() == IndicatorStatus.PASS)
                cap_resolves_to_service++;
            else {
-               int ttttt = 0;
+//               Optional<ServiceDocumentLink> doc = r.getServiceDocumentLinks().stream()
+//                       .filter(x->x.getCapabilitiesDocument() != null).findFirst();
+//               if (doc.isPresent()) {
+//                   CapabilitiesDocument capdoc = doc.get().getCapabilitiesDocument();
+//                   String xmlCap = linkCheckBlobStorageRepo.findById(capdoc.getSha2()).get().getTextValue();
+//                   XmlCapabilitiesDocument xmlCapDoc = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlCap);
+//                   List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(capdoc, xmlCapDoc);
+//
+//                   CapabilitiesDocument cd = createCap(xmlCapDoc);
+//                   cd = capabilitiesDocumentRepo.save(cd);
+//                   CapabilitiesDocument cd2 = capabilitiesDocumentRepo.findById(cd.getCapabilitiesDocumentId()).get();
+//
+//                   if (!capdoc.getCapabilitiesDatasetMetadataLinkList().isEmpty()) {
+//                       CapabilitiesDatasetMetadataLink dd = capdoc.getCapabilitiesDatasetMetadataLinkList().get(0);
+//                       int uu = 0;
+//                   }
+//                   int ttt = 0;
+//               }
+//               int ttttt = 0;
            }
 
            if (r.getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() == IndicatorStatus.PASS)
@@ -337,7 +388,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
 
 
-         String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().get(0).getCapabilitiesDocument().getSha2()).get().getTextValue();
+         String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument().getSha2()).get().getTextValue();
         XmlDoc xmlCapDoc = xmlDocumentFactory.create(xmlCap);
 
         capabilitiesServiceLinkIndicators.process(r);
@@ -382,17 +433,17 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
         for(CapabilitiesDocument doc : docs) {
             ServiceMetadataRecord localService = doc.getServiceDocumentLink().getLocalServiceMetadataRecord();
-            List<OperatesOnLink> opsOns = localService.getOperatesOnLinks();
+            Set<OperatesOnLink> opsOns = localService.getOperatesOnLinks();
             List<CapabilitiesDatasetMetadataLink> capDSs = doc.getCapabilitiesDatasetMetadataLinkList();
-            if ( (opsOns.size() ==1) && (capDSs.size() == 1) ) {
-                OperatesOnLink opOn = opsOns.get(0);
-                OperatesOnRemoteDatasetMetadataRecord OpOnDSMD = opOn.getDatasetMetadataRecord();
-                CapabilitiesDatasetMetadataLink capDSLink = capDSs.get(0);
-                CapabilitiesRemoteDatasetMetadataDocument capDSMD = capDSLink.getCapabilitiesRemoteDatasetMetadataDocument();
-                if ( (OpOnDSMD != null) && (capDSMD !=null)){
-                    int tt=0;
-                }
-            }
+//            if ( (opsOns.size() ==1) && (capDSs.size() == 1) ) {
+//                OperatesOnLink opOn = opsOns.
+//                OperatesOnRemoteDatasetMetadataRecord OpOnDSMD = opOn.getDatasetMetadataRecord();
+//                CapabilitiesDatasetMetadataLink capDSLink = capDSs.get(0);
+//                CapabilitiesRemoteDatasetMetadataDocument capDSMD = capDSLink.getCapabilitiesRemoteDatasetMetadataDocument();
+//                if ( (OpOnDSMD != null) && (capDSMD !=null)){
+//                    int tt=0;
+//                }
+//            }
             int t=0;
         }
 
@@ -458,10 +509,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
         //    localServiceMetadataRecord.setOperatesOnLinks(operatesOnLinks);
 
         LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(1L).get();
-        CapabilitiesDocument cd = sm11.getServiceDocumentLinks().get(1).getCapabilitiesDocument();
+        CapabilitiesDocument cd = sm11.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument();
         RemoteServiceMetadataRecordLink cd_rsmrl = cd.getRemoteServiceMetadataRecordLink();
         String ss = cd_rsmrl.toString();
-        List<OperatesOnLink> ll = sm11.getOperatesOnLinks();
+        Set<OperatesOnLink> ll = sm11.getOperatesOnLinks();
         int t6t = ll.size();
         String human = humanReadableServiceMetadata.getHumanReadable(sm11);
 

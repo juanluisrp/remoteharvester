@@ -59,7 +59,7 @@ public class DatasetMetadataRecord extends MetadataRecord {
 
     @OneToMany(mappedBy = "datasetMetadataRecord",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.JOIN)
     private List<DatasetDocumentLink> documentLinks;
 
     //PASS if ANY of the capabilities documents has a layer link (dataset) that matches this document (file id and dataset id).

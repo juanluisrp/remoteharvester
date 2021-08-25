@@ -34,6 +34,8 @@
 package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.swing.plaf.basic.BasicToolBarUI;
@@ -50,7 +52,8 @@ public class ServiceDocumentLink extends DocumentLink {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceMetadataLinkId;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SELECT)
     @JoinColumn(name = "capabilitiesDocumentId")
     private CapabilitiesDocument capabilitiesDocument;
 

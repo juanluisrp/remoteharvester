@@ -134,7 +134,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
     @Override
     public EventProcessor_ProcessServiceDocLinksEvent externalProcessing() throws Exception {
-        localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
+       // localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
+        localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(getInitiatingEvent().getServiceMetadataId());// make sure we re-load
 
         prune(); // remove any previous work (if this is being re-run)
 
@@ -144,9 +145,9 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             logger.debug("processing SERVICE documentid="+getInitiatingEvent().getServiceMetadataId()+" that has "+nlinksCap+" document links, and "+nlinksOperates+" operates on links");
 
             processDocumentLinks();
-            save();
+          //  save();
             processOperatesOnLinks();
-            save();
+         //   save();
 
              logger.debug("finished initial processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
 
@@ -205,6 +206,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
     public void save(){
         localServiceMetadataRecord = localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
+        localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(localServiceMetadataRecord.getServiceMetadataDocumentId());
     }
 
 
@@ -346,6 +348,10 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
     @Override
     public EventProcessor_ProcessServiceDocLinksEvent internalProcessing() throws Exception {
         //handle post-procssing
+        //reload for any outstanding transactions
+      // localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
+        localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(getInitiatingEvent().getServiceMetadataId());// make sure we re-load
+
         try {
             capabilitiesResolvesIndicators.process(localServiceMetadataRecord); // simple record->cap indicators
             capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord); // see if caps' service record matches local service record

@@ -59,6 +59,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Scope("prototype")
@@ -178,8 +179,8 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
             return;
         }
 
-        List<ServiceDocumentLink> serviceLinks = metadataDocument.getServiceDocumentLinks();
-        List<OperatesOnLink> operatesOnsLinks = metadataDocument.getOperatesOnLinks();
+        Set<ServiceDocumentLink> serviceLinks = metadataDocument.getServiceDocumentLinks();
+        Set<OperatesOnLink> operatesOnsLinks = metadataDocument.getOperatesOnLinks();
         logger.debug("extracted "+serviceLinks.size()+" service links and "+operatesOnsLinks.size()+" operatesOn links from Service Record with fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
 
         metadataDocumentService.setState(metadataDocument , ServiceMetadataDocumentState.LINKS_EXTRACTED);

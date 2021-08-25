@@ -36,6 +36,8 @@ package net.geocat.database.linkchecker.entities;
 import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -52,8 +54,9 @@ public class OperatesOnLink extends RetrievableSimpleLink {
     @ManyToOne(fetch = FetchType.EAGER)
     //@JoinColumn(name="serviceMetadataId")
     private ServiceMetadataRecord serviceMetadataRecord;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "datasetMetadataRecordId")
+    @Fetch(value = FetchMode.SELECT)
     private OperatesOnRemoteDatasetMetadataRecord datasetMetadataRecord;
 
 

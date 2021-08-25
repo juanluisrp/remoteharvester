@@ -41,7 +41,9 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -64,13 +66,13 @@ public class ServiceMetadataRecord extends MetadataRecord {
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     // @JoinColumn(name="serviceMetadataRecordId")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<ServiceDocumentLink> serviceDocumentLinks;
+    private Set<ServiceDocumentLink> serviceDocumentLinks;
 
     @OneToMany(mappedBy = "serviceMetadataRecord",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     // @JoinColumn(name="serviceMetadataRecordId")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<OperatesOnLink> operatesOnLinks;
+    private Set<OperatesOnLink> operatesOnLinks;
 
 
     //PASS if ANY linked capabilities document has a link to a Service Metadata Record that resolves to a Service Metadata Record.
@@ -115,8 +117,8 @@ public class ServiceMetadataRecord extends MetadataRecord {
 
     public ServiceMetadataRecord(){
         super();
-        serviceDocumentLinks = new ArrayList<>();
-        operatesOnLinks = new ArrayList<>();
+        serviceDocumentLinks = new HashSet<>();
+        operatesOnLinks =new HashSet<>();
     }
 
     //---------------------------------------------------------------------------
@@ -202,19 +204,19 @@ public class ServiceMetadataRecord extends MetadataRecord {
         this.numberOfOperatesOnFound = numberOfOperatesOnFound;
     }
 
-    public List<ServiceDocumentLink> getServiceDocumentLinks() {
+    public Set<ServiceDocumentLink> getServiceDocumentLinks() {
         return serviceDocumentLinks;
     }
 
-    public void setServiceDocumentLinks(List<ServiceDocumentLink> serviceDocumentLinks) {
+    public void setServiceDocumentLinks(Set<ServiceDocumentLink> serviceDocumentLinks) {
         this.serviceDocumentLinks = serviceDocumentLinks;
     }
 
-    public List<OperatesOnLink> getOperatesOnLinks() {
+    public Set<OperatesOnLink> getOperatesOnLinks() {
         return operatesOnLinks;
     }
 
-    public void setOperatesOnLinks(List<OperatesOnLink> operatesOnLinks) {
+    public void setOperatesOnLinks(Set<OperatesOnLink> operatesOnLinks) {
         this.operatesOnLinks = operatesOnLinks;
     }
 

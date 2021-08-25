@@ -52,8 +52,10 @@ public class HumanReadableServiceMetadata {
             result += "----------------------------------------------\n\n";
             result += "There are " + serviceMetadataRecord.getNumberOfLinksFound() + " links in the service document:\n\n";
 
-            for (int idx = 0; idx < serviceMetadataRecord.getNumberOfLinksFound(); idx++) {
-                ServiceDocumentLink link = serviceMetadataRecord.getServiceDocumentLinks().get(idx);
+            int idx = 0;
+            for ( ServiceDocumentLink link : serviceMetadataRecord.getServiceDocumentLinks()) {
+           // for (int idx = 0; idx < serviceMetadataRecord.getNumberOfLinksFound(); idx++) {
+            //    ServiceDocumentLink link = serviceMetadataRecord.getServiceDocumentLinks().get(idx);
                 result += "Link #" + idx + "\n";
                 result += "--------\n\n";
                 result += link.toString() + "\n\n";
@@ -93,14 +95,19 @@ public class HumanReadableServiceMetadata {
                         }
                     }
                 }
+                idx++;
             }
 
             result += "\n\n";
             result += "=================================================\n\n";
             result += "There are " + serviceMetadataRecord.getNumberOfOperatesOnFound() + " OperatesOn links in the service document:\n\n";
 
-            for (int idx = 0; idx < serviceMetadataRecord.getNumberOfOperatesOnFound(); idx++) {
-                OperatesOnLink link = serviceMetadataRecord.getOperatesOnLinks().get(idx);
+            idx=0;
+            for (OperatesOnLink link:serviceMetadataRecord.getOperatesOnLinks()) {
+
+
+           // for (int idx = 0; idx < serviceMetadataRecord.getNumberOfOperatesOnFound(); idx++) {
+           //     OperatesOnLink link = serviceMetadataRecord.getOperatesOnLinks().get(idx);
                 result += "OperatesOn Link #" + idx + "\n";
                 result += "-------------------\n\n";
                 result += link.toString() + "\n\n";
@@ -110,6 +117,7 @@ public class HumanReadableServiceMetadata {
                     result += "----------------------------------------\n\n";
                     result += operatesOnRemoteDatasetMetadataRecord.toString() + "\n\n";
                 }
+                idx++;
             }
             result += "=================================================\n\n";
 

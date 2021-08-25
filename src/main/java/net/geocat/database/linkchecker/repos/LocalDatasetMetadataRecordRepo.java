@@ -37,16 +37,29 @@ import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Component
 @Scope("prototype")
 public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalDatasetMetadataRecord, Long> {
+
+//    @EntityGraph(attributePaths =
+//            {
+//                    "documentLinks"
+//                    ,"documentLinks.capabilitiesDocument"
+//                      //  , "documentLinks.capabilitiesDocument.capabilitiesDatasetMetadataLinkList"
+//                        ,"documentLinks.capabilitiesDocument.remoteServiceMetadataRecordLink"
+//
+//            })
+//    Optional<LocalDatasetMetadataRecord> findById(long id);
+
     LocalDatasetMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
 
     List<LocalDatasetMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
@@ -66,4 +79,11 @@ public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalData
     @Query(value = "select state as state,count(*) as numberOfRecords from datasetmetadatarecord where linkcheckjobid = ?1 and dataset_record_type = 'LocalDatasetMetadataRecord'   group by state",
             nativeQuery = true)
     List<StatusQueryItem> getStatus(String LinkCheckJobId);
+
+    @Query(value="select m from LocalDatasetMetadataRecord m  where m.linkCheckJobId= ?1")
+    List<LocalDatasetMetadataRecord> partialByLinkCheckJobId(String linkCheckJobId);
+
+    @Query(value="select a from LocalDatasetMetadataRecord a JOIN fetch a.documentLinks b JOIN FETCH  b.capabilitiesDocument where a.linkCheckJobId= ?1")
+    List<LocalDatasetMetadataRecord> fullByLinkCheckJobId(String linkCheckJobId);
+
 }

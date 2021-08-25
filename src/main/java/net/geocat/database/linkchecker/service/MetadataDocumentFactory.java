@@ -48,6 +48,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -98,12 +99,12 @@ public class MetadataDocumentFactory {
         serviceMetadataRecord.setMetadataServiceType(xml.getServiceType());
         List<OnlineResource> links = serviceDocLinkExtractor.extractOnlineResource(xml);
 
-        List<ServiceDocumentLink> links2 = links.stream().map(x -> serviceDocumentLinkService.create(serviceMetadataRecord, x)).collect(Collectors.toList());
+        Set<ServiceDocumentLink> links2 = links.stream().map(x -> serviceDocumentLinkService.create(serviceMetadataRecord, x)).collect(Collectors.toSet());
         serviceMetadataRecord.setServiceDocumentLinks(links2);
 
-        List<OperatesOnLink> operatesOnLinks = xml.getOperatesOns().stream()
+        Set<OperatesOnLink> operatesOnLinks = xml.getOperatesOns().stream()
                 .map(x -> operatesOnLinkService.create(serviceMetadataRecord, x))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         serviceMetadataRecord.setOperatesOnLinks(operatesOnLinks);
     }
