@@ -116,7 +116,7 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
        // metadataRecords = metadataRecords.stream().filter(x->x.getSha2().startsWith("EE4EED5D2C77F6289DD28CFF209F4A14E7FA2B923C07FD959CFC696FFC268654")).collect(Collectors.toList());
     //    metadataRecords= metadataRecords.subList(0,10);
-       metadataRecords = metadataRecords.stream().filter(x-> x.getMetadataRecordId() == 7661).collect(Collectors.toList());//todo - remove
+    //   metadataRecords = metadataRecords.stream().filter(x-> x.getMetadataRecordId() == 7661).collect(Collectors.toList());//todo - remove
 
     //  metadataRecords = metadataRecords.stream().filter(x-> x.getMetadataRecordId() == 2691).collect(Collectors.toList());
        //    List<Long> items = Arrays.asList(new Long[] {8101L,8521L,8598L,6870L} );
