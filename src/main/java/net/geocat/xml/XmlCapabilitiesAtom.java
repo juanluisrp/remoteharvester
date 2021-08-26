@@ -83,4 +83,12 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
 ///feed/entry/nspire_dls:spatial_dataset_identifier_code
 ///feed/entry/inspire_dls:spatial_dataset_identifier_namespace
 
+    @Override
+    public String toString() {
+        String result =  "XmlCapabilitiesAtom(has service reference URL="+( (getMetadataUrlRaw() !=null) && (!getMetadataUrlRaw().isEmpty())) ;
+        result += ", number of Dataset links = "+getDatasetLinksList().size();
+        result += ")";
+        return result;
+    }
+
 }

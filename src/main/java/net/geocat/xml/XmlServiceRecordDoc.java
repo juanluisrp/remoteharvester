@@ -83,4 +83,13 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
     public List<OperatesOn> getOperatesOns() {
         return operatesOns;
     }
+
+    @Override
+    public String toString() {
+        String result =  "XmlServiceRecordDoc(fileIdentifier="+fileIdentifier;
+        result += ", serviceType = "+serviceType;
+        result += ")";
+        return result;
+    }
+
 }

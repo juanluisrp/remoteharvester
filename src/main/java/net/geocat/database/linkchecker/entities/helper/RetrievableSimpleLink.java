@@ -83,11 +83,21 @@ public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
     @Column(columnDefinition = "varchar(20)")
     private PartialDownloadHint partialDownloadHint;
 
+    @Column(columnDefinition = "text")
+    String xmlDocInfo;
+
 
 
     //---------------------------------------------------------------------------
 
 
+    public String getXmlDocInfo() {
+        return xmlDocInfo;
+    }
+
+    public void setXmlDocInfo(String xmlDocInfo) {
+        this.xmlDocInfo = xmlDocInfo;
+    }
 
     public LinkState getLinkState() {
         return linkState;
@@ -286,6 +296,8 @@ public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
         }
         if (getLinkIsXML() != null) {
             result += "     +  Link is XML: " + getLinkIsXML() + "\n";
+            if (getXmlDocInfo() != null)
+                result += "     +  xml link info: " + getXmlDocInfo() + "\n";
         }
         if ((sha2 != null) && (!sha2.isEmpty()))
             result += "     +  SHA2: " + getSha2() + "\n";

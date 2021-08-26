@@ -53,4 +53,11 @@ public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
         datasetLinksList = wmsCapabilitiesDatasetLinkExtractor.findLinks(this);
     }
 
+    @Override
+    public String toString() {
+        String result =  "XmlCapabilitiesWMS(has service reference URL="+( (getMetadataUrlRaw() !=null) && (!getMetadataUrlRaw().isEmpty())) ;
+        result += ", number of Dataset links = "+getDatasetLinksList().size();
+        result += ")";
+        return result;
+    }
 }

@@ -154,4 +154,12 @@ public class XmlCapabilitiesDocument extends XmlDoc {
     public void setDatasetLinksList(List<DatasetLink> datasetLinksList) {
         this.datasetLinksList = datasetLinksList;
     }
+
+    @Override
+    public String toString() {
+        String result =  "XmlCapabilities (has service reference URL="+( (getMetadataUrlRaw() !=null) && (!getMetadataUrlRaw().isEmpty())) ;
+        result += ", number of Dataset links = "+getDatasetLinksList().size();
+        result += ")";
+        return result;
+    }
 }

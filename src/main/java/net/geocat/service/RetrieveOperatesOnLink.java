@@ -68,6 +68,9 @@ public class RetrieveOperatesOnLink {
 
         XmlDoc doc = xmlDocumentFactory.create(new String(link.getFullData()));
 
+        if (doc !=null)
+            link.setXmlDocInfo(doc.toString());
+
         if (!(doc instanceof XmlDatasetMetadataDocument))
             return link;
 

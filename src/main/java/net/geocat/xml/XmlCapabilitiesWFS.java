@@ -34,6 +34,7 @@
 package net.geocat.xml;
 
 import net.geocat.service.capabilities.DatasetLink;
+import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -63,8 +64,8 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
     private void setup_XmlCapabilitiesWFS() throws Exception {
         NodeList sdi = xpath_nodeset("//inspire_dls:SpatialDataSetIdentifier");
-        if (sdi == null)
-            return;
+
+
         for(int idx=0; idx<sdi.getLength();idx++){
             Node n = sdi.item(idx);
             String url =getLayerMetadataURL();
@@ -78,7 +79,29 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
                 datasetLinksList.add(datasetLink);
             }
         }
+        setup_XmlCapabilitiesWFS_noinspire();
     }
 
+    //alternative way - direct links
+    private void setup_XmlCapabilitiesWFS_noinspire() throws Exception {
+        NodeList metaurls = xpath_nodeset("//wfs:FeatureTypeList/wfs:FeatureType/wfs:MetadataURL");
+        for(int idx=0; idx<metaurls.getLength();idx++) {
+            Node n = metaurls.item(idx);
+            Node urlNode = n.getAttributes().getNamedItem("xlink:href");
+            if ( (urlNode != null) && (!urlNode.getNodeValue().isEmpty()) ) {
+                String url = urlNode.getNodeValue();
+                DatasetLink datasetLink = new DatasetLink(null,url);
+                datasetLinksList.add(datasetLink);
+            }
+        }
+        datasetLinksList = WMSCapabilitiesDatasetLinkExtractor.unique(datasetLinksList);
+    }
 
+    @Override
+    public String toString() {
+        String result =  "XmlCapabilitiesWFS(has service reference URL="+( (getMetadataUrlRaw() !=null) && (!getMetadataUrlRaw().isEmpty())) ;
+        result += ", number of Dataset links = "+getDatasetLinksList().size();
+        result += ")";
+        return result;
+    }
 }

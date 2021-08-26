@@ -33,6 +33,7 @@
 
 package net.geocat.xml;
 
+import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -257,5 +258,10 @@ public class XmlDoc {
 
     public Document getParsedXml() {
         return parsedXml;
+    }
+
+    @Override
+    public String toString() {
+        return "XmlDoc(rootTag="+getRootTagName()+")";
     }
 }

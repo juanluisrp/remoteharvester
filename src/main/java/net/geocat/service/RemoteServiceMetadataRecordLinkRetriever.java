@@ -71,6 +71,8 @@ public class RemoteServiceMetadataRecordLinkRetriever {
 
         String xmlStr = new String(link.getFullData());
         XmlDoc xmlDoc = xmlDocumentFactory.create(xmlStr);
+        if (xmlDoc !=null)
+            link.setXmlDocInfo(xmlDoc.toString());
 
         if (!(xmlDoc instanceof XmlServiceRecordDoc))
             return link;

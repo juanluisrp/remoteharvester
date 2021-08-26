@@ -40,4 +40,12 @@ public class XmlCapabilitiesCSW extends XmlCapabilitiesDocument {
     public XmlCapabilitiesCSW(XmlDoc doc) throws Exception {
         super(doc, CapabilitiesType.CSW);
     }
+
+    @Override
+    public String toString() {
+        String result =  "XmlCapabilitiesCSW(has service reference URL="+( (getMetadataUrlRaw() !=null) && (!getMetadataUrlRaw().isEmpty())) ;
+        result += ", number of Dataset links = "+getDatasetLinksList().size();
+        result += ")";
+        return result;
+    }
 }

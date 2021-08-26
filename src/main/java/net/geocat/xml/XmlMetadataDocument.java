@@ -101,4 +101,12 @@ public class XmlMetadataDocument extends XmlDoc {
     public List<OnlineResource> getConnectPoints() {
         return connectPoints;
     }
+
+    @Override
+    public String toString() {
+        String result =  "XmlMetadataDocument(fileIdentifier="+fileIdentifier;
+        result += ", metadataDocumentType = "+metadataDocumentType;
+        result += ")";
+        return result;
+    }
 }

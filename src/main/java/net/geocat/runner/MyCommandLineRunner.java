@@ -181,8 +181,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-       //     run12(args);
-       //     run11(args);
+           // run12(args);
+            run11(args);
         }
         catch(Exception e){
             int t=0;
@@ -252,7 +252,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //        System.out.println("records3 total execution time: " + (endTime - startTime));
 
         startTime = System.currentTimeMillis();
-        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("798f307a-3c16-459d-985a-664077c858c3");
+        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("b7ee7707-698f-41ac-8dcf-ab0c43ab297a");
         endTime = System.currentTimeMillis();
         System.out.println("records  total execution time: " + (endTime - startTime));
 
@@ -346,7 +346,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
         int tt=0;
     }
     public void run11(String... args) throws Exception {
-       List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("798f307a-3c16-459d-985a-664077c858c3");
+    //   List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("b7ee7707-698f-41ac-8dcf-ab0c43ab297a");
+        List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("1a95b640-b7ae-4942-bc0e-ccc068574901");
+
+
        int total =records.size();
        int cap_resolves = 0;
        int cap_resolves_to_service = 0;
@@ -373,8 +376,52 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 all_opson_match++;
             else {
 
-//            String xml = blobStorageService.findXML(r.getSha2());
-//            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
+                LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
+                String rr_xml = blobStorageService.findXML(rr.getSha2());
+
+                List<OperatesOnLink> opsonlinks = new ArrayList(rr.getOperatesOnLinks());
+
+                List<OperatesOnRemoteDatasetMetadataRecord> opsonlinks_docs =     opsonlinks.stream()
+                            .filter(x-> x.getDatasetMetadataRecord() !=null)
+                            .map(x->x.getDatasetMetadataRecord())
+                            .collect(Collectors.toList());
+
+                List<String> opson_docs_xml = opsonlinks_docs.stream()
+                        .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+                        .collect(Collectors.toList());
+
+
+                List<String> opson_docs_fileid = opsonlinks_docs.stream()
+                        .map(x-> x.getFileIdentifier())
+                        .collect(Collectors.toList());
+
+
+                List<String> opson_docs_dsid = opsonlinks_docs.stream()
+                        .map(x-> x.getDatasetIdentifier())
+                        .collect(Collectors.toList());
+
+                List<CapabilitiesDocument> capDocs = rr.getServiceDocumentLinks().stream()
+                            .filter(x->x.getCapabilitiesDocument() != null)
+                            .map(x->x.getCapabilitiesDocument())
+                            .collect(Collectors.toList());
+                List<String> capDocs_xmls = capDocs.stream()
+                        .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+                        .collect(Collectors.toList());
+
+                List<CapabilitiesRemoteDatasetMetadataDocument> cap_dsdocs = capDocs.stream()
+                        .map(x-> x.getCapabilitiesDatasetMetadataLinkList())
+                        .flatMap(List::stream)
+                        .map(x->x.getCapabilitiesRemoteDatasetMetadataDocument())
+                        .filter(x->x  != null)
+                        .collect(Collectors.toList());
+                List<String> cap_dsdocs_xmls = cap_dsdocs.stream()
+                        .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+                        .collect(Collectors.toList());
+
+                boolean no_capabilities_doc = cap_dsdocs.isEmpty();
+                boolean no_operates_on = opsonlinks.isEmpty();
+
+                int tta=1;
 //
 //              if (r.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument() != null) {
 //                  String xmlCap = linkCheckBlobStorageRepo.findById(r.getServiceDocumentLinks().stream().findFirst().get().getCapabilitiesDocument().getSha2()).get().getTextValue();
@@ -388,35 +435,39 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
            if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() >0)
                 cap_resolves++;
+           else {
+//               LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
+//                     String rr_xml = blobStorageService.findXML(rr.getSha2());
+           }
 
            if (r.getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() == IndicatorStatus.PASS)
                cap_resolves_to_service++;
            else {
 
-               if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() >0) {
-                   LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
-                    String rr_xml = blobStorageService.findXML(rr.getSha2());
-
-                    List<CapabilitiesDocument> docs = rr.getServiceDocumentLinks().stream()
-                            .filter(x->x.getCapabilitiesDocument() != null)
-                            .map(x->x.getCapabilitiesDocument())
-                            .collect(Collectors.toList());
-                    List<String> xmls = docs.stream()
-                            .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
-                            .collect(Collectors.toList());
-
-                    List<XmlCapabilitiesDocument> xmlDocs = xmls.stream()
-                            .map(x-> {
-                                try {
-                                    return (XmlCapabilitiesDocument) xmlDocumentFactory.create(x);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                return null;
-                            })
-                            .collect(Collectors.toList());
-                    int u=0;
-               }
+//               if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() >0) {
+//                   LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
+//                    String rr_xml = blobStorageService.findXML(rr.getSha2());
+//
+//                    List<CapabilitiesDocument> docs = rr.getServiceDocumentLinks().stream()
+//                            .filter(x->x.getCapabilitiesDocument() != null)
+//                            .map(x->x.getCapabilitiesDocument())
+//                            .collect(Collectors.toList());
+//                    List<String> xmls = docs.stream()
+//                            .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+//                            .collect(Collectors.toList());
+//
+//                    List<XmlCapabilitiesDocument> xmlDocs = xmls.stream()
+//                            .map(x-> {
+//                                try {
+//                                    return (XmlCapabilitiesDocument) xmlDocumentFactory.create(x);
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                                return null;
+//                            })
+//                            .collect(Collectors.toList());
+//                    int u=0;
+//               }
 //               Optional<ServiceDocumentLink> doc = r.getServiceDocumentLinks().stream()
 //                       .filter(x->x.getCapabilitiesDocument() != null).findFirst();
 //               if (doc.isPresent()) {
@@ -440,11 +491,90 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
            if (r.getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() == IndicatorStatus.PASS)
                cap_link_to_service_fileId++;
+           else {
+//               if (r.getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() == IndicatorStatus.PASS) {
+//                   LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
+//                   String rr_xml = blobStorageService.findXML(rr.getSha2());
+//
+//                   List<CapabilitiesDocument> docs = rr.getServiceDocumentLinks().stream()
+//                           .filter(x -> x.getCapabilitiesDocument() != null)
+//                           .map(x -> x.getCapabilitiesDocument())
+//                           .collect(Collectors.toList());
+//                   List<String> xmls = docs.stream()
+//                           .map(x -> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+//                           .collect(Collectors.toList());
+//
+//                   List<XmlCapabilitiesDocument> xmlDocs = xmls.stream()
+//                           .map(x -> {
+//                               try {
+//                                   return (XmlCapabilitiesDocument) xmlDocumentFactory.create(x);
+//                               } catch (Exception e) {
+//                                   e.printStackTrace();
+//                               }
+//                               return null;
+//                           })
+//                           .collect(Collectors.toList());
+//                   List<RemoteServiceMetadataRecordLink> cap2serviceLinks = docs.stream()
+//                           .map(x->x.getRemoteServiceMetadataRecordLink())
+//                           .filter (x -> x !=null)
+//                           .collect(Collectors.toList());
+//
+//                   List<String> remoteServiceXMLs = cap2serviceLinks.stream()
+//                           .filter (x-> x.getRemoteServiceMetadataRecord() != null)
+//                           .map (x-> x.getRemoteServiceMetadataRecord().getSha2())
+//                           .map(x-> linkCheckBlobStorageRepo.findById(x).get().getTextValue())
+//                           .collect(Collectors.toList());
+//
+//                                   List<String> ids = cap2serviceLinks.stream()
+//                           .filter (x-> x.getRemoteServiceMetadataRecord() != null)
+//                           .map (x-> x.getRemoteServiceMetadataRecord() )
+//                           .map(x->x.getFileIdentifier())
+//                           .collect(Collectors.toList());
+//
+//                   String originalFileID = r.getFileIdentifier();
+//
+//                   int u = 0;
+ //              }
+           }
            if (r.getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES() == IndicatorStatus.PASS)
                cap_link_to_service_full_match++;
 
            if (r.getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() == IndicatorStatus.PASS)
                cap_ds_links_resolve++;
+           else {
+//               if (r.getINDICATOR_RESOLVES_TO_CAPABILITIES() >0) {
+//                   LocalServiceMetadataRecord rr = localServiceMetadataRecordRepo.fullId(r.getServiceMetadataDocumentId());
+//                   String rr_xml = blobStorageService.findXML(rr.getSha2());
+//
+//                   List<CapabilitiesDocument> docs = rr.getServiceDocumentLinks().stream()
+//                           .filter(x -> x.getCapabilitiesDocument() != null)
+//                           .map(x -> x.getCapabilitiesDocument())
+//                           .collect(Collectors.toList());
+//                   List<String> xmls = docs.stream()
+//                           .map(x -> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue())
+//                           .collect(Collectors.toList());
+//
+//                   List<XmlCapabilitiesDocument> xmlDocs = xmls.stream()
+//                           .map(x -> {
+//                               try {
+//                                   return (XmlCapabilitiesDocument) xmlDocumentFactory.create(x);
+//                               } catch (Exception e) {
+//                                   e.printStackTrace();
+//                               }
+//                               return null;
+//                           })
+//                           .collect(Collectors.toList());
+//
+//                   List<CapabilitiesDatasetMetadataLink> ds_links_fail = docs.stream()
+//                           .map(x->x.getCapabilitiesDatasetMetadataLinkList())
+//                           .flatMap(List::stream)
+//                           .filter (x->x != null)
+//                           .filter(x-> x.getCapabilitiesRemoteDatasetMetadataDocument() == null)
+//                           .collect(Collectors.toList());
+//
+//                   int uu=0;
+//               }
+           }
 
            int ttt=0;
        }

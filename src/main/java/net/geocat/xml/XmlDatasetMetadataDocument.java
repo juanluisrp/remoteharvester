@@ -83,4 +83,13 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
     public void setDatasetIdentifier(String datasetIdentifier) {
         this.datasetIdentifier = datasetIdentifier;
     }
+
+    @Override
+    public String toString() {
+        String result =  "XmlDatasetMetadataDocument(fileIdentifier="+fileIdentifier;
+        result += ", datasetIdentifier = "+datasetIdentifier;
+        result += ")";
+        return result;
+    }
+
 }

@@ -71,7 +71,13 @@ public class CapabilitiesDocumentService {
 
     public CapabilitiesDocument create(DocumentLink link) throws Exception {
         String xmlStr = new String(link.getFullData());
-        XmlCapabilitiesDocument xml = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xmlStr);
+
+        XmlDoc _doc = xmlDocumentFactory.create(xmlStr);
+        if (_doc !=null)
+            link.setXmlDocInfo(_doc.toString());
+
+        XmlCapabilitiesDocument xml = (XmlCapabilitiesDocument)_doc;
+
 
         xmlStr = XmlDoc.writeXML(xml.getParsedXml());
         String sha2 = xml.computeSHA2(xmlStr);
