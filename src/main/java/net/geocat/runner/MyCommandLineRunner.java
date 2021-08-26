@@ -182,7 +182,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
            // run12(args);
-            run11(args);
+          //  run11(args);
         }
         catch(Exception e){
             int t=0;
