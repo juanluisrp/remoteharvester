@@ -54,8 +54,13 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
         }
         n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gmx:Anchor");
         if (n != null) {
-            n = n.getAttributes().getNamedItem("xlink:href");
-            datasetIdentifier = n.getNodeValue();
+            String text = n.getTextContent();
+            if ( (text != null) && (!text.trim().isEmpty()) ) {
+                datasetIdentifier = text.trim();
+            } else {
+                n = n.getAttributes().getNamedItem("xlink:href");
+                datasetIdentifier = n.getNodeValue();
+            }
             return;
         }
         n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString");

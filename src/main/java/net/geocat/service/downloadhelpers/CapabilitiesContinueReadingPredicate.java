@@ -75,7 +75,8 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
 
     public static String replaceXMLDecl(String doc) {
         doc = doc.replaceFirst("<\\?xml[^\\?>]+\\?>", "");
-        return doc;
+        doc = doc.replaceFirst("<\\?xml[^\\?>]+\\?>", "");
+        return doc.trim();
     }
 
     public static String getRootTag(String doc) {
@@ -130,7 +131,7 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
             if (!isXML(doc))
                 return false; //not XML
 
-            doc = replaceXMLDecl(doc).trim();
+            doc = replaceXMLDecl(doc);
             doc = getRootTag(doc).trim();
 
             String prefix = getPrefix(doc);

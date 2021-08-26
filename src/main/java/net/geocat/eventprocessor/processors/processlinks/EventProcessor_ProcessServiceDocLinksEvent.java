@@ -147,7 +147,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
             processDocumentLinks();
           //  save();
             processOperatesOnLinks();
-         //   save();
+             save();
 
              logger.debug("finished initial processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
 

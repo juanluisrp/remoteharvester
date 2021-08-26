@@ -121,8 +121,10 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         http.setDoInput(true);
         if (verb.equals("POST")) {
             http.setFixedLengthStreamingMode(body_bytes.length);
-            http.setRequestProperty("Content-Type", "application/xml");
+           // http.setRequestProperty("Content-Type", "application/xml");
         }
+        http.setRequestProperty("Content-Type", "application/xml");
+        http.setRequestProperty("Accepts", "application/xml");
         if ((cookie != null) && (!cookie.isEmpty()))
             http.setRequestProperty("Cookie", cookie);
 
