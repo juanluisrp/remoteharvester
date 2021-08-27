@@ -3,6 +3,7 @@ package com.geocat.ingester.service;
 import com.geocat.ingester.dao.harvester.EndpointJobRepo;
 import com.geocat.ingester.dao.harvester.HarvestJobRepo;
 import com.geocat.ingester.dao.harvester.MetadataRecordRepo;
+import com.geocat.ingester.dao.linkchecker.LinkCheckJobRepo;
 import com.geocat.ingester.dao.linkchecker.LocalDatasetMetadataRecordRepo;
 import com.geocat.ingester.dao.linkchecker.LocalServiceMetadataRecordRepo;
 import com.geocat.ingester.exception.GeoNetworkClientException;
@@ -11,6 +12,7 @@ import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
 import com.geocat.ingester.model.harvester.MetadataRecordXml;
 import com.geocat.ingester.model.ingester.IngestJobState;
+import com.geocat.ingester.model.linkchecker.LinkCheckJob;
 import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
@@ -51,6 +53,9 @@ public class IngesterService {
     private IngestJobService ingestJobService;
 
     @Autowired
+    private LinkCheckJobRepo linkCheckJobRepo;
+
+    @Autowired
     private LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
 
     @Autowired
@@ -81,10 +86,21 @@ public class IngesterService {
             return;
         }
 
+
         log.info("Start ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
 
-        String jobId = harvestJob.get().getJobId();
-        List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(jobId);
+        String harvestJobId = harvestJob.get().getJobId();
+
+        Optional<LinkCheckJob> linkCheckJob = linkCheckJobRepo.findByHarvestJobId(harvestJobId);
+        if (!linkCheckJob.isPresent()) {
+            log.info("No link checker job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
+            // TODO: throw Exception harvester job not found
+            return;
+        }
+
+        String linkCheckJobId = linkCheckJob.get().getJobId();
+
+        List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(harvestJobId);
 
         long totalMetadataToProcess = 0;
         for (EndpointJob job : endpointJobList) {
@@ -122,8 +138,7 @@ public class IngesterService {
                     total = total + metadataRecordList.getNumberOfElements();
 
                     metadataRecordList.forEach(r -> {
-                        // TODO: Filter by linkcheckerjobid related to the harvest job
-                        List<LocalServiceMetadataRecord> localServiceMetadataRecord = localServiceMetadataRecordRepo.findAllByFileIdentifier(r.getRecordIdentifier());
+                        List<LocalServiceMetadataRecord> localServiceMetadataRecord = localServiceMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(r.getRecordIdentifier(), linkCheckJobId);
 
                         if (!localServiceMetadataRecord.isEmpty()) {
                             if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() != null) {
@@ -158,7 +173,7 @@ public class IngesterService {
                                 r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE().toString());
                             }
                         } else {
-                            List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifier(r.getRecordIdentifier());
+                            List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(r.getRecordIdentifier(), linkCheckJobId);
 
                             if (!localDatasetMetadataRecord.isEmpty()) {
                                 if (localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE() != null) {
@@ -177,7 +192,7 @@ public class IngesterService {
                         }
 
                     });
-                    metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), jobId));
+                    metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), harvestJobId));
 
                     ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
 

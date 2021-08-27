@@ -33,40 +33,18 @@
 
 package com.geocat.ingester.dao.linkchecker;
 
-import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
-import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
-import com.geocat.ingester.model.linkchecker.helper.StatusQueryItem;
+
+import com.geocat.ingester.model.harvester.HarvestJob;
+import com.geocat.ingester.model.linkchecker.LinkCheckJob;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
+import java.util.Optional;
 
 @Component
 @Scope("prototype")
-public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalDatasetMetadataRecord, Long> {
+public interface LinkCheckJobRepo extends CrudRepository<LinkCheckJob, String> {
 
-    List<LocalDatasetMetadataRecord> findAllByFileIdentifierAndLinkCheckJobId(String fileIdentifier, String linkCheckJobId);
-
-    LocalDatasetMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
-
-    List<LocalDatasetMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
-
-    long countByLinkCheckJobId(String LinkCheckJobId);
-
-    @Query(value = "Select count(*) from datasetmetadatarecord   where linkcheckjobid = ?1 and dataset_record_type = 'LocalDatasetMetadataRecord' and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
-
-    @Query(value = "Select count(*) from datasetmetadatarecord   where linkcheckjobid = ?1 and dataset_record_type = 'LocalDatasetMetadataRecord' and state  in ?2",
-            nativeQuery = true
-    )
-    long countInStates(String LinkCheckJobId, List<String> states);
-
-    @Query(value = "select state as state,count(*) as numberOfRecords from datasetmetadatarecord where linkcheckjobid = ?1 and dataset_record_type = 'LocalDatasetMetadataRecord'   group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+    Optional<LinkCheckJob> findByHarvestJobId(String harvestJobId);
 }

@@ -31,43 +31,16 @@
  *  ==============================================================================
  */
 
-package com.geocat.ingester.dao.linkchecker;
+package com.geocat.ingester.model.linkchecker;
 
-import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
-import com.geocat.ingester.model.linkchecker.helper.StatusQueryItem;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+public enum LinkCheckJobState {
+    CREATING,
 
-import java.util.List;
+    FINDING_LINKS, LINKS_FOUND,
 
+    CHECKING_LINKS, LINKS_CHECKED,
 
-@Component
-@Scope("prototype")
-public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServiceMetadataRecord, Long> {
+    COMPLETE,
 
-    List<LocalServiceMetadataRecord> findAllByFileIdentifierAndLinkCheckJobId(String fileIdentifier, String linkCheckJobId);
-
-    LocalServiceMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
-
-    List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
-
-
-    long countByLinkCheckJobId(String LinkCheckJobId);
-
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",
-            nativeQuery = true
-    )
-    long countCompletedState(String LinkCheckJobId);
-
-
-    @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state  in ?2",
-            nativeQuery = true
-    )
-    long countInStates(String LinkCheckJobId, List<String> states);
-
-    @Query(value = "select state as state,count(*) as numberOfRecords from servicemetadatarecord where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord'   group by state",
-            nativeQuery = true)
-    List<StatusQueryItem> getStatus(String LinkCheckJobId);
+    ERROR, USERABORT
 }
