@@ -169,8 +169,8 @@ public class IngesterService {
                                 r.addIndicator("INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES().toString());
                             }
 
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE() != null) {
-                                r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE().toString());
+                            if (localServiceMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES() != null) {
+                                r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES().toString());
                             }
                         } else {
                             List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(r.getRecordIdentifier(), linkCheckJobId);
