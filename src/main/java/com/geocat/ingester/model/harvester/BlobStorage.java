@@ -12,7 +12,7 @@ public class BlobStorage {
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "text_value")
     private String textValue;
 
     public String getSha2() {
