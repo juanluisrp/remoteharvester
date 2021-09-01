@@ -23,9 +23,9 @@ Contact:
 Triggers a harvest process (returns ProcessID).
 
 ```
-curl
-  -X POST "http://localhost:9999/api/startHarvest" 
-  -H "Content-Type: application/json"
+curl \
+  -X POST "http://localhost:9999/api/startHarvest" \  
+  -H "Content-Type: application/json" \
   -d '{"url":"https://msdi.data.gov.mt/geonetwork/srv/eng/csw","longTermTag":"MT","lookForNestedDiscoveryService":false}'
 ```
 
@@ -36,6 +36,14 @@ Retrieves the status of a running process.
 ```
 curl "http://localhost:9999/api/getstatus/aaa-bbb-ccc"
 ```
+
+The following statuses are returned by the application:
+
+- `CREATING`: the application is scheduling the job to retrieve the metadata.
+- `DETERMINING_WORK`: the application is analysing the harvester configuration.
+- `WORK_DETERMINED`: the application has analyse the harvester configuration and it is ready to start retrieving the metadata from the server.
+- `GETTING_RECORDS`: retrieving the metadata from the server.
+- `RECORDS_RECEIVED`: the metadata retrieval has finished.
 
 ###  GET /api/getlog/{ProcessID}
 
@@ -53,10 +61,22 @@ Aborts a running process.
 curl "http://localhost:9999/api/abortprocess/aaa-bbb-ccc"
 ```
 
+## Build
+
+```
+mvn clean package
+```
+
+It is created in the `target` folder a `jar` with the application, for example: `csw-harvester-0.0.1-SNAPSHOT.jar`.
 
 ## Installation
 
-Deploy as a war on tomcat/jetty.
+Execute the application with the following command:
+
+```
+java -jar csw-harvester-0.0.1-SNAPSHOT.jar
+```
+
 Software requires ActiveMQ and PostGreSQL. 
 
 ## Configuration
