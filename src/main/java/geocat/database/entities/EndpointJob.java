@@ -11,26 +11,30 @@ import java.time.ZonedDateTime;
         indexes = {
                 @Index(
                         name = "harvestJobId_idx",
-                        columnList = "harvestJobId",
+                        columnList = "harvest_job_id",
                         unique = false
                 )
         })
 
 public class EndpointJob {
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(columnDefinition = "timestamp with time zone", name = "create_time_utc")
     ZonedDateTime createTimeUTC;
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(columnDefinition = "timestamp with time zone", name = "last_update_utc")
     ZonedDateTime lastUpdateUTC;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "endpoint_job_id")
     private long endpointJobId;
-    @Column(columnDefinition = "varchar(40)")
+    @Column(columnDefinition = "varchar(40)", name = "harvest_job_id")
     private String harvestJobId;
     private String url;
+    @Column(name = "look_for_nested_discovery_service")
     private boolean lookForNestedDiscoveryService;
     @Column(columnDefinition = "text")
     private String filter;
+    @Column(name = "expected_number_of_records")
     private Integer expectedNumberOfRecords;
+    @Column(name = "url_get_records")
     private String urlGetRecords;
     @Enumerated(EnumType.STRING)
     private EndpointJobState state;

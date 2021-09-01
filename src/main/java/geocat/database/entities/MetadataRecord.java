@@ -10,28 +10,31 @@ import java.time.ZonedDateTime;
         indexes = {
                 @Index(
                         name = "metadata_record_endpointJobId_idx",
-                        columnList = "endpointJobId",
+                        columnList = "endpoint_job_id",
                         unique = false
                 ),
                 @Index(
                         name = "metadata_record_endpointJobId_recordnumb_idx",
-                        columnList = "endpointJobId,recordNumber",
+                        columnList = "endpoint_job_id,record_number",
                         unique = false
                 )
         })
 public class MetadataRecord {
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(columnDefinition = "timestamp with time zone", name = "create_time_utc")
     ZonedDateTime createTimeUTC;
     @Id
     // @Column(columnDefinition = "varchar(40)")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "metadata_record_id")
     private long metadataRecordId;
     // @Column(columnDefinition = "varchar(40)")
+    @Column(name = "endpoint_job_id")
     private long endpointJobId;
+    @Column(name = "record_number")
     private int recordNumber;
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "record_identifier")
     private String recordIdentifier;
 
     @PrePersist
