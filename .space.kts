@@ -5,7 +5,7 @@
  */
 
 job("Build, test and install project artifacts") {
-    container(displayName = "Run mvn install", image = "maven:latest") {
+    container(displayName = "Run mvn install", image = "maven:3-jdk-8") {
         // url of a Space Packages repository
         env["REPOSITORY_URL"] = "https://maven.pkg.jetbrains.space/geocat/p/jrc-inspire-portal/maven"
 
