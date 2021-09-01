@@ -9,26 +9,30 @@ import java.time.ZonedDateTime;
 
 public class HarvestJob {
 
-
+    @Column(name = "initial_url")
     public String initialUrl;
+    @Column(name = "nrecords_per_request")
     int nrecordsPerRequest;
+    @Column(name = "get_record_queue_hint")
     String getRecordQueueHint;
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(name = "create_time_utc", columnDefinition = "timestamp with time zone")
     ZonedDateTime createTimeUTC;
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(name = "last_update_utc", columnDefinition = "timestamp with time zone")
     ZonedDateTime lastUpdateUTC;
     @Id
-    @Column(columnDefinition = "varchar(40)")
+    @Column(name = "job_id", columnDefinition = "varchar(40)")
     private String jobId;
-    @Column(columnDefinition = "text")
+    @Column(name = "message", columnDefinition = "text")
     private String messages;
+    @Column(name = "long_term_tag")
     private String longTermTag;
+    @Column(name = "look_for_nested_discovery_service")
     private boolean lookForNestedDiscoveryService;
     @Column(columnDefinition = "text")
     private String filter;
     @Enumerated(EnumType.STRING)
     private HarvestJobState state;
-    @Column(columnDefinition = "text")
+    @Column(name = "problematic_results_configuration_json", columnDefinition = "text")
     private String problematicResultsConfigurationJSON;
 
     @PrePersist
