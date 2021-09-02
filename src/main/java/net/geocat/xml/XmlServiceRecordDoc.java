@@ -70,7 +70,9 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
 
     public void populateServiceType() throws Exception {
         Node n = xpath_node("//srv:serviceType/gco:LocalName");
-        serviceType = n.getTextContent();
+        if (n != null) {
+            serviceType = n.getTextContent();
+        }
         n = xpath_node("//srv:serviceTypeVersion/gco:CharacterString");
         if (n != null)
             serviceTypeVersion = n.getTextContent();
