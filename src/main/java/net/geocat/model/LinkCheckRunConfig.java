@@ -36,30 +36,38 @@ package net.geocat.model;
 import net.geocat.database.harvester.entities.HarvestJob;
 import net.geocat.database.harvester.repos.HarvestJobRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
 public class LinkCheckRunConfig {
 
-    String harvestJobId;
+    String longTermTag;
 
     // GUID for the harvest (used as JMS Correlation ID).  Provided by server (do not specify)
     private String processID;
 
     public void validate(LinkCheckJobRepo linkCheckJobRepo, HarvestJobRepo harvestJobRepo) throws Exception {
-        if ((harvestJobId == null) || (harvestJobId.isEmpty()))
-            throw new Exception("LinkCheckRunConfig - harvestJobId is empty!");
-        Optional<HarvestJob> job = harvestJobRepo.findById(harvestJobId);
-        if (!job.isPresent())
-            throw new Exception("LinkCheckRunConfig - cannot find previous harvest run harvestJobId: " + harvestJobId);
+        if (StringUtils.isEmpty(longTermTag)) {
+            throw new Exception("LinkCheckRunConfig - arvester with name/uuid (longTermTag) is empty!");
+        }
+
+        Optional<HarvestJob> harvestJob;
+
+        // Filter most recent
+        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(longTermTag);
+        if (!harvestJob.isPresent()) {
+            throw new Exception(String.format("LinkCheckRunConfig - No harvester job related found for the harvester with name/uuid %s." , longTermTag));
+        }
+
     }
 
-    public String getHarvestJobId() {
-        return harvestJobId;
+    public String getLongTermTag() {
+        return longTermTag;
     }
 
-    public void setHarvestJobId(String harvestJobId) {
-        this.harvestJobId = harvestJobId;
+    public void setLongTermTag(String longTermTag) {
+        this.longTermTag = longTermTag;
     }
 
     public String getProcessID() {

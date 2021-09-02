@@ -33,6 +33,7 @@
 
 package net.geocat.events;
 
+import net.geocat.database.harvester.entities.HarvestJob;
 import net.geocat.database.harvester.repos.HarvestJobRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.model.LinkCheckRunConfig;
@@ -41,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -88,7 +90,9 @@ public class EventService {
 
 
     public LinkCheckRequestedEvent createHarvestRequestedEvent(LinkCheckRunConfig linkCheckRunConfig, String processID) {
-        LinkCheckRequestedEvent result = new LinkCheckRequestedEvent(processID, linkCheckRunConfig.getHarvestJobId());
+        Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(linkCheckRunConfig.getLongTermTag());
+
+        LinkCheckRequestedEvent result = new LinkCheckRequestedEvent(processID, harvestJob.get().getJobId());
         return result;
     }
 
