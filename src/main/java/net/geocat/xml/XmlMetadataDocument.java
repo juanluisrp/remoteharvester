@@ -59,7 +59,14 @@ public class XmlMetadataDocument extends XmlDoc {
 
     public void setup_XmlMetadataDocument() throws Exception {
         Node n = xpath_node("/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue");
-        String _metadataDocumentType = n.getTextContent();
+        String _metadataDocumentType = "";
+
+        // gmd:hierarchyLevel is optional in xsd, although required in INSPIRE.
+        // But we can rely on all metadata being valid INSPIRE metadata.
+        if (n != null) {
+            _metadataDocumentType = n.getTextContent();
+        }
+
         metadataDocumentType = determineMetadataDocumentType(_metadataDocumentType);
 
         n = xpath_node("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
