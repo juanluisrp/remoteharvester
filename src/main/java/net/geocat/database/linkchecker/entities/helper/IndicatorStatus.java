@@ -33,6 +33,8 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+// status of an indicator
+// usually NULL means it hasn't been evaluated yet (i.e. UNRUN)
 public enum IndicatorStatus {
     PASS, FAIL, UNRUN
 }

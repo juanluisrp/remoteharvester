@@ -42,6 +42,8 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+
+//base class for Service Metadata records
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "service_record_type",
@@ -52,11 +54,17 @@ public class ServiceMetadataRecord extends MetadataRecord {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long serviceMetadataDocumentId;
 
-    @Column(columnDefinition = "text")
+    //type of service
     //i.e. view/download/discovery
+    @Column(columnDefinition = "text")
     private String metadataServiceType;
 
+    //number of links found in the document
+    // i.e. serviceDocumentLinks.size()
     private Integer numberOfLinksFound;
+
+    //number of operatesOn found in the document
+    // i.e. operatesOnLinks.size()
     private Integer numberOfOperatesOnFound;
 
     @OneToMany(mappedBy = "serviceMetadataRecord",

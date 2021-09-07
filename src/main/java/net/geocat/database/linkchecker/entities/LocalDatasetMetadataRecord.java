@@ -38,19 +38,26 @@ import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentSt
 
 import javax.persistence.*;
 
+//TODO: make a parent for LocalDatasetMetadataRecord, LocalServiceMetadataRecord, and LocalNotProcessedMetadataRecord
+//represents a harvested (local) Dataset document
 @Entity
 @DiscriminatorValue("LocalDatasetMetadataRecord")
 public class LocalDatasetMetadataRecord extends DatasetMetadataRecord {
 
+    //processing state of the document
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
     ServiceMetadataDocumentState state;
 
+    //which link check job is this document apart of
     @Column(columnDefinition = "varchar(40)")
     private String linkCheckJobId;
 
+    // from the harvester - what is the harvester's record ID for this document?
     private long harvesterMetadataRecordId;
 
+
+    // for display - info about this object
     @Column(columnDefinition = "text")
     private String summary;
 

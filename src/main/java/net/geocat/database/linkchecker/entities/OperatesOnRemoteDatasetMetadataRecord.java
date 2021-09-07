@@ -38,15 +38,16 @@ import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 
 import javax.persistence.*;
 
+//when an OperatesOn link resolves to a Dataset XML metadata document, this represents that document
 @Entity
 @DiscriminatorValue("RemoteDatasetMetadataRecord")
 public class OperatesOnRemoteDatasetMetadataRecord extends DatasetMetadataRecord {
 
+    //which link refered to this document?
     @OneToOne(mappedBy = "datasetMetadataRecord", fetch = FetchType.EAGER)
-    //@JoinColumn(name="operatesOnLinkId")
     private OperatesOnLink operatesOnLink;
 
-
+    //summary info about this object (for display)
     @Column(columnDefinition = "text")
     private String summary;
 

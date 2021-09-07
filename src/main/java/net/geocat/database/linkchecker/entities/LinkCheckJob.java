@@ -39,24 +39,38 @@ import javax.persistence.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+// represents a run of the link checker
 @Entity
-
 public class LinkCheckJob extends UpdateCreateDateTimeEntity  {
 
 
     @Id
     @Column(columnDefinition = "varchar(40)")
     private String jobId;
+
+    //GUID of the havest job this is processing
     @Column(columnDefinition = "varchar(40)")
     private String harvestJobId;
+
+    //state of the overall process
     @Enumerated(EnumType.STRING)
     private LinkCheckJobState state;
+
+    //important messages - usually errors during a camel route
     @Column(columnDefinition = "text")
     private String messages;
 
+    // how many documents were harvested
     Long numberOfDocumentsInBatch;
+
+    //how many of the harvested documents are service records?
     Long numberOfLocalServiceRecords;
+
+    //how many of the harvested documents are dataset records?
     Long numberOfLocalDatasetRecords;
+
+
+    //------------------------------------
 
     @PrePersist
     protected void onInsert() {
@@ -68,6 +82,7 @@ public class LinkCheckJob extends UpdateCreateDateTimeEntity  {
         super.onUpdate();
     }
 
+    //------------------------------------
 
     public Long getNumberOfLocalServiceRecords() {
         return numberOfLocalServiceRecords;

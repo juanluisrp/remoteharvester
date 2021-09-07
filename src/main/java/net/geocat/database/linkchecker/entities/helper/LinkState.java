@@ -33,9 +33,11 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+
+// status of a link in the process
 public enum LinkState {
     Created,
-    In_Progress,
+    In_Progress, // not used because of the way that JPA saves objects
 
     Complete,
 

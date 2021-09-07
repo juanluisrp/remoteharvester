@@ -36,6 +36,10 @@ package net.geocat.database.linkchecker.entities;
 import javax.persistence.*;
 import java.util.List;
 
+
+//simple object for caching the results of a HTTP request
+//    - many times multiple documents will link to the same url
+// see RetrievableSimpleLink
 @Entity
 @Table(name = "HttpResultCache"
         ,indexes = {
@@ -56,39 +60,57 @@ public class HttpResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long httpResultId;
 
+    // to group them by a particular linkcheck job
+    // a) we don't want to cache too long, so this gives a lifecycle
+    // b) makes it easy to delete after the run
     @Column(columnDefinition = "varchar(40)")
     String linkCheckJobId;
 
+    //actual response from server
     @Column(columnDefinition = "bytea")
     byte[] data;
 
+    //was the data fully read (i.e. not aborted because the response is the wrong type)
     boolean fullyRead;
+
+    // http response code from server
     Integer httpCode;
 
+    // what was the content type response from the server (header)
     @Column(columnDefinition = "text")
     String contentType;
 
+    // allow a cookie to be sent to the server (required by some servers for security)
     @Column(columnDefinition = "text")
     String specialToSendCookie;
 
+    // did an error occur during the request?
     boolean errorOccurred;
+
+    //is the end request HTTPS?
+    // (i.e. after redirects)
     boolean isHTTPS;
 
-
+    //original URL
     @Column(columnDefinition = "text")
     String URL;
 
+    //actual URL this came from (after redirects)
     @Column(columnDefinition = "text")
     String finalURL;
 
+    //cookie, if sent
     @Column(columnDefinition = "text")
     String sentCookie;
 
+    // cookies received from request (could be security tokens)
     @Column(columnDefinition = "text")
     String  receivedCookie;
 
+    // is the SSL cert trusted by Java?
     boolean sslTrusted;
 
+    //reason the SSL cert was untrusted
     @Column(columnDefinition = "text")
     String sslUnTrustedReason;
 

@@ -38,24 +38,28 @@ import net.geocat.xml.helpers.CapabilitiesType;
 
 import javax.persistence.*;
 
+//Base class for information in a metadata record (i.e. <MD_Metadata>....)
 @MappedSuperclass
 public class MetadataRecord extends UpdateCreateDateTimeEntity {
 
-
+    //not saved to DB - use the SHA2 link to get the data from blobstorage
     @Transient
-    public String actualXML; //not saved to DB - use the SHA2 link
+    public String actualXML;
 
+    //SHA2 of the XMNL Text
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
 
+    //File identifier (see XML XSL)
     @Column(columnDefinition = "text")
     private String fileIdentifier;
 
+    // what type of metadata document is this (service/dataset/series/...)
     @Column(columnDefinition = "varchar(22)")
     @Enumerated(EnumType.STRING)
-    //i.e. will be service
     private MetadataDocumentType metadataRecordType;
 
+    // summary of this document's processing in a somewhat human-readable format
     @Column(columnDefinition = "text")
     private String humanReadable;
 

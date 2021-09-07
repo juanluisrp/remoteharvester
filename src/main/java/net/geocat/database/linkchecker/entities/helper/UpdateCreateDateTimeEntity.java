@@ -40,6 +40,9 @@ import javax.persistence.PreUpdate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+//simple base class that adds to entities;
+// a. create/update time
+// b. a place to put error messages
 @MappedSuperclass
 public class UpdateCreateDateTimeEntity {
 

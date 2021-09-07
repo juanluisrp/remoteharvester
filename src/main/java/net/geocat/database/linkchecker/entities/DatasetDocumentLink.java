@@ -36,25 +36,29 @@ package net.geocat.database.linkchecker.entities;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
-import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
 
+//links from a dataset metadata document
 @Entity
 public class DatasetDocumentLink extends DocumentLink {
 
-
+    //which dataset metadata document did this link come from?
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-//    @JoinColumn(name="serviceMetadataId")
     DatasetMetadataRecord datasetMetadataRecord;
+
+    //for display - info about this link
     @Column(columnDefinition = "text")
     String summary;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long datasetMetadataLinkId;
+
+    //if this link resolved to a capabilities document, which one
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "capabilitiesDocumentId")
     @Fetch(value = FetchMode.SELECT)

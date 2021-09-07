@@ -38,22 +38,18 @@ import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 
 import javax.persistence.*;
 
+//represents a Service Metadata Record referenced by the Capabilities document
 @Entity
 @DiscriminatorValue("RemoteServiceMetadataRecord")
 public class RemoteServiceMetadataRecord extends ServiceMetadataRecord {
 
-    //    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    @JoinColumn(name = "remoteServiceMetadataRecordLinkId" )
+    //which link was resolved to get this Service Metadata document
     @OneToOne(mappedBy = "remoteServiceMetadataRecord")
     private RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink;
 
+    //summary info (for display)
     @Column(columnDefinition = "text")
     private String summary;
-
-    public RemoteServiceMetadataRecord(){
-        super();
-    }
-
 
     //when comparing this to a local service record, do they have the same file identifiers?
     @Enumerated(EnumType.STRING)
@@ -69,6 +65,11 @@ public class RemoteServiceMetadataRecord extends ServiceMetadataRecord {
     // this is a PARTIAL semi-human readable summary of xml difference
     @Column(columnDefinition = "text")
     private String metadataRecordDifferences;
+
+
+    public RemoteServiceMetadataRecord(){
+        super();
+    }
 
     //---------------------------------------------------------------------------
 

@@ -35,29 +35,37 @@ package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
+// This models all the Dataset links from a capabilities (typically 1 per layer)
 @Entity
 public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 
+    // link to the actual Dataset document (if it resolves to one)
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "datasetMetadataRecordId")
-    //@BatchSize(size=200)
     @Fetch(value = FetchMode.JOIN)
     CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument;
+
+    //link back to the capabilities document this link came from
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
     CapabilitiesDocument capabilitiesDocument;
+
+    //from the Capabilities document - identity for the layer
     @Column(columnDefinition = "text")
     String identity;
+
+    //store summary info about this
     @Column(columnDefinition = "text")
     String summary;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long capabilitiesDatasetMetadataLinkId;
+
 
     public CapabilitiesDatasetMetadataLink() {
         this.setPartialDownloadHint(PartialDownloadHint.METADATA_ONLY);

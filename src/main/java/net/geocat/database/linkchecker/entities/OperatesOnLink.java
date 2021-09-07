@@ -41,19 +41,28 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
+
+//represents an OperatesOn Link inside a Service Metadata Document
 @Entity
 public class OperatesOnLink extends RetrievableSimpleLink {
 
+    // from the Service document Operates on section
     @Column(columnDefinition = "text")
     String uuidref;
+
+    // summary of this object (for display)
     @Column(columnDefinition = "text")
     String summary;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long operatesOnLinkId;
+
+    //which service metadata record does this link belong to?
     @ManyToOne(fetch = FetchType.EAGER)
-    //@JoinColumn(name="serviceMetadataId")
     private ServiceMetadataRecord serviceMetadataRecord;
+
+    //if this link resolves to a dataset record, this represents that dataset document
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "datasetMetadataRecordId")
     @Fetch(value = FetchMode.SELECT)

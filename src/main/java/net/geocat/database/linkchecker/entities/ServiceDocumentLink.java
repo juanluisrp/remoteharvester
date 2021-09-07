@@ -38,20 +38,24 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import javax.swing.plaf.basic.BasicToolBarUI;
 
+//represents a link from a service metadata xml document
 @Entity
 public class ServiceDocumentLink extends DocumentLink {
 
-
+    //which service document did this link come from?
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-//    @JoinColumn(name="serviceMetadataId")
     ServiceMetadataRecord serviceMetadataRecord;
+
+    //summary info (for display/debugging)
     @Column(columnDefinition = "text")
     String summary;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceMetadataLinkId;
+
+    //if this link resolves to a capabilities XML document, this represents that document
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SELECT)
     @JoinColumn(name = "capabilitiesDocumentId")

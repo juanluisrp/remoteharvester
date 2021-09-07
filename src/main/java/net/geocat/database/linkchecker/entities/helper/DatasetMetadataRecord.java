@@ -42,6 +42,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// Represents a Dataset Metadata Record
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dataset_record_type",
@@ -52,10 +54,15 @@ public class DatasetMetadataRecord extends MetadataRecord {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long datasetMetadataDocumentId;
 
+    // INSPIRE dataset identifier (from document)
     private String datasetIdentifier;
 
+    // number of links found in the document
+    //  i.e. documentLinks.size()
     private Integer numberOfLinksFound;
 
+
+    // all the outgoing links (i.e. capabilities documents) from the document
     @OneToMany(mappedBy = "datasetMetadataRecord",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.JOIN)

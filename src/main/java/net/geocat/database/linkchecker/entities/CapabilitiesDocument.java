@@ -44,6 +44,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//represent a capabilities document
 @Entity
 public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
 
@@ -52,40 +54,50 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long capabilitiesDocumentId;
 
+    //sha2 of the XML's text
     @Column(columnDefinition = "varchar(64)")
     private String sha2;
 
+    //Type of this Capabilities Document (i.e. WFS/WMS/...)
     @Enumerated(EnumType.STRING)
     private CapabilitiesType capabilitiesDocumentType;
-    //
-//    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-//    @JoinColumn(name = "serviceDocumentLinkId" )
+
+    //TODO: handle this better - might want to make a super class and two subclasses for CapabilitiesDocuments
+    //      that start from a Dataset document or Service Document.
+    //NOTE: either serviceDocumentLink or datasetDocumentLink will be filled in (not both).
+
+    // if this CapabilitiesDocument came from a service document, this references which one
     @OneToOne(mappedBy = "capabilitiesDocument",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private ServiceDocumentLink serviceDocumentLink;
 
+    // if this CapabilitiesDocument came from a dataset document, this references which one
     @OneToOne(mappedBy = "capabilitiesDocument",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private DatasetDocumentLink datasetDocumentLink;
 
+    //does this XML CapabilitiesDocument have extended capabilities (i.e. <inspire_ds:ExtendedCapabilities>)
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
     private IndicatorStatus Indicator_HasExtendedCapabilities;
 
+    //extended capabilities - does it have a reference to a service metadata?
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20)")
     private IndicatorStatus Indicator_HasServiceMetadataLink;
 
+    //link to the service metadata referenced in the XML's ExtendedCapabilities
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JoinColumn(name = "remoteServiceMetadataRecordLinkId")
     private RemoteServiceMetadataRecordLink remoteServiceMetadataRecordLink;
 
 
+    //list of the links to Datasets (i.e. one for each layer)
     @OneToMany(mappedBy = "capabilitiesDocument",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-   // @BatchSize(size=200)
     private List<CapabilitiesDatasetMetadataLink> capabilitiesDatasetMetadataLinkList;
 
 
+    // summary for display
     @Column(columnDefinition = "text")
     private String summary;
 

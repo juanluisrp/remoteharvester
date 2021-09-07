@@ -37,14 +37,16 @@ import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 
 import javax.persistence.*;
 
+//Dataset Metadata Document that was referenced from a capabilities document's "layer"
 @Entity
 @DiscriminatorValue("CapabilitiesRemoteDSMDDocument")
 public class CapabilitiesRemoteDatasetMetadataDocument extends DatasetMetadataRecord {
 
+    //which capabilities document referenced this Dataset Metadata Document
     @OneToOne(mappedBy = "capabilitiesRemoteDatasetMetadataDocument", fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
-    // @JoinColumn(name="capabilitiesDatasetMetadataLinkId")
     private CapabilitiesDatasetMetadataLink capabilitiesRemoteDatasetMetadataDocumentLink;
 
+    //summary info for display
     @Column(columnDefinition = "text")
     private String summary;
 

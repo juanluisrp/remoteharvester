@@ -38,19 +38,24 @@ import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 
 import javax.persistence.*;
 
+//represents the link in the xml Capabilities document that refers to the Service metadata document
 @Entity
 public class RemoteServiceMetadataRecordLink extends RetrievableSimpleLink {
 
-    //    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    @JoinColumn(name = "capabilitiesDocumentId" )
+    //which capabilities document did this link come from?
     @OneToOne(mappedBy = "remoteServiceMetadataRecordLink")
     CapabilitiesDocument capabilitiesDocument;
+
+    //when this link resolved to a service metadata xml record, this object represent that document
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "remoteServiceMetadataRecordId")
     RemoteServiceMetadataRecord remoteServiceMetadataRecord;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long remoteServiceMetadataRecordLinkId;
+
+    //summary info (for display/debugging)
     @Column(columnDefinition = "text")
     private String summary;
 
