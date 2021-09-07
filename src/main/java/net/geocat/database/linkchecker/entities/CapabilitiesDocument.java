@@ -35,9 +35,8 @@ package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.UpdateCreateDateTimeEntity;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.xml.helpers.CapabilitiesType;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

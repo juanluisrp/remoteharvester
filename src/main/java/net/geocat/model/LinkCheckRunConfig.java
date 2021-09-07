@@ -49,7 +49,7 @@ public class LinkCheckRunConfig {
 
     public void validate(LinkCheckJobRepo linkCheckJobRepo, HarvestJobRepo harvestJobRepo) throws Exception {
         if (StringUtils.isEmpty(longTermTag)) {
-            throw new Exception("LinkCheckRunConfig - arvester with name/uuid (longTermTag) is empty!");
+            throw new Exception("LinkCheckRunConfig - harvester with name/uuid (longTermTag) is empty!");
         }
 
         Optional<HarvestJob> harvestJob;

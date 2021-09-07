@@ -35,7 +35,6 @@ package net.geocat.database.linkchecker.entities.helper;
 
 
 import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

@@ -38,8 +38,7 @@ import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalNotProcessedMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
-import net.geocat.database.linkchecker.entities2.MetadataDocument;
-import net.geocat.database.linkchecker.entities2.MetadataDocumentState;
+
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.database.linkchecker.repos.LocalNotProcessedMetadataRecordRepo;
 import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
@@ -66,18 +65,7 @@ public class MetadataDocumentService {
 //    @Autowired
 //    public MetadataDocumentRepo metadataDocumentRepo;
 
-    public MetadataDocument create(String linkCheckJobId, String sha2, Long harvesterMetadataRecordId) {
-//        MetadataDocument doc = metadataDocumentRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId,sha2);
-//        if (doc != null)
-//            return doc;
-//        doc = new MetadataDocument();
-//        doc.setLinkCheckJobId(linkCheckJobId);
-//        doc.setSha2(sha2);
-//        doc.setHarvesterMetadataRecordId(harvesterMetadataRecordId);
-//        doc.setState(MetadataDocumentState.IN_PROGRESS);
-//        return metadataDocumentRepo.save(doc);
-        return null;
-    }
+
 
     public LocalDatasetMetadataRecord findLocalDataset(String linkCheckJobId, String sha2) {
         LocalDatasetMetadataRecord doc = localDatasetMetadataRecordRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId,sha2);

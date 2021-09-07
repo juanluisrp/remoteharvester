@@ -34,12 +34,10 @@
 package net.geocat.eventprocessor.processors.processlinks.postprocessing;
 
 
-import net.geocat.database.harvester.entities.BlobStorage;
 import net.geocat.database.harvester.repos.BlobStorageRepo;
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.DocumentLink;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

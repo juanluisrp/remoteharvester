@@ -34,7 +34,7 @@
 package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 
 import javax.persistence.*;
 

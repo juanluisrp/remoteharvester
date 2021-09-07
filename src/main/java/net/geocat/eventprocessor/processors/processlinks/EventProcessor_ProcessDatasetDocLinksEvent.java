@@ -38,9 +38,7 @@ import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
-import net.geocat.database.linkchecker.repos2.LinkRepo;
-import net.geocat.database.linkchecker.service.LinkCheckJobService;
-import net.geocat.database.linkchecker.service.LinkService;
+
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.CapabilitiesResolvesIndicators;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.DatasetToLayerIndicators;

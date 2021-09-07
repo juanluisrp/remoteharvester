@@ -33,8 +33,6 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
-
 import javax.persistence.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;

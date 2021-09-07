@@ -36,10 +36,9 @@ package net.geocat.runner;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
-import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
@@ -56,9 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.jws.Oneway;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
@@ -94,14 +91,14 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     ServiceDocLinkExtractor serviceDocLinkExtractor;
 
-    @Autowired
-    LinkProcessor_SimpleLinkRequest linkProcessor_simpleLinkRequest;
+//    @Autowired
+//    LinkProcessor_SimpleLinkRequest linkProcessor_simpleLinkRequest;
 
-    @Autowired
-    LinkProcessor_ProcessCapDoc linkProcessor_processCapDoc;
+//    @Autowired
+//    LinkProcessor_ProcessCapDoc linkProcessor_processCapDoc;
 
-    @Autowired
-    LinkProcessor_GetCapLinkedMetadata linkProcessor_getCapLinkedMetadata;
+//    @Autowired
+//    LinkProcessor_GetCapLinkedMetadata linkProcessor_getCapLinkedMetadata;
 
     @Autowired
     ServiceMetadataRecordService serviceMetadataRecordService;
@@ -181,8 +178,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-           // run12(args);
-          //  run11(args);
+            run12(args);
+            run11(args);
         }
         catch(Exception e){
             int t=0;
@@ -252,7 +249,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //        System.out.println("records3 total execution time: " + (endTime - startTime));
 
         startTime = System.currentTimeMillis();
-        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("b7ee7707-698f-41ac-8dcf-ab0c43ab297a");
+        List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId("5b7d9b34-0b8b-4959-88e6-0a93c278a5f3");
         endTime = System.currentTimeMillis();
         System.out.println("records  total execution time: " + (endTime - startTime));
 
@@ -347,7 +344,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
     }
     public void run11(String... args) throws Exception {
     //   List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("b7ee7707-698f-41ac-8dcf-ab0c43ab297a");
-        List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("1a95b640-b7ae-4942-bc0e-ccc068574901");
+        List<LocalServiceMetadataRecord> records =   localServiceMetadataRecordRepo.findByLinkCheckJobId("5b7d9b34-0b8b-4959-88e6-0a93c278a5f3");
 
 
        int total =records.size();

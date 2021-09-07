@@ -40,7 +40,7 @@ import net.geocat.database.linkchecker.entities.LinkCheckBlobStorage;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

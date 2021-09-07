@@ -35,14 +35,11 @@ package net.geocat.database.linkchecker.entities.helper;
 
 import net.geocat.database.linkchecker.entities.OperatesOnLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

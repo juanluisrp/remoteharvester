@@ -34,12 +34,10 @@
 package net.geocat.service;
 
 
-import net.geocat.database.linkchecker.entities2.Link;
-import net.geocat.service.helper.NotServiceRecordException;
-import net.geocat.xml.XmlDoc;
+
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlMetadataDocument;
-import net.geocat.xml.XmlServiceRecordDoc;
+
 import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,35 +53,6 @@ public class ServiceDocLinkExtractor {
     @Autowired
     XmlDocumentFactory xmlDocumentFactory;
 
-    @Autowired
-    LinkFactory linkFactory;
-
-    public List<Link> extractLinks(String xml,
-                                   String sha2,
-                                   String harvestId,
-                                   long endpointId,
-                                   String linkCheckJobId) throws Exception {
-        XmlDoc doc = xmlDocumentFactory.create(xml);
-        if (doc instanceof XmlServiceRecordDoc)
-            return extractLinks((XmlServiceRecordDoc) doc, sha2, harvestId, endpointId, linkCheckJobId);
-        throw new NotServiceRecordException("trying to extract links from a non-service record");
-    }
-
-    public List<Link> extractLinks(XmlServiceRecordDoc xml,
-                                   String sha2,
-                                   String harvestId,
-                                   long endpointId,
-                                   String linkCheckJobId) throws Exception {
-        List<Link> result = new ArrayList<>();
-
-        List<OnlineResource> docLinks = removeDuplicates(xml.getConnectPoints(), xml.getTransferOptions());
-
-        for (OnlineResource onlineResource : docLinks) {
-            Link link = linkFactory.create(onlineResource, xml, sha2, harvestId, endpointId, linkCheckJobId);
-            result.add(link);
-        }
-        return result;
-    }
 
 
     public List<OnlineResource> extractOnlineResource(XmlMetadataDocument xml) throws Exception {

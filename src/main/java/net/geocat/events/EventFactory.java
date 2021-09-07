@@ -34,7 +34,6 @@
 package net.geocat.events;
 
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
-import net.geocat.database.linkchecker.entities2.Link;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
@@ -82,10 +81,10 @@ public class EventFactory {
         return result;
     }
 
-    public ProcessServiceDocLinksEvent createProcessLinkEvent(Link l) {
-        ProcessServiceDocLinksEvent result = new ProcessServiceDocLinksEvent(l.getLinkId(), l.getLinkCheckJobId());
-        return result;
-    }
+//    public ProcessServiceDocLinksEvent createProcessLinkEvent(Link l) {
+//        ProcessServiceDocLinksEvent result = new ProcessServiceDocLinksEvent(l.getLinkId(), l.getLinkCheckJobId());
+//        return result;
+//    }
 
     public AllLinksCheckedEvent createAllLinksCheckedEvent(String linkcheckJobId) {
         AllLinksCheckedEvent event = new AllLinksCheckedEvent(linkcheckJobId);

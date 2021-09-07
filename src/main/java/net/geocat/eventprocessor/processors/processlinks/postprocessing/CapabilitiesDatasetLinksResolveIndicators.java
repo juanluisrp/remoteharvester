@@ -36,9 +36,8 @@ package net.geocat.eventprocessor.processors.processlinks.postprocessing;
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

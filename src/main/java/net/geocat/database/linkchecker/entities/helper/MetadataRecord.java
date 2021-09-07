@@ -33,7 +33,6 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities2.IndicatorStatus;
 import net.geocat.xml.MetadataDocumentType;
 import net.geocat.xml.helpers.CapabilitiesType;
 
