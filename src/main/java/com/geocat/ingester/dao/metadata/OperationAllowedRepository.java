@@ -18,6 +18,6 @@ public interface OperationAllowedRepository extends PagingAndSortingRepository<O
     @Query("select oa from OperationAllowed oa where oa.id.metadataId = :metadataId")
     public List<OperationAllowed> findAllByMetadataId(@Param("metadataId") Integer metadataId);
 
-    @Query("select oa from OperationAllowed oa where oa.id.metadataId IN :metadataIds and oa.id.groupId = 1 and oa.id.operationId = 0")
-    public List<OperationAllowed> findPublicOperationAllowedByMetadataIds(@Param("metadataIds") Set<Integer> metadataIds);
+    @Query("select oa from OperationAllowed oa where oa.id.metadataId IN :metadataIds")
+    public List<OperationAllowed> findOperationAllowedByMetadataIds(@Param("metadataIds") Set<Integer> metadataIds);
 }

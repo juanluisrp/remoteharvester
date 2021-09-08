@@ -12,6 +12,8 @@ import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
 import com.geocat.ingester.model.harvester.MetadataRecordXml;
 import com.geocat.ingester.model.ingester.IngestJobState;
+import com.geocat.ingester.model.linkchecker.CapabilitiesType;
+import com.geocat.ingester.model.linkchecker.IndicatorStatus;
 import com.geocat.ingester.model.linkchecker.LinkCheckJob;
 import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -92,13 +95,13 @@ public class IngesterService {
         String harvestJobId = harvestJob.get().getJobId();
 
         Optional<LinkCheckJob> linkCheckJob = linkCheckJobRepo.findByHarvestJobId(harvestJobId);
+        String linkCheckJobId = null;
         if (!linkCheckJob.isPresent()) {
             log.info("No link checker job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
-            // TODO: throw Exception harvester job not found
-            return;
+        } else {
+            linkCheckJobId = linkCheckJob.get().getJobId();
         }
 
-        String linkCheckJobId = linkCheckJob.get().getJobId();
 
         List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(harvestJobId);
 
@@ -109,7 +112,6 @@ public class IngesterService {
 
         ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, 0, 0, 0, totalMetadataToProcess);
 
-        //List<Integer> metadataIds = new ArrayList<>();
         Map<String, Boolean> metadataIds = new HashMap<>();
 
         try {
@@ -137,61 +139,15 @@ public class IngesterService {
 
                     total = total + metadataRecordList.getNumberOfElements();
 
-                    metadataRecordList.forEach(r -> {
-                        List<LocalServiceMetadataRecord> localServiceMetadataRecord = localServiceMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(r.getRecordIdentifier(), linkCheckJobId);
+                    // Process metadata indicators
+                    if (!StringUtils.isEmpty(linkCheckJobId)) {
+                        final String linkCheckJobIdAux = linkCheckJobId;
 
-                        if (!localServiceMetadataRecord.isEmpty()) {
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE() != null) {
-                                r.addIndicator("INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE().toString());
-                            }
+                        metadataRecordList.forEach(r -> {
+                            fillMetadataIndicators(r, linkCheckJobIdAux);
+                        });
+                    }
 
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE() != null) {
-                                r.addIndicator("INDICATOR_ALL_OPERATES_ON_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES() != null) {
-                                r.addIndicator("INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE() != null) {
-                                r.addIndicator("INDICATOR_CAPABILITIES_TYPE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE() != null) {
-                                r.addIndicator("INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES() != null) {
-                                r.addIndicator("INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES() != null) {
-                                r.addIndicator("INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES().toString());
-                            }
-
-                            if (localServiceMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES() != null) {
-                                r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES().toString());
-                            }
-                        } else {
-                            List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(r.getRecordIdentifier(), linkCheckJobId);
-
-                            if (!localDatasetMetadataRecord.isEmpty()) {
-                                if (localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE() != null) {
-                                    r.addIndicator("INDICATOR_CAPABILITIES_TYPE", localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE().toString());
-                                }
-
-                                if (localDatasetMetadataRecord.get(0).getINDICATOR_LAYER_MATCHES() != null) {
-                                    r.addIndicator("INDICATOR_LAYER_MATCHES", localDatasetMetadataRecord.get(0).getINDICATOR_LAYER_MATCHES().toString());
-                                }
-
-                                if (localDatasetMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES() != null) {
-                                    r.addIndicator("INDICATOR_RESOLVES_TO_CAPABILITIES", localDatasetMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES().toString());
-                                }
-                            }
-
-                        }
-
-                    });
                     metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), harvestJobId));
 
                     ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
@@ -302,6 +258,55 @@ public class IngesterService {
                 log.error(ex.getMessage(), ex);
 
             }
+        }
+    }
+
+
+    /**
+     * Fill the indicators associated to a metadata record for a link checker job.
+     *
+     * @param metadata
+     * @param linkCheckJobId
+     */
+    private void fillMetadataIndicators(MetadataRecordXml metadata, String linkCheckJobId) {
+        List<LocalServiceMetadataRecord> localServiceMetadataRecord = localServiceMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(metadata.getRecordIdentifier(), linkCheckJobId);
+
+        if (!localServiceMetadataRecord.isEmpty()) {
+            addIndicator(metadata, "INDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE());
+            addIndicator(metadata, "INDICATOR_ALL_OPERATES_ON_RESOLVE", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_RESOLVE());
+            addIndicator(metadata, "INDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES());
+            addIndicator(metadata, "INDICATOR_CAPABILITIES_TYPE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE());
+            addIndicator(metadata, "INDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE());
+            addIndicator(metadata, "INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES());
+            addIndicator(metadata, "INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES());
+            addIndicator(metadata, "INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES());
+        } else {
+            List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(metadata.getRecordIdentifier(), linkCheckJobId);
+
+            if (!localDatasetMetadataRecord.isEmpty()) {
+                addIndicator(metadata, "INDICATOR_CAPABILITIES_TYPE", localDatasetMetadataRecord.get(0).getINDICATOR_CAPABILITIES_TYPE());
+                addIndicator(metadata, "INDICATOR_LAYER_MATCHES", localDatasetMetadataRecord.get(0).getINDICATOR_LAYER_MATCHES());
+                addIndicator(metadata, "INDICATOR_RESOLVES_TO_CAPABILITIES", localDatasetMetadataRecord.get(0).getINDICATOR_RESOLVES_TO_CAPABILITIES());
+            }
+
+        }
+    }
+
+    private void addIndicator(MetadataRecordXml metadata, String indicatorName, IndicatorStatus indicatorStatus) {
+        if (indicatorStatus != null) {
+            metadata.addIndicator(indicatorName, indicatorStatus.toString());
+        }
+    }
+
+    private void addIndicator(MetadataRecordXml metadata, String indicatorName, CapabilitiesType capabilitiesType) {
+        if (capabilitiesType != null) {
+            metadata.addIndicator(indicatorName, capabilitiesType.toString());
+        }
+    }
+
+    private void addIndicator(MetadataRecordXml metadata, String indicatorName, Integer indicator) {
+        if (indicator != null) {
+            metadata.addIndicator(indicatorName, indicator.toString());
         }
     }
 }

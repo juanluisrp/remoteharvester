@@ -24,7 +24,7 @@ public class HarvesterSetting {
     @SequenceGenerator(name=ID_SEQ_NAME, initialValue = 100, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ID_SEQ_NAME)
     private int id;
-    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @OneToOne(optional = true, fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "parentid")
     @OnDelete(action= OnDeleteAction.CASCADE)
     private HarvesterSetting parent;

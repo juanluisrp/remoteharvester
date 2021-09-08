@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 //@Transactional("metadataTransactionManager")
@@ -95,7 +96,6 @@ public class CatalogueService {
                 metadata.setSource(harvesterConfiguration.getUuid());
                 metadata.setCreateDate(datetime.format(DATE_PATTERN));
 
-                // TODO: Set owner
                 metadata.setOwner(Integer.parseInt(harvesterConfiguration.getUserOwner()));
                 metadata.setGroupOwner(Integer.parseInt(harvesterConfiguration.getGroupOwner()));
             }
@@ -127,29 +127,36 @@ public class CatalogueService {
         });
 
         List<OperationAllowed> operationAllowedInDb =
-                operationAllowedRepo.findPublicOperationAllowedByMetadataIds(new HashSet<>(metadataIdList));
+                operationAllowedRepo.findOperationAllowedByMetadataIds(new HashSet<>(metadataIdList));
 
         metadataList.forEach(metadata -> {
-            // TODO: Review operations management
-            OperationAllowedId operationAllowedId = new OperationAllowedId();
-            operationAllowedId.setMetadataId(metadata.getId());
-            // "ALL" group
-            operationAllowedId.setGroupId(1);
-            // "View" operation
-            operationAllowedId.setOperationId(0);
+            Map<Integer, List<Integer>> metadataPrivileges = harvesterConfiguration.getPrivileges();
 
-            boolean addOperation = false;
+            for (Map.Entry<Integer, List<Integer>> entry : metadataPrivileges.entrySet()) {
 
-            Optional<OperationAllowed> operationAllowedOptional = operationAllowedInDb.stream().filter(oa -> (oa.getId().equals(operationAllowedId))).findFirst();
+                for (Integer op : entry.getValue()) {
+                    OperationAllowedId operationAllowedId = new OperationAllowedId();
+                    operationAllowedId.setMetadataId(metadata.getId());
+                    // Group
+                    operationAllowedId.setGroupId(entry.getKey());
+                    // Operation
+                    operationAllowedId.setOperationId(op);
 
-            if (!operationAllowedOptional.isPresent()) {
-                addOperation = true;
-            }
+                    boolean addOperation = false;
 
-            if (addOperation) {
-                OperationAllowed operationAllowed = new OperationAllowed();
-                operationAllowed.setId(operationAllowedId);
-                operationAllowedList.add(operationAllowed);
+                    Optional<OperationAllowed> operationAllowedOptional = operationAllowedInDb.stream().filter(oa -> (oa.getId().equals(operationAllowedId))).findFirst();
+
+                    if (!operationAllowedOptional.isPresent()) {
+                        addOperation = true;
+                    }
+
+                    if (addOperation) {
+                        OperationAllowed operationAllowed = new OperationAllowed();
+                        operationAllowed.setId(operationAllowedId);
+                        operationAllowedList.add(operationAllowed);
+                    }
+                }
+
             }
         });
 
@@ -191,6 +198,40 @@ public class CatalogueService {
             Optional<HarvesterSetting> harvestingSettingGroupId = retrieveHarvesterSetting(harvesterSettingList, "ownerGroup");
             harvesterConfiguration.setGroupOwner(harvestingSettingGroupId.get().getValue());
 
+            // Retrieve the harvester privileges settings
+            HarvesterSetting harvesterSettingParentParent = harvesterSettingParent.getParent();
+            List<HarvesterSetting> harvesterSettingParentList = harvestingSettingRepo.findAllByParent(harvesterSettingParentParent);
+
+
+            Optional<HarvesterSetting> harvesterSettingPrivileges = retrieveHarvesterSetting(harvesterSettingParentList, "privileges");
+
+            if (harvesterSettingPrivileges.isPresent()) {
+                // Get the groups in the privileges list
+                List<HarvesterSetting> harvesterSettingPrivilegesList = harvestingSettingRepo.findAllByParent(harvesterSettingPrivileges.get());
+
+                Map<Integer, List<Integer>> privileges = new HashMap<>();
+
+                List<HarvesterSetting> privilegesGroups = retrieveHarvesterSettingsByParentIdAndName(harvesterSettingPrivilegesList, harvesterSettingPrivileges.get().getId(), "group");
+
+                // For each group in the privileges list process the operations associated
+                for (HarvesterSetting g : privilegesGroups) {
+                    List<HarvesterSetting> privilegesGroupsList = harvestingSettingRepo.findAllByParent(g);
+
+                    List<HarvesterSetting> operationsGroupOperations = retrieveHarvesterSettingsByParentIdAndName(privilegesGroupsList, g.getId(), "operation");
+                    List<Integer> ops = new ArrayList<>();
+
+                    for(HarvesterSetting op: operationsGroupOperations) {
+                        ops.add(Integer.parseInt(op.getValue()));
+                    }
+
+                    Integer groupId = Integer.parseInt(g.getValue());
+                    privileges.put(groupId, ops);
+
+                }
+
+                harvesterConfiguration.setPrivileges(privileges);
+            }
+
             // TODO: Process CSW filter
             harvesterConfiguration.setCswFilter("");
         }
@@ -209,6 +250,10 @@ public class CatalogueService {
 
     private Optional<HarvesterSetting> retrieveHarvesterSetting( List<HarvesterSetting> harvesterSettingList, String name) {
         return harvesterSettingList.stream().filter(s -> s.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    private List<HarvesterSetting> retrieveHarvesterSettingsByParentIdAndName( List<HarvesterSetting> harvesterSettingList, Integer id, String name) {
+        return harvesterSettingList.stream().filter(s -> s.getParent().getId() == id && s.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
     }
 
 
