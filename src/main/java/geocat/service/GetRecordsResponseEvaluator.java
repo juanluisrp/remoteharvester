@@ -2,6 +2,7 @@ package geocat.service;
 
 
 import geocat.csw.csw.XMLTools;
+import geocat.database.entities.DuplicateRecordsReportItem;
 import geocat.database.entities.EndpointJob;
 import geocat.database.entities.HarvestJob;
 import geocat.database.entities.RecordSet;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.NodeList;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -105,7 +109,13 @@ public class GetRecordsResponseEvaluator {
         long distinctRecordIdentifiers = metadataRecordRepo.countDistinctRecordIdentifierByEndpointJobId(endpointJob.getEndpointJobId());
 
         if ((totalCount != distinctRecordIdentifiers) && (problematicResultsConfiguration.errorIfDuplicateUUIDs())) {
-            throw new Exception("duplicate record uuids detected - totalCount=" + totalCount + ", distinctCount=" + distinctRecordIdentifiers);
+            String msg = "duplicate record uuids detected - totalCount=" + totalCount + ", distinctCount=" + distinctRecordIdentifiers;
+            List<DuplicateRecordsReportItem> report = metadataRecordRepo.queryDuplicateRecordsReport( endpointJob.getEndpointJobId());
+            List<String> report_items =  report.stream()
+                    .map(x -> x.getRecordIdentifier() +" has "+x.getCount()+" records in positions: "+x.getCswRecordNumbers())
+                    .collect(Collectors.toList());
+            msg += "\n" + String.join("\n",report_items);
+            throw new Exception(msg);
         }
     }
 }

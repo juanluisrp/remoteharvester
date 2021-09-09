@@ -27,7 +27,7 @@ public class LogbackLoggingEventException {
     @Id
     private short i;
 
-    @Column(name = "trace_line", columnDefinition = "varchar(254)")
+    @Column(name = "trace_line", columnDefinition = "text")
     private String traceLine;
 
     @Column(name = "caused_by_depth",columnDefinition = "smallint")
