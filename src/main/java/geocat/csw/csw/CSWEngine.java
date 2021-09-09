@@ -1,6 +1,7 @@
 package geocat.csw.csw;
 
 
+import geocat.csw.http.HttpResult;
 import geocat.csw.http.IHTTPRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,7 +40,8 @@ public class CSWEngine {
     }
 
     protected String GetCapabilitiesPOST(String url) throws Exception {
-        return retriever.retrieveXML("POST", url, GETCAP_XML, null);
+        HttpResult result = retriever.retrieveXML("POST", url, GETCAP_XML, null,null);
+        return new String(result.getData());
     }
 
     protected String GetCapabilitiesGET(String url) throws Exception {
@@ -48,13 +50,15 @@ public class CSWEngine {
         else if (!url.contains("?"))
             url += "?" + GETCAP_KVP;
         //otherwise, likely already has the request=GetCapabilities in it!
-        return retriever.retrieveXML("GET", url, null, null);
+        HttpResult result = retriever.retrieveXML("GET", url, null, null,null);
+        return new String(result.getData());
     }
     //--
 
     public String GetRecords(String url, String requestXML) throws Exception {
-        return retriever.retrieveXML("POST", url, requestXML, null);
-    }
+        HttpResult result = retriever.retrieveXML("POST", url, requestXML, null,null);
+        return new String(result.getData());
+     }
 
 
 }

@@ -33,47 +33,45 @@
 
 package geocat.csw.http;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 
-import java.io.IOException;
+public class VerifyingTrustingX509TrustManager implements X509TrustManager {
 
-@Component
-@Scope("prototype")
-@Qualifier("redirectAwareHTTPRetriever")
-public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
+    X509TrustManager underlying;
 
-    public static int MAXREDIRECTS = 5;
-    @Autowired
-    @Qualifier("basicHTTPRetriever")
-    public BasicHTTPRetriever retriever; // public for testing
-    Logger logger = LoggerFactory.getLogger(RedirectAwareHTTPRetriever.class);
+    boolean clientTrusted = true;
+    Exception clientTrustedException;
 
-    public RedirectAwareHTTPRetriever() {
+    boolean serverTrusted = true;
+    Exception serverTrustedException;
 
+    public VerifyingTrustingX509TrustManager(X509TrustManager underlying) {
+        this.underlying = underlying;
     }
 
-
-    @Override
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS, predicate);
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
     }
 
-
-    protected HttpResult _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public void checkClientTrusted(X509Certificate[] certs, String authType) {
         try {
-            return retriever.retrieveXML(verb, location, body, cookie, predicate);
-        } catch (RedirectException re) {
-            if (nRedirectsRemaining <= 0)
-                throw new IOException("too many redirects!");
-            logger.debug("     REDIRECTED TO location=" + re.getNewLocation());
-            return _retrieveXML(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--, predicate);
+            underlying.checkClientTrusted(certs, authType);
+            clientTrusted = true;
+        } catch (Exception e) {
+            clientTrusted = false;
+            clientTrustedException = e;
         }
     }
+
+    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        try {
+            underlying.checkServerTrusted(certs, authType);
+            serverTrusted = true;
+        } catch (Exception e) {
+            serverTrusted = false;
+            serverTrustedException = e;
+        }
+    }
+
 }
