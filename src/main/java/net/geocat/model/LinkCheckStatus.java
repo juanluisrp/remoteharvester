@@ -35,6 +35,9 @@ package net.geocat.model;
 
 import net.geocat.database.linkchecker.entities.LinkCheckJobState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LinkCheckStatus {
 
     String processID;
@@ -43,11 +46,14 @@ public class LinkCheckStatus {
     DocumentTypeStatus serviceRecordStatus;
     DocumentTypeStatus datasetRecordStatus;
 
-
+    public List<String> errorMessage;
+    public List<List<String>> stackTraces;
 
     public LinkCheckStatus(String processID, LinkCheckJobState linkCheckJobState) {
         this.processID = processID;
         this.linkCheckJobState = linkCheckJobState.toString();
+        stackTraces = new ArrayList<>();
+        errorMessage = new ArrayList<>();
     }
 
 

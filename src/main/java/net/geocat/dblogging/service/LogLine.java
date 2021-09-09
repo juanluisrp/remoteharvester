@@ -41,4 +41,7 @@ public class LogLine {
     public String message;
     public boolean isException;
     public String threadName;
+
+    public String[] stackTraces;
+
 }

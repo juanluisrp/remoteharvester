@@ -34,11 +34,10 @@
 package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
+import net.geocat.database.linkchecker.entities.helper.LogbackLoggingEvent;
+import net.geocat.database.linkchecker.entities.helper.LogbackLoggingEventException;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
-import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
-import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
-import net.geocat.database.linkchecker.repos.LocalNotProcessedMetadataRecordRepo;
-import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.*;
 import net.geocat.model.DocumentTypeStatus;
 import net.geocat.model.LinkCheckStatus;
 import net.geocat.model.StatusType;
@@ -47,7 +46,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -65,6 +67,12 @@ public class GetStatusService {
     @Autowired
     LinkCheckJobRepo linkCheckJobRepo;
 
+    @Autowired
+    LogbackLoggingEventRepo logbackLoggingEventRepo;
+
+    @Autowired
+    LogbackLoggingEventExceptionRepo logbackLoggingEventExceptionRepo;
+
     public LinkCheckStatus getStatus(String processID) {
         LinkCheckJob job = linkCheckJobRepo.findById(processID).get();
 
@@ -72,7 +80,48 @@ public class GetStatusService {
         result.setServiceRecordStatus( computeServiceRecords(processID));
         result.setDatasetRecordStatus( computeDatasetRecords(processID));
 
+        setupErrorMessages(result);
         return result;
+    }
+
+    private void setupErrorMessages(LinkCheckStatus result) {
+        List<LogbackLoggingEvent> exceptionLogMessages = logbackLoggingEventRepo.findExceptions(result.getProcessID());
+
+        for(LogbackLoggingEvent exceptionLogMessage: exceptionLogMessages) {
+
+            List<LogbackLoggingEventException> exceptionlines = logbackLoggingEventExceptionRepo.findByEventIdOrderByI(exceptionLogMessage.eventId);
+            List<String> ex_messages = exceptionlines.stream()
+                    .filter(x -> x.getI() == 0)
+                    .sorted(Comparator.comparingInt(x -> x.getCausedByDepth()))
+                    .map(x -> x.getTraceLine())
+                    .collect(Collectors.toList());
+
+            result.errorMessage.add(
+                    String.join("\n  -> ", ex_messages)
+            );
+
+            Map<Short, List<LogbackLoggingEventException>> grouped = exceptionlines.stream()
+                    .collect(Collectors.groupingBy(LogbackLoggingEventException::getCausedByDepth));
+
+            List<Map.Entry<Short, List<LogbackLoggingEventException>>> exceptions = grouped.entrySet().stream()
+                    .sorted(Comparator.comparingInt(x -> x.getKey()))
+                    .collect(Collectors.toList());
+
+            List<String> single_stacktrace = exceptions.stream()
+                    .map(x -> makeString(x.getValue()))
+                    .collect(Collectors.toList());
+
+            result.stackTraces.add (single_stacktrace  );
+        }
+    }
+
+
+    public String makeString(List<LogbackLoggingEventException> items) {
+        List<String> strs = items.stream()
+                .sorted(Comparator.comparingInt(x->x.getI()))
+                .map(x->x.getTraceLine())
+                .collect(Collectors.toList());
+        return String.join("\n   ",strs);
     }
 
     public DocumentTypeStatus computeServiceRecords(String processID){

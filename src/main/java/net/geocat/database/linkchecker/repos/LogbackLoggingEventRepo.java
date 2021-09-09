@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.helper.LogbackLoggingEvent;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
@@ -44,4 +45,7 @@ import java.util.List;
 @Scope("prototype")
 public interface LogbackLoggingEventRepo extends CrudRepository<LogbackLoggingEvent, Long> {
     List<LogbackLoggingEvent> findByJmsCorrelationIdOrderByTimestmp(String jms_correlation_id);
+
+    @Query(value="select l from LogbackLoggingEvent l  where l.jmsCorrelationId= ?1 and (l.referenceFlag = 2 or l.referenceFlag =3) order by l.timestmp")
+    List<LogbackLoggingEvent> findExceptions(String jms_correlation_id);
 }
