@@ -19,7 +19,7 @@ import javax.persistence.*;
 @IdClass(LogbackLoggingEventExceptionCompositeKey.class)
 public class LogbackLoggingEventException {
 
-    @Column(columnDefinition = "bigint")
+    @Column(name = "event_id", columnDefinition = "bigint")
     @Id
     private long eventId;
 
@@ -27,8 +27,24 @@ public class LogbackLoggingEventException {
     @Id
     private short i;
 
-    @Column(columnDefinition = "varchar(254)")
+    @Column(name = "trace_line", columnDefinition = "varchar(254)")
     private String traceLine;
+
+    @Column(name = "caused_by_depth",columnDefinition = "smallint")
+    private short causedByDepth;
+
+
+
+    //----------------------
+
+
+    public short getCausedByDepth() {
+        return causedByDepth;
+    }
+
+    public void setCausedByDepth(short causedByDepth) {
+        this.causedByDepth = causedByDepth;
+    }
 
     public long getEventId() {
         return eventId;
