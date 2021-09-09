@@ -5,8 +5,11 @@ import com.geocat.ingester.model.IngesterConfig;
 import com.geocat.ingester.model.harvester.HarvestJob;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import com.geocat.ingester.service.CatalogueService;
+import com.geocat.ingester.service.IngesterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,8 +19,10 @@ import java.util.UUID;
 
 @Component
 @Scope("prototype")
-@Slf4j(topic = "com.geocat.ingester.events")
+//@Slf4j(topic = "com.geocat.ingester.events")
 public class IngestEventService {
+
+    Logger log = LoggerFactory.getLogger(IngestEventService.class);
 
     @Autowired
     private HarvestJobRepo harvestJobRepo;
@@ -54,6 +59,7 @@ public class IngestEventService {
         message.getHeaders().clear();
         String guid = createGUID();
         message.getHeaders().put("processID", guid);
+        message.getHeaders().put("JMSCorrelationID", guid);
         ((IngesterConfig) message.getBody()).setProcessID(guid);
 
     }

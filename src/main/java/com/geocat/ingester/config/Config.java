@@ -1,9 +1,12 @@
 package com.geocat.ingester.config;
 
+import com.geocat.ingester.dblogging.MYUnitOfWorkFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.camel.CamelContext;
+import org.apache.camel.ExtendedCamelContext;
 import org.apache.camel.component.activemq.ActiveMQComponent;
+import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +20,8 @@ public class Config {
     @Value( "${activemq.url}" )
     String brokerUrl;
 
+    @Autowired
+    CamelContext camelContext;
 
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
@@ -30,7 +35,20 @@ public class Config {
         return factory;
     }
 
+    @Bean
+    public CamelContextConfiguration contextConfiguration() {
+        return new CamelContextConfiguration() {
+            @Override
+            public void beforeApplicationStart(CamelContext context) {
+                context.setUseMDCLogging(true);
+                context.adapt(ExtendedCamelContext.class).setUnitOfWorkFactory(new MYUnitOfWorkFactory());
+            }
 
+            @Override
+            public void afterApplicationStart(CamelContext camelContext) {
+            }
+        };
+    }
 
     @Bean
     public ActiveMQComponent activemq(ActiveMQConnectionFactory connectionFactory) {

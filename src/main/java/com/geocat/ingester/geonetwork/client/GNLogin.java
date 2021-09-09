@@ -1,6 +1,7 @@
 package com.geocat.ingester.geonetwork.client;
 
 import com.geocat.ingester.exception.GeoNetworkClientException;
+import com.geocat.ingester.service.IngesterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -25,7 +26,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Slf4j(topic = "com.geocat.ingester.geonetwork.client")
+//@Slf4j(topic = "com.geocat.ingester.geonetwork.client")
 public class GNLogin {
+    Logger log = LoggerFactory.getLogger(GNLogin.class);
+
     @Value("${geonetwork.baseUrl}")
     protected String baseUrl;
 
