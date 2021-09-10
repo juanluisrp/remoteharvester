@@ -14,7 +14,7 @@ public class EndpointStatus {
 
     public EndpointStatus(EndpointJob job, int numberOfRecordsReceived) {
         this.numberOfRecordsReceived = numberOfRecordsReceived;
-        this.expectedNumberOfRecords = job.getExpectedNumberOfRecords();
+        this.expectedNumberOfRecords = job.getExpectedNumberOfRecords() == null ? -1 : job.getExpectedNumberOfRecords();
         this.url = job.getUrl();
         this.urlGetRecords = job.getUrlGetRecords();
         this.state = job.getState().toString();
