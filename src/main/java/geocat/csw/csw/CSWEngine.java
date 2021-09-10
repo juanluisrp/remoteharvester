@@ -34,7 +34,7 @@ public class CSWEngine {
     public String GetCapabilities(String url) throws Exception {
         try {
             return GetCapabilitiesPOST(url);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return GetCapabilitiesGET(url);
         }
     }
