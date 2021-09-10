@@ -22,7 +22,7 @@ public class EventProcessor_ActualHarvestCompleted extends BaseEventProcessor<Ac
 
     @Override
     public EventProcessor_ActualHarvestCompleted externalProcessing() {
-        harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.RECORDS_RECEIVED);
+        harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.COMPLETE);
         return this;
     }
 
