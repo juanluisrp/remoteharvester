@@ -63,6 +63,7 @@ public class EventService {
 
     public HarvestRequestedEvent createHarvestRequestedEvent(HarvesterConfig harvesterConfig, String processID) {
         HarvestRequestedEvent result = new HarvestRequestedEvent();
+        result.setDoNotSort(harvesterConfig.getDoNotSort());
         result.setHarvestId(processID);
         result.setUrl(harvesterConfig.getUrl());
         result.setFilter(harvesterConfig.getFilter());

@@ -13,10 +13,18 @@ public class GetRecordsCommand extends Event {
     private boolean lastSet;
     private String workQueueName;
     private int totalRecordsInQuery;
+    private Boolean doNotSort;
 
     public GetRecordsCommand() {
     }
 
+    public Boolean getDoNotSort() {
+        return doNotSort;
+    }
+
+    public void setDoNotSort(Boolean doNotSort) {
+        this.doNotSort = doNotSort;
+    }
 
     public int getTotalRecordsInQuery() {
         return totalRecordsInQuery;

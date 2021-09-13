@@ -64,7 +64,7 @@ public class EventProcessor_GetRecordsCommand extends BaseEventProcessor<GetReco
     public EventProcessor_GetRecordsCommand externalProcessing() throws Exception {
 
         GetRecordsCommand e = getInitiatingEvent();
-        String xml = cswService.GetRecords(e.getGetRecordsURL(), e.getFilter(), e.getStartRecordNumber(), e.getEndRecordNumber());
+        String xml = cswService.GetRecords(e.getGetRecordsURL(), e.getFilter(), e.getStartRecordNumber(), e.getEndRecordNumber(), e.getDoNotSort());
         //logger.debug("starting to parse xml");
         Document xmlParsed = MetadataExploderService.parseXML(xml);
         //logger.debug("finish parse xml");

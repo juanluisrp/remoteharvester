@@ -39,11 +39,23 @@ public class HarvesterConfig {
     // See the ProblematicResultsConfiguration class for details
     private ProblematicResultsConfiguration problematicResultsConfiguration;
 
+
+    //if true then do NOT add the SORT BY to the individual getRecord requests
+    // if false (or null), then DO SORT/
+    public Boolean doNotSort;
+
+
     // if numberOfRecordsPerRequest is not specified, use this
     public static int DEFAULT_NRECORDS = 20;
 
 
+    public Boolean getDoNotSort() {
+        return doNotSort;
+    }
 
+    public void setDoNotSort(Boolean doNotSort) {
+        this.doNotSort = doNotSort;
+    }
 
     public String getGetRecordQueueHint() {
         return getRecordQueueHint;

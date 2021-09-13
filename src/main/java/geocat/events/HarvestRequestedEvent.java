@@ -11,10 +11,18 @@ public class HarvestRequestedEvent extends Event {
     String getRecordQueueHint;
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
+    private Boolean doNotSort;
 
     public HarvestRequestedEvent() {
     }
 
+    public Boolean getDoNotSort() {
+        return doNotSort;
+    }
+
+    public void setDoNotSort(Boolean doNotSort) {
+        this.doNotSort = doNotSort;
+    }
 
     public int getNumberRecordsPerRequest() {
         return numberRecordsPerRequest;

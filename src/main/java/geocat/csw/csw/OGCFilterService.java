@@ -61,7 +61,7 @@ public class OGCFilterService {
             "    <csw:Constraint  version=\"1.1.0\">\n" +
             "        PUT_FILTER_HERE\n" +
             "     </csw:Constraint>\n" +
-            ORDERBY +
+            "PUT_ORDERBY_HERE\n" +
             " </csw:Query>\n" +
             "</csw:GetRecords>\n";
 
@@ -75,7 +75,7 @@ public class OGCFilterService {
             "outputSchema=\"http://www.isotc211.org/2005/gmd\">\n" +
             "  <csw:Query typeNames=\"csw:Record\">\n" +
             "    <csw:ElementSetName>full</csw:ElementSetName> \n" +
-            ORDERBY +
+            "PUT_ORDERBY_HERE\n" +
             " </csw:Query>\n" +
             "</csw:GetRecords>\n";
 
@@ -124,18 +124,22 @@ public class OGCFilterService {
         return GETDISCOVERY_XML.replace("PUT_FILTER_HERE", fullFilter);
     }
 
-    public String getRecordsXML(String filter, int startRecord, int endRecord) {
+    public String getRecordsXML(String filter, int startRecord, int endRecord, boolean doNotSort) {
         String xml;
         int nrecords = endRecord - startRecord + 1;
         if ((filter != null) && (!filter.isEmpty())) {
             xml = GETRECORDS_FILTER_XML.replace("PUT_FILTER_HERE", filter)
                     .replace("PUT_START_POSITION_HERE", Integer.toString(startRecord))
                     .replace("PUT_MAX_RECORDS_HERE", Integer.toString(nrecords));
+
         } else {
             xml = GETRECORDS_NO_FILTER_XML.replace("PUT_START_POSITION_HERE", Integer.toString(startRecord))
                     .replace("PUT_MAX_RECORDS_HERE", Integer.toString(nrecords));
         }
-
+        if (doNotSort)
+            xml = xml.replace("PUT_ORDERBY_HERE","");
+        else
+            xml = xml.replace("PUT_ORDERBY_HERE",ORDERBY);
         return xml;
     }
 

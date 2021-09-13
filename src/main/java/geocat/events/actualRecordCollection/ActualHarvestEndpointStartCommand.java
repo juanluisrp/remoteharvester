@@ -12,11 +12,19 @@ public class ActualHarvestEndpointStartCommand extends Event {
     private int expectedNumberOfRecords;
     private String recordQueueHint;
     private String actualGetRecordQueue;
+    private Boolean doNotSort;
 
 
     public ActualHarvestEndpointStartCommand() {
     }
 
+    public Boolean getDoNotSort() {
+        return doNotSort;
+    }
+
+    public void setDoNotSort(Boolean doNotSort) {
+        this.doNotSort = doNotSort;
+    }
 
     public long getEndPointId() {
         return endPointId;

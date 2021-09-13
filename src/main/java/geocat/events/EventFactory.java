@@ -21,6 +21,7 @@ public class EventFactory {
 
     public ActualHarvestEndpointStartCommand create_ActualHarvestEndpointStartCommand(EndpointJob job, HarvestJob harvestJob) throws Exception {
         ActualHarvestEndpointStartCommand result = new ActualHarvestEndpointStartCommand();
+        result.setDoNotSort(harvestJob.getDoNotSort());
         result.setFilter(harvestJob.getFilter());
         result.setHarvesterId(harvestJob.getJobId());
         result.setEndPointId(job.getEndpointJobId());
@@ -35,6 +36,7 @@ public class EventFactory {
     public GetRecordsCommand create_GetRecordsCommand(ActualHarvestEndpointStartCommand cmd, int startRecord, int endRecord, long recordSetId, boolean lastOne) {
         GetRecordsCommand result = new GetRecordsCommand();
 
+        result.setDoNotSort(cmd.getDoNotSort());
         result.setEndPointId(cmd.getEndPointId());
         result.setHarvesterId(cmd.getHarvesterId());
         result.setFilter(cmd.getFilter());

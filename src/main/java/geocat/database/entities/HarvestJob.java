@@ -35,6 +35,10 @@ public class HarvestJob {
     @Column(name = "problematic_results_configuration_json", columnDefinition = "text")
     private String problematicResultsConfigurationJSON;
 
+    @Column(name = "do_not_sort")
+    private Boolean doNotSort;
+
+
     @PrePersist
     private void onInsert() {
         this.createTimeUTC = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -44,6 +48,14 @@ public class HarvestJob {
     @PreUpdate
     private void onUpdate() {
         this.lastUpdateUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+    }
+
+    public Boolean getDoNotSort() {
+        return doNotSort;
+    }
+
+    public void setDoNotSort(Boolean doNotSort) {
+        this.doNotSort = doNotSort;
     }
 
     public ZonedDateTime getCreateTimeUTC() {

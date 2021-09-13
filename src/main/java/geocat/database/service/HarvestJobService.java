@@ -34,6 +34,7 @@ public class HarvestJobService {
             return harvestJobRepo.save(job.get());
         }
         HarvestJob newJob = new HarvestJob();
+        newJob.setDoNotSort(event.getDoNotSort());
         newJob.setJobId(event.getHarvestId());
         newJob.setFilter(event.getFilter());
         newJob.setLookForNestedDiscoveryService(event.isLookForNestedDiscoveryService());
