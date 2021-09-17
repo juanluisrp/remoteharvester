@@ -54,7 +54,9 @@ public class EventProcessor_OrchestratedHarvestRequestedEvent extends BaseEventP
             lock.lock();
             job = orchestratedHarvestService.createOrchestratedHarvestProcess(processID);
             HarvestStartResponse harvestStartResponse = harvesterService.startHarvest(getInitiatingEvent().getHarvesterConfig());
-            orchestratedHarvestProcessService.updateLinkCheckJobStateInDB(processID,OrchestratedHarvestProcessState.HAVESTING);
+            job.setHarvesterJobId(harvestStartResponse.getProcessID());
+            orchestratedHarvestProcessRepo.save(job);
+            job = orchestratedHarvestProcessService.updateLinkCheckJobStateInDB(processID,OrchestratedHarvestProcessState.HAVESTING);
         }
         finally {
             lock.unlock();

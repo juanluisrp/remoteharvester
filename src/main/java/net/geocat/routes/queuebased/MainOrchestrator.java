@@ -35,7 +35,8 @@ package net.geocat.routes.queuebased;
 
 
 import net.geocat.eventprocessor.MainLoopRouteCreator;
- import net.geocat.events.OrchestratedHarvestAbortEvent;
+import net.geocat.events.CheckProcessEvent;
+import net.geocat.events.OrchestratedHarvestAbortEvent;
 
 import net.geocat.events.OrchestratedHarvestRequestedEvent;
 import net.geocat.service.DatabaseUpdateService;
@@ -52,7 +53,7 @@ import java.util.Arrays;
 @Component
 public class MainOrchestrator extends SpringRouteBuilder {
 
-    public static String myJMSQueueName = "linkCheck.MainOrchestrator";
+    public static String myJMSQueueName = "Orchestrator.MainOrchestrator";
     @Autowired
     MainLoopRouteCreator mainLoopRouteCreator;
 
@@ -62,7 +63,7 @@ public class MainOrchestrator extends SpringRouteBuilder {
 
         mainLoopRouteCreator.createEventProcessingLoop(this,
                 "activemq:" + myJMSQueueName,
-                new Class[]{OrchestratedHarvestAbortEvent.class, OrchestratedHarvestRequestedEvent.class },
+                new Class[]{OrchestratedHarvestAbortEvent.class, OrchestratedHarvestRequestedEvent.class, CheckProcessEvent.class},
                 Arrays.asList(
 
                 ),

@@ -49,6 +49,10 @@ public class EventFactory {
     @Autowired
     OrchestratedHarvestProcessRepo orchestratedHarvestProcessRepo;
 
+    public CheckProcessEvent createCheckProcessEvent(String jobId) {
+        CheckProcessEvent result = new CheckProcessEvent(jobId);
+        return result;
+    }
 
     public OrchestratedHarvestAbortEvent createLinkCheckAbortEvent(String processID  ) throws Exception {
         Optional<OrchestratedHarvestProcess> job = orchestratedHarvestProcessRepo.findById(processID);

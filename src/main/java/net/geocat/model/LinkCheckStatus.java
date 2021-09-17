@@ -31,42 +31,58 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.camelsupport;
+package net.geocat.model;
 
 
+import java.util.ArrayList;
+import java.util.List;
 
-import net.geocat.database.orchestrator.entities.OrchestratedHarvestProcess;
-import net.geocat.database.orchestrator.entities.OrchestratedHarvestProcessState;
-import net.geocat.database.orchestrator.repos.OrchestratedHarvestProcessRepo;
-import org.apache.camel.Exchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+public class LinkCheckStatus {
 
-import java.util.Optional;
+    String processID;
+    String linkCheckJobState;
 
-@Component
-@Scope("prototype")
-public class StopProcessingMessageService {
+    DocumentTypeStatus serviceRecordStatus;
+    DocumentTypeStatus datasetRecordStatus;
 
-    Logger logger = LoggerFactory.getLogger(StopProcessingMessageService.class);
+    public List<String> errorMessage;
+    public List<List<String>> stackTraces;
+
+    public LinkCheckStatus() {
+        errorMessage = new ArrayList<>();
+        stackTraces = new ArrayList<>();
+    }
 
 
-    @Autowired
-    OrchestratedHarvestProcessRepo orchestratedHarvestProcessRepo;
+    public String getProcessID() {
+        return processID;
+    }
 
-    public void checkIfShouldBeProcessed(Exchange exchange) {
-        String processId = (String) exchange.getMessage().getHeader("processID");
-        if ( (processId == null) || (processId.isEmpty()) )
-            return; // this is a ping (with no id)
-        Optional<OrchestratedHarvestProcess> job = orchestratedHarvestProcessRepo.findById(processId);
-        if (!job.isPresent())
-            return; // likely first message - cannot see in DB yet
-        if ((job.get().getState() == OrchestratedHarvestProcessState.ERROR) || (job.get().getState() == OrchestratedHarvestProcessState.USERABORT)) {
-            logger.debug("processID=" + job.get().getJobId() + " is in state " + job.get().getState().toString() + ", no processing for this message");
-            exchange.setRouteStop(true);
-        }
+    public void setProcessID(String processID) {
+        this.processID = processID;
+    }
+
+    public String getLinkCheckJobState() {
+        return linkCheckJobState;
+    }
+
+    public void setLinkCheckJobState(String linkCheckJobState) {
+        this.linkCheckJobState = linkCheckJobState;
+    }
+
+    public DocumentTypeStatus getServiceRecordStatus() {
+        return serviceRecordStatus;
+    }
+
+    public void setServiceRecordStatus(DocumentTypeStatus serviceRecordStatus) {
+        this.serviceRecordStatus = serviceRecordStatus;
+    }
+
+    public DocumentTypeStatus getDatasetRecordStatus() {
+        return datasetRecordStatus;
+    }
+
+    public void setDatasetRecordStatus(DocumentTypeStatus datasetRecordStatus) {
+        this.datasetRecordStatus = datasetRecordStatus;
     }
 }

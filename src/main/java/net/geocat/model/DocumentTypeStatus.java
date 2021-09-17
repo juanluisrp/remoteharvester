@@ -31,42 +31,42 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.camelsupport;
+package net.geocat.model;
 
+import java.util.ArrayList;
+import java.util.List;
 
+public class DocumentTypeStatus {
+    String documentType;
+    Long nTotalDocuments;
 
-import net.geocat.database.orchestrator.entities.OrchestratedHarvestProcess;
-import net.geocat.database.orchestrator.entities.OrchestratedHarvestProcessState;
-import net.geocat.database.orchestrator.repos.OrchestratedHarvestProcessRepo;
-import org.apache.camel.Exchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+    List<StatusType> statusTypes;
 
-import java.util.Optional;
+    public DocumentTypeStatus( ) {
+        statusTypes = new ArrayList<>();
+    }
 
-@Component
-@Scope("prototype")
-public class StopProcessingMessageService {
+    public String getDocumentType() {
+        return documentType;
+    }
 
-    Logger logger = LoggerFactory.getLogger(StopProcessingMessageService.class);
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
+    public Long getnTotalDocuments() {
+        return nTotalDocuments;
+    }
 
-    @Autowired
-    OrchestratedHarvestProcessRepo orchestratedHarvestProcessRepo;
+    public void setnTotalDocuments(Long nTotalDocuments) {
+        this.nTotalDocuments = nTotalDocuments;
+    }
 
-    public void checkIfShouldBeProcessed(Exchange exchange) {
-        String processId = (String) exchange.getMessage().getHeader("processID");
-        if ( (processId == null) || (processId.isEmpty()) )
-            return; // this is a ping (with no id)
-        Optional<OrchestratedHarvestProcess> job = orchestratedHarvestProcessRepo.findById(processId);
-        if (!job.isPresent())
-            return; // likely first message - cannot see in DB yet
-        if ((job.get().getState() == OrchestratedHarvestProcessState.ERROR) || (job.get().getState() == OrchestratedHarvestProcessState.USERABORT)) {
-            logger.debug("processID=" + job.get().getJobId() + " is in state " + job.get().getState().toString() + ", no processing for this message");
-            exchange.setRouteStop(true);
-        }
+    public List<StatusType> getStatusTypes() {
+        return statusTypes;
+    }
+
+    public void setStatusTypes(List<StatusType> statusTypes) {
+        this.statusTypes = statusTypes;
     }
 }
