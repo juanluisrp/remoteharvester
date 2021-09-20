@@ -34,6 +34,7 @@
 package net.geocat.model;
 
 import net.geocat.database.harvester.entities.HarvestJob;
+import net.geocat.database.harvester.entities.HarvestJobState;
 import net.geocat.database.harvester.repos.HarvestJobRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import org.springframework.util.StringUtils;
@@ -64,6 +65,10 @@ public class LinkCheckRunConfig {
             Optional<HarvestJob> harvestJob = harvestJobRepo.findById(harvestJobId);
             if (!harvestJob.isPresent()) {
                 throw new Exception("LinkCheckRunConfig - cannot find previous harvest run harvestJobId: " + harvestJobId);
+            }
+
+            if (harvestJob.get().getState() != HarvestJobState.RECORDS_RECEIVED) {
+                throw new Exception("Harvest run harvestJobId: " + harvestJobId + ", state '" + harvestJob.get().getState() + "' is not valid.");
             }
         }
 
