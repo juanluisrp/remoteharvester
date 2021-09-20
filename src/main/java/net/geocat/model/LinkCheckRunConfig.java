@@ -55,12 +55,12 @@ public class LinkCheckRunConfig {
         }
 
         // Filter most recent
-        if (StringUtils.isEmpty(longTermTag)) {
+        if (!StringUtils.isEmpty(longTermTag)) {
             Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(longTermTag);
             if (!harvestJob.isPresent()) {
                 throw new Exception(String.format("LinkCheckRunConfig - No harvester job related found for the harvester with name/uuid %s." , longTermTag));
             }
-        } else if (StringUtils.isEmpty(harvestJobId)) {
+        } else {
             Optional<HarvestJob> harvestJob = harvestJobRepo.findById(harvestJobId);
             if (!harvestJob.isPresent()) {
                 throw new Exception("LinkCheckRunConfig - cannot find previous harvest run harvestJobId: " + harvestJobId);
