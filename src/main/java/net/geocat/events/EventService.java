@@ -41,6 +41,7 @@ import org.apache.camel.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -90,9 +91,15 @@ public class EventService {
 
 
     public LinkCheckRequestedEvent createHarvestRequestedEvent(LinkCheckRunConfig linkCheckRunConfig, String processID) {
-        Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(linkCheckRunConfig.getLongTermTag());
+        LinkCheckRequestedEvent result;
 
-        LinkCheckRequestedEvent result = new LinkCheckRequestedEvent(processID, harvestJob.get().getJobId());
+        if (!StringUtils.isEmpty(linkCheckRunConfig.getLongTermTag())) {
+            Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(linkCheckRunConfig.getLongTermTag());
+            result = new LinkCheckRequestedEvent(processID, harvestJob.get().getJobId());
+        } else {
+            result = new LinkCheckRequestedEvent(processID, linkCheckRunConfig.getHarvestJobId());
+        }
+
         return result;
     }
 

@@ -44,20 +44,27 @@ public class LinkCheckRunConfig {
 
     String longTermTag;
 
+    String harvestJobId;
+
     // GUID for the harvest (used as JMS Correlation ID).  Provided by server (do not specify)
     private String processID;
 
     public void validate(LinkCheckJobRepo linkCheckJobRepo, HarvestJobRepo harvestJobRepo) throws Exception {
-        if (StringUtils.isEmpty(longTermTag)) {
-            throw new Exception("LinkCheckRunConfig - harvester with name/uuid (longTermTag) is empty!");
+        if (StringUtils.isEmpty(longTermTag) && StringUtils.isEmpty(harvestJobId)) {
+            throw new Exception("LinkCheckRunConfig - harvester with name/uuid (longTermTag) or harvestJobId should be provided!");
         }
 
-        Optional<HarvestJob> harvestJob;
-
         // Filter most recent
-        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(longTermTag);
-        if (!harvestJob.isPresent()) {
-            throw new Exception(String.format("LinkCheckRunConfig - No harvester job related found for the harvester with name/uuid %s." , longTermTag));
+        if (StringUtils.isEmpty(longTermTag)) {
+            Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(longTermTag);
+            if (!harvestJob.isPresent()) {
+                throw new Exception(String.format("LinkCheckRunConfig - No harvester job related found for the harvester with name/uuid %s." , longTermTag));
+            }
+        } else if (StringUtils.isEmpty(harvestJobId)) {
+            Optional<HarvestJob> harvestJob = harvestJobRepo.findById(harvestJobId);
+            if (!harvestJob.isPresent()) {
+                throw new Exception("LinkCheckRunConfig - cannot find previous harvest run harvestJobId: " + harvestJobId);
+            }
         }
 
     }
@@ -68,6 +75,14 @@ public class LinkCheckRunConfig {
 
     public void setLongTermTag(String longTermTag) {
         this.longTermTag = longTermTag;
+    }
+
+    public String getHarvestJobId() {
+        return harvestJobId;
+    }
+
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     public String getProcessID() {
