@@ -9,11 +9,13 @@ import net.geocat.events.Event;
 import net.geocat.events.OrchestratedHarvestAbortEvent;
 import net.geocat.model.HarvestStartResponse;
 import net.geocat.model.HarvestStatus;
+import net.geocat.model.IngestStatus;
 import net.geocat.model.LinkCheckStatus;
 import net.geocat.service.OrchestratedHarvestProcessService;
 import net.geocat.service.OrchestratedHarvestService;
 import net.geocat.service.ProcessLockingService;
 import net.geocat.service.exernalservices.HarvesterService;
+import net.geocat.service.exernalservices.IngesterService;
 import net.geocat.service.exernalservices.LinkCheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,9 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
 
     @Autowired
     LinkCheckService linkCheckService;
+
+    @Autowired
+    IngesterService ingesterService;
 
     @Override
     public EventProcessor_CheckProcessEvent externalProcessing() {
@@ -85,15 +90,31 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
         return this;
     }
 
-    private void handle_INGESTING(OrchestratedHarvestProcess process) {
+    private void handle_INGESTING(OrchestratedHarvestProcess process) throws Exception {
+        IngestStatus ingestState = ingesterService.getIngestState(process.getLinkCheckJobId());
+        String ingester_state = ingestState.getState();
+
+        if (ingester_state.equals("RECORDS_PROCESSED")) {
+            //transition to end of orchestrator
+            //throw new Exception("dont know how to run injester");
+        }
+        else {
+            // nothing to do right now (wait longer)
+            // TODO: reporting
+        }
+        //handle ERROR, USERABORT
     }
+
     private void handle_LINKCHECKING(OrchestratedHarvestProcess process) throws Exception {
         LinkCheckStatus linkCheckState = linkCheckService.getLinkCheckState(process.getLinkCheckJobId());
         String linkcheck_state = linkCheckState.getLinkCheckJobState();
 
         if (linkcheck_state.equals("COMPLETE")) {
             //transition to ingest
-            throw new Exception("dont know how to run injester");
+            HarvestStartResponse response = ingesterService.startIngest(process.getHarvesterJobId());
+            process.setLinkCheckJobId(response.getProcessID());
+            process.setState(OrchestratedHarvestProcessState.INGESTING);
+            orchestratedHarvestProcessRepo.save(process);
         }
         else {
             // nothing to do right now (wait longer)
