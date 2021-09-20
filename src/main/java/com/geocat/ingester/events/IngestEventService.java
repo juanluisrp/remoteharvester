@@ -3,6 +3,7 @@ package com.geocat.ingester.events;
 import com.geocat.ingester.dao.harvester.HarvestJobRepo;
 import com.geocat.ingester.model.IngesterConfig;
 import com.geocat.ingester.model.harvester.HarvestJob;
+import com.geocat.ingester.model.harvester.HarvestJobState;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import com.geocat.ingester.service.CatalogueService;
 import com.geocat.ingester.service.IngesterService;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -33,21 +35,37 @@ public class IngestEventService {
     //calls validate on the (parsed) input message
     public void validateIngesterConfig(Message message) throws Exception {
         String harvesterUuidOrName = ((IngesterConfig) message.getBody()).getLongTermTag();
+        String harvestJobId = ((IngesterConfig) message.getBody()).getHarvestJobId();
+
+        if (StringUtils.isEmpty(harvesterUuidOrName) && StringUtils.isEmpty(harvestJobId)) {
+            throw new Exception("Harvester with name/uuid (longTermTag) or harvestJobId should be provided!");
+        }
 
         Optional<HarvestJob> harvestJob;
 
-        Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuidOrName);
+        if (!StringUtils.isEmpty(harvesterUuidOrName)) {
+            Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuidOrName);
 
-        if (!harvesterConfigurationOptional.isPresent()) {
-            log.info("Harvester with name/uuid " +  harvesterUuidOrName + " not found.");
-            throw new Exception(String.format("Harvester with name/uuid %s not found." , harvesterUuidOrName));
-        }
+            if (!harvesterConfigurationOptional.isPresent()) {
+                log.info("Harvester with name/uuid " +  harvesterUuidOrName + " not found.");
+                throw new Exception(String.format("Harvester with name/uuid %s not found." , harvesterUuidOrName));
+            }
 
-        // Filter most recent
-        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(harvesterUuidOrName);
-        if (!harvestJob.isPresent()) {
-            log.info("No harvester job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
-            throw new Exception(String.format("No harvester job related found for the harvester with name/uuid %s." , harvesterUuidOrName));
+            // Filter most recent
+            harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(harvesterUuidOrName);
+            if (!harvestJob.isPresent()) {
+                log.info("No harvester job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
+                throw new Exception(String.format("No harvester job related found for the harvester with name/uuid %s." , harvesterUuidOrName));
+            }
+        } else {
+           harvestJob = harvestJobRepo.findById(harvestJobId);
+            if (!harvestJob.isPresent()) {
+                throw new Exception("Cannot find previous harvest run harvestJobId: " + harvestJobId);
+            }
+
+            if (harvestJob.get().getState() != HarvestJobState.RECORDS_RECEIVED) {
+                throw new Exception("Harvest run harvestJobId: " + harvestJobId + ", state '" + harvestJob.get().getState() + "' is not valid.");
+            }
         }
     }
 
@@ -83,7 +101,14 @@ public class IngestEventService {
     public IngestRequestedEvent createIngestRequestedEvent(IngesterConfig ingesterConfig, String processID) {
         IngestRequestedEvent result = new IngestRequestedEvent();
         result.setJobId(processID);
-        result.setLongTermTag(ingesterConfig.getLongTermTag());
+
+        if (!StringUtils.isEmpty(ingesterConfig.getLongTermTag())) {
+            Optional<HarvestJob> harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(ingesterConfig.getLongTermTag());
+            result.setHarvestJobId(harvestJob.get().getJobId());
+        } else {
+            result.setHarvestJobId(ingesterConfig.getHarvestJobId());
+        }
+
         return result;
     }
 }

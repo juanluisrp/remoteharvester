@@ -4,15 +4,15 @@ import com.geocat.ingester.events.Event;
 
 public class ActualIngestStartCommand extends Event {
 
-    private String harvesterId;
+    private String harvesterJobId;
     private String jobId;
 
     public ActualIngestStartCommand() {
     }
 
-    public ActualIngestStartCommand(String jobId, String harvesterId) {
+    public ActualIngestStartCommand(String jobId, String harvesterJobId) {
         this.jobId = jobId;
-        this.harvesterId = harvesterId;
+        this.harvesterJobId = harvesterJobId;
     }
 
     public String getJobId() {
@@ -23,12 +23,12 @@ public class ActualIngestStartCommand extends Event {
         this.jobId = jobId;
     }
 
-    public String getHarvesterId() {
-        return harvesterId;
+    public String getHarvesterJobId() {
+        return harvesterJobId;
     }
 
-    public void setHarvesterId(String harvesterId) {
-        this.harvesterId = harvesterId;
+    public void setHarvesterJobId(String harvesterJobId) {
+        this.harvesterJobId = harvesterJobId;
     }
 
 }

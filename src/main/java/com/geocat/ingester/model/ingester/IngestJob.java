@@ -18,7 +18,9 @@ public class IngestJob {
     private String jobId;
     @Column(columnDefinition = "text")
     private String messages;
-    private String longTermTag;
+    //GUID of the havest job this is processing
+    @Column(columnDefinition = "varchar(40)")
+    private String harvestJobId;
     @Enumerated(EnumType.STRING)
     private IngestJobState state;
     private Long totalRecords;
@@ -57,12 +59,12 @@ public class IngestJob {
         this.messages = messages;
     }
 
-    public String getLongTermTag() {
-        return longTermTag;
+    public String getHarvestJobId() {
+        return harvestJobId;
     }
 
-    public void setLongTermTag(String longTermTag) {
-        this.longTermTag = longTermTag;
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     public String getJobId() {

@@ -2,17 +2,17 @@ package com.geocat.ingester.events;
 
 public class IngestRequestedEvent extends Event {
     String jobId;
-    private String longTermTag;
+    private String harvestJobId;
 
     public IngestRequestedEvent() {
     }
 
-    public String getLongTermTag() {
-        return longTermTag;
+    public String getHarvestJobId() {
+        return harvestJobId;
     }
 
-    public void setLongTermTag(String longTermTag) {
-        this.longTermTag = longTermTag;
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     public String getJobId() {

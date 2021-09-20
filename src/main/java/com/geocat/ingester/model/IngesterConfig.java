@@ -2,6 +2,8 @@ package com.geocat.ingester.model;
 
 public class IngesterConfig {
     private String longTermTag;
+    private String harvestJobId;
+
     private String processID;
 
     public String getProcessID() {
@@ -18,6 +20,14 @@ public class IngesterConfig {
 
     public void setLongTermTag(String longTermTag) {
         this.longTermTag = longTermTag;
+    }
+
+    public String getHarvestJobId() {
+        return harvestJobId;
+    }
+
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     @Override

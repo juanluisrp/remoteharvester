@@ -24,7 +24,7 @@ public class EventProcessor_ActualIngestStartCommand extends BaseEventProcessor<
     public EventProcessor_ActualIngestStartCommand internalProcessing() throws Exception {
         ActualIngestStartCommand cmd = getInitiatingEvent();
 
-        ingesterService.run(cmd.getJobId(), cmd.getHarvesterId());
+        ingesterService.run(cmd.getJobId(), cmd.getHarvesterJobId());
 
         return this;
     }

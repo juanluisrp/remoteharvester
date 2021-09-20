@@ -28,7 +28,7 @@ public class IngestJobService {
         }
         IngestJob newJob = new IngestJob();
         newJob.setJobId(event.getJobId());
-        newJob.setLongTermTag(event.getLongTermTag());
+        newJob.setHarvestJobId(event.getHarvestJobId());
         newJob.setState(IngestJobState.CREATING);
 
         return ingestJobRepo.save(newJob);

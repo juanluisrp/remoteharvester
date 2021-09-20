@@ -71,11 +71,18 @@ public class IngesterService {
     /**
      * Executes the ingester process.
      *
-     * @param harvesterUuidOrName
+     * @param harvestJobId
      * @throws Exception
      */
-    public void run(String processId, String harvesterUuidOrName) throws Exception {
-        Optional<HarvestJob> harvestJob;
+    public void run(String processId, String harvestJobId) throws Exception {
+        Optional<HarvestJob> harvestJob = harvestJobRepo.findById(harvestJobId);
+        if (!harvestJob.isPresent()) {
+            log.info("No harvester job related found with harvest job id " +  harvestJobId + ".");
+            // TODO: throw Exception harvester job not found
+            return;
+        }
+
+        String harvesterUuidOrName = harvestJob.get().getLongTermTag();
 
         Optional<HarvesterConfiguration> harvesterConfigurationOptional = catalogueService.retrieveHarvesterConfiguration(harvesterUuidOrName);
 
@@ -85,18 +92,7 @@ public class IngesterService {
             return;
         }
 
-        // Filter most recent
-        harvestJob = harvestJobRepo.findMostRecentHarvestJobByLongTermTag(harvesterUuidOrName);
-        if (!harvestJob.isPresent()) {
-            log.info("No harvester job related found for the harvester with name/uuid " +  harvesterUuidOrName + ".");
-            // TODO: throw Exception harvester job not found
-            return;
-        }
-
-
-        log.info("Start ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
-
-        String harvestJobId = harvestJob.get().getJobId();
+        log.info("Start ingestion process for harvester with name/uuid " + harvestJob.get().getLongTermTag() + ".");
 
         Optional<LinkCheckJob> linkCheckJob = linkCheckJobRepo.findByHarvestJobId(harvestJobId);
         String linkCheckJobId = null;
@@ -105,7 +101,6 @@ public class IngesterService {
         } else {
             linkCheckJobId = linkCheckJob.get().getJobId();
         }
-
 
         List<EndpointJob> endpointJobList = endpointJobRepo.findByHarvestJobId(harvestJobId);
 
