@@ -112,7 +112,7 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
         if (linkcheck_state.equals("COMPLETE")) {
             //transition to ingest
             HarvestStartResponse response = ingesterService.startIngest(process.getHarvesterJobId());
-            process.setLinkCheckJobId(response.getProcessID());
+            process.setInjectJobId(response.getProcessID());
             process.setState(OrchestratedHarvestProcessState.INGESTING);
             orchestratedHarvestProcessRepo.save(process);
         }
