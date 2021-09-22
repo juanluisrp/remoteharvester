@@ -9,6 +9,10 @@ public class OrchestratedHarvestProcessStatus {
     String processID;
     OrchestratedHarvestProcessState orchestratedHarvestProcessState;
 
+    HarvestStatus harvestStatus;
+    LinkCheckStatus linkCheckStatus;
+    IngestStatus ingestStatus;
+
     public List<String> errorMessage;
     public List<List<String>> stackTraces;
 
@@ -34,5 +38,29 @@ public class OrchestratedHarvestProcessStatus {
 
     public void setOrchestratedHarvestProcessState(OrchestratedHarvestProcessState orchestratedHarvestProcessState) {
         this.orchestratedHarvestProcessState = orchestratedHarvestProcessState;
+    }
+
+    public HarvestStatus getHarvestStatus() {
+        return harvestStatus;
+    }
+
+    public void setHarvestStatus(HarvestStatus harvestStatus) {
+        this.harvestStatus = harvestStatus;
+    }
+
+    public LinkCheckStatus getLinkCheckStatus() {
+        return linkCheckStatus;
+    }
+
+    public void setLinkCheckStatus(LinkCheckStatus linkCheckStatus) {
+        this.linkCheckStatus = linkCheckStatus;
+    }
+
+    public IngestStatus getIngestStatus() {
+        return ingestStatus;
+    }
+
+    public void setIngestStatus(IngestStatus ingestStatus) {
+        this.ingestStatus = ingestStatus;
     }
 }

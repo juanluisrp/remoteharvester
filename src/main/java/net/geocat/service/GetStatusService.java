@@ -39,10 +39,17 @@ import net.geocat.database.orchestrator.entities.OrchestratedHarvestProcess;
 import net.geocat.database.orchestrator.repos.LogbackLoggingEventExceptionRepo;
 import net.geocat.database.orchestrator.repos.LogbackLoggingEventRepo;
 import net.geocat.database.orchestrator.repos.OrchestratedHarvestProcessRepo;
+import net.geocat.model.HarvestStatus;
+import net.geocat.model.IngestStatus;
+import net.geocat.model.LinkCheckStatus;
 import net.geocat.model.OrchestratedHarvestProcessStatus;
+import net.geocat.service.exernalservices.HarvesterService;
+import net.geocat.service.exernalservices.IngesterService;
+import net.geocat.service.exernalservices.LinkCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -62,10 +69,35 @@ public class GetStatusService {
     @Autowired
     OrchestratedHarvestProcessRepo orchestratedHarvestProcessRepo;
 
-    public OrchestratedHarvestProcessStatus getStatus(String processID) {
+    @Autowired
+    HarvesterService harvesterService;
+
+    @Autowired
+    LinkCheckService linkCheckService;
+
+    @Autowired
+    IngesterService ingesterService;
+
+    public OrchestratedHarvestProcessStatus getStatus(String processID)  throws Exception {
         OrchestratedHarvestProcess job = orchestratedHarvestProcessRepo.findById(processID).get();
 
         OrchestratedHarvestProcessStatus result = new OrchestratedHarvestProcessStatus(processID, job.getState());
+
+        if (!StringUtils.isEmpty(job.getHarvesterJobId())) {
+            HarvestStatus harvestState = harvesterService.getHarvestState(job.getHarvesterJobId());
+            result.setHarvestStatus(harvestState);
+        }
+
+        if (!StringUtils.isEmpty(job.getLinkCheckJobId())) {
+            LinkCheckStatus linkCheckState = linkCheckService.getLinkCheckState(job.getLinkCheckJobId());
+            result.setLinkCheckStatus(linkCheckState);
+        }
+
+        if (!StringUtils.isEmpty(job.getInjectJobId())) {
+            IngestStatus ingestState = ingesterService.getIngestState(job.getInjectJobId());
+            result.setIngestStatus(ingestState);
+
+        }
 
         setupErrorMessages(result);
         return result;

@@ -1,11 +1,13 @@
 package net.geocat.model;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import net.geocat.xml.XMLTools;
 import org.w3c.dom.Document;
 
 import java.net.URL;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HarvesterConfig {
 
     // tag so you can refer to "previous run results"
