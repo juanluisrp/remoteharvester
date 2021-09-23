@@ -31,6 +31,7 @@ services:
     ports:
       - "5432:5432"
   geonetwork:
+    platform: linux/x86_64
     image: geonetwork:4
     environment:
       DATA_DIR: /catalogue-data
