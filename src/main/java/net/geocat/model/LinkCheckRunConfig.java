@@ -33,22 +33,24 @@
 
 package net.geocat.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LinkCheckRunConfig {
 
     String longTermTag;
 
-    String harvestProcessID;
+    String harvestJobId;
 
     // GUID for the harvest (used as JMS Correlation ID).  Provided by server (do not specify)
     private String processID;
 
-    public String getHarvestProcessID() {
-        return harvestProcessID;
+    public String getHarvestJobId() {
+        return harvestJobId;
     }
 
-    public void setHarvestProcessID(String harvestProcessID) {
-        this.harvestProcessID = harvestProcessID;
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     public String getLongTermTag() {

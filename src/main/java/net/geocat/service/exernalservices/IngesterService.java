@@ -28,7 +28,7 @@ public class IngesterService {
 
         String url = ingesterAPIURL+"/startIngest";
         LinkCheckRunConfig linkCheckRunConfig = new LinkCheckRunConfig();
-        linkCheckRunConfig.setHarvestProcessID(harvesterId);
+        linkCheckRunConfig.setHarvestJobId(harvesterId);
         String requestJSON = objectMapper.writeValueAsString(linkCheckRunConfig);
 
         HttpResult httpResponse = sendJSON("POST",url, requestJSON);

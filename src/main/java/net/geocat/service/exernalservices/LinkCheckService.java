@@ -27,7 +27,7 @@ public class LinkCheckService {
 
         String url = linkcheckerAPIURL+"/startLinkCheck";
         LinkCheckRunConfig linkCheckRunConfig = new LinkCheckRunConfig();
-        linkCheckRunConfig.setHarvestProcessID(harvesterId);
+        linkCheckRunConfig.setHarvestJobId(harvesterId);
         String requestJSON = objectMapper.writeValueAsString(linkCheckRunConfig);
 
         HttpResult httpResponse = sendJSON("POST",url, requestJSON);
