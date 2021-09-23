@@ -91,7 +91,7 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
     }
 
     private void handle_INGESTING(OrchestratedHarvestProcess process) throws Exception {
-        IngestStatus ingestState = ingesterService.getIngestState(process.getLinkCheckJobId());
+        IngestStatus ingestState = ingesterService.getIngestState(process.getInjectJobId());
         String ingester_state = ingestState.getState();
 
         if (ingester_state.equals("RECORDS_PROCESSED")) {
