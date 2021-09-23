@@ -97,6 +97,8 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
         if (ingester_state.equals("RECORDS_PROCESSED")) {
             //transition to end of orchestrator
             //throw new Exception("dont know how to run injester");
+            process.setState(OrchestratedHarvestProcessState.COMPLETE);
+            orchestratedHarvestProcessRepo.save(process);
         }
         else {
             // nothing to do right now (wait longer)
@@ -106,6 +108,10 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
     }
 
     private void handle_LINKCHECKING(OrchestratedHarvestProcess process) throws Exception {
+        if (process.getLinkCheckJobId() == null) {
+            return;
+        }
+
         LinkCheckStatus linkCheckState = linkCheckService.getLinkCheckState(process.getLinkCheckJobId());
         String linkcheck_state = linkCheckState.getLinkCheckJobState();
 
@@ -127,6 +133,9 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
         HarvestStatus status = harvesterService.getHarvestState(process.getHarvesterJobId());
         String harvest_state = status.state;
         if (harvest_state.equals("COMPLETE")) {
+            //process.setState(OrchestratedHarvestProcessState.LINKCHECKING);
+            //orchestratedHarvestProcessRepo.save(process);
+
             //transition to linkchecker
             HarvestStartResponse response = linkCheckService.startLinkCheck(process.getHarvesterJobId());
             process.setLinkCheckJobId(response.getProcessID());
