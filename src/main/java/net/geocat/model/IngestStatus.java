@@ -6,7 +6,7 @@ package net.geocat.model;
  */
 public class IngestStatus {
     public String processID;
-    public String longTermTag;
+    public String harvesterJobId;
     public String state;
     public String createTimeUTC;
     public String lastUpdateUTC;
@@ -23,12 +23,12 @@ public class IngestStatus {
         this.processID = processID;
     }
 
-    public String getLongTermTag() {
-        return longTermTag;
+    public String getHarvesterJobId() {
+        return harvesterJobId;
     }
 
-    public void setLongTermTag(String longTermTag) {
-        this.longTermTag = longTermTag;
+    public void setHarvesterJobId(String harvesterJobId) {
+        this.harvesterJobId = harvesterJobId;
     }
 
     public String getState() {
