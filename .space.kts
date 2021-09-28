@@ -35,7 +35,6 @@ job("Build, test and install full-orchestrator artifacts") {
             // leave only the branch name without the 'refs/heads/' path
             content = """
                 export BRANCH=${'$'}(echo ${'$'}JB_SPACE_GIT_BRANCH | cut -d'/' -f 3)
-                docker pull geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/full-orchestrator:${'$'}BRANCH
             """
         }
         build {
