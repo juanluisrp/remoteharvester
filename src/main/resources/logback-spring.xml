@@ -3,10 +3,10 @@
 <!--     <property resource="application.properties" />-->
 <!--    <include resource="org/springframework/boot/logging/logback/base.xml"/>-->
 
-    <springProperty scope="context" name="spring.datasource.url" source="spring.datasource.url"/>
-    <springProperty scope="context" name="spring.datasource.username" source="spring.datasource.username"/>
-    <springProperty scope="context" name="spring.datasource.password" source="spring.datasource.password"/>
-    <springProperty scope="context" name="spring.datasource.driver-class-name" source="spring.datasource.driver-class-name"/>
+    <springProperty scope="context" name="spring.datasource.url" source="orchestrator.datasource.url"/>
+    <springProperty scope="context" name="spring.datasource.username" source="orchestrator.datasource.username"/>
+    <springProperty scope="context" name="spring.datasource.password" source="orchestrator.datasource.password"/>
+    <springProperty scope="context" name="spring.datasource.driver-class-name" source="jdbc.driverClassName"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
