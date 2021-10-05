@@ -39,6 +39,7 @@ public enum ServiceMetadataDocumentState {
     CREATED, // unprocessed
     LINKS_EXTRACTED,
     LINKS_PROCESSED,
+    LINKS_POSTPROCESSED,
 
     ERROR
 }
