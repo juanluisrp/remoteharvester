@@ -187,7 +187,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-            run_1(args);
+         run_2(args);
          //   run12(args);
         //    run11(args);
         }
@@ -197,8 +197,15 @@ public class MyCommandLineRunner implements CommandLineRunner {
         logger.debug("DONE!");
     }
 
+    public void run_2(String... args) throws Exception {
 
-    private  Node  findNode (Node n,String localName) {
+        LocalServiceMetadataRecord serviceRecord = localServiceMetadataRecordRepo.findById(298852L).get();
+        LocalServiceMetadataRecord serviceRecord2 = localServiceMetadataRecordRepo.fullId(298852L);
+        int t=0;
+    }
+
+
+        private  Node  findNode (Node n,String localName) {
 
         NodeList nl = n.getChildNodes();
         List<Node> result = new ArrayList<>();

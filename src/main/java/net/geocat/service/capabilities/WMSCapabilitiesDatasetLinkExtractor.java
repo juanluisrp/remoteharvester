@@ -117,9 +117,35 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         return null;
     }
 
+    protected Node findBestMetadataURL(Node layer) {
+        List<Node> metadataURLs = findAllNodes(layer, "MetadataURL");
+        if (metadataURLs.isEmpty())
+            return null;
+        if (metadataURLs.size() == 1) //only one, no need to choose
+            return metadataURLs.get(0);
+
+        Node good = null;
+
+        for (Node metadataURL: metadataURLs){
+            Node format = findNode(metadataURL,"Format");
+            if ( (format !=null) && (format.getTextContent() != null) ){
+                String mime = format.getTextContent().trim();
+                if (mime.toLowerCase().contains("/xml")) //  text/xml  application/xml
+                    return metadataURL;
+                if (mime.toLowerCase().contains("xml"))  // might catch something...
+                    good= metadataURL;
+            }
+        }
+        if (good !=null)
+            return good;
+        return metadataURLs.get(0);
+
+    }
+
     protected String findMetadataURL(Node layer) throws Exception {
       //  Node n = XmlDoc.xpath_node(layer, "wms:MetadataURL/wms:OnlineResource");
-        Node nn = findNode(layer, "MetadataURL");
+       // Node nn = findNode(layer, "MetadataURL");
+        Node nn =findBestMetadataURL(layer);
         if (nn == null)
             return null;
         Node n = findNode(nn, "OnlineResource");
@@ -153,6 +179,21 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         }
         return null;
     }
+
+
+    public static List<Node> findAllNodes(Node n, String localName) {
+        List<Node> result = new ArrayList<>();
+        NodeList nl = n.getChildNodes();
+        for (int idx=0; idx <nl.getLength();idx++) {
+            Node nn = nl.item(idx);
+            String name = nn.getLocalName() == null ? nn.getNodeName() : nn.getLocalName();
+            if (name.equals(localName)) {
+                result.add(nn);
+            }
+        }
+        return result;
+    }
+
 
     private String findIdentifier(Node layer) throws Exception {
 //        Node n = XmlDoc.xpath_node(layer, namespaceIdentifier+":Identifier");
