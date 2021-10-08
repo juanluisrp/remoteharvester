@@ -63,10 +63,12 @@ public class RetrieveCapabilitiesDatasetMetadataLink {
     LinkCheckBlobStorageService linkCheckBlobStorageService;
 
     public CapabilitiesDatasetMetadataLink process(CapabilitiesDatasetMetadataLink link,String jobid) throws Exception {
+
         if ( (link.getFixedURL() == null) || link.getFixedURL().isEmpty())
             link.setFixedURL(link.getRawURL());
 
         link.setFixedURL( canonicalize(link.getFixedURL()));
+
 
         link = (CapabilitiesDatasetMetadataLink) retrievableSimpleLinkDownloader.process(link);
 

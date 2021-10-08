@@ -69,6 +69,7 @@ public class RetrieveOperatesOnLink {
 
         link.setFixedURL( canonicalize(link.getFixedURL()));
 
+
         link = (OperatesOnLink) retrievableSimpleLinkDownloader.process(link);
 
         if (!link.getUrlFullyRead())

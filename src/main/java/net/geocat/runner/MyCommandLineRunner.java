@@ -36,6 +36,7 @@ package net.geocat.runner;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
+import net.geocat.database.linkchecker.entities.helper.PartialDownloadHint;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.StatusQueryItem;
 import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
@@ -45,10 +46,18 @@ import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
+
 import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
 import net.geocat.xml.*;
+
+import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
+import net.geocat.xml.XmlCapabilitiesDocument;
+import net.geocat.xml.XmlDoc;
+import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.XmlServiceRecordDoc;
+
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,8 +196,12 @@ public class MyCommandLineRunner implements CommandLineRunner {
         // run3(args);
       //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
         try {
-         run_2(args);
+
+        // run_2(args);
          //   run12(args);
+
+        //   run12(args);
+
         //    run11(args);
         }
         catch(Exception e){
