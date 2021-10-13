@@ -89,12 +89,12 @@ public class EventProcessor_StartLinkProcessingEvent extends BaseEventProcessor<
             Event e = eventFactory.createProcessServiceDocLinksEvent(id,linkCheckJobId);
             result.add(e);
         }
-
-        for(LocalDatasetMetadataRecord record : localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
-            long id = record.getDatasetMetadataDocumentId();
-            Event e = eventFactory.createProcessDatasetDocLinksEvent(id,linkCheckJobId);
-            result.add(e);
-        }
+//
+//        for(LocalDatasetMetadataRecord record : localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
+//            long id = record.getDatasetMetadataDocumentId();
+//            Event e = eventFactory.createProcessDatasetDocLinksEvent(id,linkCheckJobId);
+//            result.add(e);
+//        }
 
         return result;
     }

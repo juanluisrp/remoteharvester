@@ -84,9 +84,10 @@ public class CapabilitiesDocumentService {
         linkCheckBlobStorageService.ensureBlobExists(xmlStr, sha2); //write
 
         CapabilitiesDocument doc = new CapabilitiesDocument();
+        doc.setLinkCheckJobId(link.getLinkCheckJobId());
         doc.setSha2(sha2);
 
-        doc.setParent(link);
+
         doc.setCapabilitiesDocumentType(xml.getCapabilitiesType());
 
 

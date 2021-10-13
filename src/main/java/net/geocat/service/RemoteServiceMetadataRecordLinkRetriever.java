@@ -33,8 +33,7 @@
 
 package net.geocat.service;
 
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
+ import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
 import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDoc;
@@ -84,9 +83,7 @@ public class RemoteServiceMetadataRecordLinkRetriever {
 
         link.setSha2(sha2);
         linkCheckBlobStorageService.ensureBlobExists(xmlStr, sha2);
-
-        RemoteServiceMetadataRecord remoteServiceMetadataRecord =
-                metadataDocumentFactory.createRemoteServiceMetadataRecord(link, xmlServiceRecordDoc, sha2);
+        link.setFileIdentifier(xmlServiceRecordDoc.getFileIdentifier());
 
 
         return link;

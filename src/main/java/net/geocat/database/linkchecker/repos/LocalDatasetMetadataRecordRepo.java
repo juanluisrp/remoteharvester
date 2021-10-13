@@ -83,13 +83,16 @@ public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalData
     @Query(value="select m from LocalDatasetMetadataRecord m  where m.linkCheckJobId= ?1")
     List<LocalDatasetMetadataRecord> partialByLinkCheckJobId(String linkCheckJobId);
 
-    @Query(value="select a from LocalDatasetMetadataRecord a JOIN fetch a.documentLinks b JOIN FETCH  b.capabilitiesDocument where a.linkCheckJobId= ?1")
+    @Query(value="select a from LocalDatasetMetadataRecord a " +
+            "JOIN fetch a.documentLinks b " +
+       //     "JOIN FETCH  b.capabilitiesDocument " +
+            "where a.linkCheckJobId= ?1")
     List<LocalDatasetMetadataRecord> fullByLinkCheckJobId(String linkCheckJobId);
 
 
     @Query(value="select a from LocalDatasetMetadataRecord a " +
             "LEFT JOIN FETCH a.documentLinks b " +
-            "LEFT JOIN FETCH  b.capabilitiesDocument " +
+         //   "LEFT JOIN FETCH  b.capabilitiesDocument " +
             "where a.datasetMetadataDocumentId= ?1")
     LocalDatasetMetadataRecord  fullId(long id);
 }

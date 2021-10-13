@@ -34,12 +34,14 @@
 package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesRemoteDatasetMetadataDocument;
-import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
+ import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
+import net.geocat.service.capabilities.CapabilitiesDownloadingService;
 import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDatasetMetadataDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -49,6 +51,9 @@ import static net.geocat.service.capabilities.CapabilitiesLinkFixer.canonicalize
 @Component
 @Scope("prototype")
 public class RetrieveCapabilitiesDatasetMetadataLink {
+
+    Logger logger = LoggerFactory.getLogger(RetrieveCapabilitiesDatasetMetadataLink.class);
+
 
     @Autowired
     RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
@@ -75,6 +80,8 @@ public class RetrieveCapabilitiesDatasetMetadataLink {
         if (!link.getUrlFullyRead())
             return link;
 
+
+
         XmlDoc doc = xmlDocumentFactory.create(new String(link.getFullData()));
 
         if (doc !=null)
@@ -86,15 +93,17 @@ public class RetrieveCapabilitiesDatasetMetadataLink {
         XmlDatasetMetadataDocument xmlDatasetMetadataDocument = (XmlDatasetMetadataDocument) doc;
         String xmlStr = XmlDoc.writeXML(doc.getParsedXml());
         String sha2 = doc.computeSHA2(xmlStr);
+        link.setFileIdentifier(xmlDatasetMetadataDocument.getFileIdentifier());
+        link.setDatasetIdentifier(xmlDatasetMetadataDocument.getDatasetIdentifier());
 
 
         link.setSha2(sha2);
         linkCheckBlobStorageService.ensureBlobExists(xmlStr, sha2);
 
-        CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument = metadataDocumentFactory.createCapabilitiesRemoteDatasetMetadataDocument(link, xmlDatasetMetadataDocument,jobid);
-        capabilitiesRemoteDatasetMetadataDocument.setSha2(sha2);
+//        CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument = metadataDocumentFactory.createCapabilitiesRemoteDatasetMetadataDocument(link, xmlDatasetMetadataDocument,jobid);
+//        capabilitiesRemoteDatasetMetadataDocument.setSha2(sha2);
 
-        link.setCapabilitiesRemoteDatasetMetadataDocument(capabilitiesRemoteDatasetMetadataDocument);
+       // link.setCapabilitiesRemoteDatasetMetadataDocument(capabilitiesRemoteDatasetMetadataDocument);
 
         return link;
     }

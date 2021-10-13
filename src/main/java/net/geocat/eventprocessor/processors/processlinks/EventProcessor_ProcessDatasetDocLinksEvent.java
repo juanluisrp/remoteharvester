@@ -174,10 +174,10 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
             if (rsmrl != null) {
                 logger.debug("getting Capabilities Document's remote service metadata record...");
                 getRemoteServiceMetadataRecordLink(rsmrl);
-                if (rsmrl.getRemoteServiceMetadataRecord() !=null) {
-                    RemoteServiceMetadataRecord remoteServiceMetadataRecord=  rsmrl.getRemoteServiceMetadataRecord();
-
-                }
+//                if (rsmrl.getRemoteServiceMetadataRecord() !=null) {
+//                    RemoteServiceMetadataRecord remoteServiceMetadataRecord=  rsmrl.getRemoteServiceMetadataRecord();
+//
+//                }
             }
             int linkIdx = 0;
             logger.debug("processing "+nlinks+" dataset links from the capabilities document");
@@ -186,13 +186,13 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
                 logger.debug("processing link "+linkIdx+" of "+nlinks+" dataset links from the capabilities document");
                 linkIdx++;
                 handleLayerDatasetLink(capabilitiesDatasetMetadataLink);
-                if (capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument() !=null) {
-                    logger.debug("link produced a Dataset Metadata Document");
-                    CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument =capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument();
-                }
-                else {
-                    logger.debug("link DID NOT produce a Dataset Metadata Document");
-                }
+//                if (capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument() !=null) {
+//                    logger.debug("link produced a Dataset Metadata Document");
+//                    CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument =capabilitiesDatasetMetadataLink.getCapabilitiesRemoteDatasetMetadataDocument();
+//                }
+//                else {
+//                    logger.debug("link DID NOT produce a Dataset Metadata Document");
+//                }
             }
         }
         else {
@@ -273,12 +273,12 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
         //find objects and de-attach them
         for (DatasetDocumentLink link : localDatasetMetadataRecord.getDocumentLinks()) {
             CapabilitiesDocument capDoc = link.getCapabilitiesDocument();
-            if (capDoc != null) {
-                if (capDoc.getServiceDocumentLink() != null)
-                    capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
-                capDoc.setServiceDocumentLink(null);
-                capDocuments.add(capDoc); // to be deleted
-            }
+//            if (capDoc != null) {
+//                if (capDoc.getServiceDocumentLink() != null)
+//                    capDoc.getServiceDocumentLink().setCapabilitiesDocument(null);
+//                capDoc.setServiceDocumentLink(null);
+//                capDocuments.add(capDoc); // to be deleted
+//            }
         }
 
         if (capDocuments.isEmpty())

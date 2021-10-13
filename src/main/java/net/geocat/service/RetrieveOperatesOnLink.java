@@ -34,8 +34,7 @@
 package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.OperatesOnLink;
-import net.geocat.database.linkchecker.entities.OperatesOnRemoteDatasetMetadataRecord;
-import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
+ import net.geocat.database.linkchecker.service.MetadataDocumentFactory;
 import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDatasetMetadataDocument;
 import net.geocat.xml.XmlDoc;
@@ -87,13 +86,15 @@ public class RetrieveOperatesOnLink {
         String xmlStr = XmlDoc.writeXML(doc.getParsedXml());
         String sha2 = doc.computeSHA2(xmlStr);
 
+        link.setFileIdentifier(xmlDatasetMetadataDocument.getFileIdentifier());
+        link.setDatasetIdentifier(xmlDatasetMetadataDocument.getDatasetIdentifier());
 
         link.setSha2(sha2);
         linkCheckBlobStorageService.ensureBlobExists(xmlStr, sha2);
-        OperatesOnRemoteDatasetMetadataRecord operatesOnRemoteDatasetMetadataRecord = metadataDocumentFactory.createRemoteDatasetMetadataRecord(link, xmlDatasetMetadataDocument, jobid);
-        operatesOnRemoteDatasetMetadataRecord.setSha2(sha2);
+      //  OperatesOnRemoteDatasetMetadataRecord operatesOnRemoteDatasetMetadataRecord = metadataDocumentFactory.createRemoteDatasetMetadataRecord(link, xmlDatasetMetadataDocument, jobid);
+     //   operatesOnRemoteDatasetMetadataRecord.setSha2(sha2);
 
-        link.setDatasetMetadataRecord(operatesOnRemoteDatasetMetadataRecord);
+       // link.setDatasetMetadataRecord(operatesOnRemoteDatasetMetadataRecord);
 
         return link;
     }

@@ -38,8 +38,7 @@ import net.geocat.database.harvester.entities.BlobStorage;
 import net.geocat.database.harvester.repos.BlobStorageRepo;
 import net.geocat.database.linkchecker.entities.LinkCheckBlobStorage;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.DocumentLink;
+
 import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import org.slf4j.Logger;
@@ -69,63 +68,63 @@ public class CapabilitiesServiceLinkIndicators {
     BlobStorageRepo harvestBlogStorageRepo;
 
     public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record) {
-        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
-
-        //cap docs that have a real Service Metadata record resolved
-        List<RemoteServiceMetadataRecord> remoteServiceMetadataRecords =  links.stream()
-                    .map(x->x.getCapabilitiesDocument())
-                    .filter(x-> x != null)
-                    .map(x->x.getRemoteServiceMetadataRecordLink())
-                    .filter(x-> x != null)
-                    .map(x-> x.getRemoteServiceMetadataRecord())
-                    .filter(x-> x != null)
-                    .collect(Collectors.toList());
-
-        if (remoteServiceMetadataRecords.isEmpty()) {
-            record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.FAIL);
-            record.setINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES(IndicatorStatus.FAIL);
-            return record; //nothing to do
-        }
-
-        //at least one resolved
-        record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.PASS);
-
-        // do per-document comparision
-        for(RemoteServiceMetadataRecord remoteServiceMetadataRecord : remoteServiceMetadataRecords) {
-            try {
-             compare(record, remoteServiceMetadataRecord);
-            }
-            catch (Exception e){
-                logger.error("error while comparing two documents",e);
-                remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.FAIL);
-            }
-        }
+//        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
+//
+//        //cap docs that have a real Service Metadata record resolved
+//        List<RemoteServiceMetadataRecord> remoteServiceMetadataRecords =  links.stream()
+//                    .map(x->x.getCapabilitiesDocument())
+//                    .filter(x-> x != null)
+//                    .map(x->x.getRemoteServiceMetadataRecordLink())
+//                    .filter(x-> x != null)
+//                    .map(x-> x.getRemoteServiceMetadataRecord())
+//                    .filter(x-> x != null)
+//                    .collect(Collectors.toList());
+//
+//        if (remoteServiceMetadataRecords.isEmpty()) {
+//            record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.FAIL);
+//            record.setINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES(IndicatorStatus.FAIL);
+//            return record; //nothing to do
+//        }
+//
+//        //at least one resolved
+//        record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.PASS);
+//
+//        // do per-document comparision
+//        for(RemoteServiceMetadataRecord remoteServiceMetadataRecord : remoteServiceMetadataRecords) {
+//            try {
+//             compare(record, remoteServiceMetadataRecord);
+//            }
+//            catch (Exception e){
+//                logger.error("error while comparing two documents",e);
+//                remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.FAIL);
+//            }
+//        }
 
         return record;
     }
 
-    private void compare(LocalServiceMetadataRecord record, RemoteServiceMetadataRecord remoteServiceMetadataRecord) {
-         String localFileId = record.getFileIdentifier();
-         String remoteFileId = remoteServiceMetadataRecord.getFileIdentifier();
-         if (!compareFileIds(localFileId,remoteFileId)) {
-             remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.FAIL);
-             return; //no need to go further
-         }
-         remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.PASS);
-
-         String localXML = getXML(record);
-         String remoteXML = getXML(remoteServiceMetadataRecord);
-         List<Difference> diffs = areSame(localXML, remoteXML);
-
-         if (diffs.isEmpty()) {
-             remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus.PASS);
-             return;
-         }
-
-        remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus.FAIL);
-        String fullDiff = diffs.toString();
-        remoteServiceMetadataRecord.setMetadataRecordDifferences(fullDiff.substring(0, Math.min(2000, fullDiff.length())));
-    }
+//    private void compare(LocalServiceMetadataRecord record, RemoteServiceMetadataRecord remoteServiceMetadataRecord) {
+//         String localFileId = record.getFileIdentifier();
+//         String remoteFileId = remoteServiceMetadataRecord.getFileIdentifier();
+//         if (!compareFileIds(localFileId,remoteFileId)) {
+//             remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.FAIL);
+//             return; //no need to go further
+//         }
+//         remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_FileIdentifier(IndicatorStatus.PASS);
+//
+//         String localXML = getXML(record);
+//         String remoteXML = getXML(remoteServiceMetadataRecord);
+//         List<Difference> diffs = areSame(localXML, remoteXML);
+//
+//         if (diffs.isEmpty()) {
+//             remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus.PASS);
+//             return;
+//         }
+//
+//        remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus.FAIL);
+//        String fullDiff = diffs.toString();
+//        remoteServiceMetadataRecord.setMetadataRecordDifferences(fullDiff.substring(0, Math.min(2000, fullDiff.length())));
+//    }
 
     private List<Difference> areSame(String xml_original, String xml_remote) {
         Diff myDiff = DiffBuilder.compare(xml_original).withTest(xml_remote).ignoreComments().ignoreWhitespace().build();
@@ -136,13 +135,13 @@ public class CapabilitiesServiceLinkIndicators {
     }
 
 
-    private String getXML(RemoteServiceMetadataRecord record) {
-        if (record.actualXML != null)
-            return record.actualXML; //short cut
-        LinkCheckBlobStorage blob = linkCheckBlobStorageRepo.findById(record.getSha2()).get();
-        record.actualXML = blob.getTextValue();
-        return record.actualXML;
-    }
+//    private String getXML(RemoteServiceMetadataRecord record) {
+//        if (record.actualXML != null)
+//            return record.actualXML; //short cut
+//        LinkCheckBlobStorage blob = linkCheckBlobStorageRepo.findById(record.getSha2()).get();
+//        record.actualXML = blob.getTextValue();
+//        return record.actualXML;
+//    }
 
     public String getXML(LocalServiceMetadataRecord record) {
         if (record.actualXML != null)

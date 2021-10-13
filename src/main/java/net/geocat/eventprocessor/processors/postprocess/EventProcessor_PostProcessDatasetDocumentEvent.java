@@ -131,13 +131,13 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         //this can take some time...
         List<LocalServiceMetadataRecord> items_fully_loaded = items_partially_loaded.stream().map(x-> localServiceMetadataRecordRepo.fullId_operatesOn(x.getServiceMetadataDocumentId())).collect(Collectors.toList());
 
-        List<String> fileIds = items_fully_loaded.stream()
-                .map(x->new ArrayList<OperatesOnLink>(x.getOperatesOnLinks()))
-                .flatMap(List::stream)
-                .map(x->x.getDatasetMetadataRecord())
-                .filter(x-> x != null)
-                .map(x->x.getFileIdentifier())
-                .collect(Collectors.toList());
+//        List<String> fileIds = items_fully_loaded.stream()
+//                .map(x->new ArrayList<OperatesOnLink>(x.getOperatesOnLinks()))
+//                .flatMap(List::stream)
+//                .map(x->x.getDatasetMetadataRecord())
+//                .filter(x-> x != null)
+//                .map(x->x.getFileIdentifier())
+//                .collect(Collectors.toList());
 
         return (uuids.contains(this.localDatasetMetadataRecord.getFileIdentifier()));
 

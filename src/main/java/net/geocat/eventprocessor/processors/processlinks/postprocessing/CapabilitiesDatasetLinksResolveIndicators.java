@@ -50,42 +50,42 @@ import java.util.stream.Collectors;
 public class CapabilitiesDatasetLinksResolveIndicators {
 
     public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record) {
-        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
-
-
-        List<CapabilitiesDocument>  capDocs =  links.stream()
-                .map(x->x.getCapabilitiesDocument())
-                .filter(x-> x != null).collect(Collectors.toList());
-
-        boolean result = false;
-
-        for(CapabilitiesDocument doc  : capDocs) {
-            result = result || process(doc);
-        }
-
-        if (result)
-            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.PASS);
-        else
-            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.FAIL);
+//        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
+//
+//
+//        List<CapabilitiesDocument>  capDocs =  links.stream()
+//                .map(x->x.getCapabilitiesDocument())
+//                .filter(x-> x != null).collect(Collectors.toList());
+//
+//        boolean result = false;
+//
+//        for(CapabilitiesDocument doc  : capDocs) {
+//            result = result || process(doc);
+//        }
+//
+//        if (result)
+//            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.PASS);
+//        else
+//            record.setINDICATOR_ALL_CAPABILITIES_LAYER_RESOLVE(IndicatorStatus.FAIL);
 
         return record;
     }
 
     private boolean process(CapabilitiesDocument doc) {
-        List<CapabilitiesDatasetMetadataLink> dsLinks = doc.getCapabilitiesDatasetMetadataLinkList();
-
-        //get rid of null links (i.e. no url)
-        dsLinks = dsLinks.stream().filter(x->x.getRawURL() != null && !x.getRawURL().isEmpty()).collect(Collectors.toList());
-
-        int nExpect = dsLinks.size();
-
-        dsLinks =  dsLinks.stream().filter(x-> x.getCapabilitiesRemoteDatasetMetadataDocument() != null).collect(Collectors.toList());
-
-        if (dsLinks.isEmpty())
-            return false; // must have at least one
-
-        if (nExpect != dsLinks.size())
-            return false;
+//        List<CapabilitiesDatasetMetadataLink> dsLinks = doc.getCapabilitiesDatasetMetadataLinkList();
+//
+//        //get rid of null links (i.e. no url)
+//        dsLinks = dsLinks.stream().filter(x->x.getRawURL() != null && !x.getRawURL().isEmpty()).collect(Collectors.toList());
+//
+//        int nExpect = dsLinks.size();
+//
+//        dsLinks =  dsLinks.stream().filter(x-> x.getCapabilitiesRemoteDatasetMetadataDocument() != null).collect(Collectors.toList());
+//
+//        if (dsLinks.isEmpty())
+//            return false; // must have at least one
+//
+//        if (nExpect != dsLinks.size())
+//            return false;
 
         return true;
     }

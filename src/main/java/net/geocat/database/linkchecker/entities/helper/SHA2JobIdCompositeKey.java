@@ -31,15 +31,59 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities.OperatesOnRemoteDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecord;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.util.Objects;
 
-@Component
-@Scope("prototype")
-public interface OperatesOnRemoteDatasetMetadataRecordRepo  extends CrudRepository<OperatesOnRemoteDatasetMetadataRecord, Long> {
+public class SHA2JobIdCompositeKey implements Serializable {
+
+    //sha2 of the XML's text
+    @Id
+    @Column(columnDefinition = "varchar(64)")
+    private String sha2;
+
+    //what link check job this is apart of
+    @Id
+    @Column(columnDefinition = "varchar(40)")
+    private String linkCheckJobId;
+
+    public SHA2JobIdCompositeKey() {
+    }
+
+    public SHA2JobIdCompositeKey(String sha2, String linkCheckJobId) {
+        this.sha2 = sha2;
+        this.linkCheckJobId = linkCheckJobId;
+    }
+
+    public String getSha2() {
+        return sha2;
+    }
+
+    public void setSha2(String sha2) {
+        this.sha2 = sha2;
+    }
+
+    public String getLinkCheckJobId() {
+        return linkCheckJobId;
+    }
+
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SHA2JobIdCompositeKey that = (SHA2JobIdCompositeKey) o;
+        return Objects.equals(sha2, that.sha2) && Objects.equals(linkCheckJobId, that.linkCheckJobId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sha2, linkCheckJobId);
+    }
 }

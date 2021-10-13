@@ -85,16 +85,16 @@ public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServ
 
     @Query(value="select a from LocalServiceMetadataRecord a " +
             "LEFT JOIN FETCH a.serviceDocumentLinks b " +
-            "LEFT JOIN FETCH  b.capabilitiesDocument " +
+          //  "LEFT JOIN FETCH  b.capabilitiesDocument " +
             "LEFT JOIN FETCH a.operatesOnLinks c " +
-            "LEFT JOIN FETCH c.datasetMetadataRecord "+
+         //   "LEFT JOIN FETCH c.datasetMetadataRecord "+
             "where a.serviceMetadataDocumentId= ?1")
     LocalServiceMetadataRecord  fullId(long id);
 
     @Query(value="select a from LocalServiceMetadataRecord a " +
             "LEFT JOIN FETCH a.serviceDocumentLinks b " +
             "LEFT JOIN FETCH a.operatesOnLinks c " +
-            "LEFT JOIN FETCH c.datasetMetadataRecord "+
+         //   "LEFT JOIN FETCH c.datasetMetadataRecord "+
             "where a.serviceMetadataDocumentId= ?1")
     LocalServiceMetadataRecord  fullId_operatesOn(long id);
 }
