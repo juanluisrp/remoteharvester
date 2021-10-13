@@ -206,8 +206,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     public void run_2(String... args) throws Exception {
 
-        LocalServiceMetadataRecord serviceRecord = localServiceMetadataRecordRepo.findById(1976L).get();
-        LocalServiceMetadataRecord serviceRecord2 = localServiceMetadataRecordRepo.findById(1977L).get();
+        LocalServiceMetadataRecord serviceRecord = localServiceMetadataRecordRepo.findById(1980L).get();
+        LocalServiceMetadataRecord serviceRecord2 = localServiceMetadataRecordRepo.findById(1981L).get();
 
         List<CapabilitiesDocument> capdocs = serviceRecord.getServiceDocumentLinks().stream()
             .filter(x->x.getSha2() !=null)

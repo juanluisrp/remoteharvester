@@ -55,9 +55,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static net.geocat.database.linkchecker.service.DatabaseUpdateService.convertToString;
@@ -156,6 +153,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
             processOperatesOnLinks(localServiceMetadataRecord);
 
+            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+
             save();
             logger.debug("finished initial processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
 
@@ -187,19 +186,8 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
     private void processDocumentLinks() throws Exception {
         int nlinks = localServiceMetadataRecord.getServiceDocumentLinks().size();
-        // get a more cannonical list of URLs -- this way we can tell if they are the same easier...
-        List<String> t = localServiceMetadataRecord.getServiceDocumentLinks().stream()
-                .map(x-> {
-                    try {
-                          x.setFixedURL(capabilitiesLinkFixer.fix(x.getRawURL()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        x.setFixedURL(x.getRawURL());
-                    }
-                    return x;
-                })
-                .map(x->x.getFixedURL())
-                .collect(Collectors.toList());
+
+        fixURLs();
         int linkIdx = 0;
         logger.debug("processing "+nlinks+" service document links for documentid="+getInitiatingEvent().getServiceMetadataId());
         List<String> processedURLs = new ArrayList<>();
@@ -220,8 +208,21 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         logger.debug("FINISHED processing "+nlinks+" service document links for documentid="+getInitiatingEvent().getServiceMetadataId());
     }
 
-
-
+    // get a more cannonical list of URLs -- this way we can tell if they are the same easier...
+    private List<String> fixURLs() {
+        return localServiceMetadataRecord.getServiceDocumentLinks().stream()
+                .map(x-> {
+                    try {
+                          x.setFixedURL(capabilitiesLinkFixer.fix(x.getRawURL()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        x.setFixedURL(x.getRawURL());
+                    }
+                    return x;
+                })
+                .map(x->x.getFixedURL())
+                .collect(Collectors.toList());
+    }
 
 
     @Override

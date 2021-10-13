@@ -82,7 +82,7 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
     @Override
     public EventProcessor_PostProcessDatasetDocumentEvent externalProcessing() throws Exception {
-        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
+    //    localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
         return this;
     }
 
@@ -97,20 +97,22 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
     @Override
     public EventProcessor_PostProcessDatasetDocumentEvent internalProcessing() throws Exception {
-
-        try{
-            process();
-            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_POSTPROCESSED);
-            save(false);
-            logger.debug("finished postprocessing documentid="+getInitiatingEvent().getDatasetDocumentId()  );
-
-        }
-        catch(Exception e){
-            logger.error("postprocessing exception for datasetMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
-            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
-            localDatasetMetadataRecord.setErrorMessage(  convertToString(e) );
-            save(false);
-        }
+        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
+        localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_POSTPROCESSED);
+        localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
+//        try{
+//            process();
+//            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_POSTPROCESSED);
+//            save(false);
+//            logger.debug("finished postprocessing documentid="+getInitiatingEvent().getDatasetDocumentId()  );
+//
+//        }
+//        catch(Exception e){
+//            logger.error("postprocessing exception for datasetMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
+//            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+//            localDatasetMetadataRecord.setErrorMessage(  convertToString(e) );
+//            save(false);
+//        }
         return this;
     }
 
