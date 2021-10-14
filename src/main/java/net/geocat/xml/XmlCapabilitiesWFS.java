@@ -137,7 +137,8 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
         Node main = getFirstNode();
         Node secondary = WMSCapabilitiesDatasetLinkExtractor.findNode(main,"FeatureTypeList");
-
+        if (secondary == null)
+            return; // no feature types
         List<Node> nl = WMSCapabilitiesDatasetLinkExtractor.findNodes(secondary,"FeatureType");
 
         for(Node node : nl) {

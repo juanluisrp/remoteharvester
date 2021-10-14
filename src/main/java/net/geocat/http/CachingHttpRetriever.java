@@ -68,7 +68,7 @@ import java.util.concurrent.locks.Lock;
     @Qualifier("cookieAttachingRetriever")
     public CookieAttachingRetriever retriever; // public for testing
 
-    boolean limitByJobId = false; // false = testing (do not use in production)
+    boolean limitByJobId = false; // false = testing (do not use in production)  TODO: fix
 
     String linkCheckJobId;
 
@@ -94,8 +94,9 @@ import java.util.concurrent.locks.Lock;
             }
 
             result = retriever.retrieveXML(verb, location, body, cookie, predicate);
+            result.setURL(location); // in a re-direct, this can get changed -- use the finalURL()
             result.setLinkCheckJobId(linkCheckJobId);
-            result = saveResult(result);
+            result = saveResult(result,location);
 
             return result;
         }
@@ -106,8 +107,9 @@ import java.util.concurrent.locks.Lock;
 
     }
 
-    //chance that this throws...
-    private    HttpResult saveResult(HttpResult result) {
+
+        //chance that this throws...
+    private    HttpResult  saveResult(HttpResult result,String originalLocation) {
         synchronized (lockingObject) {
             if (limitByJobId) {
                 //could be parallel processes that did this...

@@ -54,4 +54,14 @@ public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<Capa
             ,nativeQuery = true)
     List<CapabilitiesLinkResult> linkToCapabilities(String fileidentifier, String datasetIdentifier, String linkcheckjobid);
 
+    //use this one if datasetid is null
+    @Query(value = "SELECT capabilitiesdocument.sha2, capabilitiesdocument.linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype\n" +
+            "FROM capabilitiesdatasetmetadatalink\n" +
+            "      JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid)\n" +
+            "WHERE\n" +
+            "    capabilitiesdatasetmetadatalink.fileidentifier = ?1 \n" +
+            "    AND capabilitiesdatasetmetadatalink.linkcheckjobid = ?2 "
+            ,nativeQuery = true)
+    List<CapabilitiesLinkResult> linkToCapabilities(String fileidentifier, String linkcheckjobid);
+
 }

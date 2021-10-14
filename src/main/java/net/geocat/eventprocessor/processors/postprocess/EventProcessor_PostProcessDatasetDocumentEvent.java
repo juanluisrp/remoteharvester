@@ -129,9 +129,19 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
         String linkcheckjobid=localDatasetMetadataRecord.getLinkCheckJobId();
 
+        List<ServiceDocSearchResult> serviceLinks =  new ArrayList<>();
+        List<CapabilitiesLinkResult> capLinks =  new ArrayList<>();
 
-        List<ServiceDocSearchResult> serviceLinks =  operatesOnLinkRepo.linkToService(fileId,datasetid, linkcheckjobid);
-        List<CapabilitiesLinkResult> capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, datasetid,linkcheckjobid);
+        if (datasetid == null) {
+            serviceLinks =  operatesOnLinkRepo.linkToService(fileId, linkcheckjobid);
+            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, linkcheckjobid);
+
+        } else {
+            serviceLinks =  operatesOnLinkRepo.linkToService(fileId,datasetid, linkcheckjobid);
+            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, datasetid,linkcheckjobid);
+        }
+
+
 
         ServiceDocSearchResult service_view = serviceLinks.stream()
                     .filter(x->x.getMetadataservicetype().equals("view"))

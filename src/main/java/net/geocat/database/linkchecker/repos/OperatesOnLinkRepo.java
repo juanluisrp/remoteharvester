@@ -60,5 +60,16 @@ public interface OperatesOnLinkRepo extends CrudRepository<OperatesOnLink, Long>
             ,nativeQuery = true)
     List<ServiceDocSearchResult>  linkToService(String fileidentifier,String datasetId, String linkcheckjobid);
 
+    // use this one if datasetID = null
+    @Query(value = "SELECT servicemetadatarecord.servicemetadatadocumentid as serviceid,metadataservicetype as metadataservicetype\n" +
+            " FROM\n" +
+            "    operatesonlink\n" +
+            "      JOIN servicemetadatarecord \n" +
+            "                ON operatesonlink.servicemetadatarecord_servicemetadatadocumentid = servicemetadatarecord.servicemetadatadocumentid\n" +
+            "WHERE\n" +
+            "    operatesonlink.fileidentifier = ?1 \n" +
+            "    AND operatesonlink.linkcheckjobid= ?2 "
+            ,nativeQuery = true)
+    List<ServiceDocSearchResult>  linkToService(String fileidentifier,  String linkcheckjobid);
 
 }
