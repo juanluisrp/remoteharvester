@@ -99,11 +99,40 @@ public class DatasetMetadataRecord extends MetadataRecord {
     @Column(columnDefinition = "varchar(5)")
     IndicatorStatus INDICATOR_LAYER_MATCHES_DOWNLOAD;
 
+    //PASS if ANY of the "download" service documents has a operatesOn (dataset) that matches this document (file id and dataset id).
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_SERVICE_MATCHES_DOWNLOAD;
+
+    //PASS if ANY of the "view" service documents has a operatesOn (dataset) that matches this document (file id and dataset id).
+    // null = not evaluated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(5)")
+    IndicatorStatus INDICATOR_SERVICE_MATCHES_VIEW;
+
+
     //---------------------------------------------------------------------------
 
     public DatasetMetadataRecord() {
         super();
         documentLinks = new ArrayList<>();
+    }
+
+    public IndicatorStatus getINDICATOR_SERVICE_MATCHES_DOWNLOAD() {
+        return INDICATOR_SERVICE_MATCHES_DOWNLOAD;
+    }
+
+    public void setINDICATOR_SERVICE_MATCHES_DOWNLOAD(IndicatorStatus INDICATOR_SERVICE_MATCHES_DOWNLOAD) {
+        this.INDICATOR_SERVICE_MATCHES_DOWNLOAD = INDICATOR_SERVICE_MATCHES_DOWNLOAD;
+    }
+
+    public IndicatorStatus getINDICATOR_SERVICE_MATCHES_VIEW() {
+        return INDICATOR_SERVICE_MATCHES_VIEW;
+    }
+
+    public void setINDICATOR_SERVICE_MATCHES_VIEW(IndicatorStatus INDICATOR_SERVICE_MATCHES_VIEW) {
+        this.INDICATOR_SERVICE_MATCHES_VIEW = INDICATOR_SERVICE_MATCHES_VIEW;
     }
 
     public String getLinkCheckJobId() {

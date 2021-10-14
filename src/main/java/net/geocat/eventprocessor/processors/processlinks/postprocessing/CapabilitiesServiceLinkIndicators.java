@@ -36,9 +36,12 @@ package net.geocat.eventprocessor.processors.processlinks.postprocessing;
 
 import net.geocat.database.harvester.entities.BlobStorage;
 import net.geocat.database.harvester.repos.BlobStorageRepo;
+import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.LinkCheckBlobStorage;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 
+import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import org.slf4j.Logger;
@@ -67,28 +70,33 @@ public class CapabilitiesServiceLinkIndicators {
     @Autowired
     BlobStorageRepo harvestBlogStorageRepo;
 
-    public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record) {
-//        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
-//
-//        //cap docs that have a real Service Metadata record resolved
-//        List<RemoteServiceMetadataRecord> remoteServiceMetadataRecords =  links.stream()
-//                    .map(x->x.getCapabilitiesDocument())
-//                    .filter(x-> x != null)
-//                    .map(x->x.getRemoteServiceMetadataRecordLink())
-//                    .filter(x-> x != null)
-//                    .map(x-> x.getRemoteServiceMetadataRecord())
-//                    .filter(x-> x != null)
-//                    .collect(Collectors.toList());
-//
-//        if (remoteServiceMetadataRecords.isEmpty()) {
-//            record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.FAIL);
-//            record.setINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES(IndicatorStatus.FAIL);
-//            return record; //nothing to do
-//        }
-//
-//        //at least one resolved
-//        record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.PASS);
-//
+    public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record,List<CapabilitiesDocument> capDocs) {
+        List<DocumentLink> links = new ArrayList<DocumentLink>(record.getServiceDocumentLinks());
+
+        List<RemoteServiceMetadataRecordLink> rsmrls = capDocs.stream()
+                .filter(x->x.getRemoteServiceMetadataRecordLink() !=null)
+                .map(x->x.getRemoteServiceMetadataRecordLink())
+                .filter(x-> x.getSha2() != null)
+                .collect(Collectors.toList());
+
+
+        if (rsmrls.isEmpty()) {
+            record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.FAIL);
+            record.setINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES(IndicatorStatus.FAIL);
+            return record; //nothing to do
+        }
+
+        //at least one resolved
+        record.setINDICATOR_CAPABILITIES_RESOLVES_TO_SERVICE(IndicatorStatus.PASS);
+
+        boolean match = rsmrls.stream()
+                .anyMatch(x-> x.getFileIdentifier().equals(record.getFileIdentifier()));
+
+        if (match)
+            record.setINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES(IndicatorStatus.PASS);
+        else
+            record.setINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES(IndicatorStatus.FAIL);
+
 //        // do per-document comparision
 //        for(RemoteServiceMetadataRecord remoteServiceMetadataRecord : remoteServiceMetadataRecords) {
 //            try {
@@ -123,7 +131,7 @@ public class CapabilitiesServiceLinkIndicators {
 //
 //        remoteServiceMetadataRecord.setIndicator_CompareServiceMetadataLink_Full(IndicatorStatus.FAIL);
 //        String fullDiff = diffs.toString();
-//        remoteServiceMetadataRecord.setMetadataRecordDifferences(fullDiff.substring(0, Math.min(2000, fullDiff.length())));
+   //     remoteServiceMetadataRecord.setMetadataRecordDifferences(fullDiff.substring(0, Math.min(2000, fullDiff.length())));
 //    }
 
     private List<Difference> areSame(String xml_original, String xml_remote) {

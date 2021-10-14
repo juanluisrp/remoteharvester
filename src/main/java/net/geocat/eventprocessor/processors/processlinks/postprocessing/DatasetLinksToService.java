@@ -31,27 +31,21 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.eventprocessor.processors.processlinks.postprocessing;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.helper.CapabilitiesLinkResult;
-import net.geocat.database.linkchecker.entities.helper.ServiceDocSearchResult;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+@Component
+@Scope("prototype")
+public class DatasetLinksToService {
+
+    public void process(LocalDatasetMetadataRecord record) {
+        //first, need to see what Service record's operatesOn points to this record (via file ID)
+        //     - also, need to know what type (WMS/WFS) so we can code as View/Download
+        //second, need to see if the services' capabilities document also points to the record
 
 
-public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<CapabilitiesDatasetMetadataLink, Long> {
-
-    @Query(value = "SELECT capabilitiesdocument.sha2, capabilitiesdocument.linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype\n" +
-            "FROM capabilitiesdatasetmetadatalink\n" +
-            "      JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid)\n" +
-            "WHERE\n" +
-            "    capabilitiesdatasetmetadatalink.fileidentifier = ?1 \n" +
-            "    AND capabilitiesdatasetmetadatalink.datasetidentifier = ?2 \n"+
-            "    AND capabilitiesdatasetmetadatalink.linkcheckjobid = ?3 "
-            ,nativeQuery = true)
-    List<CapabilitiesLinkResult> linkToCapabilities(String fileidentifier, String datasetIdentifier, String linkcheckjobid);
-
+    }
 }

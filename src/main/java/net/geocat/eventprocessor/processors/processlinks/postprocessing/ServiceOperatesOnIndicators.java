@@ -59,49 +59,51 @@ public class ServiceOperatesOnIndicators {
     BlobStorageRepo harvestBlogStorageRepo;
 
 
-    public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record) {
-//        List<OperatesOnLink> links = new ArrayList<OperatesOnLink>(record.getOperatesOnLinks());
-//
-//        List<OperatesOnLink> goodLinks = links.stream()
-//                .filter(x->x.getDatasetMetadataRecord() != null)
-//                .collect(Collectors.toList());
-//
-//        if ( (links.size() == goodLinks.size()) && (!links.isEmpty()) ) {
-//            record.setINDICATOR_ALL_OPERATES_ON_RESOLVE(IndicatorStatus.PASS);
-//        }
-//        else {
-//            record.setINDICATOR_ALL_OPERATES_ON_RESOLVE(IndicatorStatus.FAIL);
-//            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.FAIL); // cannot be true
-//        }
-//
-//        List<CapabilitiesRemoteDatasetMetadataDocument>  capDatasetDocs =  record.getServiceDocumentLinks().stream()
-//                .map(x->x.getCapabilitiesDocument())
-//                .filter(x-> x != null)
-//                .map(x->x.getCapabilitiesDatasetMetadataLinkList())
-//                .flatMap(List::stream)
-//                .filter(x-> x != null)
-//                .map(x->x.getCapabilitiesRemoteDatasetMetadataDocument())
-//                .filter(x-> x != null)
-//                .collect(Collectors.toList());
-//
-//        List<OperatesOnRemoteDatasetMetadataRecord> localOperatesOnRecords = goodLinks.stream()
-//                    .map(x->x.getDatasetMetadataRecord() )
-//                    .collect(Collectors.toList());
-//
-//        boolean allMatch =true;
-//        for (OperatesOnRemoteDatasetMetadataRecord localOpsOnDatasetRecord : localOperatesOnRecords) {
-//            preprocess(localOpsOnDatasetRecord,capDatasetDocs);
-//            allMatch = allMatch && process(localOpsOnDatasetRecord);
-//        }
-//
-//        if (allMatch)
-//            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.PASS);
-//        else
-//            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.FAIL);
+    public LocalServiceMetadataRecord process(LocalServiceMetadataRecord record, List<CapabilitiesDocument> capDocs) {
+        List<OperatesOnLink> links = new ArrayList<OperatesOnLink>(record.getOperatesOnLinks());
 
+        List<OperatesOnLink> goodLinks = links.stream()
+                .filter(x->x.getSha2() != null)
+                .collect(Collectors.toList());
+
+        if ( (links.size() == goodLinks.size()) && (!links.isEmpty()) ) {
+            record.setINDICATOR_ALL_OPERATES_ON_RESOLVE(IndicatorStatus.PASS);
+        }
+        else {
+            record.setINDICATOR_ALL_OPERATES_ON_RESOLVE(IndicatorStatus.FAIL);
+            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.FAIL);// cannot be true
+
+        }
+
+        List<CapabilitiesDatasetMetadataLink>  capDatasetDocLinks =  capDocs.stream()
+                .map(x->x.getCapabilitiesDatasetMetadataLinkList())
+                .flatMap(List::stream)
+                .filter(x-> x != null && x.getFileIdentifier() !=null && x.getDatasetIdentifier() != null)
+                .collect(Collectors.toList());
+
+
+
+        boolean allMatch =true;
+        for (OperatesOnLink operatesOnLink : goodLinks) {
+            allMatch = allMatch && matches(operatesOnLink,capDatasetDocLinks);
+        }
+
+        if (allMatch)
+            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.PASS);
+        else
+            record.setINDICATOR_ALL_OPERATES_ON_MATCH_CAPABILITIES(IndicatorStatus.FAIL);
 
         return record;
     }
+
+    public boolean matches(OperatesOnLink operatesOnLink,  List<CapabilitiesDatasetMetadataLink>  capDatasetDocLinks) {
+        CapabilitiesDatasetMetadataLink result= capDatasetDocLinks.stream()
+                .filter(x-> x.getFileIdentifier().equals(operatesOnLink.getFileIdentifier()) && x.getDatasetIdentifier().equals(operatesOnLink.getDatasetIdentifier() ))
+                .findFirst( )
+                .orElse(null);
+        return result != null;
+    }
+
 //
 //    private boolean process(OperatesOnRemoteDatasetMetadataRecord localOpsOnDatasetRecord) {
 //        return  localOpsOnDatasetRecord.getINDICATOR_MATCHES_A_CAP_DATASET_LAYER() == IndicatorStatus.PASS;
@@ -118,13 +120,6 @@ public class ServiceOperatesOnIndicators {
 //    }
 
 
-    private String getXML(DatasetMetadataRecord record) {
-        if (record.actualXML != null)
-            return record.actualXML; //short cut
-        LinkCheckBlobStorage blob = linkCheckBlobStorageRepo.findById(record.getSha2()).get();
-        record.actualXML = blob.getTextValue();
-        return record.actualXML;
-    }
 
 
 }

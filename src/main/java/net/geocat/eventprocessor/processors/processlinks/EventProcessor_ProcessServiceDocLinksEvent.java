@@ -36,6 +36,7 @@ package net.geocat.eventprocessor.processors.processlinks;
 
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.LinkState;
+import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.repos.*;
 
@@ -153,7 +154,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
 
             processOperatesOnLinks(localServiceMetadataRecord);
 
-            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+          //  localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
 
             save();
             logger.debug("finished initial processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
@@ -224,32 +225,50 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
                 .collect(Collectors.toList());
     }
 
+    //optimize - don't keep loading it
+    List<CapabilitiesDocument> getCapabilities(LocalServiceMetadataRecord record) {
+        List<String>  cap_sha2s =     record.getServiceDocumentLinks().stream()
+                .filter(x->x.getSha2() != null)
+                .map(x->x.getSha2())
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<CapabilitiesDocument> capdocs = cap_sha2s.stream()
+                .map(x-> capabilitiesDocumentRepo.findById(new SHA2JobIdCompositeKey(x ,record.getLinkCheckJobId())).get())
+                .collect(Collectors.toList());
+
+        return capdocs;
+    }
+
 
     @Override
     public EventProcessor_ProcessServiceDocLinksEvent internalProcessing() throws Exception {
         //handle post-procssing
         //reload for any outstanding transactions
-      // localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
-//        localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(getInitiatingEvent().getServiceMetadataId());// make sure we re-load
-//
-//        try {
-//            capabilitiesResolvesIndicators.process(localServiceMetadataRecord); // simple record->cap indicators
-//            capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord); // see if caps' service record matches local service record
-//            capabilitiesServiceMatchesLocalServiceIndicators.process(localServiceMetadataRecord); // see if cap links back to original service records
-//            capabilitiesDatasetLinksResolveIndicators.process(localServiceMetadataRecord); // looks at the cap's DS layers
-//            serviceOperatesOnIndicators.process(localServiceMetadataRecord); // check the operates on links
-//
-//            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
-//            localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
-//            save(false);
-//            logger.debug("finished post processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
-//        }
-//        catch(Exception e){
-//            logger.error("post processing exception for serviceMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
-//            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
-//            localServiceMetadataRecord.setErrorMessage(  convertToString(e) );
-//            save(false);
-//        }
+          localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
+
+        try {
+
+            List<CapabilitiesDocument> capDocs = getCapabilities(localServiceMetadataRecord);
+
+            capabilitiesResolvesIndicators.process(localServiceMetadataRecord,capDocs); // simple record->cap indicators
+            capabilitiesServiceLinkIndicators.process(localServiceMetadataRecord,capDocs); // see if a cap links back to original service records
+
+      //    capabilitiesServiceMatchesLocalServiceIndicators.process(localServiceMetadataRecord); // see if cap links back to original service records
+             capabilitiesDatasetLinksResolveIndicators.process(localServiceMetadataRecord,capDocs); // looks at the cap's DS layers
+             serviceOperatesOnIndicators.process(localServiceMetadataRecord,capDocs); // check the operates on links
+
+           localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_PROCESSED);
+           localServiceMetadataRecord.setHumanReadable(humanReadableServiceMetadata.getHumanReadable(localServiceMetadataRecord));
+           save( );
+           logger.debug("finished initial post processing  documentid="+getInitiatingEvent().getServiceMetadataId()  );
+        }
+        catch(Exception e){
+            logger.error("post processing exception for serviceMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
+            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+            localServiceMetadataRecord.setErrorMessage(  convertToString(e) );
+            save( );
+        }
 
         return this;
     }

@@ -85,9 +85,9 @@ public class EventProcessor_ProcessDatasetDocLinksEvent extends BaseEventProcess
 
     @Autowired
     RetrieveServiceDocumentLink retrieveServiceDocumentLink;
-
-    @Autowired
-    CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
+//
+//    @Autowired
+//    CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
 
     @Autowired
     DatasetToLayerIndicators datasetToLayerIndicators;

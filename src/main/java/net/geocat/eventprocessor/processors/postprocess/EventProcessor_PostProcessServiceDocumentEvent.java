@@ -79,37 +79,20 @@ public class EventProcessor_PostProcessServiceDocumentEvent extends BaseEventPro
         localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(getInitiatingEvent().getServiceMetadataId()).get();// make sure we re-load
         localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_POSTPROCESSED);
         localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
-
-     //   localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(getInitiatingEvent().getServiceMetadataId());// make sure we re-load
-
-
         return this;
     }
 
-
-    public void save(boolean reload){
-        localServiceMetadataRecord = localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
-        localServiceMetadataRecord = null;
-        if (reload)
-            localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(localServiceMetadataRecord.getServiceMetadataDocumentId());
-    }
+//
+//    public void save(boolean reload){
+//        localServiceMetadataRecord = localServiceMetadataRecordRepo.save(localServiceMetadataRecord);
+//        localServiceMetadataRecord = null;
+//        if (reload)
+//            localServiceMetadataRecord = localServiceMetadataRecordRepo.fullId(localServiceMetadataRecord.getServiceMetadataDocumentId());
+//    }
 
 
     @Override
     public EventProcessor_PostProcessServiceDocumentEvent internalProcessing() throws Exception {
-
-//        try{
-//            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.LINKS_POSTPROCESSED);
-//            save(false);
-//            logger.debug("finished postprocessing documentid="+getInitiatingEvent().getServiceMetadataId()  );
-//
-//        }
-//        catch(Exception e){
-//            logger.error("postprocessing exception for datasetMetadataRecordId="+getInitiatingEvent().getServiceMetadataId(),e);
-//            localServiceMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
-//            localServiceMetadataRecord.setErrorMessage(  convertToString(e) );
-//            save(false);
-//        }
         return this;
     }
 

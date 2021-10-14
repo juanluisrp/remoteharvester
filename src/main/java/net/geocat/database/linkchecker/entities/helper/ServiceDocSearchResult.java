@@ -31,27 +31,12 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.helper.CapabilitiesLinkResult;
-import net.geocat.database.linkchecker.entities.helper.ServiceDocSearchResult;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-import java.util.List;
+public interface ServiceDocSearchResult {
 
 
-public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<CapabilitiesDatasetMetadataLink, Long> {
+    Long getServiceid();
 
-    @Query(value = "SELECT capabilitiesdocument.sha2, capabilitiesdocument.linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype\n" +
-            "FROM capabilitiesdatasetmetadatalink\n" +
-            "      JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid)\n" +
-            "WHERE\n" +
-            "    capabilitiesdatasetmetadatalink.fileidentifier = ?1 \n" +
-            "    AND capabilitiesdatasetmetadatalink.datasetidentifier = ?2 \n"+
-            "    AND capabilitiesdatasetmetadatalink.linkcheckjobid = ?3 "
-            ,nativeQuery = true)
-    List<CapabilitiesLinkResult> linkToCapabilities(String fileidentifier, String datasetIdentifier, String linkcheckjobid);
-
+    String getMetadataservicetype();
 }
