@@ -127,16 +127,23 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
 //        List<String> items = Arrays.asList(new String[] {"eab36660-76ec-11e0-994d-0002a5d5c51b"});
 
-//     List<String> items = Arrays.asList(new String[] { "edfdec91-95ed-45f6-b469-5e1f73407302",
-//             "eca4aba3-d145-46f7-9547-a2ccfe4bf1b3",
-//             "c0c1329e-b749-4cea-ab91-ed296e1421ab",
-//             "b59f9a22-be2e-47f0-a57b-fdf4658f57be"
+//     List<String> items = Arrays.asList(new String[] { "c8929096-95fe-4ac4-bc25-cc545bcb7c6f",
+//             "d67c7652-6f4c-4d73-bb7e-d21fad38eaaa"
 //     });
 //     metadataRecords = metadataRecords.stream().filter(x-> items.contains(x.getRecordIdentifier() )).collect(Collectors.toList());
 //     metadataRecords = metadataRecords.stream().filter(x-> !items.contains(x.getRecordIdentifier() )).collect(Collectors.toList());
 
        // metadataRecords =    metadataRecords.subList(0,5);
 
+
+
+
+
+        //--------------------------------------------------------------------------------------------------------
+
+
+        //remove duplicates
+        metadataRecords = metadataRecords.stream().distinct().collect(Collectors.toList());
 
         LinkCheckJob job = linkCheckJobService.updateNumberofDocumentsInBatch(linkCheckJobId, (long) metadataRecords.size());
 

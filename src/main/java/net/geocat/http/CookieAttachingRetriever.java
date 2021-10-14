@@ -61,9 +61,29 @@ public class CookieAttachingRetriever implements IHTTPRetriever {
     public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
         HttpResult result = retriever.retrieveXML(verb, location, body, cookie, predicate);
-        if (result.isErrorOccurred()) {
-            return retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
+        if (result.getHttpCode() == 404)
+            return result; // short cut -- not going to change with a retry
+
+        if (result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
+            try {
+                Thread.sleep((long) (3.5 * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            result= retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
         }
+
+        //3rd try
+        if (result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
+            try {
+                Thread.sleep((long) (12 * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            result= retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
+        }
+
+
         return result;
     }
 }

@@ -44,6 +44,7 @@ import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
 
+import net.geocat.service.capabilities.CapabilitiesDownloadingService;
 import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
@@ -185,18 +186,24 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     BasicHTTPRetriever basicHTTPRetriever;
 
+    @Autowired
+    LocalNotProcessedMetadataRecordRepo localNotProcessedMetadataRecordRepo;
+
+    @Autowired
+    LinkCheckJobService linkCheckJobService;
+
+    @Autowired
+    CapabilitiesDownloadingService capabilitiesDownloadingService;
+
     @Override
     public void run(String... args) throws Exception {
-        // run3(args);
-      //  LocalServiceMetadataRecord sm11 = localServiceMetadataRecordRepo.findById(12248L).get();
+
         try {
+//run33();
+    //run_3(args);
+    // run12("fe94f4c1-5a58-4df9-a258-5a8f8ac13d55");
 
-      //run_3(args);
-      //    run12(args);
 
-        //   run12(args);
-
-        //    run11(args);
         }
         catch(Exception e){
             int t=0;
@@ -204,19 +211,74 @@ public class MyCommandLineRunner implements CommandLineRunner {
         logger.debug("DONE!");
     }
 
+    public void run33() throws Exception {
+        String linkCheckJobId = "782a4b94-3f73-4d0b-9c89-866e8d0aa4ec";
+             LinkCheckJob job = linkCheckJobService.find(linkCheckJobId);
+
+
+            long nRecords = job.getNumberOfDocumentsInBatch();
+
+            long nrecordsServiceComplete = localServiceMetadataRecordRepo.countCompletedState(linkCheckJobId);
+            long nrecordsDatasetComplete = localDatasetMetadataRecordRepo.countCompletedState(linkCheckJobId);
+            long nrecordWillNotProcess = localNotProcessedMetadataRecordRepo.countCompletedState(linkCheckJobId);
+
+            boolean result=  (nRecords ) == (nrecordsServiceComplete+nrecordsDatasetComplete+nrecordWillNotProcess);
+
+    }
+
     public void run_3(String... args) throws Exception {
 
-        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findById(4096L).get();
+        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findByFileIdentifier("0f29a6c1-13c7-4ad8-aba7-66e12b0a360a");
+
+        String ds_xml = blobStorageService.findXML(dsRecord.getSha2());
 
         List<ServiceDocSearchResult> serviceLinks =  operatesOnLinkRepo.linkToService(dsRecord.getFileIdentifier(), dsRecord.getDatasetIdentifier(),   dsRecord.getLinkCheckJobId());
         List<CapabilitiesLinkResult> capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(dsRecord.getFileIdentifier(),dsRecord.getDatasetIdentifier(), dsRecord.getLinkCheckJobId());
 
+        List<LocalServiceMetadataRecord> serviceDocs = serviceLinks.stream()
+                .map(x-> localServiceMetadataRecordRepo.findById(x.getServiceid()).get())
+                .collect(Collectors.toList());
 
+        List<CapabilitiesDocument> capDocs = capLinks.stream()
+                .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
+                .collect(Collectors.toList());
 
-        LocalServiceMetadataRecord serviceRecord = localServiceMetadataRecordRepo.findById(3974L).get();
-        LocalServiceMetadataRecord serviceRecord2 = localServiceMetadataRecordRepo.findById(4118L).get();
+        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findByFileIdentifier("05ad87fd-5660-4f42-9488-52433b647c36");
+        String missingXML = blobStorageService.findXML(missing.getSha2());
 
+        List<CapabilitiesDocument> missing_caps = missing.getServiceDocumentLinks().stream()
+                .filter(x-> x.getSha2() != null)
+                .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(), missing.getLinkCheckJobId())).get() )
+                .collect(Collectors.toList());
+        List<String> missing_caps_xml = missing_caps.stream()
+                .filter(x-> x.getSha2() != null)
+                .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue() )
+                .collect(Collectors.toList());
 
+        List<XmlDoc> parsed_missing_xml = missing_caps_xml.stream()
+                .map(x-> {
+                    try {
+                        return xmlDocumentFactory.create(x);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+
+//          List<ServiceDocumentLink> processed = missing.getServiceDocumentLinks().stream()
+//                .map(x-> {
+//                    try {
+//                        x.setLinkState(LinkState.Created);
+//                          capabilitiesDownloadingService.handleLink(x);
+//                          return x;
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        return x;
+//                    }
+//
+//                })
+//                .collect(Collectors.toList());
 
         int t=0;
 
@@ -406,7 +468,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
         long endTime;
 
         startTime = System.currentTimeMillis();
-        String jobid= "337da1f2-6c3b-40e8-9db9-a552780ff680";
+        String jobid= "b5b30611-0197-40f6-bd1f-fb039eab447c";
+        if ( (args !=null) && (args.length==1) )
+            jobid = args[0];
+
         List<LocalDatasetMetadataRecord> records =   localDatasetMetadataRecordRepo.findByLinkCheckJobId(jobid);
 
 

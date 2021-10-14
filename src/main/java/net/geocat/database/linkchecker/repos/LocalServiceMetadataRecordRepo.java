@@ -52,6 +52,8 @@ public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServ
 
     List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
 
+    LocalServiceMetadataRecord findByFileIdentifier(String fileID);
+
     long countByLinkCheckJobId(String LinkCheckJobId);
 
     @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",
