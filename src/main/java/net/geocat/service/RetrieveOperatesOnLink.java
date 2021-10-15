@@ -39,6 +39,7 @@ import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDatasetMetadataDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.XmlStringTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -74,7 +75,7 @@ public class RetrieveOperatesOnLink {
         if (!link.getUrlFullyRead())
             return link;
 
-        XmlDoc doc = xmlDocumentFactory.create(new String(link.getFullData()));
+        XmlDoc doc = xmlDocumentFactory.create(XmlStringTools.bytea2String(link.getFullData()));
 
         if (doc !=null)
             link.setXmlDocInfo(doc.toString());

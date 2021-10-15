@@ -40,6 +40,7 @@ import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDatasetMetadataDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.XmlStringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class RetrieveCapabilitiesDatasetMetadataLink {
 
 
 
-        XmlDoc doc = xmlDocumentFactory.create(new String(link.getFullData()));
+        XmlDoc doc = xmlDocumentFactory.create(XmlStringTools.bytea2String(link.getFullData()));
 
         if (doc !=null)
             link.setXmlDocInfo(doc.toString());

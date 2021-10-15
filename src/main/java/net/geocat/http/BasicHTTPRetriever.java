@@ -71,6 +71,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
     public boolean shouldReadMore(byte[] tinyBuffer, IContinueReadingPredicate predicate) {
         if (predicate == null)
             return true;
+
         return predicate.continueReading(tinyBuffer);
     }
 

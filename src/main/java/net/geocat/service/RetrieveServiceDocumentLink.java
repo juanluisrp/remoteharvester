@@ -42,6 +42,7 @@ import net.geocat.service.capabilities.CapabilitiesLinkFixer;
 import net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate;
 import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDoc;
+import net.geocat.xml.XmlStringTools;
 import net.geocat.xml.helpers.CapabilitiesType;
 import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class RetrieveServiceDocumentLink {
 
     public CapabilitiesType determineCapabilityType(HttpResult result) {
         try {
-            String doc = new String(result.getData());
+            String doc = XmlStringTools.bytea2String(result.getData());
             XmlDoc xmlDoc = new XmlDoc(doc);
             return capabilityDeterminer.determineCapabilitiesType(xmlDoc);
         } catch (Exception e) {
@@ -106,7 +107,7 @@ public class RetrieveServiceDocumentLink {
 
     public boolean isXML(HttpResult result) {
         try {
-            return capabilitiesContinueReadingPredicate.isXML(new String(result.getData()));
+            return XmlStringTools.isXML(result.getData());
         } catch (Exception e) {
             return false;
         }

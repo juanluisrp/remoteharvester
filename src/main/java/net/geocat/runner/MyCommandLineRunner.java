@@ -199,9 +199,9 @@ public class MyCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         try {
-//run33();
+
     //run_3(args);
-    // run12("fe94f4c1-5a58-4df9-a258-5a8f8ac13d55");
+  // run12("97b7668a-a432-4cc4-96ce-12a6f0efba31");
 
 
         }
@@ -228,7 +228,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     public void run_3(String... args) throws Exception {
 
-        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findByFileIdentifier("0f29a6c1-13c7-4ad8-aba7-66e12b0a360a");
+        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findByFileIdentifier("56256838-b3b2-43bb-acdb-12e9dab62f90");
 
         String ds_xml = blobStorageService.findXML(dsRecord.getSha2());
 
@@ -243,7 +243,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
                 .collect(Collectors.toList());
 
-        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findByFileIdentifier("05ad87fd-5660-4f42-9488-52433b647c36");
+        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findByFileIdentifier("242cd2b7-30f9-45d3-8126-fdf5fd9bd364");
         String missingXML = blobStorageService.findXML(missing.getSha2());
 
         List<CapabilitiesDocument> missing_caps = missing.getServiceDocumentLinks().stream()

@@ -39,7 +39,8 @@ import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlServiceRecordDoc;
-import org.springframework.beans.factory.annotation.Autowired;
+ import net.geocat.xml.XmlStringTools;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +69,7 @@ public class RemoteServiceMetadataRecordLinkRetriever {
         if (!link.getUrlFullyRead())
             return link;
 
-        String xmlStr = new String(link.getFullData());
+        String xmlStr = XmlStringTools.bytea2String(link.getFullData());
         XmlDoc xmlDoc = xmlDocumentFactory.create(xmlStr);
         if (xmlDoc !=null)
             link.setXmlDocInfo(xmlDoc.toString());

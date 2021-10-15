@@ -31,23 +31,55 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.Charset;
+
+@Component
+@Scope("singleton")
+public class XmlStringTools {
+
+    public final static String UTF8_BOM = "\uFEFF";
+    private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
 
-public class XmlContinueReadingPredicate implements IContinueReadingPredicate {
+    public static String trim(String s){
+        String result = s.trim();
 
-    @Override
-    public boolean continueReading(byte[] head) {
+        if (result.startsWith(UTF8_BOM)) {
+            result = result.substring(1).trim();
+        }
+
+        return result;
+    }
+
+    public static String bytea2String(byte[] bytes) {
+        return trim(new String(bytes, UTF8_CHARSET));
+    }
+
+    public static boolean isXML(String doc) {
         try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
+            if (!doc.startsWith("<?xml")) {
+                // sometimes it doesn't start with the xml declaration
+                doc =  trim(doc);
+                if (!doc.startsWith("<"))
+                    return false; //not xml
+                if (doc.length() < 4)
+                    return false;
+                //flaky, is second char a letter?
+                return Character.isLetter(doc.charAt(1));
+            }
+
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean isXML(byte[] data) {
+        return isXML(bytea2String(data));
     }
 }
