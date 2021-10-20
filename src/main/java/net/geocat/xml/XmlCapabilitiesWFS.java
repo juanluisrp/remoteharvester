@@ -52,6 +52,22 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
         setup_XmlCapabilitiesWFS();
     }
 
+    private String getLayerMetadataURL_inspire(Node spatialDatasetIdentifier) throws  Exception {
+        if (spatialDatasetIdentifier == null)
+            return null;
+
+        Node metadataURL = spatialDatasetIdentifier.getAttributes().getNamedItem("metadataURL");
+
+        if ( (metadataURL ==null) || (metadataURL.getTextContent() == null ) )
+            return null;
+
+        String url = metadataURL.getTextContent().trim();
+        if (url.isEmpty())
+            return null;
+        return url;
+
+    }
+
     private String getLayerMetadataURL() throws  Exception {
         NodeList nl = xpath_nodeset("//wfs:FeatureType/wfs:MetadataURL/@xlink:href");
         for(int idx=0;idx<nl.getLength();idx++){
@@ -70,12 +86,12 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
         for(int idx=0; idx<sdi.getLength();idx++){
             Node n = sdi.item(idx);
-            String url =getLayerMetadataURL();
+            String url =getLayerMetadataURL_inspire(n);
 
             Node codeNode = xpath_node(n,"./inspire_common:Code");
             String identity = null;
             if (codeNode != null)
-                identity = codeNode.getTextContent();
+                identity = codeNode.getTextContent().trim();
             if ( (url != null) || (identity !=null)){
                 DatasetLink datasetLink = new DatasetLink(identity,url);
                 datasetLinksList.add(datasetLink);

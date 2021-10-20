@@ -33,6 +33,9 @@
 
 package net.geocat.runner;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
@@ -62,10 +65,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.persistence.EntityManager;
+import javax.transaction.TransactionManager;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
@@ -199,9 +207,15 @@ public class MyCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         try {
+// run_scrape();
 
-    //run_3(args);
-  // run12("97b7668a-a432-4cc4-96ce-12a6f0efba31");
+//            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://api.dataforsyningen.dk/ad_inspire?request=GetCapabilities&service=WMS",null,null,null);
+//int t=0;
+//   run_3("5d126d8a-3176-4ce7-9ee0-0a3dc4c38d7e",
+//           "abe13cfa-3c8b-43a3-96c9-903dd1e9fdfa\n",
+//           "1c0c9c24-9773-4b41-b049-593fa64b2ec5");
+
+// run12("e5e22f75-2267-4b0a-9f1a-1b1bcedabd8d");
 
 
         }
@@ -209,6 +223,85 @@ public class MyCommandLineRunner implements CommandLineRunner {
             int t=0;
         }
         logger.debug("DONE!");
+    }
+
+
+    @Autowired
+    @Qualifier("entityManagerFactory")
+    LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean;
+
+    @Autowired
+    //@Qualifier("transactionManager")
+    PlatformTransactionManager transactionManager;
+
+    EntityManager entityManager;
+
+//    public void executeSQL(String sql) {
+//        if (entityManager == null)
+//            entityManager =  localContainerEntityManagerFactoryBean.createNativeEntityManager(null);
+//        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+//        transactionTemplate.execute( transactionStatus->
+//                {
+//                          entityManager.createNativeQuery(sql).executeUpdate();
+//                    transactionStatus.flush();
+//                    return null;
+//                }
+//        );
+//    }
+
+    public void executeSQL2(String sql) {
+        if (entityManager == null)
+            entityManager =  localContainerEntityManagerFactoryBean.createNativeEntityManager(null);
+       entityManager.getTransaction().begin();
+        entityManager.createNativeQuery(sql).executeUpdate();
+       entityManager.getTransaction().commit();
+    }
+
+    /*
+    delete from scap;
+    drop table scrap;
+      CREATE TABLE scrap (title text, is_view boolean, is_download boolean, country_code text,
+                file_id text, local_is_view boolean , local_is_download boolean);
+
+        update scrap set file_id = (select fileidentifier from datasetmetadatarecord where datasetmetadatarecord.title = scrap.title limit 1);
+        update scrap set local_is_view = (select indicator_layer_matches_view = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id);
+        update scrap set local_is_download = (select indicator_layer_matches_download = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id);
+--delete from scrap where file_id is null;
+
+        select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view;
+        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download;
+
+
+
+     */
+    public void run_scrape() throws  Exception {
+        String url = "https://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=*:*^1.0&sow=false&fq=sourceMetadataResourceLocator:*&fq=resourceType:(dataset%20OR%20series)&fq=memberStateCountryCode:%22MYCOUNTRYCODE%22&fl=id,resourceTitle,resourceTitle_*,providedTranslationLanguage,automatedTranslationLanguage,memberStateCountryCode,metadataLanguage,isDw:query($isDwQ),isVw:query($isVwQ),spatialScope&isDwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect:(LAYER_MATCHING_DATA_IS_AVAILABLE)&isDwVwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE%20AND%20LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=query($isDwVwQ)%20desc,%20query($isDwQ)%20desc,%20query($isVwQ)%20desc,%20resourceTitle%20asc&start=0&rows=10000&callback=?&json.wrf=processData_dtResults&_=1634538073094";
+        url = url.replace("MYCOUNTRYCODE","dk");
+
+            HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
+
+            String json = new String(result.getData());
+            json = json.replace("processData_dtResults(","");
+
+          ObjectMapper m = new ObjectMapper();
+      JsonNode rootNode = m.readValue(json, JsonNode.class);
+
+       JsonNode response =  rootNode.get("response");
+       ArrayNode docs = (ArrayNode) response.get("docs");
+
+      // executeSQL2("create table delme(i int)");
+       for(JsonNode doc : docs) {
+            String title = doc.get("resourceTitle").asText();
+            boolean isView = (doc.get("isVw") != null);
+            boolean isDownload = (doc.get("isDw") != null);
+            String country = doc.get("memberStateCountryCode").asText();
+            String sql =  String.format("INSERT INTO scrap  (title,is_view,is_download, country_code) VALUES ('%s',%s,%s,'%s') "
+                    , title, String.valueOf(isView), String.valueOf(isDownload),country);
+            executeSQL2(sql);
+           int tt=0;
+
+       }
+        int t=0;
     }
 
     public void run33() throws Exception {
@@ -226,9 +319,13 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     }
 
-    public void run_3(String... args) throws Exception {
+    public void run_3(String dsId, String serviceId, String linkCheckJobId) throws Exception {
 
-        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findByFileIdentifier("56256838-b3b2-43bb-acdb-12e9dab62f90");
+        dsId = dsId.trim();
+        serviceId = serviceId.trim();
+        linkCheckJobId = linkCheckJobId.trim();
+
+        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(dsId,linkCheckJobId);
 
         String ds_xml = blobStorageService.findXML(dsRecord.getSha2());
 
@@ -243,7 +340,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
                 .collect(Collectors.toList());
 
-        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findByFileIdentifier("242cd2b7-30f9-45d3-8126-fdf5fd9bd364");
+        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(serviceId,linkCheckJobId);
         String missingXML = blobStorageService.findXML(missing.getSha2());
 
         List<CapabilitiesDocument> missing_caps = missing.getServiceDocumentLinks().stream()
@@ -254,6 +351,13 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 .filter(x-> x.getSha2() != null)
                 .map(x-> linkCheckBlobStorageRepo.findById(x.getSha2()).get().getTextValue() )
                 .collect(Collectors.toList());
+
+//        for(CapabilitiesDocument cap : missing_caps) {
+//            List<CapabilitiesDatasetMetadataLink> links = cap.getCapabilitiesDatasetMetadataLinkList().stream()
+//                        .filter(x->x.getIdentity().startsWith("MSFD_Descriptor_1_and_6"))
+//                    .collect(Collectors.toList());
+//            int tt=0;
+//        }
 
         List<XmlDoc> parsed_missing_xml = missing_caps_xml.stream()
                 .map(x-> {

@@ -41,6 +41,7 @@ import net.geocat.database.linkchecker.entities.helper.CapabilitiesDocumentState
 import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
+import net.geocat.database.linkchecker.repos.ServiceDocumentLinkRepo;
 import net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent;
 import net.geocat.service.RemoteServiceMetadataRecordLinkRetriever;
 import net.geocat.service.RetrieveCapabilitiesDatasetMetadataLink;
@@ -86,9 +87,12 @@ public class CapabilitiesDownloadingService {
     @Autowired
     RemoteServiceMetadataRecordLinkRetriever remoteServiceMetadataRecordLinkRetriever;
 
+    @Autowired
+    ServiceDocumentLinkRepo serviceDocumentLinkRepo;
 
     public void handleLink(ServiceDocumentLink link) throws Exception {
         download(link);
+        //serviceDocumentLinkRepo.save(link);
         if (link.getCapabilitiesDocument() == null) {
             //nothing to do - we don't have a capabilities document
             return;

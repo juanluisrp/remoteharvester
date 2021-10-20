@@ -132,6 +132,9 @@ public class MetadataDocumentFactory {
                                                                        String linkCheckJobId,
                                                                        String sha2) throws Exception {
         LocalNotProcessedMetadataRecord result =  new LocalNotProcessedMetadataRecord();
+
+        result.setTitle(doc.getTitle());
+
         result.setHarvesterMetadataRecordId(underlyingHarvestMetadataRecordId);
         result.setLinkCheckJobId(linkCheckJobId);
         result.setSha2(sha2);

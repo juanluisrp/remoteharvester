@@ -66,17 +66,20 @@ public class CookieAttachingRetriever implements IHTTPRetriever {
 
         if (result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
             try {
-                Thread.sleep((long) (3.5 * 1000));
+                Thread.sleep((long) (0.5 * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             result= retriever.retrieveXML(verb, location, body, result.getSpecialToSendCookie(), predicate);
         }
 
+        if (result.getHttpCode() == 403)
+            return result; // short cut -- not going to change with a retry (probably shouldn't have re-tried in the first place, but...)
+
         //3rd try
         if (result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
             try {
-                Thread.sleep((long) (12 * 1000));
+                Thread.sleep((long) (4 * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

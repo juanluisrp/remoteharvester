@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
 @Component
 public class CapabilitiesContinueReadingPredicate implements IContinueReadingPredicate {
 
-    static Pattern tagWithNS = Pattern.compile("^<([^ :<>]+):([^ >]+)[^>]+>", Pattern.MULTILINE);
-    static Pattern tagWithoutNS = Pattern.compile("^<([^ >]+)[^>]+>", Pattern.MULTILINE);
+    static Pattern tagWithNS = Pattern.compile("^<([^ :<>]+):([^ >]+)[^>]+>");
+    static Pattern tagWithoutNS = Pattern.compile("^<([^ >]+)[^>]+>");
 
 
     CapabilityDeterminer capabilityDeterminer;

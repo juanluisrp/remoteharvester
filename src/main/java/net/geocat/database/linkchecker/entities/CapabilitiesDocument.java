@@ -95,6 +95,10 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     private List<CapabilitiesDatasetMetadataLink> capabilitiesDatasetMetadataLinkList;
 
 
+    //number of layers (CapabilitiesDatasetMetadataLink) in this document -- saved for easy access
+    // i.e. capabilitiesDatasetMetadataLinkList.size()
+    private Integer numberOfDatasetLinks;
+
     // summary for display
     @Column(columnDefinition = "text")
     private String summary;
@@ -180,12 +184,14 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     protected void onUpdate() {
         super.onUpdate();
         this.summary = this.toString();
+        this.numberOfDatasetLinks = this.capabilitiesDatasetMetadataLinkList.size();
     }
 
     @PrePersist
     protected void onInsert() {
         super.onInsert();
         this.summary = this.toString();
+        this.numberOfDatasetLinks = this.capabilitiesDatasetMetadataLinkList.size();
     }
 
     //---------------------------------------------------------------------------

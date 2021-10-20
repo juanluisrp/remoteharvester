@@ -52,7 +52,7 @@ public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServ
 
     List<LocalServiceMetadataRecord> findByLinkCheckJobId(String linkCheckJobId);
 
-    LocalServiceMetadataRecord findByFileIdentifier(String fileID);
+    LocalServiceMetadataRecord findFirstByFileIdentifierAndLinkCheckJobId(String fileID,String linkCheckJobId);
 
     long countByLinkCheckJobId(String LinkCheckJobId);
 

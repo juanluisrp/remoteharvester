@@ -163,6 +163,21 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
                 .findAny()
                 .orElse(null);
 
+        List<String> view_cap_sha2s = capLinks.stream()
+                .filter(x->x.getCapabilitiesdocumenttype().equals("WMS") || x.getCapabilitiesdocumenttype().equals("WMTS"))
+                .map(x-> x.getSha2())
+                .collect(Collectors.toList());
+
+        localDatasetMetadataRecord.setLinksToViewCapabilities( String.join(",",view_cap_sha2s));
+
+        List<String> download_cap_sha2s = capLinks.stream()
+                .filter(x->x.getCapabilitiesdocumenttype().equals("WFS") || x.getCapabilitiesdocumenttype().toLowerCase().equals("atom"))
+                .map(x-> x.getSha2())
+                .collect(Collectors.toList());
+
+        localDatasetMetadataRecord.setLinksToDownloadCapabilities( String.join(",",download_cap_sha2s));
+
+
         localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.FAIL);
         localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_VIEW(IndicatorStatus.FAIL);
         localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_DOWNLOAD(IndicatorStatus.FAIL);

@@ -54,6 +54,10 @@ public class RemoteDatasetMetadataRecordService {
                                                                        String linkCheckJobId,
                                                                        String sha2) {
         LocalDatasetMetadataRecord result = new LocalDatasetMetadataRecord();
+
+        result.setTitle(doc.getTitle());
+
+
         result.setHarvesterMetadataRecordId(underlyingHarvestMetadataRecordId);
         result.setLinkCheckJobId(linkCheckJobId);
         result.setSha2(sha2);

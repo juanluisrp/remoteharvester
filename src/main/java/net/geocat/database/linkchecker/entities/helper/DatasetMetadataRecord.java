@@ -75,6 +75,16 @@ public class DatasetMetadataRecord extends MetadataRecord {
     private String linkCheckJobId;
 
 
+    //list of SHA2 links to capabilities
+    //   to find cap doc, use linkCheckJobId+SHA2
+    @Column(columnDefinition = "text")
+    private String linksToViewCapabilities;
+
+    //list of SHA2 links to capabilities
+    //   to find cap doc, use linkCheckJobId+SHA2
+    @Column(columnDefinition = "text")
+    private String linksToDownloadCapabilities;
+
     // all the outgoing links (i.e. capabilities documents) from the document
     @OneToMany(mappedBy = "datasetMetadataRecord",
             cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
@@ -117,6 +127,22 @@ public class DatasetMetadataRecord extends MetadataRecord {
     public DatasetMetadataRecord() {
         super();
         documentLinks = new ArrayList<>();
+    }
+
+    public String getLinksToViewCapabilities() {
+        return linksToViewCapabilities;
+    }
+
+    public void setLinksToViewCapabilities(String linksToViewCapabilities) {
+        this.linksToViewCapabilities = linksToViewCapabilities;
+    }
+
+    public String getLinksToDownloadCapabilities() {
+        return linksToDownloadCapabilities;
+    }
+
+    public void setLinksToDownloadCapabilities(String linksToDownloadCapabilities) {
+        this.linksToDownloadCapabilities = linksToDownloadCapabilities;
     }
 
     public IndicatorStatus getINDICATOR_SERVICE_MATCHES_DOWNLOAD() {
