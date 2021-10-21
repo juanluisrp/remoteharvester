@@ -34,6 +34,7 @@
 package net.geocat.service;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.service.CapabilitiesDocumentService;
 import net.geocat.database.linkchecker.entities.HttpResult;
@@ -77,11 +78,11 @@ public class RetrieveServiceDocumentLink {
     RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
 
 
-    public DocumentLink process(DocumentLink link) throws Exception {
+    public DocumentLink process(ServiceDocumentLink link) throws Exception {
 
-        link.setFixedURL(capabilitiesLinkFixer.fix(link.getRawURL()));
+        link.setFixedURL(capabilitiesLinkFixer.fix(link.getRawURL(), link.getLocalServiceMetadataRecord().getMetadataServiceType()));
 
-        link = (DocumentLink) retrievableSimpleLinkDownloader.process(link);
+         retrievableSimpleLinkDownloader.process(link);
 
         if (!link.getUrlFullyRead())
             return link;

@@ -47,9 +47,7 @@ import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
 
-import net.geocat.service.capabilities.CapabilitiesDownloadingService;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor;
+import net.geocat.service.capabilities.*;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
 import net.geocat.xml.*;
 
@@ -203,17 +201,27 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     CapabilitiesDownloadingService capabilitiesDownloadingService;
 
+    @Autowired
+    CapabilitiesLinkFixer capabilitiesLinkFixer;
+
+
+    @Autowired
+    DatasetLinkFixer datasetLinkFixer;
+
     @Override
     public void run(String... args) throws Exception {
 
         try {
+
 // run_scrape();
 
-//            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://api.dataforsyningen.dk/ad_inspire?request=GetCapabilities&service=WMS",null,null,null);
+//
+//            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://haleconnect.com/services/bsp/org.874.42282e73-5afb-424d-993a-9e0a0cd3eeca/md/dataset/dataset1",null,null,null);
 //int t=0;
-//   run_3("5d126d8a-3176-4ce7-9ee0-0a3dc4c38d7e",
-//           "abe13cfa-3c8b-43a3-96c9-903dd1e9fdfa\n",
-//           "1c0c9c24-9773-4b41-b049-593fa64b2ec5");
+
+   run_3("8ad016ec-c6b9-4345-9d8c-19f241a7e6f4\n",
+           "348bf9da-a328-45c2-8047-9f367834f6fa\n",
+           "");
 
 // run12("e5e22f75-2267-4b0a-9f1a-1b1bcedabd8d");
 
@@ -236,18 +244,6 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     EntityManager entityManager;
 
-//    public void executeSQL(String sql) {
-//        if (entityManager == null)
-//            entityManager =  localContainerEntityManagerFactoryBean.createNativeEntityManager(null);
-//        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-//        transactionTemplate.execute( transactionStatus->
-//                {
-//                          entityManager.createNativeQuery(sql).executeUpdate();
-//                    transactionStatus.flush();
-//                    return null;
-//                }
-//        );
-//    }
 
     public void executeSQL2(String sql) {
         if (entityManager == null)
@@ -258,7 +254,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
     }
 
     /*
-    delete from scap;
+    delete from scrap;
     drop table scrap;
       CREATE TABLE scrap (title text, is_view boolean, is_download boolean, country_code text,
                 file_id text, local_is_view boolean , local_is_download boolean);
@@ -268,15 +264,15 @@ public class MyCommandLineRunner implements CommandLineRunner {
         update scrap set local_is_download = (select indicator_layer_matches_download = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id);
 --delete from scrap where file_id is null;
 
-        select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view;
-        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download;
+        select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view order by title;
+        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download order by title;
 
 
 
      */
     public void run_scrape() throws  Exception {
         String url = "https://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=*:*^1.0&sow=false&fq=sourceMetadataResourceLocator:*&fq=resourceType:(dataset%20OR%20series)&fq=memberStateCountryCode:%22MYCOUNTRYCODE%22&fl=id,resourceTitle,resourceTitle_*,providedTranslationLanguage,automatedTranslationLanguage,memberStateCountryCode,metadataLanguage,isDw:query($isDwQ),isVw:query($isVwQ),spatialScope&isDwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect:(LAYER_MATCHING_DATA_IS_AVAILABLE)&isDwVwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE%20AND%20LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=query($isDwVwQ)%20desc,%20query($isDwQ)%20desc,%20query($isVwQ)%20desc,%20resourceTitle%20asc&start=0&rows=10000&callback=?&json.wrf=processData_dtResults&_=1634538073094";
-        url = url.replace("MYCOUNTRYCODE","dk");
+        url = url.replace("MYCOUNTRYCODE","mt");
 
             HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
 
@@ -324,8 +320,16 @@ public class MyCommandLineRunner implements CommandLineRunner {
         dsId = dsId.trim();
         serviceId = serviceId.trim();
         linkCheckJobId = linkCheckJobId.trim();
+        LocalDatasetMetadataRecord dsRecord;
 
-        LocalDatasetMetadataRecord dsRecord = localDatasetMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(dsId,linkCheckJobId);
+        if  ( (linkCheckJobId == null) || (linkCheckJobId.isEmpty()) )
+            dsRecord = localDatasetMetadataRecordRepo.findFirstByFileIdentifier(dsId);
+        else
+            dsRecord = localDatasetMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(dsId,linkCheckJobId);
+
+        String capabilities_layer_matches_download = dsRecord.getINDICATOR_LAYER_MATCHES_DOWNLOAD().toString();
+        String capabilities_layer_matches_view = dsRecord.getINDICATOR_LAYER_MATCHES_VIEW().toString();
+
 
         String ds_xml = blobStorageService.findXML(dsRecord.getSha2());
 
@@ -340,7 +344,22 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
                 .collect(Collectors.toList());
 
-        LocalServiceMetadataRecord missing = localServiceMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(serviceId,linkCheckJobId);
+        LocalServiceMetadataRecord missing;
+        if  ( (linkCheckJobId == null) || (linkCheckJobId.isEmpty()) )
+            missing = localServiceMetadataRecordRepo.findFirstByFileIdentifier(serviceId);
+        else
+            missing = localServiceMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(serviceId,linkCheckJobId);
+
+        List<String> urls = missing.getServiceDocumentLinks().stream()
+                .map(x-> {
+                    try {
+                        return capabilitiesLinkFixer.fix(x.getRawURL(), missing.getMetadataServiceType());
+                    } catch (Exception e) {
+                       return null;
+                    }
+                })
+                .collect(Collectors.toList());
+
         String missingXML = blobStorageService.findXML(missing.getSha2());
 
         List<CapabilitiesDocument> missing_caps = missing.getServiceDocumentLinks().stream()
@@ -384,7 +403,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //                })
 //                .collect(Collectors.toList());
 
-        int t=0;
+//        String uurl = datasetLinkFixer.fix(missing_caps.get(1).getCapabilitiesDatasetMetadataLinkList().get(101).getRawURL());
+         int t=0;
 
     }
 

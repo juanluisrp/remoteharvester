@@ -62,6 +62,8 @@ public interface LocalDatasetMetadataRecordRepo extends CrudRepository<LocalData
 
     LocalDatasetMetadataRecord findFirstByFileIdentifierAndLinkCheckJobId(String fileID,String linkCheckJobId);
 
+    LocalDatasetMetadataRecord findFirstByFileIdentifier(String fileID);
+
 
     LocalDatasetMetadataRecord findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
 

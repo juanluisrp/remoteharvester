@@ -214,7 +214,7 @@ public class EventProcessor_ProcessServiceDocLinksEvent extends BaseEventProcess
         return localServiceMetadataRecord.getServiceDocumentLinks().stream()
                 .map(x-> {
                     try {
-                          x.setFixedURL(capabilitiesLinkFixer.fix(x.getRawURL()));
+                          x.setFixedURL(capabilitiesLinkFixer.fix(x.getRawURL(),localServiceMetadataRecord.getMetadataServiceType()));
                     } catch (Exception e) {
                         e.printStackTrace();
                         x.setFixedURL(x.getRawURL());
