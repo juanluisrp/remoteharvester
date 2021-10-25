@@ -56,8 +56,8 @@ job("Build, test and install project artifacts") {
         env["GEOCAT_DOCKER_REGISTRY_URL"] = "docker-registry.geocat.net:5000"
         env["GEOCAT_DOCKER_REGISTRY_USER"] = Params("geocat_docker_registry_user")
         env["GEOCAT_DOCKER_REGISTRY_PASSWORD"] = Secrets("geocat_docker_registry_password")
-        env["GITHUB_REGISTRY_USERNAME"] = Secrets("github-registry-username	")
-        env["GITHUB_REGISTRY_PAT"] = Secrets("github-registry-pat")
+        env["GITHUB_REGISTRY_USERNAME"] = Params("github_registry_username")
+        env["GITHUB_REGISTRY_PAT"] = Secrets("github_registry_pat")
 
         shellScript {
             content = """
