@@ -1,6 +1,6 @@
 FROM maven:3-adoptopenjdk-8 as builder
 
-LABEL org.opencontainers.image.source https://github.com/geocat/csw-harvester
+LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-harvester
 
 COPY ./pom.xml ./pom.xml
 COPY ./src ./src
