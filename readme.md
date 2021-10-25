@@ -15,6 +15,26 @@ Contact:
     Via Enrico Fermi 2749, 21027 Ispra, Italy; 
 	JRC-INSPIRE-SUPPORT@ec.europa.eu
 
+## Requirements
+
+- Postgres database
+- Apache ActiveMQ
+
+## Configuration
+
+- Provide the following  variables with the database connection as environment variables:
+  - `HARVESTER_DB_HOST`: Database host name.
+  - `HARVESTER_DB_USERNAME`: Database user name.
+  - `HARVESTER_DB_PASSWORD`: Database user password.
+
+- Provide the following variable with the ActiveMQ connection as an environment variable:
+  - `ACTIVEMQ_URL`: ActiveMQ url.
+
+Additionally, can be provided as start up parameters with the `-D` flag, with the property names in lowercase and replacing the `_` char with `.`. For example:
+
+```
+java -jar csw-harvester-0.0.1-SNAPSHOT.jar -Dactivemq.url=tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch\=1
+```
 
 ## Methods
 
