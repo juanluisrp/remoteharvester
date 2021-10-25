@@ -67,8 +67,8 @@ job("Build, test and install project artifacts") {
                 crane auth login ghcr.io -u ${'$'}GITHUB_REGISTRY_USERNAME -p ${'$'}GITHUB_REGISTRY_PAT
 				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
 				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/csw-harvester:${'$'}BRANCH
-                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/GeoCat/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
-				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/GeoCat/csw-harvester:${'$'}BRANCH
+                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
+				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/csw-harvester:${'$'}BRANCH
 			"""
         }
     }
