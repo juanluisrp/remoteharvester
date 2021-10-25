@@ -67,7 +67,9 @@ job("Build, test and install project artifacts") {
                 
 				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
 				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/csw-ingester:${'$'}BRANCH
-                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/csw-ingester:${'$'}BRANCH
+
+                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
+				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-ingester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/csw-ingester:${'$'}BRANCH
 			"""
         }
     }
