@@ -1,6 +1,5 @@
 FROM maven:3-adoptopenjdk-8 as builder
 
-LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-harvester
 
 COPY ./pom.xml ./pom.xml
 COPY ./src ./src
@@ -12,6 +11,8 @@ RUN mvn package -DskipTests
 FROM adoptopenjdk:8-jre-hotspot
 
 LABEL vendor="GeoCat B.V."
+LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-harvester
+
 
 
 # Check the file application.properties for a description of the environment variables that can be customized.
