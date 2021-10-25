@@ -70,8 +70,8 @@ job("Build, test and install full-orchestrator artifacts") {
                 crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
                 crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ${'$'}GEOCAT_DOCKER_REGISTRY_URL/jrc-inspire-portal/full-orchestrator:${'$'}BRANCH
 
-				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
-                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/csw-harvester:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/full-orchestrator:${'$'}BRANCH            
+				crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER
+                crane copy geocat.registry.jetbrains.space/p/jrc-inspire-portal/docker/full-orchestrator:${'$'}BRANCH-${'$'}JB_SPACE_EXECUTION_NUMBER ghcr.io/geocat/full-orchestrator:${'$'}BRANCH            
             """
         }
     }
