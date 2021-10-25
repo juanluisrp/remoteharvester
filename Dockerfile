@@ -10,6 +10,7 @@ RUN mvn -B package -DskipTests
 FROM adoptopenjdk:8-jre-hotspot
 
 LABEL vendor="GeoCat B.V."
+LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-ingester
 
 
 # Check the file application.properties for a description of the environment variables that can be customized.
