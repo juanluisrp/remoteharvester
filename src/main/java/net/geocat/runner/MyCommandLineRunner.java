@@ -43,6 +43,8 @@ import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
+import net.geocat.events.Event;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
@@ -58,6 +60,7 @@ import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlServiceRecordDoc;
 
 import net.geocat.xml.helpers.CapabilitiesType;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,21 +221,29 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
 // run_scrape();
 
+
+//            ProcessLocalMetadataDocumentEvent e = new ProcessLocalMetadataDocumentEvent("linkCheckId","SHA2", 1234L);
+//            JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
+//            ObjectMapper mapper = new ObjectMapper();
+//            String jsonDataString = mapper.writeValueAsString(e);
+//            Event ee= mapper.readValue(jsonDataString,Event.class);
+//int t=0;
+
 //
 //            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://haleconnect.com/services/bsp/org.874.42282e73-5afb-424d-993a-9e0a0cd3eeca/md/dataset/dataset1",null,null,null);
 //int t=0;
-            String linkCheckJobId = "883ed410-10bc-4f7b-9292-e626a2372a24";
-            String fileID = "37569840-7c18-49da-bac5-f730491591e4";
-           // LocalServiceMetadataRecord lmr = localServiceMetadataRecordRepo.findById(232L).get();
-
-            int t=0;
-
-            Optional<LocalServiceMetadataRecord> o_lmr2 = lazyLocalServiceMetadataRecordRepo.searchFirstByFileIdentifierAndLinkCheckJobId(fileID,linkCheckJobId);
-            logger.debug("------------------ hi ------------------ hi");
-            LocalServiceMetadataRecord lmr2 = o_lmr2.get();
-            logger.debug("------------------222 hi 222------------------ hi");
-
-            int tt=0;
+//            String linkCheckJobId = "883ed410-10bc-4f7b-9292-e626a2372a24";
+//            String fileID = "37569840-7c18-49da-bac5-f730491591e4";
+//           // LocalServiceMetadataRecord lmr = localServiceMetadataRecordRepo.findById(232L).get();
+//
+//            int t=0;
+//
+//            Optional<LocalServiceMetadataRecord> o_lmr2 = lazyLocalServiceMetadataRecordRepo.searchFirstByFileIdentifierAndLinkCheckJobId(fileID,linkCheckJobId);
+//            logger.debug("------------------ hi ------------------ hi");
+//            LocalServiceMetadataRecord lmr2 = o_lmr2.get();
+//            logger.debug("------------------222 hi 222------------------ hi");
+//
+//            int tt=0;
 
 //   run_3("8ad016ec-c6b9-4345-9d8c-19f241a7e6f4\n",
 //           "348bf9da-a328-45c2-8047-9f367834f6fa\n",
