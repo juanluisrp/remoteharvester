@@ -108,7 +108,11 @@ public class XmlDocumentFactory {
     public boolean isCSWServiceMetadataDocument(XmlDoc xmlDoc) throws XPathExpressionException {
         if (!isCSWMetadataDocument(xmlDoc))
             return false;
-        Node n = xmlDoc.xpath_node("/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue");
+        //Node n = xmlDoc.xpath_node("/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue");
+        Node n = XmlDoc.findNode(xmlDoc.parsedXml,"MD_Metadata","hierarchyLevel","MD_ScopeCode");
+        if (n == null)
+            return false;
+        n= n.getAttributes().getNamedItem("codeListValue");
         if (n == null)
             return false;
         if (n.getNodeValue().equals("service"))

@@ -80,6 +80,8 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.geocat.service.capabilities.CapabilitiesLinkFixer.canonicalize;
+
 @Component
 public class MyCommandLineRunner implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(MyCommandLineRunner.class);
@@ -222,15 +224,11 @@ public class MyCommandLineRunner implements CommandLineRunner {
 // run_scrape();
 
 
-//            ProcessLocalMetadataDocumentEvent e = new ProcessLocalMetadataDocumentEvent("linkCheckId","SHA2", 1234L);
-//            JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
-//            ObjectMapper mapper = new ObjectMapper();
-//            String jsonDataString = mapper.writeValueAsString(e);
-//            Event ee= mapper.readValue(jsonDataString,Event.class);
-//int t=0;
-
-//
-//            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://haleconnect.com/services/bsp/org.874.42282e73-5afb-424d-993a-9e0a0cd3eeca/md/dataset/dataset1",null,null,null);
+//            String url = "https://geoportal.sachsen.de/md/9250fce9-8044-41f4-a884-ae148bfbcf8c";
+//            url = canonicalize(url);
+//            HttpResult hr = basicHTTPRetriever.retrieveXML("GET","https://www.geoportal.rlp.de/mapbender/php/mod_dataISOMetadata.php?id=4b73c630-0feb-4f00-f1b7-a7bd0397a3d2&outputFormat=iso19139",null,null,null);
+//            String xml = new String(hr.getData());
+//            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
 //int t=0;
 //            String linkCheckJobId = "883ed410-10bc-4f7b-9292-e626a2372a24";
 //            String fileID = "37569840-7c18-49da-bac5-f730491591e4";
@@ -245,12 +243,14 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //
 //            int tt=0;
 
-//   run_3("8ad016ec-c6b9-4345-9d8c-19f241a7e6f4\n",
+//   run_3("20ec512a-9284-4ef4-b1ba-98eb019c5e95",
 //           "348bf9da-a328-45c2-8047-9f367834f6fa\n",
 //           "");
-//            run11("883ed410-10bc-4f7b-9292-e626a2372a24");
 //
-// run12("883ed410-10bc-4f7b-9292-e626a2372a24");
+//
+//            run11("62ef1fc1-058e-4e39-bbb3-392fec561bf0");
+//
+//            run12("62ef1fc1-058e-4e39-bbb3-392fec561bf0");
 
 
         }

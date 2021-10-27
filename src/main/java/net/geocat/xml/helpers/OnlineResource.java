@@ -83,10 +83,12 @@ public class OnlineResource {
         List<OnlineResource> result = new ArrayList<>();
         if (n.getLocalName().equals("SV_OperationMetadata")) {
             String opName = null;
-            Node nn = XmlDoc.xpath_node(n, "srv:operationName/gco:CharacterString");
+            //Node nn = XmlDoc.xpath_node(n, "srv:operationName/gco:CharacterString");
+            Node nn = XmlDoc.xpath_node(n, "*[local-name()='operationName']/*[local-name()='CharacterString']");
             if (nn != null)
                 opName = nn.getTextContent();
-            NodeList nl = XmlDoc.xpath_nodeset(n, "srv:connectPoint/gmd:CI_OnlineResource");
+           //NodeList nl = XmlDoc.xpath_nodeset(n, "srv:connectPoint/gmd:CI_OnlineResource");
+            NodeList nl = XmlDoc.xpath_nodeset(n, "*[local-name()='connectPoint']/*[local-name()='CI_OnlineResource']");
             for (int idx = 0; idx < nl.getLength(); idx++) {
                 Node nnn = nl.item(idx);
                 result.add(new OnlineResource(nnn, opName));
