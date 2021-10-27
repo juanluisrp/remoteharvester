@@ -51,7 +51,7 @@ public class LazyLocalDatsetMetadataRecordRepo {
 
 
     @Autowired
-    @Qualifier("entityManagerFactory")
+    @Qualifier("linkcheckerEntityManager")
     LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean;
 
     @Autowired

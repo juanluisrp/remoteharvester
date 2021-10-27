@@ -53,7 +53,7 @@ public class LazyLocalServiceMetadataRecordRepo {
 //    LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
 
     @Autowired
-    @Qualifier("entityManagerFactory")
+    @Qualifier("linkcheckerEntityManager")
     LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean;
 
     @Autowired
