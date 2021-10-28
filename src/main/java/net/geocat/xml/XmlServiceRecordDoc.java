@@ -79,13 +79,18 @@ public class XmlServiceRecordDoc extends XmlMetadataDocument {
 
     public void populateServiceType() throws Exception {
        // Node n = xpath_node("//srv:serviceType/gco:LocalName");
-        Node n = xpath_node("//*[local-name()='serviceType']/*[local-name()='LocalName']");
-
+       // Node n = xpath_node("//*[local-name()='serviceType']/*[local-name()='LocalName']");
+        Node serviceId = XmlDoc.findNode(parsedXml,"MD_Metadata","identificationInfo","SV_ServiceIdentification");
+        if (serviceId == null)
+            return;
+        Node n = XmlDoc.findNode(serviceId,"serviceType","LocalName");
         if (n != null) {
             serviceType = n.getTextContent();
         }
        // n = xpath_node("//srv:serviceTypeVersion/gco:CharacterString");
-        n = xpath_node("//*[local-name()='serviceTypeVersion']/*[local-name()='CharacterString']");
+    //    n = xpath_node("//*[local-name()='serviceTypeVersion']/*[local-name()='CharacterString']");
+        n = XmlDoc.findNode(serviceId,"serviceTypeVersion","CharacterString");
+
         if (n != null)
             serviceTypeVersion = n.getTextContent();
     }

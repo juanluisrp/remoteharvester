@@ -78,7 +78,8 @@ public class XmlDocumentFactory {
 
     private XmlDoc simplify(XmlDoc doc) throws Exception {
         if (doc.getRootTagName().equals("GetRecordByIdResponse")) {
-            Node n = doc.xpath_node("//gmd:MD_Metadata");
+           // Node n = doc.xpath_node("//gmd:MD_Metadata");
+            Node n = XmlDoc.findNode(doc.getParsedXml(),"GetRecordByIdResponse","MD_Metadata");
             if (n == null) // likely an empty response...
                 return doc;
             Document d = DocumentBuilderFactory.newInstance()

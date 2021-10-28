@@ -129,6 +129,10 @@ public class XmlDoc {
     }
 
 
+    public static Node findNode(Node n, String localName, String localName2, String localName3,String localName4,String localName5) {
+        return findNode(n, Arrays.asList(new String[]{localName,localName2,localName3,localName4,localName5}));
+    }
+
     public static Node findNode(Node n, String localName, String localName2, String localName3,String localName4) {
         return findNode(n, Arrays.asList(new String[]{localName,localName2,localName3,localName4}));
     }
@@ -275,12 +279,20 @@ public class XmlDoc {
     }
 
     public void setup_XmlDoc() throws Exception {
-        rootTagName = getFirstNode().getLocalName();
-        rootNS = getFirstNode().getNamespaceURI();
+        Node n = getFirstNode();
+        rootTagName = n.getLocalName();
+        rootNS = n.getNamespaceURI();
     }
 
     public Node getFirstNode() throws  Exception {
-        return xpath_node("/*");
+        NodeList nl = parsedXml.getChildNodes();
+        for (int t=0;t<nl.getLength();t++) {
+            Node n = nl.item(t);
+            if (n.getNodeType() ==1 )//element
+                return n;
+        }
+        return null;
+
     }
 
     public org.w3c.dom.NodeList xpath_nodeset(String xpathStr) throws XPathExpressionException {

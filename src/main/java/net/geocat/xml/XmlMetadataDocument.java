@@ -39,7 +39,10 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
 
 public class XmlMetadataDocument extends XmlDoc {
 
@@ -80,23 +83,52 @@ public class XmlMetadataDocument extends XmlDoc {
         n = XmlDoc.findNode(this.parsedXml,"MD_Metadata","fileIdentifier","CharacterString");
         fileIdentifier = n.getTextContent();
 
-//"//*[local-name()='ExtendedCapabilities']"
+
         //NodeList nl = xpath_nodeset("//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource");
-        NodeList nl = xpath_nodeset("//*[local-name()='transferOptions']/*[local-name()='MD_DigitalTransferOptions']/*[local-name()='onLine']/*[local-name()='CI_OnlineResource']");
-        transferOptions = OnlineResource.create(nl);
+        //NodeList nl = xpath_nodeset("//*[local-name()='transferOptions']/*[local-name()='MD_DigitalTransferOptions']/*[local-name()='onLine']/*[local-name()='CI_OnlineResource']");
+       // transferOptions = new ArrayList<>();
+        Node nn  = findNode(parsedXml,"MD_Metadata","distributionInfo","MD_Distribution");
+        if (nn !=null){
+            List<Node> nl = findNodes(nn,"transferOptions");
+            for(Node _n : nl){
+              //  _n = findNode(_n, "MD_DigitalTransferOptions","onLine","CI_OnlineResource");
+                _n = findNode(_n, "MD_DigitalTransferOptions");
+                List<Node> nl2 = findNodes(_n,"onLine");
+                for (Node __n :nl2) {
+                    __n = findNode(__n,"CI_OnlineResource");
+                    if (__n != null)
+                        transferOptions.addAll(OnlineResource.create(__n));
+                }
+            }
+        }
+
 
        // nl = xpath_nodeset("//srv:containsOperations/srv:SV_OperationMetadata");
-        nl = xpath_nodeset("//*[local-name()='containsOperations']/*[local-name()='SV_OperationMetadata']");
-        connectPoints = OnlineResource.create(nl);
+      //  NodeList nl = xpath_nodeset("//*[local-name()='containsOperations']/*[local-name()='SV_OperationMetadata']");
+        n = findNode(parsedXml,"MD_Metadata","identificationInfo","SV_ServiceIdentification");
+        if (n !=null) {
+            List<Node> connNode = findNodes(n, "containsOperations");
+            for (Node _n : connNode) {
+                _n = findNode(_n, "SV_OperationMetadata");
+                if (_n != null) {
+                    connectPoints.addAll(OnlineResource.create(_n));
+                }
+            }
+        }
+//        Node containsOperations  = findNodes(parsedXml,"MD_Metadata","distributionInfo","MD_Distribution");
+//
+//        connectPoints = OnlineResource.create(nl);
     }
 
     private void setupTitle() throws XPathExpressionException {
           // Node n =  xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
-        Node n =  xpath_node("/*[local-name()='MD_Metadata']/*[local-name()='identificationInfo']/*[local-name()='MD_DataIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']/*[local-name()='CharacterString']");
-
+       // Node n =  xpath_node("/*[local-name()='MD_Metadata']/*[local-name()='identificationInfo']/*[local-name()='MD_DataIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']/*[local-name()='CharacterString']");
+        Node n = findNode(parsedXml, Arrays.asList(new String[]{"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","title","CharacterString"}));
         if ( (n==null) || (n.getTextContent().trim().isEmpty())) {
           //  n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
-            n = xpath_node("/*[local-name()='MD_Metadata']/*[local-name()='identificationInfo']/*[local-name()='SV_ServiceIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']/*[local-name()='CharacterString']");
+           // n = xpath_node("/*[local-name()='MD_Metadata']/*[local-name()='identificationInfo']/*[local-name()='SV_ServiceIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']/*[local-name()='CharacterString']");
+           // n = xpath_node("/*[local-name()='MD_Metadata']/*[local-name()='identificationInfo']/*[local-name()='SV_ServiceIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']/*[local-name()='CharacterString']");
+             n = findNode(parsedXml, Arrays.asList(new String[]{"MD_Metadata","identificationInfo","SV_ServiceIdentification","citation","CI_Citation","title","CharacterString"}));
         }
        if ( (n !=null) && (!n.getTextContent().trim().isEmpty()) )
            setTitle(n.getTextContent().trim());
