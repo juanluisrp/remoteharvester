@@ -93,11 +93,13 @@ public class XmlMetadataDocument extends XmlDoc {
             for(Node _n : nl){
               //  _n = findNode(_n, "MD_DigitalTransferOptions","onLine","CI_OnlineResource");
                 _n = findNode(_n, "MD_DigitalTransferOptions");
-                List<Node> nl2 = findNodes(_n,"onLine");
-                for (Node __n :nl2) {
-                    __n = findNode(__n,"CI_OnlineResource");
-                    if (__n != null)
-                        transferOptions.addAll(OnlineResource.create(__n));
+                if (_n != null) {
+                    List<Node> nl2 = findNodes(_n, "onLine");
+                    for (Node __n : nl2) {
+                        __n = findNode(__n, "CI_OnlineResource");
+                        if (__n != null)
+                            transferOptions.addAll(OnlineResource.create(__n));
+                    }
                 }
             }
         }
