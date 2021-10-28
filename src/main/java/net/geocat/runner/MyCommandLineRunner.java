@@ -215,7 +215,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
 // run_scrape();
 
        // time();
-            time2();
+         //   time2();
 
 //            String url = "https://geoportal.sachsen.de/md/9250fce9-8044-41f4-a884-ae148bfbcf8c";
 //            url = canonicalize(url);
