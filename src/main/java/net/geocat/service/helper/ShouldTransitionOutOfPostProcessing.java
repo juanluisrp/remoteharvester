@@ -31,34 +31,43 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.harvester.repos;
+package net.geocat.service.helper;
 
-
-import net.geocat.database.harvester.entities.MetadataRecord;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import net.geocat.service.MetadataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
-@Scope("prototype")
-public interface MetadataRecordRepo extends CrudRepository<MetadataRecord, Long> {
+public class ShouldTransitionOutOfPostProcessing {
 
-    List<MetadataRecord> findBySha2(String sha2);
+    @Autowired
+    MetadataService metadataService;
 
-    List<MetadataRecord> findByEndpointJobIdIn(List<Long> endpointjobIds);
+    static Object lockObject = new Object();
+
+    // linkCheckJobId ->   serviceMetadataId (or datasetMetadataId)
+    protected static Map<String, Long> completedLinkCheckJobs = new HashMap<>();
 
 
-    List<MetadataRecord> findByEndpointJobId(long endpointjobId);
+    // you MUST send the complete message if this returns true.
+    // All future calls will return false.
+    // This prevents the message from being sent twice.
+    public boolean shouldSendMessage(String linkCheckJobId, Long metadataDocumentId) {
 
-   // MetadataRecord findByEndpointJobIdAndRecordNumber(long endpointjobId, int recordNumber);
+        synchronized (lockObject) {
 
-    long countByEndpointJobId(long endpointJobId);
+            if (completedLinkCheckJobs.containsKey(linkCheckJobId))
+                return false; // already sent
+            boolean done = metadataService.linkPostProcessingComplete(linkCheckJobId);
+            if (!done)
+                return false;
+            // done - we need to prevent it from happening in the future
+            completedLinkCheckJobs.put(linkCheckJobId,metadataDocumentId);
+            return true;
 
-    @Query(value = "Select count(distinct record_identifier) from metadata_record   where endpoint_job_id = ?1",
-            nativeQuery = true
-    )
-    long countDistinctRecordIdentifierByEndpointJobId(long endpointJobId);
+        }
+    }
 }

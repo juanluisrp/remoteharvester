@@ -50,6 +50,7 @@ import net.geocat.events.findlinks.LinksFoundInAllDocuments;
 import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
 import net.geocat.service.BlobStorageService;
 import net.geocat.service.ServiceDocLinkExtractor;
+import net.geocat.service.helper.ShouldTransitionOutOfLinkFinding;
 import net.geocat.xml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,8 +105,11 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
     @Autowired
     LocalNotProcessedMetadataRecordRepo localNotProcessedMetadataRecordRepo;
 
+    @Autowired
+    ShouldTransitionOutOfLinkFinding shouldTransitionOutOfLinkFinding;
+
     String xml;
-    XmlDoc doc;
+    XmlMetadataDocument doc;
     net.geocat.database.linkchecker.entities.helper.MetadataRecord metadataRecord;
 
     @Override
@@ -113,7 +117,7 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
         String sha2 = getInitiatingEvent().getSha2();
         // long endpointJobId = getInitiatingEvent().getEndpointJobId();
         xml = blobStorageService.findXML(sha2);
-        doc = xmlDocumentFactory.create(xml);
+        doc = (XmlMetadataDocument)xmlDocumentFactory.create(xml);
         return this;
     }
 
@@ -173,7 +177,6 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
 
         Set<ServiceDocumentLink> serviceLinks = metadataDocument.getServiceDocumentLinks();
         Set<OperatesOnLink> operatesOnsLinks = metadataDocument.getOperatesOnLinks();
-        logger.debug("extracted "+serviceLinks.size()+" service links and "+operatesOnsLinks.size()+" operatesOn links from Service Record with fileIdentifier:"+xmlServiceRecordDoc.getFileIdentifier());
 
         metadataDocument.setState(ServiceMetadataDocumentState.LINKS_EXTRACTED);
         localServiceMetadataRecordRepo.updateState(metadataDocument.getServiceMetadataDocumentId(), ServiceMetadataDocumentState.LINKS_EXTRACTED);
@@ -238,14 +241,18 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
     @Override
     public List<Event> newEventProcessing() {
         List<Event> result = new ArrayList<>();
+        logger.debug("Parsed Metadata Record with fileIdentifier:"+doc.getFileIdentifier() +", title="+doc.getTitle());
 
         String linkCheckJob = getInitiatingEvent().getLinkCheckJobId();
 
-        if (metadataDocumentService.completeLinkExtract(linkCheckJob)) {
+//        if (metadataDocumentService.completeLinkExtract(linkCheckJob)) {
+//            LinksFoundInAllDocuments e = eventFactory.createLinksFoundInAllDocuments(initiatingEvent);
+//            result.add(e);
+//        }
+        if (shouldTransitionOutOfLinkFinding.shouldSendMessage(linkCheckJob, getInitiatingEvent().getUnderlyingHarvestMetadataRecordId())) {
             LinksFoundInAllDocuments e = eventFactory.createLinksFoundInAllDocuments(initiatingEvent);
             result.add(e);
         }
-
 
         return result;
     }

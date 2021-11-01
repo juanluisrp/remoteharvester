@@ -66,6 +66,12 @@ public interface LocalServiceMetadataRecordRepo extends CrudRepository<LocalServ
     LocalServiceMetadataRecord findFirstByFileIdentifier(String fileID);
 
 
+    @Query(value = "SELECT servicemetadatadocumentid FROM servicemetadatarecord   WHERE linkcheckjobid = ?1",
+            nativeQuery = true
+    )
+    List<Long> searchAllServiceIds(String linkCheckJobId);
+
+
     long countByLinkCheckJobId(String LinkCheckJobId);
 
     @Query(value = "Select count(*) from servicemetadatarecord   where linkcheckjobid = ?1 and service_record_type = 'LocalServiceMetadataRecord' and state != 'CREATED'",

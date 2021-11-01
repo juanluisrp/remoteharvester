@@ -38,6 +38,7 @@ import net.geocat.database.linkchecker.service.DatabaseUpdateService;
 import net.geocat.events.Event;
 import org.apache.camel.BeanScope;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.ChoiceDefinition;
@@ -105,7 +106,7 @@ public class MainLoopRouteCreator {
         for (RedirectEvent redirectEvent : redirectEventList) {
             choice = choice
                     .when(routeBuilder.simple("${headers.eventType} == '" + redirectEvent.getEventType().getSimpleName() + "'"))
-                    .log(mainRouteName + " redirecting event of type ${headers.eventType} to " + redirectEvent.getEndpoint())
+                    .log(LoggingLevel.TRACE,mainRouteName + " redirecting event of type ${headers.eventType} to " + redirectEvent.getEndpoint())
 //                    .process(new Processor() {
 //                        @Override
 //                        public void process(Exchange exchange) throws Exception {

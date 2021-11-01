@@ -109,6 +109,8 @@ public class EventProcessor_LinksFoundInAllDocuments extends BaseEventProcessor<
 
     @Override
     public List<Event> newEventProcessing() {
+        logger.debug("LinksFoundInAllDocuments - all documents were parsed and saved, linkcheckjobid="+ getInitiatingEvent().getLinkCheckJobId());
+
         List<Event> result = new ArrayList<>();
         linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.CHECKING_LINKS);
 
