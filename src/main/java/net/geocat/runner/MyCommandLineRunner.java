@@ -212,6 +212,13 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
         try {
 
+
+//           CapabilitiesDocument doc =  capabilitiesDocumentRepo.findById(
+//                   new SHA2JobIdCompositeKey(
+//                           "7FEB464512D4054136D1E93B38C0344458807378ADE8278F331D3974C9AB09F0",
+//                           "01e2d820-bb84-4093-bc4f-cc8fe6a31932" ) ).get();
+//            int t=0;
+
 // run_scrape();
 
        // time();

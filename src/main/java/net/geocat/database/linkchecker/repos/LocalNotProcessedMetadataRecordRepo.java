@@ -63,6 +63,12 @@ public interface LocalNotProcessedMetadataRecordRepo extends CrudRepository<Loca
 
     long countByLinkCheckJobId(String LinkCheckJobId);
 
+    @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1   and state  in ?2",
+            nativeQuery = true
+    )
+    long countInStates(String LinkCheckJobId, List<String> states);
+
+
     @Query(value = "Select count(*) from localnotprocessedmetadatarecord   where linkcheckjobid = ?1    and state != 'CREATED'",
             nativeQuery = true
     )

@@ -243,7 +243,7 @@ public class EventProcessor_ProcessLocalMetadataDocumentEvent extends BaseEventP
 
         if (metadataDocumentService.completeLinkExtract(linkCheckJob)) {
             LinksFoundInAllDocuments e = eventFactory.createLinksFoundInAllDocuments(initiatingEvent);
-          // result.add(e);
+            result.add(e);
         }
 
 

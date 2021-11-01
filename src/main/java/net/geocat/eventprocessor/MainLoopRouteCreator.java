@@ -125,7 +125,7 @@ public class MainLoopRouteCreator {
         for (Class eventType : eventTypes) {
             choice = choice
                     .when(routeBuilder.simple("${headers.eventType} == '" + eventType.getSimpleName() + "'"))
-                    .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
+                   // .log(mainRouteName + " received event of type ${headers.eventType} and body=${body} ")
                     .to("direct:" + mainRouteName + "_" + eventType.getSimpleName());
         }
 
