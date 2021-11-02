@@ -179,7 +179,8 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
         }
 
      //   result = result.subList(0,180000);
-        logger.debug("Finished sending to-process-document messages for "+metadataRecords.size()+" records.");
+        logger.debug("Finished generating to-process-document messages for "+metadataRecords.size()+" records. (camel will send all in one tx)");
+
 
         return result;
     }

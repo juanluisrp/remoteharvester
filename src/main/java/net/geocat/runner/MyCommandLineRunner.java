@@ -43,6 +43,8 @@ import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
+import net.geocat.events.Event;
+import net.geocat.events.EventFactory;
 import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.*;
@@ -207,10 +209,19 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     LazyLocalServiceMetadataRecordRepo lazyLocalServiceMetadataRecordRepo;
 
+    @Autowired
+    EventFactory eventFactory;
+
     @Override
     public void run(String... args) throws Exception {
 
         try {
+
+            Event e = eventFactory.createStartPostProcessEvent("e21f60c6-98fb-40e6-bca3-832e8970ff3e");
+            ObjectMapper m = new ObjectMapper();
+            String s = m.writeValueAsString(e);
+            int t=0;
+
 
 
 //           CapabilitiesDocument doc =  capabilitiesDocumentRepo.findById(
