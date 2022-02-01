@@ -63,7 +63,7 @@ public class XmlDocumentFactory {
         if (isCSWMetadataDocument(doc)) {
             doc = new XmlMetadataDocument(doc);
             XmlMetadataDocument xmlMetadataDocument = (XmlMetadataDocument) doc;
-            if (xmlMetadataDocument.getMetadataDocumentType() == MetadataDocumentType.Dataset) {
+            if ( (xmlMetadataDocument.getMetadataDocumentType() == MetadataDocumentType.Dataset) || (xmlMetadataDocument.getMetadataDocumentType() == MetadataDocumentType.Series) ) {
                 XmlDatasetMetadataDocument xmlDatasetMetadataDocument = new XmlDatasetMetadataDocument(xmlMetadataDocument);
                 return xmlDatasetMetadataDocument;
             }
