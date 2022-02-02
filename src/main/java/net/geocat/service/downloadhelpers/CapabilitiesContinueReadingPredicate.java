@@ -137,6 +137,7 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
 
             doc = replaceXMLDecl(doc);
             doc = removeComment(doc);
+            doc = removeDocType(doc);
             doc = getRootTag(doc).trim();
 
             String prefix = getPrefix(doc);
@@ -149,6 +150,10 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
             int t = 0;
         }
         return false;
+    }
+
+    private String removeDocType(String doc) {
+        return doc.replaceAll("<!DOCTYPE[\\s\\S]*?>]>","").trim();
     }
 
 
