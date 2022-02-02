@@ -124,6 +124,9 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
         return null;
     }
 
+    public String removeComment(String doc) {
+        return doc.replaceAll("<!--[\\s\\S]*?-->","").trim();
+    }
 
     @Override
     public boolean continueReading(byte[] head) {
@@ -133,6 +136,7 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
                 return false; //not XML
 
             doc = replaceXMLDecl(doc);
+            doc = removeComment(doc);
             doc = getRootTag(doc).trim();
 
             String prefix = getPrefix(doc);
