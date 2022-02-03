@@ -95,6 +95,19 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     private List<CapabilitiesDatasetMetadataLink> capabilitiesDatasetMetadataLinkList;
 
 
+    @OneToMany(
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumns(
+            {
+                    @JoinColumn(name="cap_sha2",referencedColumnName = "sha2"),
+                    @JoinColumn(name="cap_jobId",referencedColumnName = "linkcheckjobid")
+            }
+    )
+    private List<InspireSpatialDatasetIdentifier> inspireSpatialDatasetIdentifiers;
+
+
+
     //number of layers (CapabilitiesDatasetMetadataLink) in this document -- saved for easy access
     // i.e. capabilitiesDatasetMetadataLinkList.size()
     private Integer numberOfDatasetLinks;
@@ -104,6 +117,7 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     private String summary;
 
 
+
     public CapabilitiesDocument(){
         this.capabilitiesDatasetMetadataLinkList = new ArrayList<>();
         this.state = CapabilitiesDocumentState.CREATED;
@@ -111,6 +125,22 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
 
     //---------------------------------------------------------------------------
 
+
+    public Integer getNumberOfDatasetLinks() {
+        return numberOfDatasetLinks;
+    }
+
+    public void setNumberOfDatasetLinks(Integer numberOfDatasetLinks) {
+        this.numberOfDatasetLinks = numberOfDatasetLinks;
+    }
+
+    public List<InspireSpatialDatasetIdentifier> getInspireSpatialDatasetIdentifiers() {
+        return inspireSpatialDatasetIdentifiers;
+    }
+
+    public void setInspireSpatialDatasetIdentifiers(List<InspireSpatialDatasetIdentifier> inspireSpatialDatasetIdentifiers) {
+        this.inspireSpatialDatasetIdentifiers = inspireSpatialDatasetIdentifiers;
+    }
 
     public CapabilitiesDocumentState getState() {
         return state;

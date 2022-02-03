@@ -31,13 +31,53 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.capabilities;
+package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(
+        indexes = {
+                @Index(
+                        name = "inspireSpatialDatasetIdentifier_namespace_code_idx",
+                        columnList = "namespace,code",
+                        unique = false
+                )
+        }
+)
 public class InspireSpatialDatasetIdentifier {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long InspireSpatialDatasetIdentifierId;
+
+    @Column(columnDefinition = "text")
     private String metadataURL;
+
+    @Column(columnDefinition = "text")
     private String code;
+
+    @Column(columnDefinition = "text")
     private String namespace;
+
+    //which capabilities record does this link belong to?
+    @ManyToOne(fetch = FetchType.EAGER)
+    private CapabilitiesDocument capabilitiesDocument;
+
+    public InspireSpatialDatasetIdentifier() {
+
+    }
+
 
     public InspireSpatialDatasetIdentifier(String metadataURL, String code, String namespace) {
         this.metadataURL = metadataURL;
@@ -67,6 +107,22 @@ public class InspireSpatialDatasetIdentifier {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public long getInspireSpatialDatasetIdentifierId() {
+        return InspireSpatialDatasetIdentifierId;
+    }
+
+    public void setInspireSpatialDatasetIdentifierId(long inspireSpatialDatasetIdentifierId) {
+        InspireSpatialDatasetIdentifierId = inspireSpatialDatasetIdentifierId;
+    }
+
+    public CapabilitiesDocument getCapabilitiesDocument() {
+        return capabilitiesDocument;
+    }
+
+    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
+        this.capabilitiesDocument = capabilitiesDocument;
     }
 
     @Override

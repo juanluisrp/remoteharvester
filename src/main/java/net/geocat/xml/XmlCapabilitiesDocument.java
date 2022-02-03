@@ -36,8 +36,8 @@ package net.geocat.xml;
 import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
-import net.geocat.service.capabilities.InspireSpatialDatasetIdentifier;
-import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNode;
+import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
+
 import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
 import java.util.ArrayList;
 import java.util.List;

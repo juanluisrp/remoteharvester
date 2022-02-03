@@ -44,6 +44,7 @@ import org.junit.Test;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestWFSCapabilities {
@@ -70,7 +71,6 @@ public class TestWFSCapabilities {
 
 
         assertTrue(wfs.getDatasetLinksList().isEmpty()); //not double counting
-
         int t=0;
     }
 
@@ -84,7 +84,12 @@ public class TestWFSCapabilities {
 
         assertEquals("ft1URL", wfs.getDatasetLinksList().get(0).getRawUrl() );
 
-        int t=0;
+        assertEquals(2,wfs.getInspireDatasetLinks().size());
+        assertEquals("dscode1",wfs.getInspireDatasetLinks().get(0).getCode());
+        assertEquals("dsnamespace1",wfs.getInspireDatasetLinks().get(0).getNamespace());
+        assertEquals("ds_metadataurl1",wfs.getInspireDatasetLinks().get(0).getMetadataURL());
+
+         int t=0;
     }
 
     @Test
