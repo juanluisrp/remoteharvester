@@ -130,31 +130,6 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         return result;
     }
 
-//    protected Node findMetadataURLs(Node layer) {
-//        List<Node> metadataURLs = findAllNodes(layer, "MetadataURL");
-//        if (metadataURLs.isEmpty())
-//            return null;
-//        if (metadataURLs.size() == 1) //only one, no need to choose
-//            return metadataURLs.get(0);
-//
-//        Node good = null;
-//
-//        for (Node metadataURL: metadataURLs){
-//            Node format = findNode(metadataURL,"Format");
-//            if ( (format !=null) && (format.getTextContent() != null) ){
-//                String mime = format.getTextContent().trim();
-//                if (mime.toLowerCase().contains("/xml")) //  text/xml  application/xml
-//                    return metadataURL;
-//                if (mime.toLowerCase().contains("xml"))  // might catch something...
-//                    good= metadataURL;
-//            }
-//        }
-//        if (good !=null)
-//            return good;
-//        return metadataURLs.get(0);
-//
-//    }
-
     protected List<String> findMetadataURLs(Node layer) throws Exception {
 
         List<Node> metadataURLs = findAllNodes(layer, "MetadataURL");
@@ -166,15 +141,7 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
                 .filter(x->x !=null && (x.getTextContent() != null) && (!x.getTextContent().trim().isEmpty()))
                 .map(x->x.getTextContent().trim())
                 .collect(Collectors.toList());
-//        if (nn == null)
-//            return null;
-//        Node n = findNode(nn, "OnlineResource");
-//        if (n == null)
-//            return null;
-//        Node att = n.getAttributes().getNamedItem("xlink:href");
-//        if (att == null)
-//            return null;
-//        return att.getTextContent();
+
     }
 
 
