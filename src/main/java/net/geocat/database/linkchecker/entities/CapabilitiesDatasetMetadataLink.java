@@ -67,6 +67,9 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
      @Column(columnDefinition = "text")
     String fileIdentifier;
 
+    @Column(columnDefinition = "text")
+    String parentIdentifier;
+
      @Column(columnDefinition = "text")
     String datasetIdentifier;
 
@@ -125,6 +128,14 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 
     public void setIdentity(String identity) {
         this.identity = identity;
+    }
+
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     //---------------------------------------------------------------------------

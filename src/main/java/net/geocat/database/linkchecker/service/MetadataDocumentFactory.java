@@ -80,6 +80,7 @@ public class MetadataDocumentFactory {
     public void augment(MetadataRecord metadataRecord, XmlMetadataDocument xml) {
         metadataRecord.setMetadataRecordType(xml.getMetadataDocumentType());
         metadataRecord.setFileIdentifier(xml.getFileIdentifier());
+        metadataRecord.setParentIdentifier(xml.getParentIdentifier());
     }
 
     public void augment(DatasetMetadataRecord datasetMetadataRecord, XmlDatasetMetadataDocument xml) throws Exception {
