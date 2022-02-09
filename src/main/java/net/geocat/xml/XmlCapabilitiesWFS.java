@@ -69,91 +69,11 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
     }
 
-//    private String getLayerMetadataURL() throws  Exception {
-//        NodeList nl = xpath_nodeset("//wfs:FeatureType/wfs:MetadataURL/@xlink:href");
-//        for(int idx=0;idx<nl.getLength();idx++){
-//            Node n = nl.item(idx);
-//            String value = n.getNodeValue();
-//            if  (  (value == null) || ( value.isEmpty()) )
-//                continue;
-//            return value.trim();
-//        }
-//        return null;
-//    }
 
     private void setup_XmlCapabilitiesWFS() throws Exception {
-      //  Node extended = findNode(parsedXml,"WFS_Capabilities","OperationsMetadata","ExtendedCapabilities","ExtendedCapabilities");
-        //NodeList sdi = xpath_nodeset("//inspire_dls:SpatialDataSetIdentifier");
-
-//        if (extended != null) {
-//            List<Node> sdi = findAllNodes(extended,"SpatialDataSetIdentifier");
-//
-//
-//            for (int idx = 0; idx < sdi.size(); idx++) {
-//                Node n = sdi.get(idx);
-//                String url = getLayerMetadataURL_inspire(n);
-//
-//                //Node codeNode = xpath_node(n, "./inspire_common:Code");
-//                Node codeNode = findNode(n,"Code");
-//                String identity = null;
-//                if (codeNode != null)
-//                    identity = codeNode.getTextContent().trim();
-//                if ((url != null) || (identity != null)) {
-//                    DatasetLink datasetLink = new DatasetLink(identity, url);
-//                    datasetLinksList.add(datasetLink);
-//                }
-//            }
-//        }
         setup_XmlCapabilitiesWFS_noinspire();
     }
 
-//    protected Node findBestMetadataURL(Node layer) {
-//        List<Node> metadataURLs = WMSCapabilitiesDatasetLinkExtractor.findAllNodes(layer, "MetadataURL");
-//        if (metadataURLs.isEmpty())
-//            return null;
-//        if (metadataURLs.size() == 1) //only one, no need to choose
-//            return metadataURLs.get(0);
-//
-//        Node good = null; // format has "xml" in it
-//        Node good2 = null;// no format, but has "GetRecordById" in it
-//
-//        for (Node metadataURL: metadataURLs){
-//            Node format = WMSCapabilitiesDatasetLinkExtractor.findNode(metadataURL,"Format");
-//            if (format==null)
-//                format = metadataURL.getAttributes().getNamedItem("format");
-//            if ( (format !=null) && (format.getTextContent() != null) ){
-//                String mime = format.getTextContent().trim();
-//                if (mime.toLowerCase().contains("/xml")) //  text/xml  application/xml
-//                    return metadataURL; // this is perfect!
-//                if (mime.toLowerCase().contains("xml")) {  // might catch something...
-//                    good = metadataURL;
-//                }
-//            }
-//            else
-//            {
-//                // no format info...
-//                Node urlNode20 = metadataURL.getAttributes().getNamedItem("xlink:href"); //2.0
-//                String text = metadataURL.getTextContent();
-//                if (text !=null)
-//                    text = text.trim();
-//                String url = null;
-//                if ( (urlNode20 != null) && (!urlNode20.getNodeValue().isEmpty()) )
-//                    url = urlNode20.getNodeValue();
-//                else if ( (text != null) && (!text.isEmpty()) )
-//                     url = text;
-//                if ( (url != null) && (url.toLowerCase().contains("getrecordbyid")) )
-//                    good2 = metadataURL;
-//
-//            }
-//        }
-//        if (good !=null)
-//            return good;
-//        if (good2 != null)
-//            return good2;
-//        // need to choose which one..
-//        return metadataURLs.get(0);
-//
-//    }
 
     protected List<String> findMetadataURLs(Node layer) throws Exception {
 
@@ -177,17 +97,26 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
             return; // no feature types
         List<Node> nl = WMSCapabilitiesDatasetLinkExtractor.findNodes(secondary,"FeatureType");
 
-        for(Node node : nl) {
-            List<String> metadataURLs = findMetadataURLs(node);
+        for(Node FTnode : nl) {
+            String name = null;
+            Node nameNode = findNode(FTnode,"Name");
+            if (nameNode !=null)
+                name = nameNode.getTextContent();
+            if (name !=null)
+                name = name.trim();
+
+            List<String> metadataURLs = findMetadataURLs(FTnode);
+
             if  ( (metadataURLs == null) || (metadataURLs.isEmpty()) )
                 continue;
             for (String url : metadataURLs){
                 DatasetLink datasetLink = new DatasetLink(null,url);
+                datasetLink.setOgcLayerName(name);
                 datasetLinksList.add(datasetLink);
             }
 
         }
-        datasetLinksList = WMSCapabilitiesDatasetLinkExtractor.unique(datasetLinksList);
+        // datasetLinksList = WMSCapabilitiesDatasetLinkExtractor.unique(datasetLinksList);
 
     }
 

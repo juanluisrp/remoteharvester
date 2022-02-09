@@ -82,14 +82,16 @@ public class TestWFSCapabilities {
 
         assertEquals(1, wfs.getDatasetLinksList().size()); //not double counting
 
-        assertEquals("ft1URL", wfs.getDatasetLinksList().get(0).getRawUrl() );
 
         assertEquals(2,wfs.getInspireDatasetLinks().size());
         assertEquals("dscode1",wfs.getInspireDatasetLinks().get(0).getCode());
         assertEquals("dsnamespace1",wfs.getInspireDatasetLinks().get(0).getNamespace());
         assertEquals("ds_metadataurl1",wfs.getInspireDatasetLinks().get(0).getMetadataURL());
 
-         int t=0;
+        assertEquals("ft1URL", wfs.getDatasetLinksList().get(0).getRawUrl() );
+        assertEquals("ws:layer1", wfs.getDatasetLinksList().get(0).getOgcLayerName() );
+
+        int t=0;
     }
 
     @Test
@@ -98,10 +100,15 @@ public class TestWFSCapabilities {
 
         assertEquals(2,wfs.getInspireDatasetLinks().size());
 
-        assertEquals(2, wfs.getDatasetLinksList().size()); //not double counting
+        assertEquals(3, wfs.getDatasetLinksList().size()); //not double counting
 
-        assertEquals("ft1URL", wfs.getDatasetLinksList().get(1).getRawUrl() );
-        assertEquals("ft2URL", wfs.getDatasetLinksList().get(0).getRawUrl() );
+        assertEquals("ft1URL", wfs.getDatasetLinksList().get(0).getRawUrl() );
+        assertEquals("ft2URL", wfs.getDatasetLinksList().get(1).getRawUrl() );
+        assertEquals("ft3URL", wfs.getDatasetLinksList().get(2).getRawUrl() );
+
+        assertEquals("ws:layer1", wfs.getDatasetLinksList().get(0).getOgcLayerName() );
+        assertEquals("ws:layer2", wfs.getDatasetLinksList().get(1).getOgcLayerName() );
+        assertEquals("ws:layer2", wfs.getDatasetLinksList().get(2).getOgcLayerName() );
 
         int t=0;
     }

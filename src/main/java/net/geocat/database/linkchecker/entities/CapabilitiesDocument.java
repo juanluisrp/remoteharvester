@@ -112,6 +112,11 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     // i.e. capabilitiesDatasetMetadataLinkList.size()
     private Integer numberOfDatasetLinks;
 
+
+    @Column(columnDefinition = "text")
+    private String procGetSpatialDataSetName;
+
+
     // summary for display
     @Column(columnDefinition = "text")
     private String summary;
@@ -121,10 +126,19 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
     public CapabilitiesDocument(){
         this.capabilitiesDatasetMetadataLinkList = new ArrayList<>();
         this.state = CapabilitiesDocumentState.CREATED;
+        this.inspireSpatialDatasetIdentifiers = new ArrayList<>();
     }
 
     //---------------------------------------------------------------------------
 
+
+    public String getProcGetSpatialDataSetName() {
+        return procGetSpatialDataSetName;
+    }
+
+    public void setProcGetSpatialDataSetName(String procGetSpatialDataSetName) {
+        this.procGetSpatialDataSetName = procGetSpatialDataSetName;
+    }
 
     public Integer getNumberOfDatasetLinks() {
         return numberOfDatasetLinks;

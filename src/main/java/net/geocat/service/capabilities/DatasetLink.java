@@ -37,9 +37,10 @@ import java.util.Objects;
 
 public class DatasetLink {
 
-    String identifier;
-    String rawUrl;
+    String identifier; // identifier (if present)
+    String rawUrl; //metadataURL
     String authority; //for wms
+    String ogcLayerName; // name of the layer/featuretype to make ogc request
 
     //---------------------------------------------------------------------------
 
@@ -51,6 +52,14 @@ public class DatasetLink {
 
     //---------------------------------------------------------------------------
 
+
+    public String getOgcLayerName() {
+        return ogcLayerName;
+    }
+
+    public void setOgcLayerName(String ogcLayerName) {
+        this.ogcLayerName = ogcLayerName;
+    }
 
     public String getAuthority() {
         return authority;

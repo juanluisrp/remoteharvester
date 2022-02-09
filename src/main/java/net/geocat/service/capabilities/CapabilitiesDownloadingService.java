@@ -48,11 +48,17 @@ import net.geocat.service.RetrieveCapabilitiesDatasetMetadataLink;
 import net.geocat.service.RetrieveServiceDocumentLink;
 import net.geocat.service.helper.ProcessLockingService;
 import net.geocat.service.helper.SharedForkJoinPool;
+import net.geocat.xml.XmlCapabilitiesDocument;
+import net.geocat.xml.XmlCapabilitiesWFS;
+import net.geocat.xml.XmlDocumentFactory;
+import net.geocat.xml.XmlStringTools;
+import net.geocat.xml.helpers.CapabilitiesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Node;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -78,7 +84,12 @@ public class CapabilitiesDownloadingService {
     RetrieveServiceDocumentLink retrieveServiceDocumentLink;
 
     @Autowired
+    RetrieveStoredQueries retrieveStoredQueries;
+
+    @Autowired
     CapabilitiesDocumentRepo capabilitiesDocumentRepo;
+
+
 
 
     @Autowired
@@ -115,6 +126,7 @@ public class CapabilitiesDownloadingService {
         }
     }
 
+
     private void processCapabilitiesDocument_work(ServiceDocumentLink link) {
         //first lets see if the document already exists - if not, we need to make it
         CapabilitiesDocument doc  = getOrCreate(link);
@@ -123,6 +135,9 @@ public class CapabilitiesDownloadingService {
             //we'll try again
             //STATE ERROR: this shouldn't really happen, so should be ok to re-process it when it does
             try {
+                String storedProcName = retrieveStoredQueries.getSpatialDataSetStoredQuery(doc,link);
+                if (storedProcName !=null)
+                    doc.setProcGetSpatialDataSetName(storedProcName);
                 getServiceDocument(doc);
                 getDatasetDocuments(doc);
                 doc.setState(CapabilitiesDocumentState.COMPLETE);

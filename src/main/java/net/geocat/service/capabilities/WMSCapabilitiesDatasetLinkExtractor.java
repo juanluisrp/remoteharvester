@@ -42,9 +42,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.w3c.dom.Node.ELEMENT_NODE;
 
 @Component
 @Scope("prototype")
@@ -53,12 +57,28 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
     Logger logger = LoggerFactory.getLogger(WMSCapabilitiesDatasetLinkExtractor.class);
 
 
-    public static List<DatasetLink> unique(List<DatasetLink> list) {
-        HashSet hs = new HashSet();
-        hs.addAll(list);
-        list.clear();
-        list.addAll(hs);
-        return list;
+//    public static List<DatasetLink> unique(List<DatasetLink> list) {
+//        HashSet hs = new HashSet();
+//        hs.addAll(list);
+//        list.clear();
+//        list.addAll(hs);
+//        return list;
+//    }
+
+    public static List<Node> findNodesFullSearch(Node n, String localName) {
+        NodeList nl = n.getChildNodes();
+        List<Node> result = new ArrayList<>();
+        for (int idx=0; idx <nl.getLength();idx++) {
+            Node nn = nl.item(idx);
+            String name = nn.getLocalName() == null ? nn.getNodeName() : nn.getLocalName();
+
+            if (name.equals(localName)) {
+                result.add(nn);
+            }
+            if (nn.getNodeType() == ELEMENT_NODE)
+                result.addAll(findNodesFullSearch(nn,localName)); // recurse
+        }
+        return result;
     }
 
 
@@ -78,12 +98,47 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         return result;
     }
 
+    public Map<String, String> findAuthorityURLS(XmlDoc doc) throws Exception {
+        Map<String, String> result = new HashMap<>();
+
+        List<Node> nodes = findNodesFullSearch(doc.getFirstNode(),"AuthorityURL");
+        for(Node node:nodes) {
+            Node nameNode = node.getAttributes().getNamedItem("name");
+            if (nameNode == null)
+                continue;
+            String name = nameNode.getTextContent();
+            if (name == null)
+                continue;
+            name = name.trim();
+            if (name.isEmpty())
+                continue;
+            Node onlineNode = findNode(node,"OnlineResource");
+            if (onlineNode == null)
+                continue;
+            Node urlNode = onlineNode.getAttributes().getNamedItem("xlink:href");
+            if (urlNode == null)
+                continue;
+            String url = urlNode.getTextContent();
+            if (url == null)
+                continue;
+            url = url.trim();
+            if (url.isEmpty())
+                continue;
+            result.put(name,url);
+
+        }
+
+        return result;
+    }
+
 
     @Override
     public List<DatasetLink> findLinks(XmlDoc doc) throws Exception {
         List<DatasetLink> result = new ArrayList<>();
 
         Node main = doc.getFirstNode();
+
+        Map<String,String> authorityURLs = findAuthorityURLS(doc);
 
         Node secondary = findNode(doc.getFirstNode(),"Capability");
         if (secondary == null)
@@ -94,36 +149,54 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         int idx = 0;
         for(Node n : ns) {
           //  logger.debug("indx = "+idx);
-            List<DatasetLink> links = processLayer(doc, n);
+            List<DatasetLink> links = processLayer(doc, n, authorityURLs);
             if (links != null)
                 result.addAll(links);
             idx++;
         }
 
-
-        return unique(result);
+        return result;
+        //return unique(result);
     }
 
-    public List<DatasetLink> processLayer(XmlDoc doc, Node layer) throws Exception {
+    public List<DatasetLink> processLayer(XmlDoc doc, Node layer,Map<String,String> authorityURLs) throws Exception {
         List<DatasetLink> result = new ArrayList<>();
 
         String identifier = searchIdentifier(doc, layer);
         List<String> metadataUrls = searchMetadataUrls(doc, layer);
         String authority = searchAuthority(doc,layer);
 
+        String name = null;
+        Node nameNode = findNode(layer,"Name");
+        if (nameNode !=null)
+            name = nameNode.getTextContent();
+        if (name !=null)
+            name = name.trim();
+
         if ((identifier != null) || (metadataUrls != null)) {
             if (metadataUrls !=null) {
                 for (String url : metadataUrls) {
                     DatasetLink item = new DatasetLink(identifier, url);
-                    if ((authority != null) && (!authority.isEmpty()))
-                        item.setAuthority(authority);
+                    item.setOgcLayerName(name);
+                    if ((authority != null) && (!authority.isEmpty())) {
+                        authority = authority.trim();
+                        String authorityurl = authorityURLs.get(authority);
+                        if (authorityurl == null)
+                            authorityurl = authority;
+                        item.setAuthority(authorityurl);
+                    }
                     result.add(item);
                 }
             }
             else {
                 DatasetLink item = new DatasetLink(identifier, null);
-                if ((authority != null) && (!authority.isEmpty()))
-                    item.setAuthority(authority);
+                if ((authority != null) && (!authority.isEmpty())) {
+                    authority = authority.trim();
+                    String authorityurl = authorityURLs.get(authority);
+                    if (authorityurl == null)
+                        authorityurl = authority;
+                    item.setAuthority(authorityurl);
+                }
                 result.add(item);
             }
         }

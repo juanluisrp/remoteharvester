@@ -41,18 +41,15 @@ import java.util.Arrays;
 public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 
     public String datasetIdentifier;
+    public String datasetIdentifierCodeSpace;
 
     public XmlDatasetMetadataDocument(XmlDoc doc) throws Exception {
         super(doc);
         setup_XmlDatasetMetadataDocument();
     }
 
-    private void setup_XmlDatasetMetadataDocument() throws XPathExpressionException {
-       // Node n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
-       // Node n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
+    private void setupDatasetIdentifier() {
         Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","code","CharacterString"}));
-
-
         if (n != null) {
             datasetIdentifier = n.getTextContent();
             return;
@@ -70,7 +67,7 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
             }
             return;
         }
-       // n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString");
+        // n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString");
         n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","code","CharacterString"}));
 
         if (n != null) {
@@ -87,6 +84,40 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
         }
     }
 
+    private void setupDatasetIdentifierCodeSpace() {
+        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","codeSpace","CharacterString"}));
+        if (n != null) {
+            datasetIdentifierCodeSpace = n.getTextContent();
+            if (datasetIdentifierCodeSpace !=null)
+                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
+            return;
+        }
+        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","codeSpace","CharacterString"}));
+        if (n != null) {
+            datasetIdentifierCodeSpace = n.getTextContent();
+            if (datasetIdentifierCodeSpace !=null)
+                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
+            return;
+        }
+    }
+
+    private void setup_XmlDatasetMetadataDocument() throws XPathExpressionException {
+        setupDatasetIdentifier();
+        setupDatasetIdentifierCodeSpace();
+    }
+
+
+    //--------------
+
+
+    public String getDatasetIdentifierCodeSpace() {
+        return datasetIdentifierCodeSpace;
+    }
+
+    public void setDatasetIdentifierCodeSpace(String datasetIdentifierCodeSpace) {
+        this.datasetIdentifierCodeSpace = datasetIdentifierCodeSpace;
+    }
+
     public String getDatasetIdentifier() {
         return datasetIdentifier;
     }
@@ -99,6 +130,9 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
     public String toString() {
         String result =  "XmlDatasetMetadataDocument(fileIdentifier="+fileIdentifier;
         result += ", datasetIdentifier = "+datasetIdentifier;
+        if (datasetIdentifierCodeSpace !=null)
+            result += ", datasetIdentifierCodeSpace = "+datasetIdentifierCodeSpace;
+
         result += ")";
         return result;
     }
