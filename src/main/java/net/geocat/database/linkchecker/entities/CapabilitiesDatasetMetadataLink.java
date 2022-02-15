@@ -73,6 +73,9 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
      @Column(columnDefinition = "text")
     String datasetIdentifier;
 
+    @Column(columnDefinition = "text")
+    String ogcLayerName; // <Layer><Name>  or <FeatureType><Name>
+
 //    //link back to the capabilities document this link came from
 //    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
 //    CapabilitiesDocument capabilitiesDocument;
@@ -96,6 +99,14 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 
     //---------------------------------------------------------------------------
 
+
+    public String getOgcLayerName() {
+        return ogcLayerName;
+    }
+
+    public void setOgcLayerName(String ogcLayerName) {
+        this.ogcLayerName = ogcLayerName;
+    }
 
     public String getFileIdentifier() {
         return fileIdentifier;
@@ -159,6 +170,7 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
         result += "      identity: " + identity + "\n";
         result += "      file Identifier: " + fileIdentifier + "\n";
         result += "      dataset identifier: " + datasetIdentifier + "\n";
+        result += "      ogcLayerName: " + ogcLayerName + "\n";
 
         result += "\n";
         result += super.toString();

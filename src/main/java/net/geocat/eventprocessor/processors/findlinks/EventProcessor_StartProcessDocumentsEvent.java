@@ -126,10 +126,11 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
 
 //        List<String> items = Arrays.asList(new String[] {"eab36660-76ec-11e0-994d-0002a5d5c51b"});
-//
-        //todo - remove
-//     List<String> items = Arrays.asList(new String[] { "7c2d4e17-608b-aa17-c9db-951db60ff22b",
-//              "19705c73-3409-0002-c9db-951db60ff22b"
+//"5e0e1b0c-5a84-4f56-9dc2-79930a010852","59f714fa-da7c-4e73-b9eb-0b690a010852"
+//        //todo - remove
+//     List<String> items = Arrays.asList(new String[] {
+//             "25a379b1-33db-450a-a9f4-4c396a29a02a",
+//             "5d0e1408-2409-4c19-a037-10764523379b"
 //     });
 //     metadataRecords = metadataRecords.stream().filter(x-> items.contains(x.getRecordIdentifier() )).collect(Collectors.toList());
 //     metadataRecords = metadataRecords.stream().filter(x-> !items.contains(x.getRecordIdentifier() )).collect(Collectors.toList());

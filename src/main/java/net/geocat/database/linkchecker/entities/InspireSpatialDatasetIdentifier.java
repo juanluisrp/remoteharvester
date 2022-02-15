@@ -70,9 +70,9 @@ public class InspireSpatialDatasetIdentifier {
     @Column(columnDefinition = "text")
     private String namespace;
 
-    //which capabilities record does this link belong to?
-    @ManyToOne(fetch = FetchType.EAGER)
-    private CapabilitiesDocument capabilitiesDocument;
+//    //which capabilities record does this link belong to?
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    private CapabilitiesDocument capabilitiesDocument;
 
     public InspireSpatialDatasetIdentifier() {
 
@@ -117,13 +117,13 @@ public class InspireSpatialDatasetIdentifier {
         InspireSpatialDatasetIdentifierId = inspireSpatialDatasetIdentifierId;
     }
 
-    public CapabilitiesDocument getCapabilitiesDocument() {
-        return capabilitiesDocument;
-    }
-
-    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
-        this.capabilitiesDocument = capabilitiesDocument;
-    }
+//    public CapabilitiesDocument getCapabilitiesDocument() {
+//        return capabilitiesDocument;
+//    }
+//
+//    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
+//        this.capabilitiesDocument = capabilitiesDocument;
+//    }
 
     @Override
     public String toString() {

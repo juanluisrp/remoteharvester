@@ -110,12 +110,13 @@ public class RetrieveStoredQueries {
                 return null;
 
             XmlDoc xmlStoreQueries = new XmlDoc(XmlStringTools.bytea2String(httpResult.getData()));
-            Node query = xmlStoreQueries.xpath_node("//wfs:StoredQuery[@id='GetSpatialDataSet']");
-            if (query != null)
-                return "GetSpatialDataSet";
+            Node query;
             query = xmlStoreQueries.xpath_node("//wfs:StoredQuery[@id='http://inspire.ec.europa.eu/operation/download/GetSpatialDataSet']");
             if (query != null)
                 return "http://inspire.ec.europa.eu/operation/download/GetSpatialDataSet";
+            query= xmlStoreQueries.xpath_node("//wfs:StoredQuery[@id='GetSpatialDataSet']");
+            if (query != null)
+                return "GetSpatialDataSet";
             return null;
         } catch (Exception e) {
             //didn't work - cannot process.  IGNORE.

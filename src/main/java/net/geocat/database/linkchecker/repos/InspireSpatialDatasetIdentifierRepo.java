@@ -31,43 +31,26 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.database.linkchecker.repos;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import net.geocat.xml.XmlCapabilitiesDocument;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
+import net.geocat.database.linkchecker.entities.helper.StoreQueryCapabilitiesLinkResult;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Scope("prototype")
-public class CapabilitiesDatasetMetadataLinkService {
+public interface InspireSpatialDatasetIdentifierRepo  extends CrudRepository<InspireSpatialDatasetIdentifier, String> {
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
-
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
-        List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
-        for (DatasetLink link : doc.getDatasetLinksList()) {
-
-            CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-            item.setOgcLayerName(link.getOgcLayerName());
-            item.setLinkState(LinkState.Created);
-            item.setRawURL(link.getRawUrl());
-            item.setLinkCheckJobId(cap.getLinkCheckJobId());
-            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
-            item.setIdentity(link.getIdentifier());
-
-         //   item.setCapabilitiesDocument(cap);
-            result.add(item);
-        }
-        return result;
-    }
+    @Query(value = "SELECT cap_sha2 as sha2,cap_jobid as linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype, procGetSpatialDataSetName " +
+            "FROM inspirespatialdatasetidentifier " +
+            " JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=inspirespatialdatasetidentifier.cap_sha2 and capabilitiesdocument.linkcheckjobid = inspirespatialdatasetidentifier.cap_jobid) " +
+            "WHERE cap_jobid = ?1 AND code =?2 AND namespace = ?3",
+            nativeQuery = true
+    )
+    List<StoreQueryCapabilitiesLinkResult> linkToCapabilitiesViaInspire(String linkCheckJob, String inspireCode, String inspireCodeSet);
 }

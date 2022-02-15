@@ -31,43 +31,70 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.database.linkchecker.entities;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import net.geocat.xml.XmlCapabilitiesDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-@Component
-@Scope("prototype")
-public class CapabilitiesDatasetMetadataLinkService {
+@Entity
+@DiscriminatorValue("SimpleStoredQueryDataLink")
+public class SimpleStoredQueryDataLink extends LinkToData {
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
+    @Column(columnDefinition = "text")
+    private String storedProcName;
 
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
-        List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
-        for (DatasetLink link : doc.getDatasetLinksList()) {
+    @Column(columnDefinition = "text")
+    private String code;
 
-            CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-            item.setOgcLayerName(link.getOgcLayerName());
-            item.setLinkState(LinkState.Created);
-            item.setRawURL(link.getRawUrl());
-            item.setLinkCheckJobId(cap.getLinkCheckJobId());
-            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
-            item.setIdentity(link.getIdentifier());
+    @Column(columnDefinition = "text")
+    private String codeSpace;
 
-         //   item.setCapabilitiesDocument(cap);
-            result.add(item);
-        }
-        return result;
+    public SimpleStoredQueryDataLink() {
+        super();
+    }
+
+    public SimpleStoredQueryDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype) {
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype);
+    }
+
+    //----
+
+    public String getStoredProcName() {
+        return storedProcName;
+    }
+
+    public void setStoredProcName(String storedProcName) {
+        this.storedProcName = storedProcName;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCodeSpace() {
+        return codeSpace;
+    }
+
+    public void setCodeSpace(String codeSpace) {
+        this.codeSpace = codeSpace;
+    }
+
+    //--
+
+    @Override
+    public String toString() {
+        return "SimpleStoredQueryDataLink{" + "\n"+
+                "     storedProcName: " + storedProcName + "\n" +
+                "     code: " + code + "\n" +
+                "     codeSpace: " + codeSpace + "\n" +
+                super.toString() + "\n" +
+                '}';
     }
 }

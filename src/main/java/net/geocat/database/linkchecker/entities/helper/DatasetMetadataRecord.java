@@ -71,6 +71,9 @@ public class DatasetMetadataRecord extends MetadataRecord {
     // INSPIRE dataset identifier (from document)
     private String datasetIdentifier;
 
+    // INSPIRE dataset identifier (from document)
+    private String datasetIdentifierCodeSpace;
+
     // number of links found in the document
     //  i.e. documentLinks.size()
     private Integer numberOfLinksFound;
@@ -230,6 +233,13 @@ public class DatasetMetadataRecord extends MetadataRecord {
         this.datasetIdentifier = datasetIdentifier;
     }
 
+    public String getDatasetIdentifierCodeSpace() {
+        return datasetIdentifierCodeSpace;
+    }
+
+    public void setDatasetIdentifierCodeSpace(String datasetIdentifierCodeSpace) {
+        this.datasetIdentifierCodeSpace = datasetIdentifierCodeSpace;
+    }
 
     //---------------------------------------------------------------------------
 
@@ -256,6 +266,7 @@ public class DatasetMetadataRecord extends MetadataRecord {
         String result = super.toString();
 
         result += "     dataset Identifier: " + datasetIdentifier + "\n";
+        result += "     dataset Identifier codespace: " + datasetIdentifierCodeSpace + "\n";
         if (numberOfLinksFound != null)
             result += "     number of links found: "+ numberOfLinksFound+"\n";
 

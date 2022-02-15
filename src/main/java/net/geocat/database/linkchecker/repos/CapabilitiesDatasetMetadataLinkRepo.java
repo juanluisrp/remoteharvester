@@ -45,6 +45,7 @@ import java.util.List;
 public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<CapabilitiesDatasetMetadataLink, Long> {
 
     @Query(value = "SELECT capabilitiesdocument.sha2, capabilitiesdocument.linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype\n" +
+            ",capabilitiesdatasetmetadatalink.ogclayername \n"+
             "FROM capabilitiesdatasetmetadatalink\n" +
             "      JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid)\n" +
             "WHERE\n" +
@@ -56,6 +57,7 @@ public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<Capa
 
     //use this one if datasetid is null
     @Query(value = "SELECT capabilitiesdocument.sha2, capabilitiesdocument.linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype\n" +
+            ",capabilitiesdatasetmetadatalink.ogclayername \n"+
             "FROM capabilitiesdatasetmetadatalink\n" +
             "      JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid)\n" +
             "WHERE\n" +

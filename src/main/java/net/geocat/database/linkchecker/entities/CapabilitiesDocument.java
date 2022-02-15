@@ -271,6 +271,10 @@ public class CapabilitiesDocument extends UpdateCreateDateTimeEntity {
             result += indent + "      Remote Service Metadata URL: " + remoteServiceMetadataRecordLink.getRawURL() + "\n";
         }
 
+        result += indent + "      procGetSpatialDataSetName: "+procGetSpatialDataSetName+"\n";
+        result += indent + "      numberOfDatasetLinks: "+numberOfDatasetLinks+"\n";
+
+
         result += indent + "  }";
         return result;
     }

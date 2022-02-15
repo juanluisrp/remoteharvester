@@ -31,43 +31,15 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import net.geocat.xml.XmlCapabilitiesDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+public interface StoreQueryCapabilitiesLinkResult {
 
-import java.util.ArrayList;
-import java.util.List;
+    String getSha2();
 
-@Component
-@Scope("prototype")
-public class CapabilitiesDatasetMetadataLinkService {
+    String getLinkcheckjobid();
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
+    String getCapabilitiesdocumenttype();
 
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
-        List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
-        for (DatasetLink link : doc.getDatasetLinksList()) {
-
-            CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-            item.setOgcLayerName(link.getOgcLayerName());
-            item.setLinkState(LinkState.Created);
-            item.setRawURL(link.getRawUrl());
-            item.setLinkCheckJobId(cap.getLinkCheckJobId());
-            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
-            item.setIdentity(link.getIdentifier());
-
-         //   item.setCapabilitiesDocument(cap);
-            result.add(item);
-        }
-        return result;
-    }
+    String getProcGetSpatialDataSetName();
 }

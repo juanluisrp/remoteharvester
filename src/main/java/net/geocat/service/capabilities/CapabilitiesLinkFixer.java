@@ -63,11 +63,21 @@ public class CapabilitiesLinkFixer   {
         link = link.trim();
         link = link.replace(" ","%20");
 
+        //these are for AT - it doesn't like outputSchema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd
+        //and needs them un-url encoded!
+        link = link.replace("%3A", ":");
+        link = link.replace("%2F", "/");
+
         URIBuilder uriBuilder = new URIBuilder(link);
         List<NameValuePair> params =  uriBuilder.getQueryParams();
         params.sort( Comparator.comparing(x->x.getName()));
         uriBuilder.setParameters(params);
-        return uriBuilder.build().toString();
+        link =  uriBuilder.build().toString();
+        //these are for AT - it doesn't like outputSchema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd
+        //and needs them un-url encoded!
+        link = link.replace("%3A", ":");
+        link = link.replace("%2F", "/");
+        return link;
     }
 
 
@@ -80,6 +90,8 @@ public class CapabilitiesLinkFixer   {
             link = link.replace("&amp;","&"); // this seems to happen a lot
             link = link.replace("{","%7B");
             link = link.replace("}","%7D");
+
+
 
             if (link.endsWith("?"))
                 link += "request=GetCapabilities";

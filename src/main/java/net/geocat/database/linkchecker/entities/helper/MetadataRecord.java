@@ -168,6 +168,7 @@ public class MetadataRecord extends UpdateCreateDateTimeEntity {
     @Override
     public String toString() {
         String result = super.toString();
+        result += "     title: " + title + "\n";
         result += "     sha2: " + sha2 + "\n";
         result += "     fileIdentifier: " + fileIdentifier + "\n";
         result += "     metadataRecordType: " + metadataRecordType + "\n";

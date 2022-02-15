@@ -107,8 +107,11 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
 
             List<String> metadataURLs = findMetadataURLs(FTnode);
 
-            if  ( (metadataURLs == null) || (metadataURLs.isEmpty()) )
-                continue;
+            if  ( (metadataURLs == null) || (metadataURLs.isEmpty()) ) {
+                DatasetLink datasetLink = new DatasetLink(null,null);
+                datasetLink.setOgcLayerName(name);
+                datasetLinksList.add(datasetLink);
+            }
             for (String url : metadataURLs){
                 DatasetLink datasetLink = new DatasetLink(null,url);
                 datasetLink.setOgcLayerName(name);

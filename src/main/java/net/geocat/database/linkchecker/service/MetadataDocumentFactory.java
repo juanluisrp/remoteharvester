@@ -86,6 +86,7 @@ public class MetadataDocumentFactory {
     public void augment(DatasetMetadataRecord datasetMetadataRecord, XmlDatasetMetadataDocument xml) throws Exception {
         augment((MetadataRecord) datasetMetadataRecord, (XmlMetadataDocument) xml);
         datasetMetadataRecord.setDatasetIdentifier(xml.getDatasetIdentifier());
+        datasetMetadataRecord.setDatasetIdentifierCodeSpace(xml.getDatasetIdentifierCodeSpace());
 
          List<OnlineResource> links = serviceDocLinkExtractor.extractOnlineResource(xml);
 

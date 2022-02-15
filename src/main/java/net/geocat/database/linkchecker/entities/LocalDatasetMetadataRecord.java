@@ -34,11 +34,17 @@
 package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
- //represents a harvested (local) Dataset document
+//represents a harvested (local) Dataset document
  @NamedEntityGraph(
          name = "LocalDatasetMetadataRecord-lazy-graph",
          attributeNodes = {
@@ -64,12 +70,17 @@ public class LocalDatasetMetadataRecord extends DatasetMetadataRecord {
     @Column(columnDefinition = "text")
     private String summary;
 
+    @OneToMany(mappedBy = "datasetMetadataRecord",
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
+    private Set<LinkToData> dataLinks;
 
 
     //--------
 
     public LocalDatasetMetadataRecord() {
         super();
+        dataLinks = new HashSet<>();
     }
 
 
@@ -90,8 +101,14 @@ public class LocalDatasetMetadataRecord extends DatasetMetadataRecord {
         this.state = state;
     }
 
+    public Set<LinkToData> getDataLinks() {
+        return dataLinks;
+    }
 
-    //---------------------------------------------------------------------------
+    public void setDataLinks(Set<LinkToData> dataLinks) {
+        this.dataLinks = dataLinks;
+    }
+//---------------------------------------------------------------------------
 
     @PreUpdate
     protected void onUpdate() {
