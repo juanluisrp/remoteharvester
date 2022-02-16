@@ -4,7 +4,7 @@
  * For more info, see https://www.jetbrains.com/help/space/automation.html
  */
 
-job("Build, test and install project artifacts") {
+job("Build, test and install CSW-harvester artifacts") {
     container(displayName = "Run mvn install", image = "maven:3-jdk-8") {
         // url of a Space Packages repository
         env["REPOSITORY_URL"] = "https://maven.pkg.jetbrains.space/geocat/p/jrc-inspire-portal/maven"
