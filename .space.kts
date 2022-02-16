@@ -4,7 +4,7 @@
 * For more info, see https://www.jetbrains.com/help/space/automation.html
 */
 
-job("Build, test and install project artifacts") {
+job("Build, test and install CSW-ingester artifacts") {
     
     container(displayName = "Run mvn install", image = "maven:3-jdk-8") {
         // url of a Space Packages repository
