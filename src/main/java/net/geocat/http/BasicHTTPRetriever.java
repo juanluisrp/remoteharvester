@@ -78,7 +78,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
     public HttpResult retrieveJSON(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException
     {
-        return retrieve(verb,location,body, cookie,predicate, "application/json","application/json");
+        return retrieve(verb,location,body, cookie,predicate, "application/json",new String[] {"application/json"});
     }
 
     /**
@@ -92,7 +92,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
     public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException
     {
-        return retrieve(verb,location,body, cookie,predicate, "application/xml",  "application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9");
+        //some systems don't understand the q qualifier
+        return retrieve(verb,location,body, cookie,predicate, "application/xml",  new String[] {"application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9"});
     }
 
 
@@ -104,7 +105,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public HttpResult retrieve (String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,String contentType,String accept) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public HttpResult retrieve (String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,String contentType,String[] accept) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
         if (body == null)
             body = "";
@@ -149,7 +150,12 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         if (verb.equals("POST")) {
             http.setRequestProperty("Content-Type", contentType); // some servers don't like this set if there's no body
         }
-        http.setRequestProperty("Accept", accept);
+        if (accept !=null) {
+            for(String a:accept){
+                http.setRequestProperty("Accept", a);
+            }
+        }
+
         if ((cookie != null) && (!cookie.isEmpty()))
             http.setRequestProperty("Cookie", cookie);
 

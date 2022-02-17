@@ -96,7 +96,8 @@ public class RetrieveCapabilitiesDatasetMetadataLink {
         String sha2 = doc.computeSHA2(xmlStr);
         link.setFileIdentifier(xmlDatasetMetadataDocument.getFileIdentifier());
         link.setParentIdentifier(xmlDatasetMetadataDocument.getParentIdentifier());
-        link.setDatasetIdentifier(xmlDatasetMetadataDocument.getDatasetIdentifier());
+
+        link.setDatasetIdentifiers(xmlDatasetMetadataDocument.getDatasetIdentifiers());
 
 
         link.setSha2(sha2);

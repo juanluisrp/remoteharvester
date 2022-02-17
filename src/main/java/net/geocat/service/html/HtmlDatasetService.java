@@ -38,6 +38,7 @@ import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
@@ -96,6 +97,14 @@ public class HtmlDatasetService {
 
         String result = "<h1> Dataset Record</h1> \n";
         result += "<xmp>" + record.toString() + "</xmp><br>\n<br>\n";
+
+
+        result += "<h1> Dataset Identifiers</h1> \n";
+        result += "<b>FileIdentifier: "+ record.getFileIdentifier() +"</b><br><br>\n";
+        for(DatasetIdentifier identifier:record.getDatasetIdentifiers()) {
+            result += identifier.toString() +"<br>\n";
+        }
+
 
         if (record.getDataLinks().size() == 0) {
             result += "NO links to data<Br><br>\n";

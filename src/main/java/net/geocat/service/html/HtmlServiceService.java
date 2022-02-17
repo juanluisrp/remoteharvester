@@ -35,7 +35,9 @@ package net.geocat.service.html;
 
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.OperatesOnLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
 import net.geocat.service.BlobStorageService;
@@ -107,7 +109,7 @@ public class HtmlServiceService {
         result +="<h2>Service Document Links</h2>\n";
         idx = 0;
         for(ServiceDocumentLink link: record.getServiceDocumentLinks()) {
-            result += "<br> <h3>Link #"+idx+" - <a href='"+ link.getFixedURL() +"'>"+link.getFixedURL()+"</a>" +"</h3>\n";
+            result += "<br> <h3>Document Link #"+idx+" - <a href='"+ link.getFixedURL() +"'>"+link.getFixedURL()+"</a>" +"</h3>\n";
             result += "fully downloaed: "+link.getUrlFullyRead()+"<br>\n";
             result += "<xmp>"+link.toString()  + "</xmp><br>\n<br>\n";
             result +="Initial Data:<br>\n";
@@ -115,6 +117,24 @@ public class HtmlServiceService {
                 result += "<xmp>"+new String(link.getLinkContentHead())+"</xmp>";
             idx++;
         }
+
+
+        result +="<h2>Operates On Links</h2>\n";
+        idx = 0;
+        for(OperatesOnLink link: record.getOperatesOnLinks()) {
+            result += "<br> <h3>OperatesOn Link #"+idx+" - <a href='"+ link.getFixedURL() +"'>"+link.getFixedURL()+"</a>" +"</h3>\n";
+            result += "fully downloaded: "+link.getUrlFullyRead()+"<br>\n";
+            result += "<xmp>"+link.toString()  + "</xmp><br>\n<br>\n";
+//            result +="Initial Data:<br>\n";
+//            if (link.getLinkContentHead() !=null)
+//                result += "<xmp>"+new String(link.getLinkContentHead())+"</xmp>";
+            result += "Dataset Identfiers:<br>\n";
+            for(DatasetIdentifier identifier:link.getDatasetIdentifiers()) {
+                result += identifier.toString() +"<br>\n";
+            }
+            idx++;
+        }
+
 
         result += "<br><br><br><hr><br><br><xmp>"+text(record)+"</xmp><br><br>";
         return result;

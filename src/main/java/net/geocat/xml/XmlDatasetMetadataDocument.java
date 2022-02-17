@@ -33,106 +33,229 @@
 
 package net.geocat.xml;
 
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifierNodeType;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
+import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodesFullSearch;
 
 public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 
-    public String datasetIdentifier;
-    public String datasetIdentifierCodeSpace;
-
+//    public String datasetIdentifier;
+//    public String datasetIdentifierCodeSpace;
+    List<DatasetIdentifier> datasetIdentifiers;
     public XmlDatasetMetadataDocument(XmlDoc doc) throws Exception {
         super(doc);
+        datasetIdentifiers = new ArrayList<>();
         setup_XmlDatasetMetadataDocument();
     }
 
-    private void setupDatasetIdentifier() {
-        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","code","CharacterString"}));
-        if (n != null) {
-            datasetIdentifier = n.getTextContent();
-            return;
-        }
-        //n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gmx:Anchor");
-        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","code","Anchor"}));
+//    private void setupDatasetIdentifier() {
+//        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","code","CharacterString"}));
+//        if (n != null) {
+//            datasetIdentifier = n.getTextContent();
+//            return;
+//        }
+//        //n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gmx:Anchor");
+//        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","code","Anchor"}));
+//
+//        if (n != null) {
+//            String text = n.getTextContent();
+//            if ( (text != null) && (!text.trim().isEmpty()) ) {
+//                datasetIdentifier = text.trim();
+//            } else {
+//                n = n.getAttributes().getNamedItem("xlink:href");
+//                datasetIdentifier = n.getNodeValue();
+//            }
+//            return;
+//        }
+//        // n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString");
+//        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","code","CharacterString"}));
+//
+//        if (n != null) {
+//            datasetIdentifier = n.getTextContent();
+//            return;
+//        }
+//        //n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gmx:Anchor");
+//        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","code","Anchor"}));
+//
+//        if (n != null) {
+//            n = n.getAttributes().getNamedItem("xlink:href");
+//            datasetIdentifier = n.getNodeValue();
+//            return;
+//        }
+//    }
+//
+//    private void setupDatasetIdentifierCodeSpace() {
+//        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","codeSpace","CharacterString"}));
+//        if (n != null) {
+//            datasetIdentifierCodeSpace = n.getTextContent();
+//            if (datasetIdentifierCodeSpace !=null)
+//                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
+//            return;
+//        }
+//        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","codeSpace","CharacterString"}));
+//        if (n != null) {
+//            datasetIdentifierCodeSpace = n.getTextContent();
+//            if (datasetIdentifierCodeSpace !=null)
+//                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
+//            return;
+//        }
+//    }
 
-        if (n != null) {
-            String text = n.getTextContent();
-            if ( (text != null) && (!text.trim().isEmpty()) ) {
-                datasetIdentifier = text.trim();
-            } else {
-                n = n.getAttributes().getNamedItem("xlink:href");
-                datasetIdentifier = n.getNodeValue();
+    public void check() {
+        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation"}));
+        List<Node> ids =  findNodes(n,"identifier");
+        if (ids.size()>1) {
+            int tt = 0;
+        }
+    }
+
+    private List<DatasetIdentifier> parseIdentifier(  Node node) {
+        List<DatasetIdentifier>  result = new ArrayList<>();
+        String mainNodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
+        DatasetIdentifierNodeType datasetIdentifierNodeType =   DatasetIdentifierNodeType.valueOf(mainNodeName);
+
+        Node codeNode = findNode(node,"code");
+        Node codespaceNode = findNode(node,"codeSpace");
+
+        if (codeNode == null) {
+           return result; // should not happen (no code node)
+        }
+
+        List<String> codeValues = new ArrayList<>();
+        Node nodeCodeCharacterString = findNode(codeNode,"CharacterString");
+        Node nodeCodeAnchor = findNode(codeNode, "Anchor");
+
+        if ( (nodeCodeCharacterString == null) && (nodeCodeAnchor == null) ) {
+            return result; //ie. <gmd:code/>
+        }
+
+        if (nodeCodeAnchor != null) {
+            //anchors have 2 possible results - the text and link
+            if  ( (nodeCodeAnchor.getTextContent() != null) && (!nodeCodeAnchor.getTextContent().trim().isEmpty()) )
+                codeValues.add(nodeCodeAnchor.getTextContent().trim());
+            Node link = nodeCodeAnchor.getAttributes().getNamedItem("xlink:href");
+            if ( (link !=null) && (link.getNodeValue() != null) && (!link.getNodeValue().trim().isEmpty()) )
+                codeValues.add(link.getNodeValue().trim());
+        }
+        else {
+            //simple - use value in CharacterString
+            if  ( (nodeCodeCharacterString.getTextContent() != null) && (!nodeCodeCharacterString.getTextContent().trim().isEmpty()) )
+                codeValues.add(nodeCodeCharacterString.getTextContent().trim());
+        }
+
+        if (codeValues.isEmpty()) // they were empty
+            return result;
+
+        //make unique
+        codeValues = codeValues.stream().distinct().collect( Collectors.toList());
+
+        List<String> codespaceValues = new ArrayList<>();
+        if (codespaceNode !=null) {
+            Node nodeCodespaceCharacterString = findNode(codespaceNode,"CharacterString");
+            Node nodeCodespaceAnchor = findNode(codespaceNode, "Anchor");
+            if (nodeCodespaceAnchor != null) {
+                //I didn't find any examples of this in a set of 10k documents - included for completeness
+                //anchors have 2 possible results - the text and link
+                if  ( (nodeCodespaceAnchor.getTextContent() != null) && (!nodeCodespaceAnchor.getTextContent().trim().isEmpty()) )
+                    codespaceValues.add(nodeCodespaceAnchor.getTextContent().trim());
+                Node link = nodeCodespaceAnchor.getAttributes().getNamedItem("xlink:href");
+                if ( (link !=null) && (link.getNodeValue() != null) && (!link.getNodeValue().trim().isEmpty()) )
+                    codespaceValues.add(link.getNodeValue().trim());
             }
-            return;
+            else {
+                //simple - use value in CharacterString
+                if  ( (nodeCodespaceCharacterString.getTextContent() != null) && (!nodeCodespaceCharacterString.getTextContent().trim().isEmpty()) )
+                    codespaceValues.add(nodeCodespaceCharacterString.getTextContent().trim());
+            }
         }
-        // n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString");
-        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","code","CharacterString"}));
 
-        if (n != null) {
-            datasetIdentifier = n.getTextContent();
-            return;
-        }
-        //n = xpath_node("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:RS_Identifier/gmd:code/gmx:Anchor");
-        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","code","Anchor"}));
+        codespaceValues = codespaceValues.stream().distinct().collect( Collectors.toList());
 
-        if (n != null) {
-            n = n.getAttributes().getNamedItem("xlink:href");
-            datasetIdentifier = n.getNodeValue();
-            return;
+        for(String code:codeValues) {
+            for (String codeSpace: codespaceValues) {
+                DatasetIdentifier item = new DatasetIdentifier(datasetIdentifierNodeType, code, codeSpace);
+                result.add(item);
+            }
+            if (codespaceValues.isEmpty()) {
+                DatasetIdentifier item = new DatasetIdentifier(datasetIdentifierNodeType, code, null);
+                result.add(item);
+            }
         }
+
+        if (result.size() >1)
+        {
+            int t =0;
+        }
+
+        return result;
     }
 
-    private void setupDatasetIdentifierCodeSpace() {
-        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","MD_Identifier","codeSpace","CharacterString"}));
-        if (n != null) {
-            datasetIdentifierCodeSpace = n.getTextContent();
-            if (datasetIdentifierCodeSpace !=null)
-                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
-            return;
+    public List<DatasetIdentifier> findDatasetIdentifier() {
+        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation"}));
+        if (n == null)
+            return new ArrayList<>();
+        List<Node> identifiersMD =  findNodesFullSearch(n,"MD_Identifier");
+        List<Node> identifiersRS =  findNodesFullSearch(n,"RS_Identifier");
+
+//        if ( (identifiersMD.size() >1) && (identifiersRS.size()>1)) {
+//            int t=0;
+//        }
+//        if ( (identifiersMD.size() ==0) && (identifiersRS.size()==0)) {
+//            int t=0;
+//        }
+//        if ( (identifiersMD.size() >1) ||(identifiersRS.size()>1)) {
+//            int t=0;
+//        }
+        List<DatasetIdentifier> result = new ArrayList<>();
+        for(Node node: identifiersMD) {
+            List<DatasetIdentifier> items = parseIdentifier(node);
+            result.addAll(items);
         }
-        n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation","identifier","RS_Identifier","codeSpace","CharacterString"}));
-        if (n != null) {
-            datasetIdentifierCodeSpace = n.getTextContent();
-            if (datasetIdentifierCodeSpace !=null)
-                datasetIdentifierCodeSpace = datasetIdentifierCodeSpace.trim();
-            return;
+        for(Node node: identifiersRS) {
+            List<DatasetIdentifier> items = parseIdentifier(node);
+            result.addAll(items);
         }
+
+        return result;
     }
+
+
 
     private void setup_XmlDatasetMetadataDocument() throws XPathExpressionException {
-        setupDatasetIdentifier();
-        setupDatasetIdentifierCodeSpace();
+     //   check();
+        datasetIdentifiers = findDatasetIdentifier();
+
+//        setupDatasetIdentifier();
+//        setupDatasetIdentifierCodeSpace();
     }
 
 
     //--------------
 
 
-    public String getDatasetIdentifierCodeSpace() {
-        return datasetIdentifierCodeSpace;
+    public List<DatasetIdentifier> getDatasetIdentifiers() {
+        return datasetIdentifiers;
     }
 
-    public void setDatasetIdentifierCodeSpace(String datasetIdentifierCodeSpace) {
-        this.datasetIdentifierCodeSpace = datasetIdentifierCodeSpace;
-    }
-
-    public String getDatasetIdentifier() {
-        return datasetIdentifier;
-    }
-
-    public void setDatasetIdentifier(String datasetIdentifier) {
-        this.datasetIdentifier = datasetIdentifier;
+    public void setDatasetIdentifiers(List<DatasetIdentifier> datasetIdentifiers) {
+        this.datasetIdentifiers = datasetIdentifiers;
     }
 
     @Override
     public String toString() {
         String result =  "XmlDatasetMetadataDocument(fileIdentifier="+fileIdentifier;
-        result += ", datasetIdentifier = "+datasetIdentifier;
-        if (datasetIdentifierCodeSpace !=null)
-            result += ", datasetIdentifierCodeSpace = "+datasetIdentifierCodeSpace;
-
+        for(DatasetIdentifier id : this.datasetIdentifiers) {
+            result += id.toString();
+        }
         result += ")";
         return result;
     }

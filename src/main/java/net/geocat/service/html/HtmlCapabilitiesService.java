@@ -38,6 +38,7 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
@@ -122,8 +123,13 @@ public class HtmlCapabilitiesService {
             result += "<h3> layer #"+idx+"</h3><br>\n";
             result += "fully downloaded: "+layer.getUrlFullyRead() +"<br><br>";
             result += "<xmp>"+ layer.toString() + "</xmp><br>\n";
+            for(DatasetIdentifier identifier:layer.getDatasetIdentifiers()) {
+                result += identifier.toString() +"<br>\n";
+            }
             idx++;
         }
+
+
 
 
         result += "<br><br><br><hr><br><br><xmp>"+text(capabilitiesDocument)+"</xmp><br><br>";

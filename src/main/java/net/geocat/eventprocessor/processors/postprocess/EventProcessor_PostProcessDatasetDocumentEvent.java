@@ -33,12 +33,11 @@
 
 package net.geocat.eventprocessor.processors.postprocess;
 
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.CapabilitiesLinkResult;
-import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
-import net.geocat.database.linkchecker.entities.helper.ServiceDocSearchResult;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.entities.helper.StoreQueryCapabilitiesLinkResult;
 import net.geocat.database.linkchecker.repos.CapabilitiesDatasetMetadataLinkRepo;
@@ -61,8 +60,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import java.util.stream.Collectors;
 
 import static net.geocat.database.linkchecker.service.DatabaseUpdateService.convertToString;
 
@@ -146,103 +143,106 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
     }
 
     public void findStoredQueryLinks() {
-        if ( (localDatasetMetadataRecord.getDatasetIdentifier() == null) || (localDatasetMetadataRecord.getDatasetIdentifier().isEmpty()) )
+        if ( (localDatasetMetadataRecord.getDatasetIdentifiers() ==null) || localDatasetMetadataRecord.getDatasetIdentifiers().isEmpty())
             return;
-        if ( (localDatasetMetadataRecord.getDatasetIdentifierCodeSpace() == null) || (localDatasetMetadataRecord.getDatasetIdentifierCodeSpace().isEmpty()) )
-            return;
-        List<StoreQueryCapabilitiesLinkResult> links = inspireSpatialDatasetIdentifierRepo.linkToCapabilitiesViaInspire(localDatasetMetadataRecord.getLinkCheckJobId(),
-                localDatasetMetadataRecord.getDatasetIdentifier(), localDatasetMetadataRecord.getDatasetIdentifierCodeSpace());
-        for(StoreQueryCapabilitiesLinkResult link:links){
-            SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(),link.getSha2(), link.getCapabilitiesdocumenttype());
-            item.setCode(localDatasetMetadataRecord.getDatasetIdentifier());
-            item.setCodeSpace(localDatasetMetadataRecord.getDatasetIdentifierCodeSpace());
-            item.setStoredProcName(link.getProcGetSpatialDataSetName());
-            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
-            this.localDatasetMetadataRecord.getDataLinks().add(item);
+        for (DatasetIdentifier identifier:localDatasetMetadataRecord.getDatasetIdentifiers()) {
+
+            if ((identifier.getCodeSpace() == null) || (identifier.getCodeSpace().isEmpty()))
+                continue;
+            List<StoreQueryCapabilitiesLinkResult> links = inspireSpatialDatasetIdentifierRepo.linkToCapabilitiesViaInspire(localDatasetMetadataRecord.getLinkCheckJobId(),
+                    identifier.getCode(), identifier.getCodeSpace());
+            for (StoreQueryCapabilitiesLinkResult link : links) {
+                SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+                item.setCode(identifier.getCode());
+                item.setCodeSpace(identifier.getCodeSpace());
+                item.setStoredProcName(link.getProcGetSpatialDataSetName());
+                item.setDatasetMetadataRecord(localDatasetMetadataRecord);
+                this.localDatasetMetadataRecord.getDataLinks().add(item);
+            }
         }
     }
 
 
     private void process() {
         String fileId = localDatasetMetadataRecord.getFileIdentifier();
-        String datasetid=localDatasetMetadataRecord.getDatasetIdentifier();
+      //  String datasetid=localDatasetMetadataRecord.getDatasetIdentifier();
 
         String linkcheckjobid=localDatasetMetadataRecord.getLinkCheckJobId();
 
         findSimpleLayerMetadataURLinks(fileId,linkcheckjobid);
         findStoredQueryLinks();
 
-        List<ServiceDocSearchResult> serviceLinks =  new ArrayList<>();
-        List<CapabilitiesLinkResult> capLinks =  new ArrayList<>();
-
-        if (datasetid == null) {
-            serviceLinks =  operatesOnLinkRepo.linkToService(fileId, linkcheckjobid);
-            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, linkcheckjobid);
-
-        } else {
-            serviceLinks =  operatesOnLinkRepo.linkToService(fileId,datasetid, linkcheckjobid);
-            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, datasetid,linkcheckjobid);
-        }
-
-
-
-        ServiceDocSearchResult service_view = serviceLinks.stream()
-                    .filter(x->x.getMetadataservicetype().equals("view"))
-                    .findAny()
-                    .orElse(null);
-
-        ServiceDocSearchResult service_download = serviceLinks.stream()
-                .filter(x->x.getMetadataservicetype().equals("download"))
-                .findAny()
-                .orElse(null);
-
-        CapabilitiesLinkResult cap_view = capLinks.stream()
-                .filter(x->x.getCapabilitiesdocumenttype().equals("WMS") || x.getCapabilitiesdocumenttype().equals("WMTS"))
-                .findAny()
-                .orElse(null);
-
-        CapabilitiesLinkResult cap_download = capLinks.stream()
-                .filter(x->x.getCapabilitiesdocumenttype().equals("WFS") || x.getCapabilitiesdocumenttype().toLowerCase().equals("atom"))
-                .findAny()
-                .orElse(null);
-
-        List<String> view_cap_sha2s = capLinks.stream()
-                .filter(x->x.getCapabilitiesdocumenttype().equals("WMS") || x.getCapabilitiesdocumenttype().equals("WMTS"))
-                .map(x-> x.getSha2())
-                .collect(Collectors.toList());
-
-        localDatasetMetadataRecord.setLinksToViewCapabilities( String.join(",",view_cap_sha2s));
-
-        List<String> download_cap_sha2s = capLinks.stream()
-                .filter(x->x.getCapabilitiesdocumenttype().equals("WFS") || x.getCapabilitiesdocumenttype().toLowerCase().equals("atom"))
-                .map(x-> x.getSha2())
-                .collect(Collectors.toList());
-
-        localDatasetMetadataRecord.setLinksToDownloadCapabilities( String.join(",",download_cap_sha2s));
-
-
-        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.FAIL);
-        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_VIEW(IndicatorStatus.FAIL);
-        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_DOWNLOAD(IndicatorStatus.FAIL);
-        localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_VIEW(IndicatorStatus.FAIL);
-        localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_DOWNLOAD(IndicatorStatus.FAIL);
-
-
-        if (service_view != null) {
-            localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_VIEW(IndicatorStatus.PASS);
-        }
-        if (service_download !=null) {
-            localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_DOWNLOAD(IndicatorStatus.PASS);
-
-        }
-        if (cap_view != null) {
-            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.PASS);
-            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_VIEW(IndicatorStatus.PASS);
-        }
-        if (cap_download != null){
-            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.PASS);
-            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_DOWNLOAD(IndicatorStatus.PASS);
-        }
+//        List<ServiceDocSearchResult> serviceLinks =  new ArrayList<>();
+//        List<CapabilitiesLinkResult> capLinks =  new ArrayList<>();
+//
+//        if (datasetid == null) {
+//            serviceLinks =  operatesOnLinkRepo.linkToService(fileId, linkcheckjobid);
+//            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, linkcheckjobid);
+//
+//        } else {
+//            serviceLinks =  operatesOnLinkRepo.linkToService(fileId,datasetid, linkcheckjobid);
+//            capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, datasetid,linkcheckjobid);
+//        }
+//
+//
+//
+//        ServiceDocSearchResult service_view = serviceLinks.stream()
+//                    .filter(x->x.getMetadataservicetype().equals("view"))
+//                    .findAny()
+//                    .orElse(null);
+//
+//        ServiceDocSearchResult service_download = serviceLinks.stream()
+//                .filter(x->x.getMetadataservicetype().equals("download"))
+//                .findAny()
+//                .orElse(null);
+//
+//        CapabilitiesLinkResult cap_view = capLinks.stream()
+//                .filter(x->x.getCapabilitiesdocumenttype().equals("WMS") || x.getCapabilitiesdocumenttype().equals("WMTS"))
+//                .findAny()
+//                .orElse(null);
+//
+//        CapabilitiesLinkResult cap_download = capLinks.stream()
+//                .filter(x->x.getCapabilitiesdocumenttype().equals("WFS") || x.getCapabilitiesdocumenttype().toLowerCase().equals("atom"))
+//                .findAny()
+//                .orElse(null);
+//
+//        List<String> view_cap_sha2s = capLinks.stream()
+//                .filter(x->x.getCapabilitiesdocumenttype().equals("WMS") || x.getCapabilitiesdocumenttype().equals("WMTS"))
+//                .map(x-> x.getSha2())
+//                .collect(Collectors.toList());
+//
+//        localDatasetMetadataRecord.setLinksToViewCapabilities( String.join(",",view_cap_sha2s));
+//
+//        List<String> download_cap_sha2s = capLinks.stream()
+//                .filter(x->x.getCapabilitiesdocumenttype().equals("WFS") || x.getCapabilitiesdocumenttype().toLowerCase().equals("atom"))
+//                .map(x-> x.getSha2())
+//                .collect(Collectors.toList());
+//
+//        localDatasetMetadataRecord.setLinksToDownloadCapabilities( String.join(",",download_cap_sha2s));
+//
+//
+//        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.FAIL);
+//        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_VIEW(IndicatorStatus.FAIL);
+//        localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_DOWNLOAD(IndicatorStatus.FAIL);
+//        localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_VIEW(IndicatorStatus.FAIL);
+//        localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_DOWNLOAD(IndicatorStatus.FAIL);
+//
+//
+//        if (service_view != null) {
+//            localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_VIEW(IndicatorStatus.PASS);
+//        }
+//        if (service_download !=null) {
+//            localDatasetMetadataRecord.setINDICATOR_SERVICE_MATCHES_DOWNLOAD(IndicatorStatus.PASS);
+//
+//        }
+//        if (cap_view != null) {
+//            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.PASS);
+//            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_VIEW(IndicatorStatus.PASS);
+//        }
+//        if (cap_download != null){
+//            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES(IndicatorStatus.PASS);
+//            localDatasetMetadataRecord.setINDICATOR_LAYER_MATCHES_DOWNLOAD(IndicatorStatus.PASS);
+//        }
 
     }
 
