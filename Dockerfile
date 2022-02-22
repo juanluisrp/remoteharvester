@@ -1,24 +1,27 @@
-FROM maven:3-eclipse-temurin-8 as builder
+FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 as builder
 
 
 COPY ./pom.xml ./pom.xml
 # store maven dependencies so next build doesn't have to download them again
-RUN mvn dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2/repository \
+	mvn dependency:go-offline -B
 
 COPY ./src ./src
 
 
-RUN mvn -B package -DskipTests
+RUN --mount=type=cache,target=/root/.m2/repository \
+	mvn -B package -DskipTests
 RUN mkdir /application && \
 	cp target/*.jar /application/csw-harvester.jar
 
 WORKDIR /application
 
 # Extract spring boot JAR layers
-RUN java -Djarmode=layertools -jar csw-harvester.jar extract
+RUN --mount=type=cache,target=/root/.m2/repository \
+	java -Djarmode=layertools -jar csw-harvester.jar extract
 
 
-FROM eclipse-temurin:8-jre
+FROM eclipse-temurin:8-jre as finalImage
 
 LABEL vendor="GeoCat B.V."
 LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-harvester
