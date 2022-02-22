@@ -36,14 +36,12 @@ package net.geocat.runner;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import net.geocat.database.harvester.entities.MetadataRecord;
 import net.geocat.database.harvester.repos.MetadataRecordRepo;
 import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
-import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
@@ -53,10 +51,8 @@ import net.geocat.service.capabilities.*;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
 import net.geocat.xml.*;
 
-import net.geocat.xml.XmlCapabilitiesDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
-import net.geocat.xml.XmlServiceRecordDoc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +62,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.persistence.EntityManager;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -164,6 +156,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
     LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
     @Autowired
+    DatasetMetadataRecordRepo datasetMetadataRecordRepo;
+
+
+    @Autowired
     CapabilitiesResolvesIndicators capabilitiesResolvesIndicators;
 
     @Autowired
@@ -197,6 +193,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
     LinkCheckJobService linkCheckJobService;
 
     @Autowired
+    LinkCheckJobRepo linkCheckJobRepo;
+
+
+    @Autowired
     CapabilitiesDownloadingService capabilitiesDownloadingService;
 
     @Autowired
@@ -219,6 +219,26 @@ public class MyCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         try {
+         //  allLocalDataset();
+
+//            HttpResult r = basicHTTPRetriever.retrieveXML("GET","https://geoportal.gov.cz/php/micka/record/xml/%7B98B9FB58-E421-46CE-9436-8D5F79ED4ACA%7D",null,null,null);
+//            String s = new String(r.getData());
+//            XmlDoc d = xmlDocumentFactory.create(s);
+//            int t=0;
+
+//            run12("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
+//            run11("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
+
+           // String country = "mt";
+         //   String lastLinkCheckJob = lastLinkCheckJob(country);
+           // allWFS();
+           // all_();
+
+  //   run_scrape(country,lastLinkCheckJob(country));
+//            run_3("25a379b1-33db-450a-a9f4-4c396a29a02a\n",
+//                    "5d0e1408-2409-4c19-a037-10764523379b\n",
+//                    lastLinkCheckJob);
+            //series();
 
 //            Event e = eventFactory.createStartPostProcessEvent("e21f60c6-98fb-40e6-bca3-832e8970ff3e");
 //            ObjectMapper m = new ObjectMapper();
@@ -274,6 +294,122 @@ public class MyCommandLineRunner implements CommandLineRunner {
         logger.debug("DONE!");
     }
 
+    public String lastLinkCheckJob(String country){
+        if (country ==null)
+            return lastLinkCheckJob();
+
+        LinkCheckJob lastJob = null;
+        for(LinkCheckJob job : linkCheckJobRepo.findAll()){
+            if (!job.getLongTermTag().toLowerCase().startsWith(country.toLowerCase()))
+                continue;
+            if (lastJob == null)
+                lastJob = job;
+            if (lastJob.getCreateTimeUTC().compareTo(job.getCreateTimeUTC()) <1)
+                lastJob = job;
+        }
+        return lastJob.getJobId();
+    }
+
+
+    public String lastLinkCheckJob(){
+        LinkCheckJob lastJob = null;
+        for(LinkCheckJob job : linkCheckJobRepo.findAll()){
+            if (lastJob == null)
+                lastJob = job;
+            if (lastJob.getCreateTimeUTC().compareTo(job.getCreateTimeUTC()) <1)
+                lastJob = job;
+        }
+        return lastJob.getJobId();
+    }
+
+    public void allLocalDataset() throws Exception {
+        List<LocalDatasetMetadataRecord> datasets = new ArrayList();
+        Iterable<LocalDatasetMetadataRecord> datasetsIterator = localDatasetMetadataRecordRepo.findAll();
+        datasetsIterator.forEach(datasets::add);
+        for (LocalDatasetMetadataRecord record: datasetsIterator ){
+            String xml = blobStorageService.findXML(record.getSha2());
+            XmlDatasetMetadataDocument doc = (XmlDatasetMetadataDocument) xmlDocumentFactory.create(xml);
+            if (doc.getDatasetIdentifiers().size()>1) {
+                int tt=0;
+            }
+            int t=0;
+        }
+
+
+        int t = 0;
+    }
+
+    public void allDataset() throws Exception {
+//        for (LocalDatasetMetadataRecord record: localDatasetMetadataRecordRepo.findAll() ){
+//            String xml = blobStorageService.findXML(record.getSha2());
+//            XmlDoc doc = xmlDocumentFactory.create(xml);
+//            int t=0;
+//        }
+
+        List<DatasetMetadataRecord> datasets = new ArrayList();
+        Iterable<DatasetMetadataRecord> datasetsIterator = datasetMetadataRecordRepo.findAll();
+        datasetsIterator.forEach(datasets::add);
+
+        for (DatasetMetadataRecord record: datasets ){
+            String xml = blobStorageService.findXML(record.getSha2());
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+        int t = 0;
+    }
+
+    public void allWFS() throws Exception {
+
+        List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE text_value like '%WFS_Capabilities%'");
+        for (Object v: wfs) {
+            String xml = (String) v;
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+    }
+
+    public void allWMS() throws Exception {
+
+        List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE text_value like '%WMS_Capabilities%' ");
+        for (Object v: wfs) {
+            String xml = (String) v;
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+    }
+
+    public void allWMTS() throws Exception {
+
+        List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE    text_value like '%:Capabilities%'OR text_value like '%<Capabilities%'");
+        for (Object v: wfs) {
+            String xml = (String) v;
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+    }
+
+    public void all_() throws Exception {
+
+        List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE  text_value  ilike '%codeListValue=\"dataset\"%' ");
+      // List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE  text_value  ilike '%9a21b8e2-1b28-43ee-91e9-241357add698%' ");
+
+        for (Object v: wfs) {
+            String xml = (String) v;
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+    }
+
+
+    private void series() throws Exception {
+        for (LocalNotProcessedMetadataRecord record : localNotProcessedMetadataRecordRepo.findAll()) {
+            if (record.getMetadataRecordType() !=  MetadataDocumentType.Series)
+                continue;
+            String xmlSeries =   blobStorageService.findXML(record.getSha2());
+            XmlDoc doc = xmlDocumentFactory.create(xmlSeries);
+            int t=0;
+        }
+    }
 
 
     @Autowired
@@ -291,8 +427,17 @@ public class MyCommandLineRunner implements CommandLineRunner {
         if (entityManager == null)
             entityManager =  localContainerEntityManagerFactoryBean.createNativeEntityManager(null);
        entityManager.getTransaction().begin();
-        entityManager.createNativeQuery(sql).executeUpdate();
+        int n = entityManager.createNativeQuery(sql).executeUpdate();
        entityManager.getTransaction().commit();
+    }
+
+    public List executeSQL3(String sql) {
+        if (entityManager == null)
+            entityManager =  localContainerEntityManagerFactoryBean.createNativeEntityManager(null);
+        entityManager.getTransaction().begin();
+        List result =  entityManager.createNativeQuery(sql).getResultList();
+        entityManager.getTransaction().commit();
+        return result;
     }
 
     /*
@@ -302,9 +447,12 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 file_id text, local_is_view boolean , local_is_download boolean);
 
         update scrap set file_id = (select fileidentifier from datasetmetadatarecord where datasetmetadatarecord.title = scrap.title limit 1);
-        update scrap set local_is_view = (select indicator_layer_matches_view = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id);
-        update scrap set local_is_download = (select indicator_layer_matches_download = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id);
+        update scrap set local_is_view = (select indicator_layer_matches_view = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id and linkcheckjobid='54a30bc1-3900-48d6-8cd3-c9d3609ee0a9');
+        update scrap set local_is_download = (select indicator_layer_matches_download = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id and linkcheckjobid='54a30bc1-3900-48d6-8cd3-c9d3609ee0a9') ;
 --delete from scrap where file_id is null;
+
+
+
 
         select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title;
         select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;
@@ -312,9 +460,22 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
 
      */
-    public void run_scrape() throws  Exception {
+    public void run_scrape(String countryCode, String jobid) throws  Exception {
+        try{
+            String sql =  "drop table if exists scrap;";
+            executeSQL2(sql);
+        }
+        catch (Exception e){}
+
+        try{
+            String sql =  "CREATE TABLE scrap (title text, is_view boolean, is_download boolean, country_code text,\n" +
+                    "                file_id text, local_is_view boolean , local_is_download boolean);";
+            executeSQL2(sql);
+        }
+        catch (Exception e){}
+
         String url = "https://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=*:*^1.0&sow=false&fq=sourceMetadataResourceLocator:*&fq=resourceType:(dataset%20OR%20series)&fq=memberStateCountryCode:%22MYCOUNTRYCODE%22&fl=id,resourceTitle,resourceTitle_*,providedTranslationLanguage,automatedTranslationLanguage,memberStateCountryCode,metadataLanguage,isDw:query($isDwQ),isVw:query($isVwQ),spatialScope&isDwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect:(LAYER_MATCHING_DATA_IS_AVAILABLE)&isDwVwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE%20AND%20LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=query($isDwVwQ)%20desc,%20query($isDwQ)%20desc,%20query($isVwQ)%20desc,%20resourceTitle%20asc&start=0&rows=300000&callback=?&json.wrf=processData_dtResults&_=1634538073094";
-        url = url.replace("MYCOUNTRYCODE","de");
+        url = url.replace("MYCOUNTRYCODE",countryCode.toLowerCase());
 
             HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
 
@@ -340,6 +501,16 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
        }
         int t=0;
+
+        String sql =  "update scrap set file_id = (select fileidentifier from datasetmetadatarecord where datasetmetadatarecord.title = scrap.title limit 1);";
+        executeSQL2(sql);
+
+
+        sql =  " update scrap set local_is_view = (select indicator_layer_matches_view = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id and linkcheckjobid='"+jobid+"');";
+        executeSQL2(sql);
+
+        sql =  " update scrap set local_is_download = (select indicator_layer_matches_download = 'PASS' from datasetmetadatarecord where datasetmetadatarecord.fileidentifier = scrap.file_id and linkcheckjobid='"+jobid+"') ";
+        executeSQL2(sql);
     }
 
 
@@ -355,22 +526,22 @@ public class MyCommandLineRunner implements CommandLineRunner {
         else
             dsRecord = localDatasetMetadataRecordRepo.findFirstByFileIdentifierAndLinkCheckJobId(dsId,linkCheckJobId);
 
-        String capabilities_layer_matches_download = dsRecord.getINDICATOR_LAYER_MATCHES_DOWNLOAD().toString();
-        String capabilities_layer_matches_view = dsRecord.getINDICATOR_LAYER_MATCHES_VIEW().toString();
+      //  String capabilities_layer_matches_download = dsRecord.getINDICATOR_LAYER_MATCHES_DOWNLOAD().toString();
+      //  String capabilities_layer_matches_view = dsRecord.getINDICATOR_LAYER_MATCHES_VIEW().toString();
 
 
         String ds_xml = blobStorageService.findXML(dsRecord.getSha2());
 
-        List<ServiceDocSearchResult> serviceLinks =  operatesOnLinkRepo.linkToService(dsRecord.getFileIdentifier(), dsRecord.getDatasetIdentifier(),   dsRecord.getLinkCheckJobId());
-        List<CapabilitiesLinkResult> capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(dsRecord.getFileIdentifier(),dsRecord.getDatasetIdentifier(), dsRecord.getLinkCheckJobId());
+       // List<ServiceDocSearchResult> serviceLinks =  operatesOnLinkRepo.linkToService(dsRecord.getFileIdentifier(), dsRecord.getDatasetIdentifier(),   dsRecord.getLinkCheckJobId());
+      //  List<CapabilitiesLinkResult> capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(dsRecord.getFileIdentifier(),dsRecord.getDatasetIdentifier(), dsRecord.getLinkCheckJobId());
 
-        List<LocalServiceMetadataRecord> serviceDocs = serviceLinks.stream()
-                .map(x-> localServiceMetadataRecordRepo.findById(x.getServiceid()).get())
-                .collect(Collectors.toList());
-
-        List<CapabilitiesDocument> capDocs = capLinks.stream()
-                .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
-                .collect(Collectors.toList());
+//        List<LocalServiceMetadataRecord> serviceDocs = serviceLinks.stream()
+//                .map(x-> localServiceMetadataRecordRepo.findById(x.getServiceid()).get())
+//                .collect(Collectors.toList());
+//
+//        List<CapabilitiesDocument> capDocs = capLinks.stream()
+//                .map(x-> capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(x.getSha2(),x.getLinkcheckjobid())).get())
+//                .collect(Collectors.toList());
 
         LocalServiceMetadataRecord missing;
         if  ( (linkCheckJobId == null) || (linkCheckJobId.isEmpty()) )
@@ -528,6 +699,9 @@ public class MyCommandLineRunner implements CommandLineRunner {
         int all_opson_match = 0;
 
         for(LocalServiceMetadataRecord r:records){
+
+            if (r.getState() == ServiceMetadataDocumentState.NOT_APPLICABLE)
+                continue; // not processed
 
 //            String xml = blobStorageService.findXML(r.getSha2());
 //            XmlDoc xmlDoc = xmlDocumentFactory.create(xml);
