@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 
@@ -65,23 +66,28 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
         Lock lock = processLockingService.getLock(processID);
         try {
             lock.lock();
-            OrchestratedHarvestProcess process = orchestratedHarvestProcessRepo.findById(processID).get();
-            switch(process.getState()){
-                case ERROR:
-                case USERABORT:
-                case COMPLETE:
+            Optional<OrchestratedHarvestProcess> processOptional = orchestratedHarvestProcessRepo.findById(processID);
+
+            if (processOptional.isPresent()) {
+                OrchestratedHarvestProcess process = processOptional.get();
+
+                switch(process.getState()){
+                    case ERROR:
+                    case USERABORT:
+                    case COMPLETE:
                         break; // do nothing - process is finished (this should not happen - this message shouldnt have been generated...)
-                case CREATED:
+                    case CREATED:
                         break; // shouldn't happen - first state should be harvesting (likely got the ping a bit too eary - HarvestRequestedEvent will handle this
-                case HAVESTING:
-                    handle_HAVESTING(process);
-                    break;
-                case LINKCHECKING:
-                    handle_LINKCHECKING(process);
-                    break;
-                case INGESTING:
-                    handle_INGESTING(process);
-                    break;
+                    case HAVESTING:
+                        handle_HAVESTING(process);
+                        break;
+                    case LINKCHECKING:
+                        handle_LINKCHECKING(process);
+                        break;
+                    case INGESTING:
+                        handle_INGESTING(process);
+                        break;
+                }
             }
         }
         finally {
@@ -99,8 +105,13 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
             //throw new Exception("dont know how to run injester");
             process.setState(OrchestratedHarvestProcessState.COMPLETE);
             orchestratedHarvestProcessRepo.save(process);
-        }
-        else {
+        } else if (ingester_state.equals("ERROR")) {
+            process.setState(OrchestratedHarvestProcessState.ERROR);
+            orchestratedHarvestProcessRepo.save(process);
+        } else if (ingester_state.equals("USERABORT")) {
+            process.setState(OrchestratedHarvestProcessState.USERABORT);
+            orchestratedHarvestProcessRepo.save(process);
+        } else {
             // nothing to do right now (wait longer)
             // TODO: reporting
         }
@@ -121,8 +132,13 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
             process.setInjectJobId(response.getProcessID());
             process.setState(OrchestratedHarvestProcessState.INGESTING);
             orchestratedHarvestProcessRepo.save(process);
-        }
-        else {
+        } else if (linkcheck_state.equals("ERROR")) {
+            process.setState(OrchestratedHarvestProcessState.ERROR);
+            orchestratedHarvestProcessRepo.save(process);
+        } else if (linkcheck_state.equals("USERABORT")) {
+            process.setState(OrchestratedHarvestProcessState.USERABORT);
+            orchestratedHarvestProcessRepo.save(process);
+        } else {
             // nothing to do right now (wait longer)
             // TODO: reporting
         }
@@ -136,13 +152,27 @@ public class EventProcessor_CheckProcessEvent extends BaseEventProcessor<CheckPr
             //process.setState(OrchestratedHarvestProcessState.LINKCHECKING);
             //orchestratedHarvestProcessRepo.save(process);
 
-            //transition to linkchecker
-            HarvestStartResponse response = linkCheckService.startLinkCheck(process.getHarvesterJobId());
-            process.setLinkCheckJobId(response.getProcessID());
-            process.setState(OrchestratedHarvestProcessState.LINKCHECKING);
+            if (process.getExecuteLinkChecker()) {
+                //transition to linkchecker
+                HarvestStartResponse response = linkCheckService.startLinkCheck(process.getHarvesterJobId());
+                process.setLinkCheckJobId(response.getProcessID());
+                process.setState(OrchestratedHarvestProcessState.LINKCHECKING);
+                orchestratedHarvestProcessRepo.save(process);
+            } else {
+                //transition to ingest
+                HarvestStartResponse response = ingesterService.startIngest(process.getHarvesterJobId());
+                process.setInjectJobId(response.getProcessID());
+                process.setState(OrchestratedHarvestProcessState.INGESTING);
+                orchestratedHarvestProcessRepo.save(process);
+            }
+
+        } else if (harvest_state.equals("ERROR")) {
+            process.setState(OrchestratedHarvestProcessState.ERROR);
             orchestratedHarvestProcessRepo.save(process);
-        }
-        else {
+        } else if (harvest_state.equals("USERABORT")) {
+            process.setState(OrchestratedHarvestProcessState.USERABORT);
+            orchestratedHarvestProcessRepo.save(process);
+        } else {
             // nothing to do right now (wait longer)
             // TODO: reporting
         }
