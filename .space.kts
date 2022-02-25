@@ -38,7 +38,7 @@ job("Build, test and install CSW-harvester artifacts") {
         }
         build {
             context = "."
-            file = "./Dockerfile"
+            file = "./DockerfileSpace"
             labels["vendor"] = "GeoCat B.V."
         }
 
