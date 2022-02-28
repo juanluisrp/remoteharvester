@@ -109,7 +109,7 @@ public class XmlCapabilitiesDocument extends XmlDoc {
             if ((namespaceNode !=null ) && (namespaceNode.getTextContent() !=null) && (!namespaceNode.getTextContent().trim().isEmpty()))
                 namespace = namespaceNode.getTextContent().trim();
 
-            if ( (code !=null) && (namespace!=null) )
+            if ( (code !=null)  )
                 inspireDatasetLinks.add(new InspireSpatialDatasetIdentifier(metadataURL,code,namespace));
         }
     }

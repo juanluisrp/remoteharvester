@@ -38,6 +38,8 @@ import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.CapabilitiesLinkResult;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.entities.helper.StoreQueryCapabilitiesLinkResult;
 import net.geocat.database.linkchecker.repos.CapabilitiesDatasetMetadataLinkRepo;
@@ -52,6 +54,7 @@ import net.geocat.events.EventFactory;
 import net.geocat.events.postprocess.PostProcessDatasetDocumentEvent;
  import net.geocat.service.MetadataService;
 import net.geocat.service.helper.ShouldTransitionOutOfPostProcessing;
+import net.geocat.xml.helpers.CapabilitiesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +174,19 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
         findSimpleLayerMetadataURLinks(fileId,linkcheckjobid);
         findStoredQueryLinks();
+
+
+        localDatasetMetadataRecord.setINDICATOR_DOWNLOAD_LINK_TO_DATA(IndicatorStatus.FAIL);
+        localDatasetMetadataRecord.setINDICATOR_VIEW_LINK_TO_DATA(IndicatorStatus.FAIL);
+
+
+        for (LinkToData link : localDatasetMetadataRecord.getDataLinks()){
+            if ( (link.getCapabilitiesDocumentType() == CapabilitiesType.WFS) || (link.getCapabilitiesDocumentType() == CapabilitiesType.Atom) )
+                localDatasetMetadataRecord.setINDICATOR_DOWNLOAD_LINK_TO_DATA(IndicatorStatus.PASS);
+            if ( (link.getCapabilitiesDocumentType() == CapabilitiesType.WMS) || (link.getCapabilitiesDocumentType() == CapabilitiesType.WMTS) )
+                localDatasetMetadataRecord.setINDICATOR_VIEW_LINK_TO_DATA(IndicatorStatus.PASS);
+        }
+
 
 //        List<ServiceDocSearchResult> serviceLinks =  new ArrayList<>();
 //        List<CapabilitiesLinkResult> capLinks =  new ArrayList<>();

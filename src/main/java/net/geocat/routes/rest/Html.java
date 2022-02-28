@@ -36,6 +36,8 @@ package net.geocat.routes.rest;
 
 import net.geocat.service.html.HtmlCapabilitiesService;
 import net.geocat.service.html.HtmlDatasetService;
+import net.geocat.service.html.HtmlDiscoverService;
+import net.geocat.service.html.HtmlScrapeService;
 import net.geocat.service.html.HtmlServiceService;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
@@ -78,6 +80,24 @@ public class Html extends RouteBuilder {
                 .route()
                 .routeId("rest.rest.html.dataset")
                 .bean(HtmlDatasetService.class, "getHtml( ${header.processID}, ${header.fileId} )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+
+        rest("/api/html/discover/")
+                .get("/{fileId}")
+                .route()
+                .routeId("rest.rest.html.discover")
+                .bean(HtmlDiscoverService.class, "getHtml(  ${header.fileId} )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+
+        rest("/api/html/scrape/")
+                .get("/{processID}/{country}")
+                .route()
+                .routeId("rest.rest.html.scrape")
+                .bean(HtmlScrapeService.class, "getHtml( ${header.processID}, ${header.country} )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;
