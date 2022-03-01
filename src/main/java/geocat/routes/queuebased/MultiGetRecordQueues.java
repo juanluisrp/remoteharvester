@@ -64,7 +64,8 @@ public class MultiGetRecordQueues extends SpringRouteBuilder {
                 queue,
                 "activemq:" + ActualRecordCollectionOrchestrator.myJMSQueueName,
                 queueName,
-                true
+                true,
+                null
         );
     }
 }

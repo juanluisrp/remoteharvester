@@ -102,7 +102,8 @@ public class MainLoopRouteCreator {
                         "direct:" + mainRouteName + "_" + eventType.getSimpleName(),
                         from,
                         mainRouteName,
-                        false);
+                        false,
+                        redirectEventList);
             }
         }
 
