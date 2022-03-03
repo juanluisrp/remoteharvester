@@ -166,12 +166,13 @@ public class IngesterService {
         }
 
         // Index added/updated records
+        // TODO: Test, commented to be indexed in GeoNetwork to avoid issues with GeoNetwork API and ECAS
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
-        List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
+        /*List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         geoNetworkClient.init();
-        indexRecords(metadataIdsToIndex, processId);
+        indexRecords(metadataIdsToIndex, processId);*/
 
         // Delete old harvested records no longer in the harvester server
         List<String> remoteHarvesterUuids = metadataIds.entrySet().stream()
@@ -297,6 +298,8 @@ public class IngesterService {
                 addIndicator(metadata, "INDICATOR_RESOLVES_TO_CAPABILITIES", localDatasetMetadataRecord.get().getINDICATOR_RESOLVES_TO_CAPABILITIES());
                 addIndicator(metadata, "INDICATOR_LAYER_MATCHES_VIEW", localDatasetMetadataRecord.get().getINDICATOR_LAYER_MATCHES_VIEW());
                 addIndicator(metadata, "INDICATOR_LAYER_MATCHES_DOWNLOAD", localDatasetMetadataRecord.get().getINDICATOR_LAYER_MATCHES_DOWNLOAD());
+                addIndicator(metadata, "INDICATOR_VIEW_LINK_TO_DATA", localDatasetMetadataRecord.get().getINDICATOR_VIEW_LINK_TO_DATA());
+                addIndicator(metadata, "INDICATOR_DOWNLOAD_LINK_TO_DATA", localDatasetMetadataRecord.get().getINDICATOR_DOWNLOAD_LINK_TO_DATA());
             }
 
         }
