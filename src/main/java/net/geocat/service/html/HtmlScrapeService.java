@@ -193,23 +193,29 @@ public class HtmlScrapeService {
 
         run_scrape(country,linkCheckJob);
 
-        String result ="";
+        String result ="<h1>Differences</h1>";
 
         //       select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title;
         //        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;
 
         List queryResult = executeSQL3("select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title");
-
+        result +="<h1> View Differences </h2><br>\n";
         if (!queryResult.isEmpty()) {
-            result +="<h1> View Differences </h2><br>\n";
+
             result += results(linkCheckJob,queryResult);
+        }
+        else
+        {
+            result +="NO DIFFERENCES<br>\n";
         }
 
         List queryResult2 = executeSQL3("select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;");
+        result +="<h1> Download Differences </h2><br>\n";
         if (!queryResult2.isEmpty()) {
-            result +="<h1> Download Differences </h2><br>\n";
             result += results(linkCheckJob,queryResult2);
-
+        }
+        else {
+            result +="NO DIFFERENCES<br>\n";
         }
         return result;
     }

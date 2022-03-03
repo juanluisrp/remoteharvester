@@ -38,6 +38,7 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.RemoteServiceMetadataRecordLink;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.helper.CapabilitiesDocumentState;
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.LinkState;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
@@ -101,7 +102,7 @@ public class CapabilitiesDownloadingService {
     @Autowired
     ServiceDocumentLinkRepo serviceDocumentLinkRepo;
 
-    public void handleLink(ServiceDocumentLink link) throws Exception {
+    public void handleLink(DocumentLink link) throws Exception {
         download(link);
         //serviceDocumentLinkRepo.save(link);
         if (link.getCapabilitiesDocument() == null) {
@@ -112,7 +113,7 @@ public class CapabilitiesDownloadingService {
 
     }
 
-    private void processCapabilitiesDocument(ServiceDocumentLink link) {
+    private void processCapabilitiesDocument(DocumentLink link) {
         String linkCheckId = link.getLinkCheckJobId();
         String capSha2 = link.getSha2();
         String lockKey = "cap_"+linkCheckId+"_"+capSha2;
@@ -127,7 +128,7 @@ public class CapabilitiesDownloadingService {
     }
 
 
-    private void processCapabilitiesDocument_work(ServiceDocumentLink link) {
+    private void processCapabilitiesDocument_work(DocumentLink link) {
         //first lets see if the document already exists - if not, we need to make it
         CapabilitiesDocument doc  = getOrCreate(link);
         if ( (doc.getState() != CapabilitiesDocumentState.COMPLETE) && ( doc.getState() != CapabilitiesDocumentState.ERROR) ) {
@@ -207,31 +208,37 @@ public class CapabilitiesDownloadingService {
         }
     }
 
-    private CapabilitiesDocument getOrCreate(ServiceDocumentLink link) {
+    private Object lockObject = new Object();
+
+    private CapabilitiesDocument getOrCreate(DocumentLink link) {
         String linkCheckId = link.getLinkCheckJobId();
         String capSha2 = link.getSha2();
 
         SHA2JobIdCompositeKey key = new SHA2JobIdCompositeKey(capSha2,linkCheckId);
 
-        Optional<CapabilitiesDocument> capDoc = capabilitiesDocumentRepo.findById(key);
-        if (capDoc.isPresent())
-            return capDoc.get();
+        //make sure we dont have multiple threads (i.e. via slightly different URLs) attempt to create the doc at the same time
+        synchronized (lockObject) {
+            Optional<CapabilitiesDocument> capDoc = capabilitiesDocumentRepo.findById(key);
+            if (capDoc.isPresent())
+                return capDoc.get();
 
-        //create
-        CapabilitiesDocument doc = link.getCapabilitiesDocument();
-        doc.setLinkCheckJobId(linkCheckId);
-        doc.setSha2(capSha2);
+            //create
+            CapabilitiesDocument doc = link.getCapabilitiesDocument();
+            doc.setLinkCheckJobId(linkCheckId);
+            doc.setSha2(capSha2);
 
-        doc = capabilitiesDocumentRepo.save(doc);
+            doc = capabilitiesDocumentRepo.save(doc);
 
-       // return capabilitiesDocumentRepo.findById(key).get(); //re-load (sometimes this is better)
-        return doc;
+            // return capabilitiesDocumentRepo.findById(key).get(); //re-load (sometimes this is better)
+            return doc;
+        }
+
     }
 
 
-    private void download(ServiceDocumentLink link) {
+    private void download(DocumentLink link) {
         try {
-            link = (ServiceDocumentLink) retrieveServiceDocumentLink.process(link);
+            link =   retrieveServiceDocumentLink.process(link);
             link.setLinkState(LinkState.Complete);
         }
         catch (Exception e){

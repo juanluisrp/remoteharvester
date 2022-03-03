@@ -33,10 +33,12 @@
 
 package net.geocat.service.html;
 
+import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
+import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
@@ -105,6 +107,17 @@ public class HtmlDatasetService {
             result += identifier.toString() +"<br>\n";
         }
 
+        result +="<h2>Capabilities Links</h2><Br>\n";
+        int idx = 0;
+        for(DatasetDocumentLink link: record.getDocumentLinks()) {
+            if ( (link.getUrlFullyRead() != null) && (link.getUrlFullyRead())) {
+                result += "<h3>Link #" + idx + " - <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getSha2()   + "'>"+link.getXmlDocInfo() + "</a>" + "</h3>\n";
+                idx++;
+            }
+        }
+
+
+
 
         if (record.getDataLinks().size() == 0) {
             result += "NO links to data<Br><br>\n";
@@ -112,7 +125,17 @@ public class HtmlDatasetService {
         else {
             result += showDataLinks(record);
         }
-
+        result +="<h2>Document Links</h2>\n";
+        idx = 0;
+        for(DatasetDocumentLink link: record.getDocumentLinks()) {
+            result += "<br> <h3>Document Link #"+idx+" - <a href='"+ link.getFixedURL() +"'>"+link.getFixedURL()+"</a>" +"</h3>\n";
+            result += "fully downloaed: "+link.getUrlFullyRead()+"<br>\n";
+            result += "<xmp>"+link.toString()  + "</xmp><br>\n<br>\n";
+            result +="Initial Data:<br>\n";
+            if (link.getLinkContentHead() !=null)
+                result += "<xmp>"+new String(link.getLinkContentHead())+"</xmp>";
+            idx++;
+        }
 
         result += "<br><br><br><hr><br><br><xmp>"+text(record)+"</xmp><br><br>";
         return result;
@@ -133,6 +156,11 @@ public class HtmlDatasetService {
                 SimpleStoredQueryDataLink _link = (SimpleStoredQueryDataLink) link;
                 result += "<br>storedProcName: "+_link.getStoredProcName()+"<br>\n";
                 result += "code: "+_link.getCode()+"<br>\n";
+                result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+            }
+            if (link instanceof SimpleSpatialDSIDDataLink) {
+                SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
+                 result += "code: "+_link.getCode()+"<br>\n";
                 result += "codespace: "+_link.getCodeSpace()+"<br>\n";
             }
             indx++;

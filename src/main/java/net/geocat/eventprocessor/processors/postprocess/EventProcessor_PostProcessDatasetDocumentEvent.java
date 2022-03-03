@@ -33,6 +33,7 @@
 
 package net.geocat.eventprocessor.processors.postprocess;
 
+import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
@@ -134,10 +135,27 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
     }
 
     public void findSimpleLayerMetadataURLinks(String fileId , String linkcheckjobid){
-        List<CapabilitiesLinkResult> capLinks =  capabilitiesDatasetMetadataLinkRepo.linkToCapabilities(fileId, linkcheckjobid);
-        if (capLinks.isEmpty())
+        List<CapabilitiesLinkResult> result = new ArrayList<>();
+        if ( (localDatasetMetadataRecord.getDatasetIdentifiers() ==null) || localDatasetMetadataRecord.getDatasetIdentifiers().isEmpty())
             return;
-        for(CapabilitiesLinkResult link: capLinks){
+
+        //should only be one
+        for (DatasetIdentifier identifier:localDatasetMetadataRecord.getDatasetIdentifiers()) {
+            if ( (identifier.getCodeSpace() != null) && (!identifier.getCodeSpace().isEmpty())) {
+                List<CapabilitiesLinkResult>  links = capabilitiesDatasetMetadataLinkRepo.linkToCapabilitiesViaIdentifier_codeAndCodeSpace(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode(),
+                        identifier.getCodeSpace());
+                result.addAll(links);
+            }
+            else {
+                List<CapabilitiesLinkResult> links = capabilitiesDatasetMetadataLinkRepo.linkToCapabilitiesViaIdentifier_codeOnly(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode());
+                result.addAll(links);
+            }
+
+        }
+
+        for(CapabilitiesLinkResult link: result){
             SimpleLayerMetadataUrlDataLink item = new SimpleLayerMetadataUrlDataLink(link.getLinkcheckjobid(),link.getSha2(), link.getCapabilitiesdocumenttype());
             item.setOgcLayerName(link.getOgclayername());
             item.setDatasetMetadataRecord(localDatasetMetadataRecord);
@@ -145,35 +163,66 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         }
     }
 
-    public void findStoredQueryLinks() {
-        if ( (localDatasetMetadataRecord.getDatasetIdentifiers() ==null) || localDatasetMetadataRecord.getDatasetIdentifiers().isEmpty())
-            return;
-        for (DatasetIdentifier identifier:localDatasetMetadataRecord.getDatasetIdentifiers()) {
-
-            if ((identifier.getCodeSpace() == null) || (identifier.getCodeSpace().isEmpty()))
-                continue;
-            List<StoreQueryCapabilitiesLinkResult> links = inspireSpatialDatasetIdentifierRepo.linkToCapabilitiesViaInspire(localDatasetMetadataRecord.getLinkCheckJobId(),
-                    identifier.getCode(), identifier.getCodeSpace());
-            for (StoreQueryCapabilitiesLinkResult link : links) {
-                SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
-                item.setCode(identifier.getCode());
-                item.setCodeSpace(identifier.getCodeSpace());
-                item.setStoredProcName(link.getProcGetSpatialDataSetName());
-                item.setDatasetMetadataRecord(localDatasetMetadataRecord);
-                this.localDatasetMetadataRecord.getDataLinks().add(item);
-            }
+    public void findStoredQueryLinks(List<StoreQueryCapabilitiesLinkResult> links) {
+        for (StoreQueryCapabilitiesLinkResult link : links) {
+            if ( (link.getProcGetSpatialDataSetName() == null) || (link.getProcGetSpatialDataSetName().isEmpty()))
+                continue; //not a WFS 2.0 with the correct stored proc -- don't link
+            SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+            item.setCode(link.getCode());
+            item.setCodeSpace(link.getCodespace());
+            item.setStoredProcName(link.getProcGetSpatialDataSetName());
+            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
+            this.localDatasetMetadataRecord.getDataLinks().add(item);
         }
     }
 
 
+
+    public List<StoreQueryCapabilitiesLinkResult> findLinkedCapabilities() {
+        List<StoreQueryCapabilitiesLinkResult> result = new ArrayList<>();
+        if ( (localDatasetMetadataRecord.getDatasetIdentifiers() ==null) || localDatasetMetadataRecord.getDatasetIdentifiers().isEmpty())
+            return result;
+
+        //should only be one
+        for (DatasetIdentifier identifier:localDatasetMetadataRecord.getDatasetIdentifiers()) {
+
+            List<StoreQueryCapabilitiesLinkResult> links;
+            if ( (identifier.getCodeSpace() != null) && (!identifier.getCodeSpace().isEmpty())) {
+                links = inspireSpatialDatasetIdentifierRepo.linkToCapabilitiesViaInspire_codeAndCodespace(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode(),
+                        identifier.getCodeSpace());
+                result.addAll(links);
+            }
+            else {
+                links = inspireSpatialDatasetIdentifierRepo.linkToCapabilitiesViaInspire_codeOnly(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode());
+                result.addAll(links);
+            }
+        }
+        return result;
+    }
+
+    public void addLinkedCapabilities( List<StoreQueryCapabilitiesLinkResult> linkedCapabilities) {
+        for(StoreQueryCapabilitiesLinkResult link : linkedCapabilities) {
+            SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
+            this.localDatasetMetadataRecord.getDataLinks().add(item);
+        }
+    }
+
+
+
     private void process() {
         String fileId = localDatasetMetadataRecord.getFileIdentifier();
-      //  String datasetid=localDatasetMetadataRecord.getDatasetIdentifier();
-
         String linkcheckjobid=localDatasetMetadataRecord.getLinkCheckJobId();
 
+        List<StoreQueryCapabilitiesLinkResult> linkedCapabilities =  findLinkedCapabilities();
+
+        addLinkedCapabilities(linkedCapabilities);
+        findStoredQueryLinks(linkedCapabilities);
+
         findSimpleLayerMetadataURLinks(fileId,linkcheckjobid);
-        findStoredQueryLinks();
+
 
 
         localDatasetMetadataRecord.setINDICATOR_DOWNLOAD_LINK_TO_DATA(IndicatorStatus.FAIL);

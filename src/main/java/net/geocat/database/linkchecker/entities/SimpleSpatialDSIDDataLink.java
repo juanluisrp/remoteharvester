@@ -31,19 +31,60 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.entities.helper;
+package net.geocat.database.linkchecker.entities;
 
-public interface StoreQueryCapabilitiesLinkResult {
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 
-    String getSha2();
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-    String getLinkcheckjobid();
+@Entity
+@DiscriminatorValue("SimpleSpatialDSIDDataLink")
+public class SimpleSpatialDSIDDataLink extends LinkToData {
 
-    String getCapabilitiesdocumenttype();
+    public SimpleSpatialDSIDDataLink() {
+        super();
+    }
 
-    String getProcGetSpatialDataSetName();
+    public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype) {
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype);
+    }
+    @Column(columnDefinition = "text")
+    private String code;
 
-    String getCode();
+    @Column(columnDefinition = "text")
+    private String codeSpace;
+    //---
 
-    String getCodespace();
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCodeSpace() {
+        return codeSpace;
+    }
+
+    public void setCodeSpace(String codeSpace) {
+        this.codeSpace = codeSpace;
+    }
+
+
+    //----
+
+
+    @Override
+    public String toString() {
+        return "SimpleSpatialDSIDDataLink{\n" +
+                super.toString() +
+                "code='" + code + '\'' +
+                ", codeSpace='" + codeSpace + '\'' +
+                '}';
+    }
+
+
 }

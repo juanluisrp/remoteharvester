@@ -31,51 +31,20 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.database.linkchecker.repos;
 
 import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
-import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
-import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.database.linkchecker.entities.helper.ServiceMetadataRecord;
-import net.geocat.xml.helpers.OnlineResource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+
 
 @Component
 @Scope("prototype")
-public class ServiceDocumentLinkService {
+public interface DatasetDocumentLinkRepo extends CrudRepository<DatasetDocumentLink, Long> {
 
+    List<DatasetDocumentLink> findByLinkCheckJobIdAndSha2(String linkCheckJobId, String Sha2);
 
-    public ServiceDocumentLink create(LocalServiceMetadataRecord localServiceMetadataRecord, OnlineResource onlineResource) {
-        ServiceDocumentLink result = new ServiceDocumentLink();
-
-
-        result.setLinkState(LinkState.Created);
-        result.setServiceMetadataRecord(localServiceMetadataRecord);
-        result.setFunction(onlineResource.getFunction());
-        result.setOperationName(onlineResource.getOperationName());
-        result.setRawURL(onlineResource.getRawURL());
-        result.setProtocol(onlineResource.getProtocol());
-        result.setLinkCheckJobId(localServiceMetadataRecord.getLinkCheckJobId());
-
-        return result;
-    }
-
-
-    public DatasetDocumentLink create(DatasetMetadataRecord datasetMetadataRecord, OnlineResource onlineResource) {
-        DatasetDocumentLink result = new DatasetDocumentLink();
-
-        result.setLinkState(LinkState.Created);
-        result.setDatasetMetadataRecord(datasetMetadataRecord);
-        result.setFunction(onlineResource.getFunction());
-        result.setOperationName(onlineResource.getOperationName());
-        result.setRawURL(onlineResource.getRawURL());
-        result.setProtocol(onlineResource.getProtocol());
-
-        result.setLinkCheckJobId(datasetMetadataRecord.getLinkCheckJobId());
-
-        return result;
-    }
 }

@@ -33,6 +33,7 @@
 
 package net.geocat.service.capabilities;
 
+import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.service.ILinkFixer;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -67,6 +68,7 @@ public class CapabilitiesLinkFixer   {
         //and needs them un-url encoded!
         link = link.replace("%3A", ":");
         link = link.replace("%2F", "/");
+        link = link.replace("%26", "&");
 
         URIBuilder uriBuilder = new URIBuilder(link);
         List<NameValuePair> params =  uriBuilder.getQueryParams();
@@ -77,11 +79,24 @@ public class CapabilitiesLinkFixer   {
         //and needs them un-url encoded!
         link = link.replace("%3A", ":");
         link = link.replace("%2F", "/");
+        link = link.replace("%26", "&");
+
         return link;
     }
 
+    public boolean isAtom(String link, DocumentLink documentLink) {
+        if ((documentLink == null) || (documentLink.getProtocol() == null) || (documentLink.getProtocol().isEmpty()) )
+            return false;
+        String protocol = documentLink.getProtocol().toLowerCase();
+        if (protocol.endsWith("-rss"))
+            return true;
+        if (protocol.endsWith("atom"))
+            return true;
+        return false;
+    }
 
-    public String fix(String link, String serviceRecordType) throws Exception {
+
+    public String fix(String link, String serviceRecordType, DocumentLink documentLink) throws Exception {
 
         try {
             if (link == null)
@@ -91,7 +106,8 @@ public class CapabilitiesLinkFixer   {
             link = link.replace("{","%7B");
             link = link.replace("}","%7D");
 
-
+            if (isAtom(link,documentLink))
+                return link; // do NOT add service info to it!
 
             if (link.endsWith("?"))
                 link += "request=GetCapabilities";
@@ -109,14 +125,17 @@ public class CapabilitiesLinkFixer   {
             uriBuilder.setParameter(requestParam, "GetCapabilities");
             link =  canonicalize(uriBuilder.build().toString());
 
+            //actually, still need to do this - some servers ALSO require the service=wms even though its going through the WMS endpoint
             // if the link already has a wms/wmts/wfs/atom, we assume we don't need to re-add its (i.e. http://.../WMS.exe?...)
-            if ( (link.toLowerCase().contains("wms")) || (link.toLowerCase().contains("wmts"))
-                 || (link.toLowerCase().contains("wfs"))
-                    || (link.toLowerCase().contains("atom")) )
-                return link;
+//            if ( (link.toLowerCase().contains("wms")) || (link.toLowerCase().contains("wmts"))
+//                 || (link.toLowerCase().contains("wfs"))
+//                    || (link.toLowerCase().contains("atom")) )
+//                return link;
 
             if ( (serviceRecordType==null) || (serviceRecordType.isEmpty()))
                 return link; // no info to process
+
+
 
             //assumptions
             String service = null;

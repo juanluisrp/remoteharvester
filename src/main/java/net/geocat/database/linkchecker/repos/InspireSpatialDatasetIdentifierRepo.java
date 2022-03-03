@@ -46,11 +46,27 @@ import java.util.List;
 @Scope("prototype")
 public interface InspireSpatialDatasetIdentifierRepo  extends CrudRepository<InspireSpatialDatasetIdentifier, String> {
 
-    @Query(value = "SELECT cap_sha2 as sha2,cap_jobid as linkcheckjobid, capabilitiesdocument.capabilitiesdocumenttype, procGetSpatialDataSetName " +
+    @Query(value = "SELECT cap_sha2 as sha2," +
+            "cap_jobid as linkcheckjobid, " +
+            "capabilitiesdocument.capabilitiesdocumenttype, " +
+            "procGetSpatialDataSetName, ?2 as code, ?3 as codespace " +
             "FROM inspirespatialdatasetidentifier " +
             " JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=inspirespatialdatasetidentifier.cap_sha2 and capabilitiesdocument.linkcheckjobid = inspirespatialdatasetidentifier.cap_jobid) " +
             "WHERE cap_jobid = ?1 AND code =?2 AND namespace = ?3",
             nativeQuery = true
     )
-    List<StoreQueryCapabilitiesLinkResult> linkToCapabilitiesViaInspire(String linkCheckJob, String inspireCode, String inspireCodeSet);
+    List<StoreQueryCapabilitiesLinkResult> linkToCapabilitiesViaInspire_codeAndCodespace(String linkCheckJob, String inspireCode, String inspireCodeSet);
+
+
+    @Query(value = "SELECT cap_sha2 as sha2," +
+            "cap_jobid as linkcheckjobid, " +
+            "capabilitiesdocument.capabilitiesdocumenttype," +
+            "procGetSpatialDataSetName, ?2 as code, null as codespace  " +
+            "FROM inspirespatialdatasetidentifier " +
+            " JOIN capabilitiesdocument ON (capabilitiesdocument.sha2=inspirespatialdatasetidentifier.cap_sha2 and capabilitiesdocument.linkcheckjobid = inspirespatialdatasetidentifier.cap_jobid) " +
+            "WHERE cap_jobid = ?1 AND code =?2 AND namespace is NULL",
+            nativeQuery = true
+    )
+    List<StoreQueryCapabilitiesLinkResult> linkToCapabilitiesViaInspire_codeOnly(String linkCheckJob, String inspireCode);
+
 }

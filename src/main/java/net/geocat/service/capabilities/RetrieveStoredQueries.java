@@ -89,7 +89,7 @@ public class RetrieveStoredQueries {
     }
 
 
-    public String getSpatialDataSetStoredQuery(CapabilitiesDocument doc, ServiceDocumentLink link) {
+    public String getSpatialDataSetStoredQuery(CapabilitiesDocument doc, DocumentLink link) {
         if (doc.getInspireSpatialDatasetIdentifiers().isEmpty())
             return null; //nothing to do
         if (doc.getCapabilitiesDocumentType() != CapabilitiesType.WFS)

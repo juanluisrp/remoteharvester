@@ -139,9 +139,9 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
         }
 
         if (nodeCodeAnchor != null) {
-            //anchors have 2 possible results - the text and link
-            if  ( (nodeCodeAnchor.getTextContent() != null) && (!nodeCodeAnchor.getTextContent().trim().isEmpty()) )
-                codeValues.add(nodeCodeAnchor.getTextContent().trim());
+            //anchors just link
+//            if  ( (nodeCodeAnchor.getTextContent() != null) && (!nodeCodeAnchor.getTextContent().trim().isEmpty()) )
+//                codeValues.add(nodeCodeAnchor.getTextContent().trim());
             Node link = nodeCodeAnchor.getAttributes().getNamedItem("xlink:href");
             if ( (link !=null) && (link.getNodeValue() != null) && (!link.getNodeValue().trim().isEmpty()) )
                 codeValues.add(link.getNodeValue().trim());
@@ -165,8 +165,8 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
             if (nodeCodespaceAnchor != null) {
                 //I didn't find any examples of this in a set of 10k documents - included for completeness
                 //anchors have 2 possible results - the text and link
-                if  ( (nodeCodespaceAnchor.getTextContent() != null) && (!nodeCodespaceAnchor.getTextContent().trim().isEmpty()) )
-                    codespaceValues.add(nodeCodespaceAnchor.getTextContent().trim());
+//                if  ( (nodeCodespaceAnchor.getTextContent() != null) && (!nodeCodespaceAnchor.getTextContent().trim().isEmpty()) )
+//                    codespaceValues.add(nodeCodespaceAnchor.getTextContent().trim());
                 Node link = nodeCodespaceAnchor.getAttributes().getNamedItem("xlink:href");
                 if ( (link !=null) && (link.getNodeValue() != null) && (!link.getNodeValue().trim().isEmpty()) )
                     codespaceValues.add(link.getNodeValue().trim());
@@ -216,14 +216,24 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 //            int t=0;
 //        }
         List<DatasetIdentifier> result = new ArrayList<>();
-        for(Node node: identifiersMD) {
-            List<DatasetIdentifier> items = parseIdentifier(node);
+        if (!identifiersMD.isEmpty()){
+            List<DatasetIdentifier> items = parseIdentifier(identifiersMD.get(0));
             result.addAll(items);
         }
-        for(Node node: identifiersRS) {
-            List<DatasetIdentifier> items = parseIdentifier(node);
-            result.addAll(items);
+        else {
+            if (!identifiersRS.isEmpty()) {
+                List<DatasetIdentifier> items = parseIdentifier(identifiersRS.get(0));
+                result.addAll(items);
+            }
         }
+//        for(Node node: identifiersMD) {
+//            List<DatasetIdentifier> items = parseIdentifier(node);
+//            result.addAll(items);
+//        }
+//        for(Node node: identifiersRS) {
+//            List<DatasetIdentifier> items = parseIdentifier(node);
+//            result.addAll(items);
+//        }
 
         return result;
     }

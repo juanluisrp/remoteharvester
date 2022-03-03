@@ -35,18 +35,23 @@ package net.geocat.service.html;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
 import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
-import net.geocat.database.linkchecker.entities.LocalServiceMetadataRecord;
+import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
+import net.geocat.database.linkchecker.repos.DatasetDocumentLinkRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos.ServiceDocumentLinkRepo;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class HtmlCapabilitiesService {
@@ -54,6 +59,11 @@ public class HtmlCapabilitiesService {
     @Autowired
     LinkCheckBlobStorageRepo linkCheckBlobStorageRepo;
 
+    @Autowired
+    ServiceDocumentLinkRepo serviceDocumentLinkRepo;
+
+    @Autowired
+    DatasetDocumentLinkRepo datasetDocumentLinkRepo;
 
     @Autowired
     LinkCheckJobRepo linkCheckJobRepo;
@@ -115,6 +125,24 @@ public class HtmlCapabilitiesService {
         }
         else {
             result += "<xmp>"+ capabilitiesDocument.getRemoteServiceMetadataRecordLink().toString()+"</xmp><br>\n";
+        }
+
+
+
+        List<ServiceDocumentLink> serviceBackLinks =  serviceDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
+        if (!serviceBackLinks.isEmpty()) {
+            result += "<h3>Service Back Links</h3>\n";
+            for(ServiceDocumentLink link : serviceBackLinks) {
+                result += "<a href='/api/html/service/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getLocalServiceMetadataRecord().getFileIdentifier()+"'>"+link.getLocalServiceMetadataRecord().getTitle() +"</a><br>";
+            }
+        }
+
+        List<DatasetDocumentLink> datasetBackLinks =  datasetDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
+        if (!datasetBackLinks.isEmpty()) {
+            result += "<h3>Dataset Back Links</h3>\n";
+            for(DatasetDocumentLink link : datasetBackLinks) {
+                result += "<a href='/api/html/dataset/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+"'>"+link.getDatasetMetadataRecord().getTitle() +"</a><br>";
+            }
         }
 
         result += "<br> <h3>Layers</h3><br>";

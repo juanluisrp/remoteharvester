@@ -53,6 +53,8 @@ import java.util.Arrays;
 @Scope("prototype")
 public class RetrievableSimpleLinkDownloader {
 
+    public static int headLength = 2048;
+
     private static final Logger logger = LoggerFactory.getLogger(RetrievableSimpleLinkDownloader.class);
 
 
@@ -105,7 +107,7 @@ public class RetrievableSimpleLinkDownloader {
                 link.setLinkSSLUntrustedByJavaReason(data.getSslUnTrustedReason());
             }
 
-            byte[] headData = Arrays.copyOf(data.getData(), Math.min(1000, data.getData().length));
+            byte[] headData = Arrays.copyOf(data.getData(), Math.min(headLength, data.getData().length));
             link.setLinkContentHead(headData);
 
             link.setLinkIsXML(isXML(data));

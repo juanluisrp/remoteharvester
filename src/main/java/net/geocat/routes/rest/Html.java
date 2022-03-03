@@ -39,6 +39,7 @@ import net.geocat.service.html.HtmlDatasetService;
 import net.geocat.service.html.HtmlDiscoverService;
 import net.geocat.service.html.HtmlScrapeService;
 import net.geocat.service.html.HtmlServiceService;
+import net.geocat.service.html.HtmlSummaryService;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,6 +99,14 @@ public class Html extends RouteBuilder {
                 .route()
                 .routeId("rest.rest.html.scrape")
                 .bean(HtmlScrapeService.class, "getHtml( ${header.processID}, ${header.country} )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+        rest("/api/html/summary/")
+                .get("/{processID}")
+                .route()
+                .routeId("rest.rest.html.summary")
+                .bean(HtmlSummaryService.class, "getHtml( ${header.processID}  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;
