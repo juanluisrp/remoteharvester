@@ -67,10 +67,14 @@ import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Component
 public class MyCommandLineRunner implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(MyCommandLineRunner.class);
 
+    @Autowired
+    CapabilitiesDatasetMetadataLinkRepo capabilitiesDatasetMetadataLinkRepo;
 
     @Autowired
     BlobStorageService blobStorageService;
@@ -139,8 +143,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     OperatesOnLinkRepo operatesOnLinkRepo;
 
-    @Autowired
-    CapabilitiesDatasetMetadataLinkRepo capabilitiesDatasetMetadataLinkRepo;
+
 
     @Autowired
     RetrieveCapabilitiesDatasetMetadataLink retrieveCapabilitiesDatasetMetadataLink;
@@ -215,26 +218,38 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     EventFactory eventFactory;
 
+    @Autowired
+    @Qualifier("cachingHttpRetriever")
+    IHTTPRetriever retriever_cachingHttpRetriever;
+
+
     @Override
     public void run(String... args) throws Exception {
 
         try {
-         //  allLocalDataset();
 
-//            HttpResult r = basicHTTPRetriever.retrieveXML("GET","https://geoportal.gov.cz/php/micka/record/xml/%7B98B9FB58-E421-46CE-9436-8D5F79ED4ACA%7D",null,null,null);
+         //  single("5917E153B70E949CC07D5A8B153A588E963BA6C6EF5F01D0500314FD029114B7");
+       // allDataset();
+
+//          HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
+//                  "https://www.geoportal.lt/geonetwork/srv/eng/csw?elementSetName=full&id=7ce59d66-159c-4b81-9951-20f801f05748&outputSchema=http://www.isotc211.org/2005/gmd&request=GetRecordById&service=CSW&version=2.0.2",
+//                  null,
+//                  null,
+//                  partialDownloadPredicateFactory.create(PartialDownloadHint.METADATA_ONLY));
 //            String s = new String(r.getData());
-//            XmlDoc d = xmlDocumentFactory.create(s);
-//            int t=0;
+//
+//           XmlDoc d = xmlDocumentFactory.create(s);
+            int t=0;
 
 //            run12("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
 //            run11("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
 
-           // String country = "mt";
-         //   String lastLinkCheckJob = lastLinkCheckJob(country);
+          String country = "nl";
+//         String lastLinkCheckJob = lastLinkCheckJob(country);
            // allWFS();
            // all_();
 
-  //   run_scrape(country,lastLinkCheckJob(country));
+ // run_scrape(country,lastLinkCheckJob(country));
 //            run_3("25a379b1-33db-450a-a9f4-4c396a29a02a\n",
 //                    "5d0e1408-2409-4c19-a037-10764523379b\n",
 //                    lastLinkCheckJob);
@@ -350,11 +365,40 @@ public class MyCommandLineRunner implements CommandLineRunner {
         Iterable<DatasetMetadataRecord> datasetsIterator = datasetMetadataRecordRepo.findAll();
         datasetsIterator.forEach(datasets::add);
 
+        logger.debug("finished reading local xml");
+        List<XmlDatasetMetadataDocument> docs = new ArrayList<>();
         for (DatasetMetadataRecord record: datasets ){
             String xml = blobStorageService.findXML(record.getSha2());
-            XmlDoc doc = xmlDocumentFactory.create(xml);
+            XmlDatasetMetadataDocument doc = (XmlDatasetMetadataDocument) xmlDocumentFactory.create(xml);
+            docs.add(doc);
             int t=0;
         }
+
+        logger.debug("finished parsing local xml "+ docs.size());
+        datasets.clear();
+        List<CapabilitiesDatasetMetadataLink> datasets2 = new ArrayList();
+        Iterable<CapabilitiesDatasetMetadataLink> linksIterator = capabilitiesDatasetMetadataLinkRepo.findBySha2NotNull();
+        linksIterator.forEach(datasets2::add);
+        logger.debug("finished reading external xml links ");
+
+        for (CapabilitiesDatasetMetadataLink link: datasets2 ){
+            if (link.getSha2() == null)
+                continue;
+            String xml = linkCheckBlobStorageRepo.findById(link.getSha2()).get().getTextValue();
+            XmlDatasetMetadataDocument doc = (XmlDatasetMetadataDocument) xmlDocumentFactory.create(xml);
+            docs.add(doc);
+            int t=0;
+        }
+
+        logger.debug("finished parsing external xml links" + datasets2.size());
+        datasets2.clear();
+
+        Map<String, List<XmlDatasetMetadataDocument>> groups =  docs.stream()
+                .collect(groupingBy(XmlDatasetMetadataDocument::getFileIdentifier));
+
+        List<Map.Entry<String, List<XmlDatasetMetadataDocument>>> result = groups.entrySet().stream()
+                .filter(x -> !x.getValue().isEmpty())
+                .collect(Collectors.toList());
         int t = 0;
     }
 
@@ -386,6 +430,12 @@ public class MyCommandLineRunner implements CommandLineRunner {
             XmlDoc doc = xmlDocumentFactory.create(xml);
             int t=0;
         }
+    }
+
+    public void single(String sha2) throws Exception {
+        String xml = linkCheckBlobStorageRepo.findById(sha2).get().getTextValue();
+        XmlDoc doc = xmlDocumentFactory.create(xml);
+        int t=0;
     }
 
     public void all_() throws Exception {
@@ -552,7 +602,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         List<String> urls = missing.getServiceDocumentLinks().stream()
                 .map(x-> {
                     try {
-                        return capabilitiesLinkFixer.fix(x.getRawURL(), missing.getMetadataServiceType());
+                        return capabilitiesLinkFixer.fix(x.getRawURL(), missing.getMetadataServiceType(),x);
                     } catch (Exception e) {
                        return null;
                     }
