@@ -168,11 +168,11 @@ public class IngesterService {
         // Index added/updated records
         // TODO: Test, commented to be indexed in GeoNetwork to avoid issues with GeoNetwork API and ECAS
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
-        /*List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
+        List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         geoNetworkClient.init();
-        indexRecords(metadataIdsToIndex, processId);*/
+        indexRecords(metadataIdsToIndex, processId);
 
         // Delete old harvested records no longer in the harvester server
         List<String> remoteHarvesterUuids = metadataIds.entrySet().stream()
