@@ -33,14 +33,10 @@
 
 package net.geocat.xml;
 
-import com.sun.org.apache.xpath.internal.NodeSet;
 import net.geocat.service.capabilities.DatasetLink;
 import net.geocat.xml.helpers.CapabilitiesType;
-import org.springframework.data.annotation.Persistent;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
 import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
@@ -52,22 +48,52 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
         setup_XmlCapabilitiesAtom();
     }
 
+    public Node findDescribedByLink(Node entryNode) {
+        List<Node> nodes = findNodes(entryNode,"link");
+        for (Node n : nodes) {
+             Node rel = n.getAttributes().getNamedItem("rel");
+             if ( (rel != null) && (rel.getNodeValue() !=null) && (!rel.getNodeValue().trim().isEmpty())) {
+                 if (rel.getNodeValue().trim().equals("describedby"))
+                     return n;
+             }
+        }
+        return null;
+    }
+
     private void setup_XmlCapabilitiesAtom() throws  Exception {
         Node n = getFirstNode();
         //NodeList ns = xpath_nodeset("//atom:entry");
         List<Node> ns = XmlDoc.findAllNodes(n,"entry");
         for(int idx=0;idx<ns.size();idx++) {
             String identity = null;
+            String authority = null;
             String url = null;
             Node entryNode = ns.get(idx);
            // Node spatial_dataset_identifier_codeNode = xpath_node(entryNode,"inspire_dls:spatial_dataset_identifier_code");
             Node spatial_dataset_identifier_codeNode = findNode(entryNode,"spatial_dataset_identifier_code");
-            Node urlNode = xpath_node(entryNode,"atom:link[@rel='describedby']");
+            Node spatial_dataset_identifier_namesapceNode = findNode(entryNode,"spatial_dataset_identifier_namespace");
+
+            // Node urlNode = xpath_node(entryNode,"atom:link[@rel='describedby']");
+            Node urlNode =findDescribedByLink(entryNode);
+            if (findNodes(entryNode,"spatial_dataset_identifier_code").size()>1)
+            {
+                int t=0;
+            }
+
+            Node idNode = findNode(entryNode,"id");
+            String id = null;
+            if ( (idNode!=null) && (idNode.getTextContent() !=null) && (!idNode.getTextContent().trim().isEmpty()) )
+                id = idNode.getTextContent().trim();
 
             if (spatial_dataset_identifier_codeNode != null) {
                 identity = spatial_dataset_identifier_codeNode.getTextContent();
                 if (identity.isEmpty())
                     identity = null;
+            }
+            if (spatial_dataset_identifier_namesapceNode != null) {
+                authority = spatial_dataset_identifier_codeNode.getTextContent();
+                if (authority.isEmpty())
+                    authority = null;
             }
             if (urlNode != null) {
                 Node hrefNode = urlNode.getAttributes().getNamedItem("href");
@@ -79,6 +105,8 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
             }
             if ( (url !=null) || (identity !=null)) {
                 DatasetLink dl = new DatasetLink(identity,url);
+                dl.setAuthority(authority);
+                dl.setOgcLayerName(id);
                 this.getDatasetLinksList().add(dl);
             }
 

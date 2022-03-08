@@ -49,6 +49,9 @@ import net.geocat.xml.XmlDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Component
 public class HtmlDatasetService {
@@ -116,7 +119,7 @@ public class HtmlDatasetService {
             }
         }
 
-
+        result += "<h2>Links to Data</h2>\n";
 
 
         if (record.getDataLinks().size() == 0) {
@@ -140,13 +143,19 @@ public class HtmlDatasetService {
         result += "<br><br><br><hr><br><br><xmp>"+text(record)+"</xmp><br><br>";
         return result;
     }
-
     private String showDataLinks(LocalDatasetMetadataRecord record) {
+        return showDataLinks(new ArrayList(record.getDataLinks()), false);
+    }
+
+    public static String showDataLinks(List<LinkToData> links, boolean showDSLink) {
         String result = "";
         int indx =0;
-        for (LinkToData link:record.getDataLinks()) {
+        for (LinkToData link:links) {
             result += "<h3>link "+indx+" - " + link.getClass().getSimpleName() + "</h3>";
-            result += "<a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getCapabilitiesSha2() + "'>"+link.getCapabilitiesDocumentType()  + " Capabilities</a>" + "</h3>\n";
+            if (showDSLink)
+                result += "dataset: <a href='" +"/api/html/dataset/"+ link.getDatasetMetadataRecord().getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+ "'>"+link.getDatasetMetadataRecord().getFileIdentifier()  + "  </a>" + "</h3><br>\n";
+
+            result += "capabilities: <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getCapabilitiesSha2() + "'>"+link.getCapabilitiesDocumentType()  + " Capabilities</a>" + "</h3>\n";
 
             if (link instanceof SimpleLayerMetadataUrlDataLink) {
                 SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
@@ -160,7 +169,7 @@ public class HtmlDatasetService {
             }
             if (link instanceof SimpleSpatialDSIDDataLink) {
                 SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
-                 result += "code: "+_link.getCode()+"<br>\n";
+                 result += "<br>code: "+_link.getCode()+"<br>\n";
                 result += "codespace: "+_link.getCodeSpace()+"<br>\n";
             }
             indx++;

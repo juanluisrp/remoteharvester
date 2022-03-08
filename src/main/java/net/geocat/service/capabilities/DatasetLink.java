@@ -37,6 +37,11 @@ import java.util.Objects;
 
 public class DatasetLink {
 
+    //for atom;
+    //   ogcLayerName -> entry/id
+    //   identifier -> spatial_dataset_identifier_code  code
+    //   authority  -> spatial_dataset_identifier_namespace  namespace
+
     String identifier; // identifier (if present)
     String rawUrl; //metadataURL
     String authority; //for wms

@@ -205,6 +205,8 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
     public void addLinkedCapabilities( List<StoreQueryCapabilitiesLinkResult> linkedCapabilities) {
         for(StoreQueryCapabilitiesLinkResult link : linkedCapabilities) {
             SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+            item.setCode(link.getCode());
+            item.setCodeSpace(link.getCodespace());
             item.setDatasetMetadataRecord(localDatasetMetadataRecord);
             this.localDatasetMetadataRecord.getDataLinks().add(item);
         }

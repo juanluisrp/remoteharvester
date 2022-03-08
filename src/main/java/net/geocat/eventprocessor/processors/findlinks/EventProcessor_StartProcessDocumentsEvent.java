@@ -130,8 +130,9 @@ public class EventProcessor_StartProcessDocumentsEvent extends BaseEventProcesso
 
         //todo - remove
 //     List<String> items = Arrays.asList(new String[] {
-//             "48374bce-e52c-4194-ab79-3db603a1eca9",
-//             "7ce59d66-159c-4b81-9951-20f801f05748"
+//             "CZ-VUV-MD-ProtectedAreas",
+//             "CZ-VUV-MD-INSPIREWMS"
+//                ,"CZ-VUV-MD-ATOM-Inspire-WFDCHRUZ"
 //     });
 //     metadataRecords = metadataRecords.stream().filter(x-> items.contains(x.getRecordIdentifier() )).collect(Collectors.toList());
 

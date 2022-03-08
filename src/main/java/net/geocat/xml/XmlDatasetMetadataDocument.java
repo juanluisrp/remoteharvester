@@ -206,15 +206,10 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
         List<Node> identifiersMD =  findNodesFullSearch(n,"MD_Identifier");
         List<Node> identifiersRS =  findNodesFullSearch(n,"RS_Identifier");
 
-//        if ( (identifiersMD.size() >1) && (identifiersRS.size()>1)) {
-//            int t=0;
-//        }
-//        if ( (identifiersMD.size() ==0) && (identifiersRS.size()==0)) {
-//            int t=0;
-//        }
-//        if ( (identifiersMD.size() >1) ||(identifiersRS.size()>1)) {
-//            int t=0;
-//        }
+        if ( (identifiersMD.size() >=1) && (identifiersRS.size()>=3)) {
+            int t=0;
+        }
+
         List<DatasetIdentifier> result = new ArrayList<>();
         if (!identifiersMD.isEmpty()){
             List<DatasetIdentifier> items = parseIdentifier(identifiersMD.get(0));

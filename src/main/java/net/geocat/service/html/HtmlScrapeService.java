@@ -199,9 +199,9 @@ public class HtmlScrapeService {
         //        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;
 
         List queryResult = executeSQL3("select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title");
-        result +="<h1> View Differences </h2><br>\n";
+        result +="<h1> View Differences - "+queryResult.size()+" differences (geoportal viewable)</h2><br>\n";
         if (!queryResult.isEmpty()) {
-
+            result+="<b>Geoportal says these are Viewable, but we do not</b><Br>";
             result += results(linkCheckJob,queryResult);
         }
         else
@@ -210,19 +210,43 @@ public class HtmlScrapeService {
         }
 
         List queryResult2 = executeSQL3("select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;");
-        result +="<h1> Download Differences </h2><br>\n";
+        result +="<h1> Download Differences - "+queryResult2.size()+" differences (geoportal downloadable)</h2><br>\n";
         if (!queryResult2.isEmpty()) {
+            result+="<b>Geoportal says these are downloadable, but we do not</b><Br>";
             result += results(linkCheckJob,queryResult2);
         }
         else {
             result +="NO DIFFERENCES<br>\n";
         }
+
+        List queryResult3 = executeSQL3("select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and not(is_view) and title is not null order by title");
+        result +="<h1> View Differences - "+queryResult3.size()+" differences (geoportal not viewable)</h2><br>\n";
+        if (!queryResult3.isEmpty()) {
+            result+="<b>Geoportal says these are NOT Viewable, but we say they are (perhaps just not accessible?)</b><Br>";
+            result += results(linkCheckJob,queryResult3);
+        }
+        else
+        {
+            result +="NO DIFFERENCES<br>\n";
+        }
+
+        List queryResult4 = executeSQL3("select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and not(is_download) and title is not null order by title;");
+        result +="<h1> Download Differences - "+queryResult4.size()+" differences (geoportal not downloadable)</h2><br>\n";
+        if (!queryResult4.isEmpty()) {
+            result+="<b>Geoportal says these are NOT downloadable, but we say they are (perhaps just not accessible?)</b><Br>";
+            result += results(linkCheckJob,queryResult4);
+        }
+        else {
+            result +="NO DIFFERENCES<br>\n";
+        }
+
+        result +="<br><br><br>\n";
         return result;
     }
 
     private String results(String linkcheckjob,List queryResult) {
         String result ="";
-        result +="<table><tr> <td>File Identifier</td> <td>Title</td> <td>Remote - connected</td><td>Local - connected</td></tr>";
+        result +="<table><tr> <td>File Identifier</td> <td>Title</td> <td>Geoportal - connected</td><td>Local - connected</td></tr>";
         for (Object o:queryResult) {
             Object[] cols = (Object[])o;
             String link = "<a href='/api/html/dataset/"+linkcheckjob+"/"+cols[0].toString()+"'>"+cols[0].toString()+"</a>";

@@ -40,11 +40,13 @@ import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
 import net.geocat.database.linkchecker.repos.CapabilitiesDocumentRepo;
 import net.geocat.database.linkchecker.repos.DatasetDocumentLinkRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckBlobStorageRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos.LinkToDataRepo;
 import net.geocat.database.linkchecker.repos.ServiceDocumentLinkRepo;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
@@ -53,8 +55,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static net.geocat.service.html.HtmlDatasetService.showDataLinks;
+
 @Component
 public class HtmlCapabilitiesService {
+
+    @Autowired
+    LinkToDataRepo linkToDataRepo;
 
     @Autowired
     LinkCheckBlobStorageRepo linkCheckBlobStorageRepo;
@@ -128,6 +135,11 @@ public class HtmlCapabilitiesService {
         }
 
 
+        List<LinkToData> datalinks = linkToDataRepo.findByLinkCheckJobIdAndCapabilitiesSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
+        result += "<h2>Data links</h2>";
+        result += showDataLinks(datalinks,true);
+        if (datalinks.isEmpty())
+            result += "NO DATALINKS<BR>";
 
         List<ServiceDocumentLink> serviceBackLinks =  serviceDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
         if (!serviceBackLinks.isEmpty()) {

@@ -227,9 +227,9 @@ public class MyCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         try {
-
+          //  allAtom();
          //  single("5917E153B70E949CC07D5A8B153A588E963BA6C6EF5F01D0500314FD029114B7");
-       // allDataset();
+        //allDataset();
 
 //          HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
 //                  "https://www.geoportal.lt/geonetwork/srv/eng/csw?elementSetName=full&id=7ce59d66-159c-4b81-9951-20f801f05748&outputSchema=http://www.isotc211.org/2005/gmd&request=GetRecordById&service=CSW&version=2.0.2",
@@ -408,6 +408,23 @@ public class MyCommandLineRunner implements CommandLineRunner {
         for (Object v: wfs) {
             String xml = (String) v;
             XmlDoc doc = xmlDocumentFactory.create(xml);
+            int t=0;
+        }
+    }
+
+    public void allAtom() throws Exception {
+        int tt=0;
+
+        List wfs = executeSQL3("SELECT data FROM httpresultcache WHERE data  like '%spatial_dataset_identifier_%'");
+        for (Object v: wfs) {
+            String xml = new String((byte[]) v);
+            try {
+                XmlDoc doc = xmlDocumentFactory.create(xml);
+            }
+            catch(Exception e) {
+                tt++;
+                String xml2 = new String((byte[]) v);
+            }
             int t=0;
         }
     }
