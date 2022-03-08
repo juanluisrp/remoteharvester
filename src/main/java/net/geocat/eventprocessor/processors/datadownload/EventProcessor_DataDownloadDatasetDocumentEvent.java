@@ -31,14 +31,19 @@
  *  ==============================================================================
  */
 
-package net.geocat.eventprocessor.processors.main;
+package net.geocat.eventprocessor.processors.datadownload;
 
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
-import net.geocat.database.linkchecker.service.LinkCheckJobService;
+import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
+import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.eventprocessor.BaseEventProcessor;
+import net.geocat.eventprocessor.processors.postprocess.EventProcessor_PostProcessDatasetDocumentEvent;
+import net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.postprocess.AllPostProcessingCompleteEvent;
+import net.geocat.events.datadownload.DataDownloadDatasetDocumentEvent;
+import net.geocat.events.postprocess.PostProcessDatasetDocumentEvent;
+import net.geocat.service.helper.ShouldTransitionOutOfDataDownloading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,41 +56,52 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_AllPostProcessingCompleteEvent extends BaseEventProcessor<AllPostProcessingCompleteEvent> {
+public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventProcessor<DataDownloadDatasetDocumentEvent> {
 
-    Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent.class);
+    Logger logger = LoggerFactory.getLogger(EventProcessor_DataDownloadDatasetDocumentEvent.class);
 
     @Autowired
-    LinkCheckJobService linkCheckJobService;
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
     @Autowired
     EventFactory eventFactory;
 
+    @Autowired
+    ShouldTransitionOutOfDataDownloading shouldTransitionOutOfDataDownloading;
+
+    LocalDatasetMetadataRecord localDatasetMetadataRecord;
+
     @Override
-    public EventProcessor_AllPostProcessingCompleteEvent externalProcessing() {
+    public EventProcessor_DataDownloadDatasetDocumentEvent externalProcessing() throws Exception {
+        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
+        localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.DATADOWNLOADED);
+        save();
         return this;
     }
 
 
-    @Override
-    public EventProcessor_AllPostProcessingCompleteEvent internalProcessing() {
+    public void save()
+    {
+        localDatasetMetadataRecord = localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
+    }
 
-        linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.DATADOWNLOADING);
+    @Override
+    public EventProcessor_DataDownloadDatasetDocumentEvent internalProcessing() throws Exception {
 
         return this;
     }
 
-
     @Override
-    public List<Event> newEventProcessing() {
-        logger.debug("AllPostProcessingCompleteEvent - all documents were postprocessed, linkcheckjobid="+getInitiatingEvent().getLinkCheckJobId());
-//        logger.debug("LinkCheckJob COMPLETE - "+ getInitiatingEvent().getLinkCheckJobId());
-
+    public List<Event> newEventProcessing () {
         List<Event> result = new ArrayList<>();
-        Event e = eventFactory.createStartDataDownloadEvent(this.getInitiatingEvent().getLinkCheckJobId());
-        result.add(e);
+
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
+
+        if (shouldTransitionOutOfDataDownloading.shouldSendMessage(linkCheckJobId, getInitiatingEvent().getDatasetDocumentId())) {
+            //done
+            Event e = eventFactory.createAllDataDownloadedEvent(linkCheckJobId);
+            result.add(e);
+        }
         return result;
     }
-
 }
-

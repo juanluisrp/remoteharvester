@@ -31,23 +31,43 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.entities;
+package net.geocat.routes.queuebased;
 
-//state of the link check job
-public enum LinkCheckJobState {
-    CREATING, // not really started
+import net.geocat.eventprocessor.MainLoopRouteCreator;
+import net.geocat.eventprocessor.RedirectEvent;
+import net.geocat.events.datadownload.AllDataDownloadedEvent;
+import net.geocat.events.datadownload.DataDownloadDatasetDocumentEvent;
+import net.geocat.events.datadownload.StartDataDownloadEvent;
+import net.geocat.events.findlinks.LinksFoundInAllDocuments;
+import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
+import net.geocat.events.findlinks.StartProcessDocumentsEvent;
+import org.apache.camel.spring.SpringRouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    //Go through each of the documents harvested, parse the XML, and save the results in the linkchecker database (as per the diagram). This is extracting links
-    FINDING_LINKS, LINKS_FOUND, // initial processing of do
+import java.util.Arrays;
 
-    //  go through each of the documents (in the link checker database) and process all the links (i.e. resolve them, parse the capabilities document, fetch the DS link from the layers).
-    CHECKING_LINKS, LINKS_CHECKED,
 
-    POST_PROCESSING,
 
-    DATADOWNLOADING,
+@Component
+public class DataDownloadOrchestrator extends SpringRouteBuilder {
 
-    COMPLETE,
+    public static String myJMSQueueName = "linkCheck.DataDownloadOrchestrator";
 
-    ERROR, USERABORT  // abnormal ending
+    @Autowired
+    MainLoopRouteCreator mainLoopRouteCreator;
+
+    @Override
+    public void configure() throws Exception {
+
+        mainLoopRouteCreator.createEventProcessingLoop(this,
+                "activemq:" + myJMSQueueName,
+                new Class[]{StartDataDownloadEvent.class, DataDownloadDatasetDocumentEvent.class},
+                Arrays.asList(
+                        new RedirectEvent(AllDataDownloadedEvent.class, "activemq:" + MainOrchestrator.myJMSQueueName)
+                ),
+                Arrays.asList(new Class[0]),
+                10  //todo changeme
+        );
+    }
 }

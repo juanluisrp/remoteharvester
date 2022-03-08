@@ -38,7 +38,8 @@ import net.geocat.database.linkchecker.service.LinkCheckJobService;
 import net.geocat.eventprocessor.BaseEventProcessor;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.postprocess.AllPostProcessingCompleteEvent;
+import net.geocat.events.datadownload.AllDataDownloadedEvent;
+import net.geocat.events.processlinks.AllLinksCheckedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,44 +49,42 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+     @Component
+    @Scope("prototype")
+    public class EventProcessor_AllDataDownloadedEvent extends BaseEventProcessor<AllDataDownloadedEvent> {
 
-@Component
-@Scope("prototype")
-public class EventProcessor_AllPostProcessingCompleteEvent extends BaseEventProcessor<AllPostProcessingCompleteEvent> {
+        Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent.class);
 
-    Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent.class);
+        @Autowired
+        LinkCheckJobService linkCheckJobService;
 
-    @Autowired
-    LinkCheckJobService linkCheckJobService;
-
-    @Autowired
-    EventFactory eventFactory;
-
-    @Override
-    public EventProcessor_AllPostProcessingCompleteEvent externalProcessing() {
-        return this;
-    }
+        @Autowired
+        EventFactory eventFactory;
 
 
-    @Override
-    public EventProcessor_AllPostProcessingCompleteEvent internalProcessing() {
-
-        linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.DATADOWNLOADING);
-
-        return this;
-    }
+        @Override
+        public net.geocat.eventprocessor.processors.main.EventProcessor_AllDataDownloadedEvent externalProcessing() {
+            return this;
+        }
 
 
-    @Override
-    public List<Event> newEventProcessing() {
-        logger.debug("AllPostProcessingCompleteEvent - all documents were postprocessed, linkcheckjobid="+getInitiatingEvent().getLinkCheckJobId());
-//        logger.debug("LinkCheckJob COMPLETE - "+ getInitiatingEvent().getLinkCheckJobId());
+        @Override
+        public net.geocat.eventprocessor.processors.main.EventProcessor_AllDataDownloadedEvent internalProcessing() {
+            linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.COMPLETE);
+            return this;
+        }
 
-        List<Event> result = new ArrayList<>();
-        Event e = eventFactory.createStartDataDownloadEvent(this.getInitiatingEvent().getLinkCheckJobId());
-        result.add(e);
-        return result;
-    }
+
+        @Override
+        public List<Event> newEventProcessing() {
+            logger.debug("AllDataDownloadedEvent - all data connections were downloaded and processed, linkcheckjobid="+ getInitiatingEvent().getLinkCheckJobId() );
+            logger.debug("LinkCheckJob COMPLETE - "+ getInitiatingEvent().getLinkCheckJobId());
+
+
+            List<Event> result = new ArrayList<>();
+            //Event e = eventFactory.createStartPostProcessEvent(this.getInitiatingEvent().getLinkCheckJobId());
+          //  result.add(e);
+            return result;
+        }
 
 }
-

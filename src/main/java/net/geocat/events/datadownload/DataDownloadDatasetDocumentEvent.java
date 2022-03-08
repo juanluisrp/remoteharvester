@@ -31,23 +31,41 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.entities;
+package net.geocat.events.datadownload;
 
-//state of the link check job
-public enum LinkCheckJobState {
-    CREATING, // not really started
+import net.geocat.events.Event;
 
-    //Go through each of the documents harvested, parse the XML, and save the results in the linkchecker database (as per the diagram). This is extracting links
-    FINDING_LINKS, LINKS_FOUND, // initial processing of do
+public class DataDownloadDatasetDocumentEvent  extends Event {
 
-    //  go through each of the documents (in the link checker database) and process all the links (i.e. resolve them, parse the capabilities document, fetch the DS link from the layers).
-    CHECKING_LINKS, LINKS_CHECKED,
+    private long datasetDocumentId;
+    private String linkCheckJobId;
 
-    POST_PROCESSING,
+    public DataDownloadDatasetDocumentEvent() {
+    }
 
-    DATADOWNLOADING,
+    public DataDownloadDatasetDocumentEvent(long datasetDocumentId, String linkCheckJobId) {
+        this.datasetDocumentId = datasetDocumentId;
+        this.linkCheckJobId = linkCheckJobId;
+    }
 
-    COMPLETE,
+    public long getDatasetDocumentId() {
+        return datasetDocumentId;
+    }
 
-    ERROR, USERABORT  // abnormal ending
+    public void setDatasetDocumentId(long datasetDocumentId) {
+        this.datasetDocumentId = datasetDocumentId;
+    }
+
+    public String getLinkCheckJobId() {
+        return linkCheckJobId;
+    }
+
+    public void setLinkCheckJobId(String linkCheckJobId) {
+        this.linkCheckJobId = linkCheckJobId;
+    }
+
+    @Override
+    public String toString() {
+        return "DataDownloadDatasetDocumentEvent  - datasetDocumentId:" + datasetDocumentId + ", linkcheckJobId:" + linkCheckJobId;
+    }
 }

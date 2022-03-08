@@ -31,14 +31,17 @@
  *  ==============================================================================
  */
 
-package net.geocat.eventprocessor.processors.main;
+package net.geocat.eventprocessor.processors.datadownload;
 
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
-import net.geocat.database.linkchecker.service.LinkCheckJobService;
+
+import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
+import net.geocat.database.linkchecker.repos.LocalServiceMetadataRecordRepo;
 import net.geocat.eventprocessor.BaseEventProcessor;
+
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
-import net.geocat.events.postprocess.AllPostProcessingCompleteEvent;
+import net.geocat.events.datadownload.StartDataDownloadEvent;
+import net.geocat.events.postprocess.StartPostProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,41 +54,63 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_AllPostProcessingCompleteEvent extends BaseEventProcessor<AllPostProcessingCompleteEvent> {
+public class EventProcessor_StartDataDownloadEvent extends BaseEventProcessor<StartDataDownloadEvent> {
 
-    Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent.class);
-
-    @Autowired
-    LinkCheckJobService linkCheckJobService;
+    Logger logger = LoggerFactory.getLogger(EventProcessor_StartDataDownloadEvent.class);
 
     @Autowired
     EventFactory eventFactory;
 
+    @Autowired
+    LocalServiceMetadataRecordRepo localServiceMetadataRecordRepo;
+
+    @Autowired
+    LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
+
+
+
     @Override
-    public EventProcessor_AllPostProcessingCompleteEvent externalProcessing() {
+    public EventProcessor_StartDataDownloadEvent externalProcessing() throws Exception {
         return this;
     }
 
 
     @Override
-    public EventProcessor_AllPostProcessingCompleteEvent internalProcessing() {
-
-        linkCheckJobService.updateLinkCheckJobStateInDB(getInitiatingEvent().getLinkCheckJobId(), LinkCheckJobState.DATADOWNLOADING);
-
+    public EventProcessor_StartDataDownloadEvent internalProcessing() throws Exception {
         return this;
     }
 
 
     @Override
     public List<Event> newEventProcessing() {
-        logger.debug("AllPostProcessingCompleteEvent - all documents were postprocessed, linkcheckjobid="+getInitiatingEvent().getLinkCheckJobId());
-//        logger.debug("LinkCheckJob COMPLETE - "+ getInitiatingEvent().getLinkCheckJobId());
+        String linkCheckJobId = getInitiatingEvent().getLinkCheckJobId();
 
         List<Event> result = new ArrayList<>();
-        Event e = eventFactory.createStartDataDownloadEvent(this.getInitiatingEvent().getLinkCheckJobId());
-        result.add(e);
+
+//        List<Long> serviceIds =  localServiceMetadataRecordRepo.searchAllServiceIds(linkCheckJobId);
+//        for(Long id : serviceIds){
+//            Event e = eventFactory.createPostProcessServiceDocumentEvent(id,linkCheckJobId);
+//            result.add(e);
+//        }
+
+        List<Long> datasetIds =  localDatasetMetadataRecordRepo.searchAllDatasetIds(linkCheckJobId);
+        for(Long id : datasetIds){
+            Event e = eventFactory.createDataDownloadDatasetDocumentEvent(id,linkCheckJobId);
+            result.add(e);
+        }
+
+//        for(LocalServiceMetadataRecord record : localServiceMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
+//            long id = record.getServiceMetadataDocumentId();
+//            Event e = eventFactory.createPostProcessServiceDocumentEvent(id,linkCheckJobId);
+//            result.add(e);
+//        }
+//
+//        for(LocalDatasetMetadataRecord record : localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId)) {
+//            long id = record.getDatasetMetadataDocumentId();
+//            Event e = eventFactory.createPostProcessDatasetDocumentEvent(id,linkCheckJobId);
+//            result.add(e);
+//        }
+
         return result;
     }
-
 }
-
