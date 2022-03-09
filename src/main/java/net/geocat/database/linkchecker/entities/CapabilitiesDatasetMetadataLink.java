@@ -92,6 +92,10 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
     @Column(columnDefinition = "text")
     String identity;
 
+    //from the Capabilities document - authority (url) for the layer
+    @Column(columnDefinition = "text")
+    String authority;
+
     //store summary info about this
     @Column(columnDefinition = "text")
     String summary;
@@ -108,6 +112,14 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 
     //---------------------------------------------------------------------------
 
+
+    public String getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(String authority) {
+        this.authority = authority;
+    }
 
     public String getOgcLayerName() {
         return ogcLayerName;
@@ -178,6 +190,7 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
         String result = "CapabilitiesDatasetMetadataLink {\n";
         result += "      capabilitiesDatasetMetadataLinkId: " + capabilitiesDatasetMetadataLinkId + "\n";
         result += "      identity: " + identity + "\n";
+        result += "      authority: " + authority + "\n";
         result += "      file Identifier: " + fileIdentifier + "\n";
       //  result += "      dataset identifier: " + datasetIdentifier + "\n";
         result += "      ogcLayerName: " + ogcLayerName + "\n";

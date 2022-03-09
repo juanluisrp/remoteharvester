@@ -31,44 +31,76 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
+package net.geocat.xml.helpers;
 
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import net.geocat.xml.XmlCapabilitiesDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+public class AtomLink {
+    String href;
+    String rel;
+    String type;
+    String hreflang;
+    String title;
 
-import java.util.ArrayList;
-import java.util.List;
+    public AtomLink(String href, String rel, String type, String hreflang, String title) {
+        this.href = href;
+        this.rel = rel;
+        this.type = type;
+        this.hreflang = hreflang;
+        this.title = title;
+    }
 
-@Component
-@Scope("prototype")
-public class CapabilitiesDatasetMetadataLinkService {
+    // ---
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
+    public String getHref() {
+        return href;
+    }
 
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
-        List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
-        for (DatasetLink link : doc.getDatasetLinksList()) {
+    public void setHref(String href) {
+        this.href = href;
+    }
 
-            CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-            item.setOgcLayerName(link.getOgcLayerName());
-            item.setLinkState(LinkState.Created);
-            item.setRawURL(link.getRawUrl());
-            item.setLinkCheckJobId(cap.getLinkCheckJobId());
-            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
-            item.setIdentity(link.getIdentifier());
-            item.setAuthority(link.getAuthority());
+    public String getRel() {
+        return rel;
+    }
 
-         //   item.setCapabilitiesDocument(cap);
-            result.add(item);
-        }
-        return result;
+    public void setRel(String rel) {
+        this.rel = rel;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getHreflang() {
+        return hreflang;
+    }
+
+    public void setHreflang(String hreflang) {
+        this.hreflang = hreflang;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+
+    //---
+
+    @Override
+    public String toString() {
+        return "AtomLink{" +
+                "href='" + href + '\'' +
+                ", rel='" + rel + '\'' +
+                ", type='" + type + '\'' +
+                ", hreflang='" + hreflang + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 }

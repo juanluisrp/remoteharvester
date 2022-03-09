@@ -31,44 +31,54 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.service;
-
-import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
-import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
-import net.geocat.database.linkchecker.entities.helper.LinkState;
-import net.geocat.service.capabilities.DatasetLink;
-import net.geocat.service.capabilities.DatasetLinkFixer;
-import net.geocat.xml.XmlCapabilitiesDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+package net.geocat.xml.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-@Scope("prototype")
-public class CapabilitiesDatasetMetadataLinkService {
+public class AtomEntry {
 
-    @Autowired
-    DatasetLinkFixer datasetLinkFixer;
+    String id;
+    List<AtomLink> links;
 
-    public List<CapabilitiesDatasetMetadataLink> createCapabilitiesDatasetMetadataLinks(CapabilitiesDocument cap, XmlCapabilitiesDocument doc) throws Exception {
-        List<CapabilitiesDatasetMetadataLink> result = new ArrayList<>();
-        for (DatasetLink link : doc.getDatasetLinksList()) {
+    public AtomEntry(String id, List<AtomLink> links) {
+        this.id = id;
+        this.links = links;
+        if (links == null)
+            this.links = new ArrayList<>();
 
-            CapabilitiesDatasetMetadataLink item = new CapabilitiesDatasetMetadataLink();
-            item.setOgcLayerName(link.getOgcLayerName());
-            item.setLinkState(LinkState.Created);
-            item.setRawURL(link.getRawUrl());
-            item.setLinkCheckJobId(cap.getLinkCheckJobId());
-            item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
-            item.setIdentity(link.getIdentifier());
-            item.setAuthority(link.getAuthority());
+    }
 
-         //   item.setCapabilitiesDocument(cap);
-            result.add(item);
-        }
-        return result;
+    public AtomEntry(String id) {
+        this.id = id;
+        this.links = new ArrayList<>();
+    }
+
+    //--
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<AtomLink> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<AtomLink> links) {
+        this.links = links;
+    }
+
+    //--
+
+    @Override
+    public String toString() {
+        return "AtomEntry{" +
+                "id='" + id + '\'' +
+                ", links=" + links +
+                '}';
     }
 }

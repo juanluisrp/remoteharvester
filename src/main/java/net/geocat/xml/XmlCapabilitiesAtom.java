@@ -34,19 +34,70 @@
 package net.geocat.xml;
 
 import net.geocat.service.capabilities.DatasetLink;
+import net.geocat.xml.helpers.AtomEntry;
+import net.geocat.xml.helpers.AtomLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
 
 public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
 
+    List<AtomEntry> entries = new ArrayList<>();
+
     public XmlCapabilitiesAtom(XmlDoc doc) throws Exception {
         super(doc, CapabilitiesType.Atom);
         setup_XmlCapabilitiesAtom();
+        setup_entries();
     }
+
+    public String attribute(Node n, String attribute) {
+        if (n==null)
+            return null;
+        Node att = n.getAttributes().getNamedItem(attribute);
+        if (att == null)
+            return null;
+        String val = att.getNodeValue();
+        if (val == null)
+            return null;
+        val = val.trim();
+        if (val.isEmpty())
+            return null;
+        return val;
+    }
+
+    public void setup_entries() throws Exception {
+        Node n = getFirstNode();
+        //NodeList ns = xpath_nodeset("//atom:entry");
+        List<Node> ns = XmlDoc.findAllNodes(n,"entry");
+        for(int idx=0;idx<ns.size();idx++) {
+            Node entryNode = ns.get(idx);
+            Node idNode = findNode(entryNode,"id");
+            String id = null;
+            if ( (idNode!=null) && (idNode.getTextContent() !=null) && (!idNode.getTextContent().trim().isEmpty()) )
+                id = idNode.getTextContent().trim();
+
+            List<AtomLink> atomLinks = new ArrayList<>();
+            List<Node> links = XmlDoc.findAllNodes(entryNode,"link");
+            for(int idx2=0;idx2<links.size();idx2++) {
+                Node linkNode = links.get(idx2);
+                AtomLink link = new AtomLink(
+                        attribute(linkNode,"href"),
+                        attribute(linkNode,"rel"),
+                        attribute(linkNode,"type"),
+                        attribute(linkNode,"hreflang"),
+                        attribute(linkNode,"title")
+                    );
+                atomLinks.add(link);
+            }
+            AtomEntry entry = new AtomEntry(id,atomLinks);
+            entries.add(entry);
+        }
+    }
+
 
     public Node findDescribedByLink(Node entryNode) {
         List<Node> nodes = findNodes(entryNode,"link");
@@ -91,7 +142,7 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
                     identity = null;
             }
             if (spatial_dataset_identifier_namesapceNode != null) {
-                authority = spatial_dataset_identifier_codeNode.getTextContent();
+                authority = spatial_dataset_identifier_namesapceNode.getTextContent();
                 if (authority.isEmpty())
                     authority = null;
             }
@@ -111,6 +162,16 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
             }
 
         }
+    }
+
+    //---
+
+    public List<AtomEntry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<AtomEntry> entries) {
+        this.entries = entries;
     }
 
 //    Extract the dataset authority:identifier from service feed

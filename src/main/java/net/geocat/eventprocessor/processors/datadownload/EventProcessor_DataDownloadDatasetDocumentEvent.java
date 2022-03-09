@@ -53,6 +53,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.geocat.database.linkchecker.service.DatabaseUpdateService.convertToString;
+
 
 @Component
 @Scope("prototype")
@@ -74,10 +76,34 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
     @Override
     public EventProcessor_DataDownloadDatasetDocumentEvent externalProcessing() throws Exception {
         localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(getInitiatingEvent().getDatasetDocumentId()).get();// make sure we re-load
-        localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.DATADOWNLOADED);
-        save();
+        if (localDatasetMetadataRecord.getDataLinks().isEmpty()) {
+            // no links to data -> nothing to download
+            localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.DATADOWNLOADED);
+            save();
+        }
+        else
+        {
+            try{
+                process();
+                localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.DATADOWNLOADED);
+                save();
+                logger.debug("finished DATADOWNLOADED dataset documentid="+getInitiatingEvent().getDatasetDocumentId()  );
+
+            }
+            catch(Exception e){
+                logger.error("DATADOWNLOADED exception for datasetMetadataRecordId="+getInitiatingEvent().getDatasetDocumentId(),e);
+                localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.ERROR);
+                localDatasetMetadataRecord.setErrorMessage(  convertToString(e) );
+                save();
+            }
+        }
+
         return this;
     }
+
+    private void process() {
+
+     }
 
 
     public void save()

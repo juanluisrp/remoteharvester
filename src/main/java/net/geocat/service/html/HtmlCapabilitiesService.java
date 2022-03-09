@@ -117,7 +117,16 @@ public class HtmlCapabilitiesService {
         if (capabilitiesDocument == null)
             return "<h1> Couldnt find capabilitiesDocument record </h1>";
         String result =  "<h1> Capabilities Document  </h1> \n";
-        result += "<xmp>"+capabilitiesDocument.toString()  + "</xmp><br>\n<br>\n";
+
+        result += "type: "+capabilitiesDocument.getCapabilitiesDocumentType()+"<bR>\n";
+        result += "procGetSpatialDataSetName: "+capabilitiesDocument.getProcGetSpatialDataSetName()+"<bR>\n";
+        result += "numberOfDatasetLinks: "+capabilitiesDocument.getNumberOfDatasetLinks()+"<bR>\n";
+        result += "has inspire extended capabilities: "+capabilitiesDocument.getIndicator_HasExtendedCapabilities()+"<bR>\n";
+        result += "sha2: "+capabilitiesDocument.getSha2()+"<bR>\n";
+
+        result += "<br><br>";
+
+       // result += "<xmp>"+capabilitiesDocument.toString()  + "</xmp><br>\n<br>\n";
 
 
         if (capabilitiesDocument.getInspireSpatialDatasetIdentifiers().isEmpty())
@@ -135,15 +144,11 @@ public class HtmlCapabilitiesService {
         }
 
 
-        List<LinkToData> datalinks = linkToDataRepo.findByLinkCheckJobIdAndCapabilitiesSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
-        result += "<h2>Data links</h2>";
-        result += showDataLinks(datalinks,true);
-        if (datalinks.isEmpty())
-            result += "NO DATALINKS<BR>";
+
 
         List<ServiceDocumentLink> serviceBackLinks =  serviceDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
         if (!serviceBackLinks.isEmpty()) {
-            result += "<h3>Service Back Links</h3>\n";
+            result += "<h3>Service documents that link to this capabilities</h3>\n";
             for(ServiceDocumentLink link : serviceBackLinks) {
                 result += "<a href='/api/html/service/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getLocalServiceMetadataRecord().getFileIdentifier()+"'>"+link.getLocalServiceMetadataRecord().getTitle() +"</a><br>";
             }
@@ -151,26 +156,34 @@ public class HtmlCapabilitiesService {
 
         List<DatasetDocumentLink> datasetBackLinks =  datasetDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
         if (!datasetBackLinks.isEmpty()) {
-            result += "<h3>Dataset Back Links</h3>\n";
+            result += "<h3>Dataset  documents that link to this capabilities</h3>\n";
             for(DatasetDocumentLink link : datasetBackLinks) {
                 result += "<a href='/api/html/dataset/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+"'>"+link.getDatasetMetadataRecord().getTitle() +"</a><br>";
             }
         }
 
-        result += "<br> <h3>Layers</h3><br>";
+        result += "<br> <h3>Layers - "+capabilitiesDocument.getNumberOfDatasetLinks()+"</h3><br>";
         int idx =0;
         for(CapabilitiesDatasetMetadataLink layer : capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList()) {
             result += "<h3> layer #"+idx+"</h3><br>\n";
             result += "fully downloaded: "+layer.getUrlFullyRead() +"<br><br>";
-            result += "<xmp>"+ layer.toString() + "</xmp><br>\n";
+            result += "Remote Dataset Identifiers:<Br>\n";
+            if (layer.getDatasetIdentifiers().isEmpty())
+                result += "NO Dataset Identifiers<br>\n";
             for(DatasetIdentifier identifier:layer.getDatasetIdentifiers()) {
-                result += identifier.toString() +"<br>\n";
+                result += "&nbsp;&nbsp;&nbsp;+ " +identifier.toString() +"<br>\n";
             }
+            result += "<xmp>"+ layer.toString() + "</xmp><br>\n";
+
             idx++;
         }
 
 
-
+        List<LinkToData> datalinks = linkToDataRepo.findByLinkCheckJobIdAndCapabilitiesSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
+        result += "<Br><br><h2>Datasets documents that link to data via this capabilities</h2>";
+        result += showDataLinks(datalinks,true);
+        if (datalinks.isEmpty())
+            result += "NO DATALINKS<BR>";
 
         result += "<br><br><br><hr><br><br><xmp>"+text(capabilitiesDocument)+"</xmp><br><br>";
         return result;
