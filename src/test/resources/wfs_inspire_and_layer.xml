@@ -114,7 +114,7 @@
         <ows:Parameter name="srsName">
             <ows:AllowedValues>
                 <ows:Value>http://www.opengis.net/def/crs/EPSG/0/4258</ows:Value>
-                <ows:Value>http://www.opengis.net/def/crs/EPSG/0/3045</ows:Value>
+                <ows:Value>http://www.opengis.net/def/crs/EPSG/0/4258</ows:Value>
             </ows:AllowedValues>
         </ows:Parameter>
         <ows:Parameter name="outputFormat">
@@ -145,7 +145,7 @@
                 </inspire_common:MetadataUrl>
                 <inspire_common:SupportedLanguages>
                     <inspire_common:DefaultLanguage>
-                        <inspire_common:Language>eng</inspire_common:Language>
+                        <inspire_common:Language>LANG</inspire_common:Language>
                     </inspire_common:DefaultLanguage>
 
                 </inspire_common:SupportedLanguages>

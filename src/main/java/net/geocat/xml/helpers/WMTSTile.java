@@ -31,38 +31,60 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+public class WMTSTile {
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+    String tileMatrixSetName;
+    String tileMatrixName;
+    int row;
+    int col;
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    public WMTSTile(String tileMatrixSetName, String tileMatrixName, int row, int col) {
+        this.tileMatrixSetName = tileMatrixSetName;
+        this.tileMatrixName = tileMatrixName;
+        this.row = row;
+        this.col = col;
+    }
+
+    public String getTileMatrixSetName() {
+        return tileMatrixSetName;
+    }
+
+    public void setTileMatrixSetName(String tileMatrixSetName) {
+        this.tileMatrixSetName = tileMatrixSetName;
+    }
+
+    public String getTileMatrixName() {
+        return tileMatrixName;
+    }
+
+    public void setTileMatrixName(String tileMatrixName) {
+        this.tileMatrixName = tileMatrixName;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String toString() {
+        return "WMTSTile{" +
+                "tileMatrixName='" + tileMatrixName + '\'' +
+                ", row=" + row +
+                ", col=" + col +
+                '}';
     }
 }

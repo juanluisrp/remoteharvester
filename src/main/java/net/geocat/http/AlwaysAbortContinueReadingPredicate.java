@@ -31,38 +31,15 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.http;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import org.springframework.stereotype.Component;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+@Component
+public class AlwaysAbortContinueReadingPredicate implements IContinueReadingPredicate {
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
     @Override
     public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+        return false;
     }
 }

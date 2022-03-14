@@ -53,12 +53,13 @@ import static net.geocat.eventprocessor.processors.datadownload.downloaders.Down
 import static net.geocat.eventprocessor.processors.datadownload.downloaders.DownloaderHelper.setParameter;
 import static net.geocat.xml.XmlStringTools.determineRootTagInfo;
 
+
 @Component
 @Scope("prototype")
-public class WFSLayerDownloader {
+public class WFSStoredQueryDownloader {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(WFSLayerDownloader.class);
+    private static final Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.datadownload.downloaders.WFSStoredQueryDownloader.class);
 
 
     @Autowired
@@ -85,30 +86,34 @@ public class WFSLayerDownloader {
 
 
 
-    public String determineTypeNameParam(XmlCapabilitiesWFS wfsCap) {
-        if ( (wfsCap.getVersionNumber() == null) || (wfsCap.getVersionNumber().isEmpty()))
-            return "TYPENAMES";
-        if (wfsCap.getVersionNumber().startsWith("2"))
-            return "TYPENAMES";
-        return  "TYPENAME";
-    }
 
-    public String createURL(XmlCapabilitiesWFS wfsCap, String layerName) throws Exception {
+
+    public String createURL(XmlCapabilitiesWFS wfsCap, String code, String codespace, String storedProcName) throws Exception {
         String url = fixBaseURL(wfsCap.getGetFeatureEndpoint());
         url = addBasicItemsToUrl(url, wfsCap.getVersionNumber());
 
-        url = setParameter(url, determineTypeNameParam(wfsCap), layerName);
-
-        if (wfsCap.getVersionNumber().startsWith("2"))
-            url = setParameter(url, "count", "1");
+        url = setParameter(url,"DataSetIdCode",code);
+        if (codespace != null)
+            url = setParameter(url,"DataSetIdNamespace",codespace);
         else
-            url = setParameter(url, "maxFeatures", "1");
+            url = setParameter(url,"DataSetIdNamespace",""); // some require this
+
+        url = setParameter(url,"STOREDQUERY_ID",storedProcName);
+        url = setParameter(url,"Language",wfsCap.getDefaultLang());
+
+        if (!wfsCap.getSRSs().isEmpty()) {
+            url = setParameter(url, "CRS", wfsCap.getSRSs().get(0));
+        }
+        else {
+            url = setParameter(url, "CRS", "EPSG:4326");
+        }
+        url = setParameter(url, "count", "1");
 
         return url;
     }
 
-    public OGCRequest downloads(XmlCapabilitiesWFS wfsCap, String layerName) throws Exception {
-        String url = createURL(wfsCap,layerName);
+    public OGCRequest downloads(XmlCapabilitiesWFS wfsCap, String storedProcName, String code, String codespace) throws Exception {
+        String url = createURL(wfsCap,code,codespace,   storedProcName);
 
         OGCRequest ogcRequest = new OGCRequest(url);
         retrievableSimpleLinkDownloader.process(ogcRequest, 4096);
@@ -144,3 +149,4 @@ public class WFSLayerDownloader {
     }
 
 }
+

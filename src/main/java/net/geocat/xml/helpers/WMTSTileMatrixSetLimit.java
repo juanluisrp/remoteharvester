@@ -31,38 +31,73 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+public class WMTSTileMatrixSetLimit {
+    String tileMatrixName;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+    int minTileRow;
+    int maxTileRow;
+    int minTileCol;
+    int maxTileCol;
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    public WMTSTileMatrixSetLimit(String tileMatrixName, int minTileRow, int maxTileRow, int minTileCol, int maxTileCol) {
+        this.tileMatrixName = tileMatrixName;
+        this.minTileRow = minTileRow;
+        this.maxTileRow = maxTileRow;
+        this.minTileCol = minTileCol;
+        this.maxTileCol = maxTileCol;
+    }
+
+    public String getTileMatrixName() {
+        return tileMatrixName;
+    }
+
+    public void setTileMatrixName(String tileMatrixName) {
+        this.tileMatrixName = tileMatrixName;
+    }
+
+    public int getMinTileRow() {
+        return minTileRow;
+    }
+
+    public void setMinTileRow(int minTileRow) {
+        this.minTileRow = minTileRow;
+    }
+
+    public int getMaxTileRow() {
+        return maxTileRow;
+    }
+
+    public void setMaxTileRow(int maxTileRow) {
+        this.maxTileRow = maxTileRow;
+    }
+
+    public int getMinTileCol() {
+        return minTileCol;
+    }
+
+    public void setMinTileCol(int minTileCol) {
+        this.minTileCol = minTileCol;
+    }
+
+    public int getMaxTileCol() {
+        return maxTileCol;
+    }
+
+    public void setMaxTileCol(int maxTileCol) {
+        this.maxTileCol = maxTileCol;
+    }
+
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String toString() {
+        return "WMTSTileMatrixSetLimit{" +
+                "tileMatrixName='" + tileMatrixName + '\'' +
+                ", minTileRow=" + minTileRow +
+                ", maxTileRow=" + maxTileRow +
+                ", minTileCol=" + minTileCol +
+                ", maxTileCol=" + maxTileCol +
+                '}';
     }
 }

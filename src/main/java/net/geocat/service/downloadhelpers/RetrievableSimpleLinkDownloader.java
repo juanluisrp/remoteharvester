@@ -65,8 +65,11 @@ public class RetrievableSimpleLinkDownloader {
     @Autowired
     PartialDownloadPredicateFactory partialDownloadPredicateFactory;
 
-
     public RetrievableSimpleLink process(RetrievableSimpleLink link) {
+        return process(link, headLength);
+    }
+
+    public RetrievableSimpleLink process(RetrievableSimpleLink link, int headLength) {
         try {
 
             HttpResult data = null;

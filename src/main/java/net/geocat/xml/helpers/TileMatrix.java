@@ -31,38 +31,75 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+public class TileMatrix {
+    String identifier;
+    int width;
+    int height;
+    int matrixWidth;
+    int matrixHeight;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+    public TileMatrix(String identifier, int width, int height, int matrixWidth, int matrixHeight) {
+        this.identifier = identifier;
+        this.width = width;
+        this.height = height;
+        this.matrixWidth = matrixWidth;
+        this.matrixHeight = matrixHeight;
+    }
+    // -
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getMatrixWidth() {
+        return matrixWidth;
+    }
+
+    public void setMatrixWidth(int matrixWidth) {
+        this.matrixWidth = matrixWidth;
+    }
+
+    public int getMatrixHeight() {
+        return matrixHeight;
+    }
+
+    public void setMatrixHeight(int matrixHeight) {
+        this.matrixHeight = matrixHeight;
+    }
+
+    //-
+
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String toString() {
+        return "TileMatrix{" +
+                "identifier='" + identifier + '\'' +
+                ", width='" + width + '\'' +
+                ", height='" + height + '\'' +
+                ", matrixWidth='" + matrixWidth + '\'' +
+                ", matrixHeight='" + matrixHeight + '\'' +
+                '}';
     }
 }

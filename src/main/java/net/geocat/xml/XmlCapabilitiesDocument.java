@@ -38,7 +38,11 @@ import net.geocat.xml.helpers.CapabilitiesType;
 import org.w3c.dom.Node;
 import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 
+import javax.xml.xpath.XPathExpressionException;
+
 import static net.geocat.service.capabilities.WMSCapabilitiesDatasetLinkExtractor.findNodes;
+import static net.geocat.xml.XmlStringTools.getNodeTextValue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,14 +55,31 @@ public class XmlCapabilitiesDocument extends XmlDoc {
     List<DatasetLink> datasetLinksList;
     List<InspireSpatialDatasetIdentifier> inspireDatasetLinks;
 
+    String defaultLang = "eng";
+
     public XmlCapabilitiesDocument(XmlDoc doc, CapabilitiesType type) throws Exception {
         super(doc);
         datasetLinksList = new ArrayList<>();
         inspireDatasetLinks = new ArrayList<>();
         this.capabilitiesType = type;
         setup_XmlCapabilitiesDocument();
-        if (hasExtendedCapabilities)
+        if (hasExtendedCapabilities) {
             setup_spatialdatasetidentifiers();
+            setup_lang();
+        }
+    }
+
+    private void setup_lang() throws XPathExpressionException {
+        Node extendedCap = xpath_node("//*[local-name()='ExtendedCapabilities']");
+        if (extendedCap ==null)
+            return;
+        Node langNode = findNode(extendedCap,"ExtendedCapabilities","SupportedLanguages","DefaultLanguage","Language");
+        if (langNode ==null)
+           return;
+
+        String lang = getNodeTextValue(langNode);
+        if (lang != null)
+            defaultLang = lang;
     }
 
     public static XmlCapabilitiesDocument create(XmlDoc doc, CapabilitiesType type) throws Exception {
@@ -225,6 +246,14 @@ public class XmlCapabilitiesDocument extends XmlDoc {
 
     public void setInspireDatasetLinks(List<InspireSpatialDatasetIdentifier> inspireDatasetLinks) {
         this.inspireDatasetLinks = inspireDatasetLinks;
+    }
+
+    public String getDefaultLang() {
+        return defaultLang;
+    }
+
+    public void setDefaultLang(String defaultLang) {
+        this.defaultLang = defaultLang;
     }
 
     @Override

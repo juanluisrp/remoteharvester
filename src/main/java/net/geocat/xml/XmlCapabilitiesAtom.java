@@ -54,7 +54,7 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
         setup_entries();
     }
 
-    public String attribute(Node n, String attribute) {
+    public static String attribute(Node n, String attribute) {
         if (n==null)
             return null;
         Node att = n.getAttributes().getNamedItem(attribute);

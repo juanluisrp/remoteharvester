@@ -31,38 +31,59 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import java.util.ArrayList;
+import java.util.List;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+public class TileMatrixSet {
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    String identifier;
+    String CRS;
+
+    List<TileMatrix> tileMatrices;
+
+    public TileMatrixSet(String identifier, String CRS) {
+        this.identifier = identifier;
+        this.CRS = CRS;
+        this.tileMatrices = new ArrayList<>();
+    }
+
+    //--
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getCRS() {
+        return CRS;
+    }
+
+    public void setCRS(String CRS) {
+        this.CRS = CRS;
+    }
+
+    public List<TileMatrix> getTileMatrices() {
+        return tileMatrices;
+    }
+
+    public void setTileMatrices(List<TileMatrix> tileMatrices) {
+        this.tileMatrices = tileMatrices;
+    }
+
+    //--
+
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String toString() {
+        return "TileMatrixSet{" +
+                "identifier='" + identifier + '\'' +
+                ", CRS='" + CRS + '\'' +
+                ", tileMatrices=" + tileMatrices +
+                '}';
     }
 }

@@ -31,38 +31,77 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+public class WMSLayerBBox {
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+    String CRS;
+    String xmin;
+    String ymin;
+    String xmax;
+    String ymax;
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    public WMSLayerBBox(String CRS, String xmin, String ymin, String xmax, String ymax) {
+        this.CRS = CRS;
+        this.xmin = xmin;
+        this.ymin = ymin;
+        this.xmax = xmax;
+        this.ymax = ymax;
+    }
+
+    public String getCRS() {
+        return CRS;
+    }
+
+    public void setCRS(String CRS) {
+        this.CRS = CRS;
+    }
+
+    public String getXmin() {
+        return xmin;
+    }
+
+    public void setXmin(String xmin) {
+        this.xmin = xmin;
+    }
+
+    public String getYmin() {
+        return ymin;
+    }
+
+    public void setYmin(String ymin) {
+        this.ymin = ymin;
+    }
+
+    public String getXmax() {
+        return xmax;
+    }
+
+    public void setXmax(String xmax) {
+        this.xmax = xmax;
+    }
+
+    public String getYmax() {
+        return ymax;
+    }
+
+    public void setYmax(String ymax) {
+        this.ymax = ymax;
+    }
+
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
+    public String toString() {
+        return "WMSLayerBBox{" +
+                "CRS='" + CRS + '\'' +
+                ", xmin='" + xmin + '\'' +
+                ", ymin='" + ymin + '\'' +
+                ", xmax='" + xmax + '\'' +
+                ", ymax='" + ymax + '\'' +
+                '}';
+    }
 
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String asBBOX() {
+        return xmin+","+ymin+","+xmax+","+ymax;
     }
 }

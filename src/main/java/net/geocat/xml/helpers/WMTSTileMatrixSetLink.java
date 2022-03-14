@@ -31,38 +31,42 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import java.util.ArrayList;
+import java.util.List;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+public class WMTSTileMatrixSetLink {
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
+    String tileMatrixSetName;
+    List<WMTSTileMatrixSetLimit> tileMatrixSetLimits;
+
+    public WMTSTileMatrixSetLink(String tileMatrixSetName) {
+        this.tileMatrixSetName = tileMatrixSetName;
+        this.tileMatrixSetLimits = new ArrayList<>();
+    }
+
+    public String getTileMatrixSetName() {
+        return tileMatrixSetName;
+    }
+
+    public void setTileMatrixSetName(String tileMatrixSetName) {
+        this.tileMatrixSetName = tileMatrixSetName;
+    }
+
+    public List<WMTSTileMatrixSetLimit> getTileMatrixSetLimits() {
+        return tileMatrixSetLimits;
+    }
+
+    public void setTileMatrixSetLimits(List<WMTSTileMatrixSetLimit> tileMatrixSetLimits) {
+        this.tileMatrixSetLimits = tileMatrixSetLimits;
+    }
+
     @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
-
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
-
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
-
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
-
-
-        } catch (Exception e) {
-            return false;
-        }
+    public String toString() {
+        return "WMTSTileMatrixSetLink{" +
+                "tileMatrixSetName='" + tileMatrixSetName + '\'' +
+                ", tileMatrixSetLimits=" + tileMatrixSetLimits +
+                '}';
     }
 }

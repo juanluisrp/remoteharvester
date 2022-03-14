@@ -31,38 +31,34 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.xml.helpers;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import java.util.ArrayList;
+import java.util.List;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+public class WMSLayer {
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
-    @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
+    public String name;
+    public List<WMSLayerBBox> wmsLayerBBoxList;
 
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
+    public WMSLayer(String name) {
+        this.name = name;
+        wmsLayerBBoxList = new ArrayList<>();
+    }
 
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
+    public String getName() {
+        return name;
+    }
 
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public List<WMSLayerBBox> getWmsLayerBBoxList() {
+        return wmsLayerBBoxList;
+    }
 
-        } catch (Exception e) {
-            return false;
-        }
+    public void setWmsLayerBBoxList(List<WMSLayerBBox> wmsLayerBBoxList) {
+        this.wmsLayerBBoxList = wmsLayerBBoxList;
     }
 }

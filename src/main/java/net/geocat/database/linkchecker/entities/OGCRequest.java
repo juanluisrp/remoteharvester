@@ -31,38 +31,45 @@
  *  ==============================================================================
  */
 
-package net.geocat.service.downloadhelpers;
+package net.geocat.database.linkchecker.entities;
 
-import net.geocat.http.IContinueReadingPredicate;
-import net.geocat.xml.XmlStringTools;
+import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 
-import static net.geocat.service.downloadhelpers.CapabilitiesContinueReadingPredicate.*;
-import static net.geocat.xml.XmlStringTools.getNS;
-import static net.geocat.xml.XmlStringTools.getPrefix;
-import static net.geocat.xml.XmlStringTools.getRootTag;
-import static net.geocat.xml.XmlStringTools.getTagName;
-import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+import javax.persistence.Column;
 
-public class MetadataContinueReadingPredicate implements IContinueReadingPredicate {
-    @Override
-    public boolean continueReading(byte[] head) {
-        try {
-            String doc = XmlStringTools.bytea2String(head);
-            if (!XmlStringTools.isXML(doc))
-                return false; //not XML
+import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.ALWAYS_PARTIAL;
 
-            doc = replaceXMLDecl(doc).trim();
-            doc = getRootTag(doc).trim();
+public class OGCRequest extends RetrievableSimpleLink  {
 
-            String prefix = getPrefix(doc);
-            String tag = getTagName(doc);
-            String ns = getNS(prefix, doc);
+    boolean successfulOGCRequest;
 
-            return (tag.equals("MD_Metadata") || tag.equals("GetRecordsResponse") || tag.equals("GetRecordByIdResponse"));
+    @Column(columnDefinition = "text")
+    String  unSuccessfulOGCRequestReason;
 
+    public OGCRequest() {
+        super();
+        setPartialDownloadHint(ALWAYS_PARTIAL);
+    }
 
-        } catch (Exception e) {
-            return false;
-        }
+    public OGCRequest(String url) {
+        this();
+        setRawURL(url);
+        setFixedURL(url);
+    }
+
+    public boolean isSuccessfulOGCRequest() {
+        return successfulOGCRequest;
+    }
+
+    public void setSuccessfulOGCRequest(boolean successfulOGCRequest) {
+        this.successfulOGCRequest = successfulOGCRequest;
+    }
+
+    public String getUnSuccessfulOGCRequestReason() {
+        return unSuccessfulOGCRequestReason;
+    }
+
+    public void setUnSuccessfulOGCRequestReason(String unSuccessfulOGCRequestReason) {
+        this.unSuccessfulOGCRequestReason = unSuccessfulOGCRequestReason;
     }
 }

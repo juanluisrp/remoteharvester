@@ -39,14 +39,19 @@ import net.geocat.xml.helpers.CapabilitiesType;
 import net.geocat.xml.helpers.CapabilityDeterminer;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+
+import static net.geocat.xml.XmlStringTools.getNS;
+import static net.geocat.xml.XmlStringTools.getPrefix;
+import static net.geocat.xml.XmlStringTools.getRootTag;
+import static net.geocat.xml.XmlStringTools.getTagName;
+import static net.geocat.xml.XmlStringTools.replaceXMLDecl;
+import static net.geocat.xml.XmlStringTools.removeComment;
 
 @Component
 public class CapabilitiesContinueReadingPredicate implements IContinueReadingPredicate {
 
-    static Pattern tagWithNS = Pattern.compile("^<([^ :<>]+):([^ >]+)[^>]+>");
-    static Pattern tagWithoutNS = Pattern.compile("^<([^ >]+)[^>]+>");
+
 
 
     CapabilityDeterminer capabilityDeterminer;
@@ -74,59 +79,7 @@ public class CapabilitiesContinueReadingPredicate implements IContinueReadingPre
 //        }
 //    }
 
-    public static String replaceXMLDecl(String doc) {
-        doc = doc.replaceFirst("<\\?xml[^\\?>]+\\?>", "");
-        doc = doc.replaceFirst("<\\?xml[^\\?>]+\\?>", "");
-        return doc.trim();
-    }
 
-    public static String getRootTag(String doc) {
-        Matcher matcher = tagWithNS.matcher(doc);
-        boolean find = matcher.find();
-        if (find)
-            return matcher.group(0);
-        matcher = tagWithoutNS.matcher(doc);
-        find = matcher.find();
-        if (find)
-            return matcher.group(0);
-        return null;
-    }
-
-    public static String getPrefix(String doc) {
-        Matcher matcher = tagWithNS.matcher(doc);
-        boolean find = matcher.find();
-        if (!find)
-            return null;
-        return matcher.group(1).trim();
-    }
-
-    public static String getTagName(String doc) {
-        Matcher matcher = tagWithNS.matcher(doc);
-        boolean find = matcher.find();
-        if (find)
-            return matcher.group(2).trim();
-        matcher = tagWithoutNS.matcher(doc);
-        find = matcher.find();
-        if (find)
-            return matcher.group(1).trim();
-        return null;
-    }
-
-    public static String getNS(String prefix, String tag) {
-        String pattern = "xmlns=[\"']([^\"']+)[\"']";
-        if (prefix != null)
-            pattern = "xmlns:" + prefix + "=[\"']([^\"']+)[\"']";
-        Pattern ns = Pattern.compile(pattern, Pattern.MULTILINE);
-        Matcher matcher = ns.matcher(tag);
-        boolean find = matcher.find();
-        if (find)
-            return matcher.group(1);
-        return null;
-    }
-
-    public String removeComment(String doc) {
-        return doc.replaceAll("<!--[\\s\\S]*?-->","").trim();
-    }
 
     @Override
     public boolean continueReading(byte[] head) {

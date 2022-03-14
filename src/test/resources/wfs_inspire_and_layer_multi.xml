@@ -99,7 +99,7 @@
         <ows:Operation name="GetFeature">
             <ows:DCP>
                 <ows:HTTP>
-                    <ows:Get xlink:href="getfeature_get"/>
+                    <ows:Get xlink:href="http://localhost:8080/geoserver/wfs"/>
                     <ows:Post xlink:href="getfeature_post"/>
                 </ows:HTTP>
             </ows:DCP>

@@ -41,6 +41,10 @@ import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.WFSLayerDownloader;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.WFSStoredQueryDownloader;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.WMSLayerDownloader;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.WMTSLayerDownloader;
 import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.events.EventFactory;
 import net.geocat.http.BasicHTTPRetriever;
@@ -222,24 +226,83 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Qualifier("cachingHttpRetriever")
     IHTTPRetriever retriever_cachingHttpRetriever;
 
+    @Autowired
+    WFSLayerDownloader wfsLayerDownloader;
+
+    @Autowired
+    WMSLayerDownloader wmsLayerDownloader;
+
+    @Autowired
+    WMTSLayerDownloader wmtsLayerDownloader;
+
+    @Autowired
+    WFSStoredQueryDownloader wfsStoredQueryDownloader;
 
     @Override
     public void run(String... args) throws Exception {
 
         try {
-          //  allAtom();
-        single("E89301532EE46B5191AA9424BE2AD4F407B03B9AAC6D9EFE5991198C117F1C22");
+        //    single("9356591E2A5DDDE87E8323C0309986CDC594397B9EC929696409B7B61C5F36DE");
+
+            //  allAtom();
+         //  allWMS();
+         //   allWMTS();
         //allDataset();
 
-//          HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
-//                  "https://www.geoportal.lt/geonetwork/srv/eng/csw?elementSetName=full&id=7ce59d66-159c-4b81-9951-20f801f05748&outputSchema=http://www.isotc211.org/2005/gmd&request=GetRecordById&service=CSW&version=2.0.2",
+//            HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
+//                  "https://geodata.nationaalgeoregister.nl/wko/wfs?&request=GetCapabilities&service=WFS&language=dut",
 //                  null,
 //                  null,
-//                  partialDownloadPredicateFactory.create(PartialDownloadHint.METADATA_ONLY));
+//                  partialDownloadPredicateFactory.create(PartialDownloadHint.CAPABILITIES_ONLY));
 //            String s = new String(r.getData());
+//            XmlDoc d = xmlDocumentFactory.create(s);
+
+           // String url = wfsLayerDownloader.createURL( (XmlCapabilitiesWFS) d, "wko:os_koud_warm");
+//            OGCRequest ogcRequest = wfsLayerDownloader.downloads((XmlCapabilitiesWFS) d, "wko:os_koud_warm2");
+
+
+//            HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
+//                  "https://gis.cenia.cz/geoserver/corine_land_cover_2018/ows?SERVICE=WMS&version=1.3.0&request=getcapabilities",
+//                  null,
+//                  null,
+//                  partialDownloadPredicateFactory.create(PartialDownloadHint.CAPABILITIES_ONLY));
+//            String s = new String(r.getData());
+//            XmlDoc d = xmlDocumentFactory.create(s);
 //
-//           XmlDoc d = xmlDocumentFactory.create(s);
-            int t=0;
+//            String url = wmsLayerDownloader.createURL( (XmlCapabilitiesWMS) d, "corine_cha18_CZ");
+//            OGCRequest ogcRequest = wmsLayerDownloader.downloads((XmlCapabilitiesWMS) d, "corine_cha18_CZ");
+
+//            HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
+//                    "https://kartta.hel.fi/ws/geoserver/avoindata/gwc/service/wmts?request=GetCapabilities",
+//                  null,
+//                  null,
+//                  partialDownloadPredicateFactory.create(PartialDownloadHint.CAPABILITIES_ONLY));
+//            String s = new String(r.getData());
+//            XmlDoc d = xmlDocumentFactory.create(s);
+//
+//            String url = wmtsLayerDownloader.createURL( (XmlCapabilitiesWMTS) d, "Ortoilmakuva_2020","ETRS-GK25:7");
+//            OGCRequest ogcRequest = wmtsLayerDownloader.downloads((XmlCapabilitiesWMTS) d, "Ortoilmakuva_2020");
+
+//            String url = wmsLayerDownloader.createURL( (XmlCapabilitiesWMS) d, "corine_cha18_CZ");
+//            OGCRequest ogcRequest = wmsLayerDownloader.downloads((XmlCapabilitiesWMS) d, "corine_cha18_CZ");
+//
+//            HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
+//                    "https://geodata.nationaalgeoregister.nl/vogelrichtlijnverspreidingsgebiedsoorten/wfs?request=GetCapabilities&service=WFS",
+//                  null,
+//                  null,
+//                  partialDownloadPredicateFactory.create(PartialDownloadHint.CAPABILITIES_ONLY));
+//            String s = new String(r.getData());
+//            XmlDoc d = xmlDocumentFactory.create(s);
+//
+//            String url = wfsStoredQueryDownloader.createURL( (XmlCapabilitiesWFS) d,
+//                    "fff0273c-ebf2-4a09-be2f-4d69f6f549f3",
+//                    null,
+//                    "http://inspire.ec.europa.eu/operation/download/GetSpatialDataSet");
+//            OGCRequest ogcRequest = wfsStoredQueryDownloader.downloads((XmlCapabilitiesWFS) d,
+//                    "fff0273c-ebf2-4a09-be2f-4d69f6f549f3",
+//                    null,
+//                    "http://inspire.ec.europa.eu/operation/download/GetSpatialDataSet");
+//            int t=0;
 
 //            run12("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
 //            run11("1bfeaf7b-28b7-430f-87c2-12e3bfb2d3f8");
@@ -407,7 +470,15 @@ public class MyCommandLineRunner implements CommandLineRunner {
         List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE text_value like '%WFS_Capabilities%'");
         for (Object v: wfs) {
             String xml = (String) v;
-            XmlDoc doc = xmlDocumentFactory.create(xml);
+            XmlCapabilitiesWFS doc = (XmlCapabilitiesWFS) xmlDocumentFactory.create(xml);
+            System.out.println(doc.getGetFeatureEndpoint());
+            if (doc.getGetFeatureEndpoint() == null) {
+                int yt=0;
+                XmlCapabilitiesWFS doc2 = (XmlCapabilitiesWFS) xmlDocumentFactory.create(xml);
+            }
+            if (doc.getVersionNumber() == null) {
+                int ttt =0;
+            }
             int t=0;
         }
     }
@@ -434,8 +505,25 @@ public class MyCommandLineRunner implements CommandLineRunner {
         List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE text_value like '%WMS_Capabilities%' ");
         for (Object v: wfs) {
             String xml = (String) v;
-            XmlDoc doc = xmlDocumentFactory.create(xml);
-            int t=0;
+            XmlDoc _doc =   xmlDocumentFactory.create(xml);
+            if (!(_doc instanceof XmlCapabilitiesWMS))
+                continue;
+            XmlCapabilitiesWMS doc = (XmlCapabilitiesWMS) _doc;
+           // System.out.println(doc.getGetMapEndpoint());
+            if (doc.getGetMapEndpoint() == null) {
+                int yt=0;
+                XmlCapabilitiesWMS doc2 = (XmlCapabilitiesWMS) xmlDocumentFactory.create(xml);
+            }
+            if (doc.getSupportedImageFormats().isEmpty())
+            {
+                int ttt =0;
+            }
+            if (doc.getVersionNumber() == null) {
+                int ttt =0;
+            }
+            if (!doc.getVersionNumber().equals("1.3.0")) {
+                int ttt =0;
+            }
         }
     }
 
@@ -444,8 +532,16 @@ public class MyCommandLineRunner implements CommandLineRunner {
         List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE    text_value like '%:Capabilities%'OR text_value like '%<Capabilities%'");
         for (Object v: wfs) {
             String xml = (String) v;
-            XmlDoc doc = xmlDocumentFactory.create(xml);
-            int t=0;
+            XmlDoc _doc = xmlDocumentFactory.create(xml);
+            if (!(_doc instanceof XmlCapabilitiesWMTS))
+                continue;
+            XmlCapabilitiesWMTS doc = (XmlCapabilitiesWMTS) _doc;
+             System.out.println(doc.getGetTileEndpoint());
+            if (doc.getGetTileEndpoint() == null) {
+                int yt=0;
+                XmlCapabilitiesWMTS doc2 = (XmlCapabilitiesWMTS) xmlDocumentFactory.create(xml);
+            }
+             int t=0;
         }
     }
 
