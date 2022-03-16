@@ -58,6 +58,7 @@ public class EventProcessor_OrchestratedHarvestRequestedEvent extends BaseEventP
             job.setSkipHarvesting(getInitiatingEvent().getHarvesterConfig().getSkipHarvesting());
             // Set to null to avoid sending it to the harvester component
             getInitiatingEvent().getHarvesterConfig().setExecuteLinkChecker(null);
+            getInitiatingEvent().getHarvesterConfig().setSkipHarvesting(null);
 
             if (!job.getSkipHarvesting()) {
                 HarvestStartResponse harvestStartResponse = harvesterService.startHarvest(getInitiatingEvent().getHarvesterConfig());

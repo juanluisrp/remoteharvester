@@ -174,7 +174,7 @@ public class HarvesterConfig {
     public void setSkipHarvesting(Boolean skipHarvesting) {
         this.skipHarvesting = skipHarvesting;
 
-        if (this.skipHarvesting) {
+        if ((this.skipHarvesting != null) && (this.skipHarvesting == Boolean.TRUE)) {
             setExecuteLinkChecker(true);
         }
     }

@@ -84,7 +84,8 @@ public class HarvesterService {
         if (httpResponse.isErrorOccurred() || (httpResponse.getHttpCode() != 200))
             throw new Exception("couldnt query the harvest job id process - "+result);
 
-        return result;
+        // The identifier is returned between quotes
+        return result.replace("\"", "");
     }
 
 
