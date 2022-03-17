@@ -35,6 +35,8 @@ package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.OGCRequest;
+import net.geocat.database.linkchecker.entities.helper.HTTPRequestCheckerType;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.http.AlwaysAbortContinueReadingPredicate;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
@@ -112,41 +114,18 @@ public class WFSStoredQueryDownloader {
         return url;
     }
 
-    public OGCRequest downloads(XmlCapabilitiesWFS wfsCap, String storedProcName, String code, String codespace) throws Exception {
+    public OGCRequest setupRequest(XmlCapabilitiesWFS wfsCap, String storedProcName, String code, String codespace) throws Exception {
         String url = createURL(wfsCap,code,codespace,   storedProcName);
 
-        OGCRequest ogcRequest = new OGCRequest(url);
-        retrievableSimpleLinkDownloader.process(ogcRequest, 4096);
-
-        if (ogcRequest.getLinkHTTPStatusCode() != 200) {
-            ogcRequest.setSuccessfulOGCRequest(false);
-            ogcRequest.setUnSuccessfulOGCRequestReason("http result code is not 200");
-            return ogcRequest;
-        }
-
-        String partialXML = XmlStringTools.bytea2String(ogcRequest.getLinkContentHead());
-        if (!XmlStringTools.isXML(partialXML)) {
-            ogcRequest.setUnSuccessfulOGCRequestReason("http result is not an xml document");
-            ogcRequest.setSuccessfulOGCRequest(false);
-            return ogcRequest;
-        }
-
-        XmlTagInfo rootTagInfo = determineRootTagInfo(partialXML);
-        if (!rootTagInfo.getTagName().equals("FeatureCollection")) {
-            ogcRequest.setUnSuccessfulOGCRequestReason("xml result is not a FeatureCollection");
-            ogcRequest.setSuccessfulOGCRequest(false);
-            return ogcRequest;
-        }
-
-        ogcRequest.setSuccessfulOGCRequest(true);
+        OGCRequest ogcRequest = new OGCRequest(url, HTTPRequestCheckerType.FEATURE_COLLECTION_ONLY);
+        if (codespace != null)
+            ogcRequest.setSummary(getClass().getSimpleName()+ "code="+code+", codespace="+codespace);
+        else
+            ogcRequest.setSummary(getClass().getSimpleName()+ "code="+code);
         return ogcRequest;
     }
 
-    public boolean downloads(CapabilitiesDocument wfsCap, String layerName) throws Exception {
 
-
-        return false;
-    }
 
 }
 

@@ -56,7 +56,7 @@ public class CapabilityDeterminer {
         if (rootTagName.equals("Capabilities") && (ns.equalsIgnoreCase("http://www.opengis.net/wmts/1.0")))
             return CapabilitiesType.WMTS;
         if (rootTagName.equals("WMT_MS_Capabilities")) // EE examples dont have a namespace
-            return CapabilitiesType.WMTS;
+            return CapabilitiesType.WMS;
         if (rootTagName.equals("WFS_Capabilities") && (ns.equalsIgnoreCase("http://www.opengis.net/wfs/2.0")))
             return CapabilitiesType.WFS;
         if (rootTagName.equals("WFS_Capabilities") && (ns.equalsIgnoreCase("http://www.opengis.net/wfs")))

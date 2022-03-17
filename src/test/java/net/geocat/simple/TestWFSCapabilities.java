@@ -85,7 +85,7 @@ public class TestWFSCapabilities {
         assertEquals("LANG", wfs.getDefaultLang());
         assertEquals(2,wfs.getSRSs().size());
         assertEquals("http://www.opengis.net/def/crs/EPSG/0/4258", wfs.getSRSs().get(0));
-        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4258", wfs.getSRSs().get(1));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", wfs.getSRSs().get(1));
 
         assertEquals(2,wfs.getInspireDatasetLinks().size());
         assertEquals("dscode1",wfs.getInspireDatasetLinks().get(0).getCode());

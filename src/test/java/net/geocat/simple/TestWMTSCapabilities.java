@@ -53,7 +53,12 @@ public class TestWMTSCapabilities {
 
     XmlDocumentFactory xmlDocumentFactory;
     WMTSCapabilitiesDatasetLinkExtractor wmtsCapabilitiesDatasetLinkExtractor;
-
+//
+//    @Test
+//    public void test_111() throws  Exception {
+//        XmlCapabilitiesWMTS xmlCapabilitiesDocument = read("wmts_111.xml");
+//        assertNotNull(xmlCapabilitiesDocument);
+//    }
 
     @Test
     public void test_limitMatrix() throws  Exception {

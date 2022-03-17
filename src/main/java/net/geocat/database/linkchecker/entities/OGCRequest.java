@@ -33,15 +33,39 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.HTTPRequestCheckerType;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.ALWAYS_PARTIAL;
 
+@Entity
 public class OGCRequest extends RetrievableSimpleLink  {
 
-    boolean successfulOGCRequest;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long ogcRequestId;
+
+    Boolean successfulOGCRequest;
+
+    @OneToOne(mappedBy = "ogcRequest")
+    LinkToData linkToData;
+
+
+    @Column(columnDefinition = "text")
+    String summary;
+
+    @Enumerated(EnumType.STRING)
+    HTTPRequestCheckerType httpRequestCheckerType;
 
     @Column(columnDefinition = "text")
     String  unSuccessfulOGCRequestReason;
@@ -51,17 +75,18 @@ public class OGCRequest extends RetrievableSimpleLink  {
         setPartialDownloadHint(ALWAYS_PARTIAL);
     }
 
-    public OGCRequest(String url) {
+    public OGCRequest(String url,HTTPRequestCheckerType httpRequestCheckerType) {
         this();
         setRawURL(url);
         setFixedURL(url);
+        setHttpRequestCheckerType(httpRequestCheckerType);
     }
 
-    public boolean isSuccessfulOGCRequest() {
+    public Boolean isSuccessfulOGCRequest() {
         return successfulOGCRequest;
     }
 
-    public void setSuccessfulOGCRequest(boolean successfulOGCRequest) {
+    public void setSuccessfulOGCRequest(Boolean successfulOGCRequest) {
         this.successfulOGCRequest = successfulOGCRequest;
     }
 
@@ -71,5 +96,46 @@ public class OGCRequest extends RetrievableSimpleLink  {
 
     public void setUnSuccessfulOGCRequestReason(String unSuccessfulOGCRequestReason) {
         this.unSuccessfulOGCRequestReason = unSuccessfulOGCRequestReason;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public HTTPRequestCheckerType getHttpRequestCheckerType() {
+        return httpRequestCheckerType;
+    }
+
+    public void setHttpRequestCheckerType(HTTPRequestCheckerType httpRequestCheckerType) {
+        this.httpRequestCheckerType = httpRequestCheckerType;
+    }
+
+    public long getOgcRequestId() {
+        return ogcRequestId;
+    }
+
+    public void setOgcRequestId(long ogcRequestId) {
+        this.ogcRequestId = ogcRequestId;
+    }
+
+    public LinkToData getLinkToData() {
+        return linkToData;
+    }
+
+    public void setLinkToData(LinkToData linkToData) {
+        this.linkToData = linkToData;
+    }
+
+    @Override
+    public String toString() {
+        return "OGCRequest{" +
+                summary +"," +
+                "successfulOGCRequest=" + successfulOGCRequest +
+                ", unSuccessfulOGCRequestReason='" + unSuccessfulOGCRequestReason + '\'' +
+                '}';
     }
 }

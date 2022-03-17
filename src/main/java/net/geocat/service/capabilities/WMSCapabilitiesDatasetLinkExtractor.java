@@ -173,6 +173,9 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         if (name !=null)
             name = name.trim();
 
+        if (name == null)
+            name = identifier;
+
         if ((identifier != null) || (metadataUrls != null)) {
             if (metadataUrls !=null) {
                 for (String url : metadataUrls) {
@@ -268,7 +271,7 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
     public String searchIdentifier(XmlDoc doc, Node layer) throws Exception {
         String localIdentifier = findIdentifier(layer);
         if ((localIdentifier != null) && (!localIdentifier.isEmpty()))
-            return localIdentifier;
+            return localIdentifier.trim();
         Node parentLayer = layer.getParentNode();
         if (parentLayer.getLocalName().equals("Layer"))
             return searchIdentifier(doc, parentLayer);

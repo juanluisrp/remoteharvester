@@ -34,6 +34,8 @@
 package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
 import net.geocat.database.linkchecker.entities.OGCRequest;
+import net.geocat.database.linkchecker.entities.helper.HTTPRequestCheckerType;
+import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.http.AlwaysAbortContinueReadingPredicate;
 import net.geocat.http.IHTTPRetriever;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
@@ -120,25 +122,12 @@ public class WMTSLayerDownloader {
     }
 
 
-    public OGCRequest downloads(XmlCapabilitiesWMTS wmtsCap, String layerName) throws Exception {
+    public OGCRequest setupRequest(XmlCapabilitiesWMTS wmtsCap, String layerName) throws Exception {
         String url = createURL(wmtsCap,layerName,null);
 
-        OGCRequest ogcRequest = new OGCRequest(url);
-      retrievableSimpleLinkDownloader.process(ogcRequest, 4096);
+        OGCRequest ogcRequest = new OGCRequest(url, HTTPRequestCheckerType.IMAGE_ONLY);
+        ogcRequest.setSummary(getClass().getSimpleName()+", layer="+layerName);
 
-        if (ogcRequest.getLinkHTTPStatusCode() != 200) {
-            ogcRequest.setSuccessfulOGCRequest(false);
-            ogcRequest.setUnSuccessfulOGCRequestReason("http result code is not 200");
-            return ogcRequest;
-        }
-
-        if (!isRecognizedImage(ogcRequest.getLinkContentHead())) {
-            ogcRequest.setUnSuccessfulOGCRequestReason("http result is not a recognized image type (png or jpeg)");
-            ogcRequest.setSuccessfulOGCRequest(false);
-            return ogcRequest;
-        }
-
-        ogcRequest.setSuccessfulOGCRequest(true);
         return ogcRequest;
      }
 }

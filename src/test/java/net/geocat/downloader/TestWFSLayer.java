@@ -53,7 +53,7 @@ public class TestWFSLayer {
     public void testFullUrl1() throws Exception {
         WFSLayerDownloader downloader = new WFSLayerDownloader();
         XmlCapabilitiesWFS wfsGetCap = read("wfs_inspire_and_layer_multi.xml");
-        assertEquals("http://localhost:8080/geoserver/wfs?REQUEST=GetFeature&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=ws%3Alayer2",
+        assertEquals("http://localhost:8080/geoserver/wfs?REQUEST=GetFeature&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=ws%3Alayer2&count=1",
                 downloader.createURL(wfsGetCap,"ws:layer2"));
     }
 

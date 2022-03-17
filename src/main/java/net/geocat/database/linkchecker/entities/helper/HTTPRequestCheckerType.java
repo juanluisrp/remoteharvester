@@ -31,21 +31,10 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.repos;
+package net.geocat.database.linkchecker.entities.helper;
 
-import net.geocat.database.linkchecker.entities.helper.LinkToData;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-
-@Component
-@Scope("prototype")
-public interface LinkToDataRepo extends CrudRepository<LinkToData, Long> {
-
-    List<LinkToData> findByLinkCheckJobIdAndCapabilitiesSha2(String linkCheckJobId, String sha2);
-    List<LinkToData> findByLinkCheckJobId(String linkCheckJobId);
-
+public enum HTTPRequestCheckerType {
+    ANY,
+    IMAGE_ONLY,
+    FEATURE_COLLECTION_ONLY
 }

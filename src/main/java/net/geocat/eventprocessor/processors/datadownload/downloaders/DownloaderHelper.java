@@ -99,10 +99,16 @@ public class DownloaderHelper {
     }
 
     public static boolean isRecognizedImage(byte[] result){
-        //List_of_file_signatures
+        if ( (result == null) || (result.length < 8) )
+            return false;
+
         //png
         if (isSame(result, new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}))
             return true;
+
+        if (   (result.length < 12) )
+            return false;
+
         //jpeg
         if (isSame(result, new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01}))
             return true;

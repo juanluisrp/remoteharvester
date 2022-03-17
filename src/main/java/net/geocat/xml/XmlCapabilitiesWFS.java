@@ -86,6 +86,8 @@ public class XmlCapabilitiesWFS extends XmlCapabilitiesDocument {
         }
         List uniqueCRSs = allcrses.stream().distinct().collect(Collectors.toList());
         SRSs.addAll(uniqueCRSs);
+        SRSs = SRSs.stream().distinct().collect(Collectors.toList());
+
     }
 
     //from the operationsmetadata/Parameter["srsName"]

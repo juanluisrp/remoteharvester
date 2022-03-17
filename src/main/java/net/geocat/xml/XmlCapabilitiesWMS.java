@@ -81,11 +81,13 @@ public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
             for(Node bbox:bboxs) {
                 //        <BoundingBox CRS="CRS:84" maxx="18.95663115922459" maxy="51.305916291382516" minx="12.024498725444078" miny="48.25578803534065"/>
                 String crs = attribute(bbox,"CRS") ;
+                if (crs == null)
+                    crs = attribute(bbox,"SRS") ;
                 String xmin = attribute(bbox,"minx") ;
                 String ymin = attribute(bbox,"miny") ;
                 String xmax = attribute(bbox,"maxx") ;
                 String ymax = attribute(bbox,"maxy") ;
-                WMSLayerBBox wmsLayerBBox = new WMSLayerBBox(crs,xmin,ymin,xmax,ymax);
+                WMSLayerBBox wmsLayerBBox = new WMSLayerBBox(crs, Double.valueOf(xmin),Double.valueOf(ymin),Double.valueOf(xmax),Double.valueOf(ymax));
                 wmsLayer.getWmsLayerBBoxList().add(wmsLayerBBox);
             }
             int t=0;

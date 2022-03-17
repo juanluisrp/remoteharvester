@@ -43,11 +43,11 @@ import java.util.List;
 @Entity
 @Table(name = "HttpResultCache"
         ,indexes = {
-//                @Index(
-//                        name = "idx_httpresultcache_url",
-//                        columnList = "URL",
-//                        unique = false
-//                ),
+                @Index(
+                        name = "idx_httpresultcache_url",
+                        columnList = "URL",
+                        unique = false
+                ),
         @Index(
                 name = "idx_httpresultcache_job_url",
                 columnList = "linkCheckJobId,URL",

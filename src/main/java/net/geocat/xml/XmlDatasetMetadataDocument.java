@@ -36,6 +36,7 @@ package net.geocat.xml;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifierNodeType;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
@@ -110,16 +111,16 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 //        }
 //    }
 
-    public void check() {
-        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation"}));
-        List<Node> ids =  findNodes(n,"identifier");
-        if (ids.size()>1) {
-            int tt = 0;
-        }
-    }
+//    public void check() {
+//        Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation"}));
+//        List<Node> ids =  findNodes(n,"identifier");
+//        if (ids.size()>1) {
+//            int tt = 0;
+//        }
+//    }
 
-    private List<DatasetIdentifier> parseIdentifier(  Node node) {
-        List<DatasetIdentifier>  result = new ArrayList<>();
+    private  DatasetIdentifier  parseIdentifier(  Node node) {
+         DatasetIdentifier   result= null;
         String mainNodeName = node.getLocalName() == null ? node.getNodeName() : node.getLocalName();
         DatasetIdentifierNodeType datasetIdentifierNodeType =   DatasetIdentifierNodeType.valueOf(mainNodeName);
 
@@ -183,44 +184,70 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
         for(String code:codeValues) {
             for (String codeSpace: codespaceValues) {
                 DatasetIdentifier item = new DatasetIdentifier(datasetIdentifierNodeType, code, codeSpace);
-                result.add(item);
+                result = item;
             }
             if (codespaceValues.isEmpty()) {
                 DatasetIdentifier item = new DatasetIdentifier(datasetIdentifierNodeType, code, null);
-                result.add(item);
+                result = item;
             }
         }
 
-        if (result.size() >1)
-        {
-            int t =0;
-        }
+
 
         return result;
     }
 
+    //identifier is a <gmd:identifier>
+    // find the FIRST MD_Identifier or RS_Identifier inside
+    public Node firstMD_RSIdentifier(Node identifier){
+        NodeList nl = identifier.getChildNodes();
+        for (int idx=0; idx <nl.getLength();idx++) {
+            Node nn = nl.item(idx);
+            String name = nn.getLocalName() == null ? nn.getNodeName() : nn.getLocalName();
+            if (name.equals("MD_Identifier") || name.equals("RS_Identifier") ) {
+                return nn;
+            }
+        }
+        return null;
+    }
+
     public List<DatasetIdentifier> findDatasetIdentifier() {
+        List<DatasetIdentifier> result = new ArrayList<>();
+        //finds first one...
         Node n = findNode(parsedXml, Arrays.asList(new String[] {"MD_Metadata","identificationInfo","MD_DataIdentification","citation","CI_Citation"}));
         if (n == null)
             return new ArrayList<>();
-        List<Node> identifiersMD =  findNodesFullSearch(n,"MD_Identifier");
-        List<Node> identifiersRS =  findNodesFullSearch(n,"RS_Identifier");
 
-        if ( (identifiersMD.size() >=1) && (identifiersRS.size()>=3)) {
-            int t=0;
-        }
+        List<Node> identifiers  =  findNodes(n,"identifier");
 
-        List<DatasetIdentifier> result = new ArrayList<>();
-        if (!identifiersMD.isEmpty()){
-            List<DatasetIdentifier> items = parseIdentifier(identifiersMD.get(0));
-            result.addAll(items);
-        }
-        else {
-            if (!identifiersRS.isEmpty()) {
-                List<DatasetIdentifier> items = parseIdentifier(identifiersRS.get(0));
-                result.addAll(items);
+        for (Node identifier :identifiers){
+            Node MDRS_identifier = firstMD_RSIdentifier(identifier);
+            if (MDRS_identifier != null) {
+                DatasetIdentifier  id  = parseIdentifier(MDRS_identifier);
+                if (id !=null)
+                    result.add(id);
             }
         }
+        return result;
+
+//        List<Node> identifiersMD =  findNodesFullSearch(n,"MD_Identifier");
+//        List<Node> identifiersRS =  findNodesFullSearch(n,"RS_Identifier");
+//
+//        if ( (identifiersMD.size() >=1) && (identifiersRS.size()>=3)) {
+//            int t=0;
+//        }
+//
+//        List<DatasetIdentifier> result = new ArrayList<>();
+//        if (!identifiersMD.isEmpty()){
+//            List<DatasetIdentifier> items = parseIdentifier(identifiersMD.get(0));
+//            result.addAll(items);
+//        }
+//        else {
+//            if (!identifiersRS.isEmpty()) {
+//                List<DatasetIdentifier> items = parseIdentifier(identifiersRS.get(0));
+//                result.addAll(items);
+//            }
+//        }
 //        for(Node node: identifiersMD) {
 //            List<DatasetIdentifier> items = parseIdentifier(node);
 //            result.addAll(items);
@@ -230,7 +257,7 @@ public class XmlDatasetMetadataDocument extends XmlMetadataDocument {
 //            result.addAll(items);
 //        }
 
-        return result;
+    //    return result;
     }
 
 

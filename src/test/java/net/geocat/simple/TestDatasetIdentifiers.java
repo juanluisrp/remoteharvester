@@ -102,15 +102,15 @@ public class TestDatasetIdentifiers {
     @Test
     public void test_multiMD() throws Exception {
         XmlDatasetMetadataDocument datasetRecord = read("identifier/identifier_md_multiple.xml");
-        assertEquals(1, datasetRecord.getDatasetIdentifiers().size());
+        assertEquals(2, datasetRecord.getDatasetIdentifiers().size());
 
         assertEquals("md_code1", datasetRecord.getDatasetIdentifiers().get(0).getCode());
         assertNull(  datasetRecord.getDatasetIdentifiers().get(0).getCodeSpace());
         assertEquals( DatasetIdentifierNodeType.MD_Identifier, datasetRecord.getDatasetIdentifiers().get(0).getIdentifierNodeType());
 
-//        assertEquals("md_code2", datasetRecord.getDatasetIdentifiers().get(1).getCode());
-//        assertNull(  datasetRecord.getDatasetIdentifiers().get(1).getCodeSpace());
-//        assertEquals( DatasetIdentifierNodeType.MD_Identifier, datasetRecord.getDatasetIdentifiers().get(1).getIdentifierNodeType());
+        assertEquals("md_code2", datasetRecord.getDatasetIdentifiers().get(1).getCode());
+        assertNull(  datasetRecord.getDatasetIdentifiers().get(1).getCodeSpace());
+        assertEquals( DatasetIdentifierNodeType.MD_Identifier, datasetRecord.getDatasetIdentifiers().get(1).getIdentifierNodeType());
 
     }
 
@@ -137,15 +137,15 @@ public class TestDatasetIdentifiers {
     @Test
     public void test_multiRS() throws Exception {
         XmlDatasetMetadataDocument datasetRecord = read("identifier/identifier_rs_multi.xml");
-        assertEquals(1, datasetRecord.getDatasetIdentifiers().size());
+        assertEquals(2, datasetRecord.getDatasetIdentifiers().size());
 
         assertEquals("code1", datasetRecord.getDatasetIdentifiers().get(0).getCode());
         assertEquals( "codespace1", datasetRecord.getDatasetIdentifiers().get(0).getCodeSpace());
         assertEquals( DatasetIdentifierNodeType.RS_Identifier, datasetRecord.getDatasetIdentifiers().get(0).getIdentifierNodeType());
 
-//        assertEquals("code2", datasetRecord.getDatasetIdentifiers().get(1).getCode());
-//        assertEquals( "codespace2", datasetRecord.getDatasetIdentifiers().get(1).getCodeSpace());
-//        assertEquals( DatasetIdentifierNodeType.RS_Identifier, datasetRecord.getDatasetIdentifiers().get(1).getIdentifierNodeType());
+        assertEquals("code2", datasetRecord.getDatasetIdentifiers().get(1).getCode());
+        assertEquals( "codespace2", datasetRecord.getDatasetIdentifiers().get(1).getCodeSpace());
+        assertEquals( DatasetIdentifierNodeType.RS_Identifier, datasetRecord.getDatasetIdentifiers().get(1).getIdentifierNodeType());
     }
 
     @Test

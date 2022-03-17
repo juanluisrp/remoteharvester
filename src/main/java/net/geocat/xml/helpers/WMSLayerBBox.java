@@ -36,17 +36,21 @@ package net.geocat.xml.helpers;
 public class WMSLayerBBox {
 
     String CRS;
-    String xmin;
-    String ymin;
-    String xmax;
-    String ymax;
+    double xmin;
+    double ymin;
+    double xmax;
+    double ymax;
 
-    public WMSLayerBBox(String CRS, String xmin, String ymin, String xmax, String ymax) {
+    public WMSLayerBBox(String CRS, double xmin, double ymin, double xmax, double ymax) {
         this.CRS = CRS;
         this.xmin = xmin;
         this.ymin = ymin;
         this.xmax = xmax;
         this.ymax = ymax;
+    }
+
+    public WMSLayerBBox copy() {
+        return new WMSLayerBBox(CRS,xmin,ymin,xmax,ymax);
     }
 
     public String getCRS() {
@@ -57,35 +61,35 @@ public class WMSLayerBBox {
         this.CRS = CRS;
     }
 
-    public String getXmin() {
+    public double getXmin() {
         return xmin;
     }
 
-    public void setXmin(String xmin) {
+    public void setXmin(double xmin) {
         this.xmin = xmin;
     }
 
-    public String getYmin() {
+    public double getYmin() {
         return ymin;
     }
 
-    public void setYmin(String ymin) {
+    public void setYmin(double ymin) {
         this.ymin = ymin;
     }
 
-    public String getXmax() {
+    public double getXmax() {
         return xmax;
     }
 
-    public void setXmax(String xmax) {
+    public void setXmax(double xmax) {
         this.xmax = xmax;
     }
 
-    public String getYmax() {
+    public double getYmax() {
         return ymax;
     }
 
-    public void setYmax(String ymax) {
+    public void setYmax(double ymax) {
         this.ymax = ymax;
     }
 

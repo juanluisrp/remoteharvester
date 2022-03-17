@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+import net.geocat.database.linkchecker.entities.OGCRequest;
 import net.geocat.xml.helpers.CapabilitiesType;
 
 import javax.persistence.CascadeType;
@@ -50,6 +51,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 
 
 @Entity(name="linktodata")
@@ -62,6 +64,8 @@ public class LinkToData {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long linkToDataId;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    OGCRequest ogcRequest; // might be null
 
     //----
     //which dataset metadata document did this link come from?
@@ -141,6 +145,14 @@ public class LinkToData {
 
     public void setDatasetMetadataRecord(DatasetMetadataRecord datasetMetadataRecord) {
         this.datasetMetadataRecord = datasetMetadataRecord;
+    }
+
+    public OGCRequest getOgcRequest() {
+        return ogcRequest;
+    }
+
+    public void setOgcRequest(OGCRequest ogcRequest) {
+        this.ogcRequest = ogcRequest;
     }
 
     //------
