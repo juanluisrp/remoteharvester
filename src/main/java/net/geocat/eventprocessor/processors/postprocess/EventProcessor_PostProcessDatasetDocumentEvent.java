@@ -33,6 +33,7 @@
 
 package net.geocat.eventprocessor.processors.postprocess;
 
+import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
 import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
@@ -212,6 +213,50 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         }
     }
 
+    private void findLayerIdLinks(String fileId, String linkcheckjobid) {
+         if ( (localDatasetMetadataRecord.getDatasetIdentifiers() ==null) || localDatasetMetadataRecord.getDatasetIdentifiers().isEmpty())
+            return;
+
+        for (DatasetIdentifier identifier:localDatasetMetadataRecord.getDatasetIdentifiers()) {
+            if ( (identifier.getCodeSpace() != null) && (!identifier.getCodeSpace().isEmpty())) {
+
+                List<CapabilitiesLinkResult>  links = capabilitiesDatasetMetadataLinkRepo.linkToCapabilitiesLayerViaIdentifier(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode(),
+                        identifier.getCodeSpace());
+
+                for(CapabilitiesLinkResult link: links){
+                    SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
+                            link.getLinkcheckjobid(),
+                            link.getSha2(),
+                            link.getCapabilitiesdocumenttype(),
+                            link.getOgclayername(),
+                            identifier.getCode(),
+                            identifier.getCodeSpace()
+                            );
+
+                    item.setDatasetMetadataRecord(localDatasetMetadataRecord);
+                    this.localDatasetMetadataRecord.getDataLinks().add(item);
+                }
+            }
+            else {
+                List<CapabilitiesLinkResult> links = capabilitiesDatasetMetadataLinkRepo.linkToCapabilitiesLayerViaIdentifier(localDatasetMetadataRecord.getLinkCheckJobId(),
+                        identifier.getCode());
+                for(CapabilitiesLinkResult link: links){
+                    SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
+                            link.getLinkcheckjobid(),
+                            link.getSha2(),
+                            link.getCapabilitiesdocumenttype(),
+                            link.getOgclayername(),
+                            identifier.getCode(),
+                            identifier.getCodeSpace()
+                    );
+
+                    item.setDatasetMetadataRecord(localDatasetMetadataRecord);
+                    this.localDatasetMetadataRecord.getDataLinks().add(item);
+                }
+            }
+        }
+    }
 
 
     private void process() {
@@ -225,6 +270,7 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
         findSimpleLayerMetadataURLinks(fileId,linkcheckjobid);
 
+        findLayerIdLinks(fileId,linkcheckjobid);
 
 
         localDatasetMetadataRecord.setINDICATOR_DOWNLOAD_LINK_TO_DATA(IndicatorStatus.FAIL);
@@ -312,6 +358,7 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 //        }
 
     }
+
 
 
     @Override

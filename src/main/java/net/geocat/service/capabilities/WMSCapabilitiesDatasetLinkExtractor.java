@@ -187,6 +187,7 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
                         if (authorityurl == null)
                             authorityurl = authority;
                         item.setAuthority(authorityurl);
+                        item.setAuthorityName(authority);
                     }
                     result.add(item);
                 }
@@ -199,6 +200,7 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
                     if (authorityurl == null)
                         authorityurl = authority;
                     item.setAuthority(authorityurl);
+                    item.setAuthorityName(authority);
                 }
                 result.add(item);
             }

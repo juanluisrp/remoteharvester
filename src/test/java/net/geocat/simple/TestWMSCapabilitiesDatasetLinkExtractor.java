@@ -67,12 +67,16 @@ public class TestWMSCapabilitiesDatasetLinkExtractor {
         assertEquals(2,links.size());
 
         assertEquals("http://www.authority", links.get(0).getAuthority());
+        assertEquals("authority", links.get(0).getAuthorityName());
+
         assertEquals("layer2identifierDSURL", links.get(0).getRawUrl());
         assertEquals("layer2identifier", links.get(0).getIdentifier());
         assertEquals("layer2name", links.get(0).getOgcLayerName());
 
 
         assertEquals("http://www.authority", links.get(1).getAuthority());
+        assertEquals("authority", links.get(1).getAuthorityName());
+
         assertEquals("layer2identifierDSURL2", links.get(1).getRawUrl());
         assertEquals("layer2identifier", links.get(1).getIdentifier());
         assertEquals("layer2name", links.get(1).getOgcLayerName());

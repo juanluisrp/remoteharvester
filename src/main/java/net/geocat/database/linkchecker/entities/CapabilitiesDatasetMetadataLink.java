@@ -96,6 +96,11 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
     @Column(columnDefinition = "text")
     String authority;
 
+    //from the Capabilities document - authority (name of authority) for the layer
+    // i.e. <Identity authority="XYZ" .../>
+    @Column(columnDefinition = "text")
+    String authorityName;
+
     //store summary info about this
     @Column(columnDefinition = "text")
     String summary;
@@ -154,6 +159,13 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
         this.capabilitiesDatasetMetadataLinkId = capabilitiesDatasetMetadataLinkId;
     }
 
+    public String getAuthorityName() {
+        return authorityName;
+    }
+
+    public void setAuthorityName(String authorityName) {
+        this.authorityName = authorityName;
+    }
 
     public String getIdentity() {
         return identity;

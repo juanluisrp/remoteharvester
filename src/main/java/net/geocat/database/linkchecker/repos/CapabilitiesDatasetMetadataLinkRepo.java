@@ -120,4 +120,47 @@ public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<Capa
             "    AND capabilitiesdatasetmetadatalink.cap_jobid = ?1 "
             ,nativeQuery = true)
     List<CapabilitiesLinkResult>  linkToCapabilitiesViaIdentifier_codeAndCodeSpace(String linkCheckJobId, String metadata_code,String metadata_codespace);
+
+
+    @Query(value =   "SELECT \n" +
+            "   capabilitiesdatasetmetadatalink.cap_sha2 as sha2,\n" +
+            "   capabilitiesdatasetmetadatalink.cap_jobid as linkcheckjobid, \n" +
+            "   capabilitiesdocument.capabilitiesdocumenttype,  \n" +
+            "   capabilitiesdatasetmetadatalink.ogclayername   \n" +
+            "\n" +
+            "FROM  \n" +
+            "     capabilitiesdatasetmetadatalink         \n" +
+            "    JOIN \n" +
+            "       capabilitiesdocument  \n" +
+            "             ON ( \n" +
+            "                 capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2  \n" +
+            "                 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid \n" +
+            "                )  \n" +
+            "WHERE\n" +
+            "     capabilitiesdatasetmetadatalink.identity = ?2 \n" +
+            "  AND capabilitiesdatasetmetadatalink.cap_jobid = ?1\n"
+            ,nativeQuery = true)
+    List<CapabilitiesLinkResult> linkToCapabilitiesLayerViaIdentifier(String linkCheckJobId, String DSIDcode);
+
+    @Query(value =   "SELECT \n" +
+            "   capabilitiesdatasetmetadatalink.cap_sha2 as sha2,\n" +
+            "   capabilitiesdatasetmetadatalink.cap_jobid as linkcheckjobid, \n" +
+            "   capabilitiesdocument.capabilitiesdocumenttype,  \n" +
+            "   capabilitiesdatasetmetadatalink.ogclayername   \n" +
+            "\n" +
+            "FROM  \n" +
+            "     capabilitiesdatasetmetadatalink         \n" +
+            "    JOIN \n" +
+            "       capabilitiesdocument  \n" +
+            "             ON ( \n" +
+            "                 capabilitiesdocument.sha2=capabilitiesdatasetmetadatalink.cap_sha2  \n" +
+            "                 and capabilitiesdocument.linkcheckjobid = capabilitiesdatasetmetadatalink.linkcheckjobid \n" +
+            "                )  \n" +
+            "WHERE\n" +
+            "     capabilitiesdatasetmetadatalink.identity = ?2 \n" +
+            "  AND (datasetidentifier.authority = ?3 OR datasetidentifier.authorityname = ?3)   \n" +
+            "  AND capabilitiesdatasetmetadatalink.cap_jobid = ?1\n"
+            ,nativeQuery = true)
+    List<CapabilitiesLinkResult> linkToCapabilitiesLayerViaIdentifier(String linkCheckJobId, String DSIDcode, String DSIDcodespace);
+
 }

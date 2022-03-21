@@ -65,6 +65,7 @@ public class CapabilitiesDatasetMetadataLinkService {
             item.setFixedURL(datasetLinkFixer.fix(link.getRawUrl()));
             item.setIdentity(link.getIdentifier());
             item.setAuthority(link.getAuthority());
+            item.setAuthorityName(link.getAuthorityName());
 
          //   item.setCapabilitiesDocument(cap);
             result.add(item);

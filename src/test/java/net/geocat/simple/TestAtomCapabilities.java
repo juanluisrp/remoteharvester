@@ -68,6 +68,10 @@ public class TestAtomCapabilities {
         assertEquals(1, xmlCapabilitiesDocument.getEntries().size());
         assertEquals(2, xmlCapabilitiesDocument.getEntries().get(0).getLinks().size());
 
+        assertEquals("spatial_dataset_identifier_namespace1", xmlCapabilitiesDocument.getDatasetLinksList().get(0).getAuthority());
+        assertEquals("spatial_dataset_identifier_code1", xmlCapabilitiesDocument.getDatasetLinksList().get(0).getIdentifier());
+        assertNull( xmlCapabilitiesDocument.getDatasetLinksList().get(0).getAuthorityName());
+
         assertEquals("describedby",xmlCapabilitiesDocument.getEntries().get(0).getLinks().get(0).getRel());
         assertEquals("describedbyURL",xmlCapabilitiesDocument.getEntries().get(0).getLinks().get(0).getHref());
         assertEquals("application/xml",xmlCapabilitiesDocument.getEntries().get(0).getLinks().get(0).getType());
