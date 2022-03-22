@@ -50,9 +50,15 @@ public class EventProcessor_OrchestratedHarvestRequestedEvent extends BaseEventP
     @Override
     public EventProcessor_OrchestratedHarvestRequestedEvent externalProcessing() throws Exception {
         String processID = getInitiatingEvent().getProcessId();
+
+        logger.info(String.format("EventProcessor_OrchestratedHarvestRequestedEvent, processId: %s", processID));
+
         Lock lock = processLockingService.getLock(processID);
         try {
             lock.lock();
+
+            logger.info(String.format("EventProcessor_OrchestratedHarvestRequestedEvent, harvesting config skipHarvesting: %b", getInitiatingEvent().getHarvesterConfig().getSkipHarvesting()));
+
             job = orchestratedHarvestService.createOrchestratedHarvestProcess(processID);
             job.setExecuteLinkChecker(getInitiatingEvent().getHarvesterConfig().getExecuteLinkChecker());
             job.setSkipHarvesting(getInitiatingEvent().getHarvesterConfig().getSkipHarvesting());
@@ -61,12 +67,18 @@ public class EventProcessor_OrchestratedHarvestRequestedEvent extends BaseEventP
             getInitiatingEvent().getHarvesterConfig().setSkipHarvesting(null);
 
             if (!job.getSkipHarvesting()) {
+                logger.info("EventProcessor_OrchestratedHarvestRequestedEvent, no skip harvesting");
+
                 HarvestStartResponse harvestStartResponse = harvesterService.startHarvest(getInitiatingEvent().getHarvesterConfig());
                 job.setHarvesterJobId(harvestStartResponse.getProcessID());
 
             } else {
+                logger.info("EventProcessor_OrchestratedHarvestRequestedEvent, skip harvesting");
+
                 // Get the last completed harvest job for the longTermTag
                 String harvestJobId = harvesterService.getLastCompletedHarvestJobIdByLongTermTag(getInitiatingEvent().getHarvesterConfig());
+
+                logger.info(String.format("EventProcessor_OrchestratedHarvestRequestedEvent, skip harvesting, harvestJobId: %s", harvestJobId));
 
                 if (StringUtils.hasLength(harvestJobId)) {
                     job.setHarvesterJobId(harvestJobId);
