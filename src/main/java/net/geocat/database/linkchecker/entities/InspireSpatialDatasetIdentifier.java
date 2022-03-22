@@ -42,6 +42,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -49,8 +51,8 @@ import javax.persistence.Table;
 @Table(
         indexes = {
                 @Index(
-                        name = "inspireSpatialDatasetIdentifier_namespace_code_idx",
-                        columnList = "namespace,code",
+                        name = "inspireSpatialDatasetIdentifier_code_idx",
+                        columnList = "code",
                         unique = false
                 )
         }
@@ -71,8 +73,14 @@ public class InspireSpatialDatasetIdentifier {
     private String namespace;
 
 //    //which capabilities record does this link belong to?
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    private CapabilitiesDocument capabilitiesDocument;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumns(
+            {
+                    @JoinColumn(name="cap_sha2",referencedColumnName = "sha2"),
+                    @JoinColumn(name="cap_jobId",referencedColumnName = "linkcheckjobid")
+            }
+    )
+    private CapabilitiesDocument capabilitiesDocument;
 
     public InspireSpatialDatasetIdentifier() {
 
@@ -83,6 +91,14 @@ public class InspireSpatialDatasetIdentifier {
         this.metadataURL = metadataURL;
         this.code = code;
         this.namespace = namespace;
+    }
+
+    public CapabilitiesDocument getCapabilitiesDocument() {
+        return capabilitiesDocument;
+    }
+
+    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
+        this.capabilitiesDocument = capabilitiesDocument;
     }
 
     public String getMetadataURL() {

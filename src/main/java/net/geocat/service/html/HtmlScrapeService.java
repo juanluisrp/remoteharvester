@@ -40,6 +40,8 @@ import net.geocat.database.linkchecker.entities.HttpResult;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.http.BasicHTTPRetriever;
+import net.geocat.http.HTTPRequest;
+import net.geocat.http.SmartHTTPRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -60,8 +62,11 @@ public class HtmlScrapeService {
     LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean;
 
 
+//    @Autowired
+//    BasicHTTPRetriever basicHTTPRetriever;
+
     @Autowired
-    BasicHTTPRetriever basicHTTPRetriever;
+    SmartHTTPRetriever smartHTTPRetriever;
 
     @Autowired
     //@Qualifier("transactionManager")
@@ -140,7 +145,12 @@ public class HtmlScrapeService {
         String url = "https://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=*:*^1.0&sow=false&fq=sourceMetadataResourceLocator:*&fq=resourceType:(dataset%20OR%20series)&fq=memberStateCountryCode:%22MYCOUNTRYCODE%22&fl=id,resourceTitle,resourceTitle_*,providedTranslationLanguage,automatedTranslationLanguage,memberStateCountryCode,metadataLanguage,isDw:query($isDwQ),isVw:query($isVwQ),spatialScope&isDwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect:(LAYER_MATCHING_DATA_IS_AVAILABLE)&isDwVwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE%20AND%20LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=query($isDwVwQ)%20desc,%20query($isDwQ)%20desc,%20query($isVwQ)%20desc,%20resourceTitle%20asc&start=0&rows=300000&callback=?&json.wrf=processData_dtResults&_=1634538073094";
         url = url.replace("MYCOUNTRYCODE",countryCode.toLowerCase());
 
-        HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
+
+        HTTPRequest request = HTTPRequest.createGET(url);
+        request.setSaveToCache(false);
+        HttpResult result = smartHTTPRetriever.retrieve(request);
+
+       // HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
 
         String json = new String(result.getData());
         json = json.replace("processData_dtResults(","");

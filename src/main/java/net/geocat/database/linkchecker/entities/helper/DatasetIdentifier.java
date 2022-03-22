@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+ import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
  import net.geocat.database.linkchecker.entities.helper.DatasetIdentifierNodeType;
 
 import javax.persistence.Column;
@@ -41,11 +42,15 @@ import javax.persistence.Column;
  import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
+ import javax.persistence.FetchType;
+ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
  import javax.persistence.Inheritance;
  import javax.persistence.InheritanceType;
+ import javax.persistence.JoinColumn;
+ import javax.persistence.JoinColumns;
+ import javax.persistence.ManyToOne;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -68,6 +73,9 @@ public class DatasetIdentifier {
     @Column(columnDefinition = "text")
     private String codeSpace;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private DatasetMetadataRecord datasetMetadataRecord;
+
     //---
     public DatasetIdentifier() {}
 
@@ -78,6 +86,15 @@ public class DatasetIdentifier {
     }
 
     //---
+
+
+    public DatasetMetadataRecord getDatasetMetadataRecord() {
+        return datasetMetadataRecord;
+    }
+
+    public void setDatasetMetadataRecord(DatasetMetadataRecord datasetMetadataRecord) {
+        this.datasetMetadataRecord = datasetMetadataRecord;
+    }
 
     public long getDatasetIdentifierId() {
         return datasetIdentifierId;

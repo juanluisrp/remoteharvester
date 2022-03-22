@@ -55,9 +55,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class RetrieveServiceDocumentLink {
 
-    @Autowired
-    @Qualifier("cookieAttachingRetriever")
-    IHTTPRetriever retriever;
+//    @Autowired
+//    @Qualifier("cookieAttachingRetriever")
+//    IHTTPRetriever retriever;
 
     @Autowired
     CapabilitiesContinueReadingPredicate capabilitiesContinueReadingPredicate;

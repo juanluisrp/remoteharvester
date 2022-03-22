@@ -37,6 +37,7 @@ package net.geocat.routes.rest;
 import net.geocat.service.html.HtmlCapabilitiesService;
 import net.geocat.service.html.HtmlDatasetService;
 import net.geocat.service.html.HtmlDiscoverService;
+import net.geocat.service.html.HtmlIdentifierService;
 import net.geocat.service.html.HtmlScrapeService;
 import net.geocat.service.html.HtmlServiceService;
 import net.geocat.service.html.HtmlSummaryService;
@@ -107,6 +108,15 @@ public class Html extends RouteBuilder {
                 .route()
                 .routeId("rest.rest.html.summary")
                 .bean(HtmlSummaryService.class, "getHtml( ${header.processID}  )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+
+        rest("/api/html/identifier/")
+                .get("/{identifier}")
+                .route()
+                .routeId("rest.rest.html.identifier")
+                .bean(HtmlIdentifierService.class, "getHtml( ${header.identifier}  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;

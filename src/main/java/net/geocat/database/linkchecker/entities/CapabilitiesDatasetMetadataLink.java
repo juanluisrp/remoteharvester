@@ -70,6 +70,15 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 //    @Fetch(value = FetchMode.JOIN)
 //    CapabilitiesRemoteDatasetMetadataDocument capabilitiesRemoteDatasetMetadataDocument;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumns(
+            {
+                    @JoinColumn(name="cap_sha2",referencedColumnName = "sha2"),
+                    @JoinColumn(name="cap_jobId",referencedColumnName = "linkcheckjobid")
+            }
+    )
+    private CapabilitiesDocument capabilitiesDocument;
+
      @Column(columnDefinition = "text")
     String fileIdentifier;
 
@@ -117,6 +126,14 @@ public class CapabilitiesDatasetMetadataLink extends RetrievableSimpleLink {
 
     //---------------------------------------------------------------------------
 
+
+    public CapabilitiesDocument getCapabilitiesDocument() {
+        return capabilitiesDocument;
+    }
+
+    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
+        this.capabilitiesDocument = capabilitiesDocument;
+    }
 
     public String getAuthority() {
         return authority;

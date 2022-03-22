@@ -65,7 +65,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         }
     };
     Logger logger = LoggerFactory.getLogger(BasicHTTPRetriever.class);
-    int TIMEOUT_MS = 1 * 20 * 1000;
+  //  int TIMEOUT_MS = 1 * 2 * 1000;
     int initialReadSize = 4096;
 
     public boolean shouldReadMore(byte[] tinyBuffer, IContinueReadingPredicate predicate) {
@@ -75,10 +75,10 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         return predicate.continueReading(tinyBuffer);
     }
 
-    public HttpResult retrieveJSON(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
+    public HttpResult retrieveJSON(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException
     {
-        return retrieve(verb,location,body, cookie,predicate, "application/json",new String[] {"application/json"});
+        return retrieve(verb,location,body, cookie,predicate, "application/json",new String[] {"application/json"},timeoutSeconds);
     }
 
     /**
@@ -89,11 +89,11 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate)
+    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException
     {
         //some systems don't understand the q qualifier
-        return retrieve(verb,location,body, cookie,predicate, "application/xml",  new String[] {"application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9"});
+        return retrieve(verb,location,body, cookie,predicate, "application/xml",  new String[] {"application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9"},timeoutSeconds);
     }
 
 
@@ -105,7 +105,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public HttpResult retrieve (String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,String contentType,String[] accept) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public HttpResult retrieve (String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,String contentType,String[] accept,int timeoutSeconds) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
         if (body == null)
             body = "";
@@ -138,8 +138,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
 
 
 
-        http.setConnectTimeout(TIMEOUT_MS);
-        http.setReadTimeout(TIMEOUT_MS);
+        http.setConnectTimeout(timeoutSeconds*1000);
+        http.setReadTimeout(timeoutSeconds*1000);
         http.setRequestMethod(verb);
         http.setDoOutput(true);
         http.setDoInput(true);

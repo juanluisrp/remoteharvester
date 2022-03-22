@@ -38,7 +38,9 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.HttpResult;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
 import net.geocat.database.linkchecker.entities.helper.DocumentLink;
+import net.geocat.http.HTTPRequest;
 import net.geocat.http.IHTTPRetriever;
+import net.geocat.http.SmartHTTPRetriever;
 import net.geocat.xml.XmlCapabilitiesWFS;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
@@ -59,9 +61,12 @@ public class RetrieveStoredQueries {
     @Autowired
     XmlDocumentFactory xmlDocumentFactory;
 
+//    @Autowired
+//    @Qualifier("cachingHttpRetriever")
+//    IHTTPRetriever retriever;
+
     @Autowired
-    @Qualifier("cachingHttpRetriever")
-    IHTTPRetriever retriever;
+    SmartHTTPRetriever smartHTTPRetriever;
 
     public String fixURL(String link) throws Exception {
         link = link.trim();
@@ -105,8 +110,12 @@ public class RetrieveStoredQueries {
             String url = n.getAttributes().getNamedItem("xlink:href").getTextContent();
             url = fixURL(url);
 
-            HttpResult httpResult = retriever.retrieveXML("GET", url, null, null, null);
-            if (!httpResult.isFullyRead())
+
+            HTTPRequest request = HTTPRequest.createGET(url);
+            request.setLinkCheckJobId(link.getLinkCheckJobId());
+            HttpResult httpResult = smartHTTPRetriever.retrieve(request);
+
+             if (!httpResult.isFullyRead())
                 return null;
 
             XmlDoc xmlStoreQueries = new XmlDoc(XmlStringTools.bytea2String(httpResult.getData()));

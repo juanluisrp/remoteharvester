@@ -43,6 +43,7 @@ import java.util.List;
 
 
 public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<CapabilitiesDatasetMetadataLink, Long> {
+    List<CapabilitiesDatasetMetadataLink> findByIdentity(String identity);
 
     List<CapabilitiesDatasetMetadataLink> findBySha2NotNull();
 

@@ -33,13 +33,8 @@
 
 package net.geocat.http;
 
-import net.geocat.database.linkchecker.entities.HttpResult;
-
-import java.io.IOException;
-
-public interface IHTTPRetriever {
-
-    HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException;
-
+public class HTTPCachedException extends Exception {
+    public HTTPCachedException(String message){
+        super(message);
+    }
 }

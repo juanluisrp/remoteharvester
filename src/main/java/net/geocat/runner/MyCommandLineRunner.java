@@ -41,6 +41,8 @@ import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestGenerator;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestResolver;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.WFSLayerDownloader;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.WFSStoredQueryDownloader;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.WMSLayerDownloader;
@@ -49,6 +51,7 @@ import net.geocat.eventprocessor.processors.processlinks.postprocessing.*;
 import net.geocat.events.EventFactory;
 import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.IHTTPRetriever;
+import net.geocat.http.SmartHTTPRetriever;
 import net.geocat.service.*;
 
 import net.geocat.service.capabilities.*;
@@ -58,6 +61,7 @@ import net.geocat.xml.*;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 
+import net.geocat.xml.helpers.CapabilitiesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +91,14 @@ public class MyCommandLineRunner implements CommandLineRunner {
     XmlDocumentFactory xmlDocumentFactory;
 
     @Autowired
-    LinkCheckBlobStorageRepo linkCheckBlobStorageRepo;
+    OGCRequestGenerator ogcRequestGenerator;
 
     @Autowired
-    @Qualifier("cookieAttachingRetriever")
-    IHTTPRetriever retriever;
+    LinkCheckBlobStorageRepo linkCheckBlobStorageRepo;
+
+//    @Autowired
+//    @Qualifier("cookieAttachingRetriever")
+//    IHTTPRetriever retriever;
 
 //    @Autowired
 //    LinkRepo linkRepo;
@@ -238,15 +245,37 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     WFSStoredQueryDownloader wfsStoredQueryDownloader;
 
+    @Autowired
+    LinkToDataRepo linkToDataRepo;
+
+    @Autowired
+    OGCRequestResolver ogcRequestResolver;
+
+    @Autowired
+    SmartHTTPRetriever smartHTTPRetriever;
+
     @Override
     public void run(String... args) throws Exception {
 
         try {
+//            String uuu = "http://data.waterkwaliteitsportaal.nl/inspire/ds/nl.xml?request=GetCapabilities&service=WFS";
+//            HTTPRequest request = HTTPRequest.createGET(uuu);
+//            request.setLinkCheckJobId("TESTCASE");
+//            HttpResult r = smartHTTPRetriever.retrieve(request);
+
+        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
+                           "7EDA5132F05A4B4B9828AAF7F8517757C4BB07E0880A713015713C93B4832122",
+                           "40d0fea0-50df-4fca-b264-6b8af330de6c" ) ).get();
+    int t=0;
+
+
+     //  test_linkstodata2(   "d3e1c48a-05a1-433d-b269-577c452d9a0d" );
+      //   test_linkstodata( lastLinkCheckJob("fi"));
         //    single("9356591E2A5DDDE87E8323C0309986CDC594397B9EC929696409B7B61C5F36DE");
 
             //  allAtom();
          //  allWMS();
-         //   allWMTS();
+          // allWMTS();
         //allDataset();
 
 //            HttpResult r = retriever_cachingHttpRetriever.retrieveXML("GET",
@@ -370,6 +399,68 @@ public class MyCommandLineRunner implements CommandLineRunner {
             logger.error("startup test case error",e);
         }
         logger.debug("DONE!");
+    }
+
+    private void test_linkstodata2(String linkcheckjob) throws Exception {
+        for (LocalDatasetMetadataRecord record: localDatasetMetadataRecordRepo.findAll() ){
+            String xml = blobStorageService.findXML(record.getSha2());
+            XmlDoc doc = xmlDocumentFactory.create(xml);
+            List<LinkToData> links = new ArrayList<LinkToData>(record.getDataLinks());
+            List<LinkToData> links_view =  links.stream()
+                    .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WMS || x.getCapabilitiesDocumentType() == CapabilitiesType.WMS)
+                    .collect(Collectors.toList());
+            List<LinkToData> links_download =  links.stream()
+                    .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WFS || x.getCapabilitiesDocumentType() == CapabilitiesType.Atom)
+                    .collect(Collectors.toList());
+            int t=0;
+        }
+    }
+
+
+        private void test_linkstodata(String linkcheckjob) throws Exception {
+        List<LinkToData> links = linkToDataRepo.findByLinkCheckJobId(linkcheckjob);
+        List<LinkToData> links_wfs = links.stream()
+                .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WFS).collect(Collectors.toList());
+        List<LinkToData> links_wms = links.stream()
+                .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WMS).collect(Collectors.toList());
+        List<LinkToData> links_wmts = links.stream()
+                .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WMTS).collect(Collectors.toList());
+
+        List<OGCRequest> requests_wfs = new ArrayList<>();
+        List<OGCRequest> requests_wms = new ArrayList<>();
+        List<OGCRequest> requests_wmts = new ArrayList<>();
+
+//        for (LinkToData link : links_wfs) {
+//            OGCRequest request= ogcRequestGenerator.prepareToDownload(link);
+//            requests_wfs.add(request);
+//        }
+
+        List<OGCRequest> bad_wfs = requests_wfs.stream().filter(x->x!=null && !x.isSuccessfulOGCRequest()).collect(Collectors.toList());
+//124,285
+     //   links_wms = Arrays.asList(new LinkToData[]{links_wms.subList(124, 125).get(0), links_wms.subList(285, 286).get(0)});
+
+//        for (LinkToData link : links_wms) {
+//            OGCRequest request= ogcRequestGenerator.prepareToDownload(link);
+//            requests_wms.add(request);
+//        }
+
+        List<OGCRequest> bad_wms = requests_wms.stream().filter(x->x!=null && !x.isSuccessfulOGCRequest()).collect(Collectors.toList());
+
+//       // links_wmts = links_wmts.subList(52,53);
+        for (LinkToData link : links_wmts) {
+            try {
+                OGCRequest request = ogcRequestGenerator.prepareToDownload(link);
+                requests_wmts.add(request);
+                ogcRequestResolver.resolve(request);
+            }
+            catch (Exception e){
+                int tt=0;
+            }
+        }
+
+        List<OGCRequest> bad_wmts = requests_wmts.stream().filter(x->x!=null && !x.isSuccessfulOGCRequest()).collect(Collectors.toList());
+
+        int t=0;
     }
 
     public String lastLinkCheckJob(String country){
@@ -527,7 +618,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         }
     }
 
-    public void allWMTS() throws Exception {
+    public void allWMTS2() throws Exception {
 
         List wfs = executeSQL3("SELECT text_value FROM blob_storage WHERE    text_value like '%:Capabilities%'OR text_value like '%<Capabilities%'");
         for (Object v: wfs) {
@@ -537,10 +628,10 @@ public class MyCommandLineRunner implements CommandLineRunner {
                 continue;
             XmlCapabilitiesWMTS doc = (XmlCapabilitiesWMTS) _doc;
              System.out.println(doc.getGetTileEndpoint());
-            if (doc.getGetTileEndpoint() == null) {
-                int yt=0;
-                XmlCapabilitiesWMTS doc2 = (XmlCapabilitiesWMTS) xmlDocumentFactory.create(xml);
-            }
+
+        //    String url = wmtsLayerDownloader.createURL( (XmlCapabilitiesWMTS) d, "Ortoilmakuva_2020","ETRS-GK25:7");
+            OGCRequest ogcRequest = wmtsLayerDownloader.setupRequest(doc, "Ortoilmakuva_2020");
+
              int t=0;
         }
     }
@@ -640,7 +731,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
         String url = "https://inspire-geoportal.ec.europa.eu/solr/select?wt=json&q=*:*^1.0&sow=false&fq=sourceMetadataResourceLocator:*&fq=resourceType:(dataset%20OR%20series)&fq=memberStateCountryCode:%22MYCOUNTRYCODE%22&fl=id,resourceTitle,resourceTitle_*,providedTranslationLanguage,automatedTranslationLanguage,memberStateCountryCode,metadataLanguage,isDw:query($isDwQ),isVw:query($isVwQ),spatialScope&isDwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE)&isVwQ=interoperabilityAspect:(LAYER_MATCHING_DATA_IS_AVAILABLE)&isDwVwQ=interoperabilityAspect:(DOWNLOAD_MATCHING_DATA_IS_AVAILABLE%20AND%20DATA_DOWNLOAD_LINK_IS_AVAILABLE%20AND%20LAYER_MATCHING_DATA_IS_AVAILABLE)&sort=query($isDwVwQ)%20desc,%20query($isDwQ)%20desc,%20query($isVwQ)%20desc,%20resourceTitle%20asc&start=0&rows=300000&callback=?&json.wrf=processData_dtResults&_=1634538073094";
         url = url.replace("MYCOUNTRYCODE",countryCode.toLowerCase());
 
-            HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null);
+            HttpResult result = basicHTTPRetriever.retrieveJSON("GET", url, null, null, null,20);
 
             String json = new String(result.getData());
             json = json.replace("processData_dtResults(","");

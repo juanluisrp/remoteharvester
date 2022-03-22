@@ -114,6 +114,11 @@ public class HttpResult {
     @Column(columnDefinition = "text")
     String sslUnTrustedReason;
 
+    Boolean exceptionOccurred;
+
+    @Column(columnDefinition = "text")
+    String exceptionInfo;
+
     public HttpResult() {
 
     }
@@ -138,8 +143,25 @@ public class HttpResult {
 
 
 
+
     public HttpResult(byte[] data) {
         this.data = data;
+    }
+
+    public String getExceptionInfo() {
+        return exceptionInfo;
+    }
+
+    public void setExceptionInfo(String exceptionInfo) {
+        this.exceptionInfo = exceptionInfo;
+    }
+
+    public Boolean getExceptionOccurred() {
+        return exceptionOccurred;
+    }
+
+    public void setExceptionOccurred(Boolean exceptionOccurred) {
+        this.exceptionOccurred = exceptionOccurred;
     }
 
     public long getHttpResultId() {

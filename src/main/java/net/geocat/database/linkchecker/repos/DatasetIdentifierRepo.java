@@ -31,51 +31,19 @@
  *  ==============================================================================
  */
 
-package net.geocat.http;
+package net.geocat.database.linkchecker.repos;
 
-import net.geocat.database.linkchecker.entities.HttpResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.util.List;
 
 @Component
 @Scope("prototype")
-@Qualifier("redirectAwareHTTPRetriever")
-public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
+public interface DatasetIdentifierRepo extends CrudRepository<DatasetIdentifier, Long> {
 
-    public static int MAXREDIRECTS = 5;
-    @Autowired
-    @Qualifier("basicHTTPRetriever")
-    public BasicHTTPRetriever retriever; // public for testing
-    Logger logger = LoggerFactory.getLogger(RedirectAwareHTTPRetriever.class);
-
-    public RedirectAwareHTTPRetriever() {
-
-    }
-
-
-    @Override
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return _retrieveXML(verb, location, body, cookie, MAXREDIRECTS, predicate,timeoutSeconds);
-    }
-
-
-    protected HttpResult _retrieveXML(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate,int timeoutSeconds)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        try {
-            return retriever.retrieveXML(verb, location, body, cookie, predicate,timeoutSeconds);
-        } catch (RedirectException re) {
-            nRedirectsRemaining--;
-            if (nRedirectsRemaining <= 0)
-                throw new IOException("too many redirects!");
-            logger.debug("     REDIRECTED TO location=" + re.getNewLocation());
-            return _retrieveXML(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--, predicate,timeoutSeconds);
-        }
-    }
+    List<DatasetIdentifier> findByCode(String code);
 }

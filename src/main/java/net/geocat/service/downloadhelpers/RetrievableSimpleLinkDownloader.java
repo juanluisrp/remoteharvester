@@ -36,8 +36,10 @@ package net.geocat.service.downloadhelpers;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.database.linkchecker.entities.HttpResult;
+import net.geocat.http.HTTPRequest;
 import net.geocat.http.IContinueReadingPredicate;
 import net.geocat.http.IHTTPRetriever;
+import net.geocat.http.SmartHTTPRetriever;
 import net.geocat.xml.XmlStringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +61,9 @@ public class RetrievableSimpleLinkDownloader {
 
 
     @Autowired
-    @Qualifier("cachingHttpRetriever")
-    IHTTPRetriever retriever;
+   // @Qualifier("cachingHttpRetriever")
+   // IHTTPRetriever retriever;
+    SmartHTTPRetriever smartHTTPRetriever;
 
     @Autowired
     PartialDownloadPredicateFactory partialDownloadPredicateFactory;
@@ -89,7 +92,10 @@ public class RetrievableSimpleLinkDownloader {
             IContinueReadingPredicate continueReadingPredicate = partialDownloadPredicateFactory.create(link);
 
             try {
-                data = retriever.retrieveXML("GET", url, null, null, continueReadingPredicate);
+                HTTPRequest request = HTTPRequest.createGET(url);
+                request.setLinkCheckJobId(link.getLinkCheckJobId());
+                request.setPredicate(continueReadingPredicate);
+                data = smartHTTPRetriever.retrieve(request);
             } catch (Exception e) {
                 link.setIndicator_LinkResolves(IndicatorStatus.FAIL);
                 link.setLinkHTTPException(e.getClass().getSimpleName() + " - " + e.getMessage());
