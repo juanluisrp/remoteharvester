@@ -1,14 +1,14 @@
 FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 as builder
 
 WORKDIR /sources
-COPY ./pom.xml ./pom.xml
+COPY ./ /sources
 # store maven dependencies so next build doesn't have to download them again
 RUN --mount=type=cache,target=/root/.m2/repository \ 
     mvn dependency:go-offline
 
-COPY ./src ./src
 
-RUN mvn -B package -DskipTests
+RUN --mount=type=cache,target=/root/.m2/repository \  
+    mvn -B package -DskipTests
 
 RUN mkdir /application && \
     cp target/*.jar /application/full-orchestrator.jar
