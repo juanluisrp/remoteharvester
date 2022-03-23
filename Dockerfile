@@ -8,8 +8,7 @@ RUN --mount=type=cache,target=/root/.m2/repository \
 
 COPY ./src ./src
 
-RUN --mount=type=cache,target=/root/.m2/repository \
-    mvn -B package -DskipTests
+RUN mvn -B package -DskipTests
 
 RUN mkdir /application && \
     cp target/*.jar /application/full-orchestrator.jar
