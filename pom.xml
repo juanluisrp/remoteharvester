@@ -140,7 +140,7 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                Update maven git plugin version
+                <version>4.0.5</version>
             </plugin>
         </plugins>
     </build>
