@@ -159,7 +159,7 @@ public interface CapabilitiesDatasetMetadataLinkRepo extends CrudRepository<Capa
             "                )  \n" +
             "WHERE\n" +
             "     capabilitiesdatasetmetadatalink.identity = ?2 \n" +
-            "  AND (datasetidentifier.authority = ?3 OR datasetidentifier.authorityname = ?3)   \n" +
+            "  AND (capabilitiesdatasetmetadatalink.authority = ?3 OR capabilitiesdatasetmetadatalink.authorityname = ?3)   \n" +
             "  AND capabilitiesdatasetmetadatalink.cap_jobid = ?1\n"
             ,nativeQuery = true)
     List<CapabilitiesLinkResult> linkToCapabilitiesLayerViaIdentifier(String linkCheckJobId, String DSIDcode, String DSIDcodespace);

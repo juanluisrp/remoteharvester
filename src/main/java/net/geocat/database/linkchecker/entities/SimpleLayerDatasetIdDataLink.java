@@ -34,6 +34,7 @@
 package net.geocat.database.linkchecker.entities;
 
 
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 
 import javax.persistence.Column;
@@ -100,8 +101,8 @@ public class SimpleLayerDatasetIdDataLink extends LinkToData {
     }
 
     public SimpleLayerDatasetIdDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype,
-                                        String ogcLayerName, String code, String codeSpace) {
-        super(linkcheckjobid,sha2,capabilitiesdocumenttype);
+                                        String ogcLayerName, String code, String codeSpace, DatasetMetadataRecord datasetMetadataRecord) {
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
         this.ogcLayerName = ogcLayerName;
         this.code = code;
         this.codeSpace = codeSpace;

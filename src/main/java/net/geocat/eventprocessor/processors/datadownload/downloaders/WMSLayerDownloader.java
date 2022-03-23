@@ -70,9 +70,9 @@ public class WMSLayerDownloader {
     private static final Logger logger = LoggerFactory.getLogger(net.geocat.eventprocessor.processors.datadownload.downloaders.WMSLayerDownloader.class);
 
 
-    @Autowired
-    @Qualifier("cachingHttpRetriever")
-    IHTTPRetriever retriever;
+//    @Autowired
+//    @Qualifier("cachingHttpRetriever")
+//    IHTTPRetriever retriever;
 
     @Autowired
     PartialDownloadPredicateFactory partialDownloadPredicateFactory;

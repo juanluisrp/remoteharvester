@@ -54,6 +54,18 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
         setup_entries();
     }
 
+    public AtomEntry findEntry(String id) {
+        if ( (entries ==null) || (entries.isEmpty()))
+            return null;
+
+        for (AtomEntry entry: entries) {
+            if (entry.getId().equals(id))
+                return entry;
+        }
+
+        return null;
+    }
+
     public static String attribute(Node n, String attribute) {
         if (n==null)
             return null;

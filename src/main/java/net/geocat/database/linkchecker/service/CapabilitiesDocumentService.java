@@ -40,7 +40,6 @@ import net.geocat.database.linkchecker.entities.helper.DocumentLink;
 import net.geocat.database.linkchecker.entities.helper.IndicatorStatus;
 import net.geocat.service.BlobStorageService;
 import net.geocat.service.LinkCheckBlobStorageService;
-import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 import net.geocat.xml.XmlCapabilitiesDocument;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
@@ -94,8 +93,8 @@ public class CapabilitiesDocumentService {
 
         if ((xml.getInspireDatasetLinks() !=null) && (!xml.getInspireDatasetLinks().isEmpty()) ) {
             doc.setInspireSpatialDatasetIdentifiers(xml.getInspireDatasetLinks());
-//            doc.getInspireSpatialDatasetIdentifiers().stream()
-//                    .forEach(x->x.setCapabilitiesDocument(doc));
+            doc.getInspireSpatialDatasetIdentifiers().stream()
+                    .forEach(x->x.setCapabilitiesDocument(doc));
         }
 
         List<CapabilitiesDatasetMetadataLink> dslinks = capabilitiesDatasetMetadataLinkService.createCapabilitiesDatasetMetadataLinks(doc, xml);

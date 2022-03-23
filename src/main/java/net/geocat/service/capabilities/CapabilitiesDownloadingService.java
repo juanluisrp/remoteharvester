@@ -186,7 +186,8 @@ public class CapabilitiesDownloadingService {
                             })
             ).get();
 
-
+        capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList().stream()
+                .forEach(x->x.setCapabilitiesDocument(capabilitiesDocument));
     }
 
 

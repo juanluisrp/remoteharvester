@@ -41,6 +41,7 @@ import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.AtomLayerDownloader;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestGenerator;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestResolver;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.WFSLayerDownloader;
@@ -254,6 +255,9 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     SmartHTTPRetriever smartHTTPRetriever;
 
+    @Autowired
+    AtomLayerDownloader atomLayerDownloader;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -263,9 +267,22 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //            request.setLinkCheckJobId("TESTCASE");
 //            HttpResult r = smartHTTPRetriever.retrieve(request);
 
+
+        SimpleLayerMetadataUrlDataLink link = (SimpleLayerMetadataUrlDataLink) linkToDataRepo.findById(1416565L).get();
+
         CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
-                           "7EDA5132F05A4B4B9828AAF7F8517757C4BB07E0880A713015713C93B4832122",
-                           "40d0fea0-50df-4fca-b264-6b8af330de6c" ) ).get();
+                link.getCapabilitiesSha2(),
+                           link.getLinkCheckJobId() ) ).get();
+
+        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
+        XmlCapabilitiesAtom atomCap = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlCap);
+        AtomSubFeedRequest atomSubFeedRequest = atomLayerDownloader.createSubFeedRequest(atomCap, link.getOgcLayerName());
+
+        atomSubFeedRequest =  atomLayerDownloader.resolve(atomSubFeedRequest);
+        String xmlSub = new String(atomSubFeedRequest.getFullData());
+        XmlCapabilitiesAtom atomCapSub = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlSub);
+
+        List<List<AtomDataRequest>> requests = atomLayerDownloader.createDataRequests(atomCapSub);
     int t=0;
 
 

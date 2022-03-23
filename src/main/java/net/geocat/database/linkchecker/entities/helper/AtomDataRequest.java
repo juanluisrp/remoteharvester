@@ -31,78 +31,32 @@
  *  ==============================================================================
  */
 
-package net.geocat.xml.helpers;
+package net.geocat.database.linkchecker.entities.helper;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-public class AtomEntry {
+import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.ALWAYS_PARTIAL;
+import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.CAPABILITIES_ONLY;
 
-    String id;
-    List<AtomLink> links;
+@Entity
+public class AtomDataRequest extends RetrievableSimpleLink  {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long atomDataRequestId;
 
-    public AtomEntry(String id, List<AtomLink> links) {
-        this.id = id;
-        this.links = links;
-        if (links == null)
-            this.links = new ArrayList<>();
+
+
+    public AtomDataRequest() {
+        super();
+        setPartialDownloadHint(ALWAYS_PARTIAL);
     }
 
-    public AtomLink findLink(String rel) {
-        if ( (links == null) || (links.isEmpty()))
-            return null;
-
-        for (AtomLink link:links) {
-            if (link.getRel().equals(rel))
-                return link;
-        }
-        return null;
-    }
-
-    public List<AtomLink> findLinks(String rel) {
-        List<AtomLink> result = new ArrayList<>();
-        if ( (links == null) || (links.isEmpty()))
-            return null;
-
-        for (AtomLink link:links) {
-            if (link.getRel().equals(rel))
-                result.add(link);
-        }
-        if (!links.isEmpty())
-            return result;
-        return null;
-    }
-
-    public AtomEntry(String id) {
-        this.id = id;
-        this.links = new ArrayList<>();
-    }
-
-    //--
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<AtomLink> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<AtomLink> links) {
-        this.links = links;
-    }
-
-    //--
-
-    @Override
-    public String toString() {
-        return "AtomEntry{" +
-                "id='" + id + '\'' +
-                ", links=" + links +
-                '}';
+    public AtomDataRequest(String url ) {
+        this();
+        setRawURL(url);
+        setFixedURL(url);
     }
 }

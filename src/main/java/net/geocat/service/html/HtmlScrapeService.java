@@ -203,7 +203,7 @@ public class HtmlScrapeService {
 
         run_scrape(country,linkCheckJob);
 
-        String result ="<h1>Differences</h1>";
+        String result ="<h1>Differences - "+linkCheckJob+"</h1>";
 
         //       select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title;
         //        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;

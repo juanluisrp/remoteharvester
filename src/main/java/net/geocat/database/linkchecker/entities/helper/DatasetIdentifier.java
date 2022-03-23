@@ -73,28 +73,21 @@ public class DatasetIdentifier {
     @Column(columnDefinition = "text")
     private String codeSpace;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private DatasetMetadataRecord datasetMetadataRecord;
+
 
     //---
     public DatasetIdentifier() {}
 
     public DatasetIdentifier(DatasetIdentifierNodeType identifierNodeType, String code, String codeSpace) {
         this.identifierNodeType = identifierNodeType;
-         this.code = code;
+        this.code = code;
         this.codeSpace = codeSpace;
     }
 
     //---
 
 
-    public DatasetMetadataRecord getDatasetMetadataRecord() {
-        return datasetMetadataRecord;
-    }
 
-    public void setDatasetMetadataRecord(DatasetMetadataRecord datasetMetadataRecord) {
-        this.datasetMetadataRecord = datasetMetadataRecord;
-    }
 
     public long getDatasetIdentifierId() {
         return datasetIdentifierId;

@@ -37,6 +37,7 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.InspireSpatialDatasetIdentifier;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecordDatasetIdentifier;
 import net.geocat.database.linkchecker.repos.CapabilitiesDatasetMetadataLinkRepo;
 import net.geocat.database.linkchecker.repos.DatasetIdentifierRepo;
 import net.geocat.database.linkchecker.repos.InspireSpatialDatasetIdentifierRepo;
@@ -93,10 +94,11 @@ public class HtmlIdentifierService {
         if (datasetIDs.isEmpty())
             result += "NO RESULTS<bR>";
         for(DatasetIdentifier datasetID : datasetIDs) {
-            if (datasetID.getDatasetMetadataRecord() ==null)
+            if (!(datasetID instanceof DatasetMetadataRecordDatasetIdentifier))
                 continue;
-            result += "<a href='/api/html/dataset/"+ datasetID.getDatasetMetadataRecord().getLinkCheckJobId()+"/"+ datasetID.getDatasetMetadataRecord().getFileIdentifier()
-                    +"'>" +datasetID.getDatasetMetadataRecord().getLinkCheckJobId()+" :: "+datasetID.getDatasetMetadataRecord().getFileIdentifier() + "</a><bR>\n";
+            DatasetMetadataRecordDatasetIdentifier _datasetID = (DatasetMetadataRecordDatasetIdentifier) datasetID;
+            result += "<a href='/api/html/dataset/"+ _datasetID.getDatasetMetadataRecord().getLinkCheckJobId()+"/"+ _datasetID.getDatasetMetadataRecord().getFileIdentifier()
+                    +"'>" +_datasetID.getDatasetMetadataRecord().getLinkCheckJobId()+" :: "+_datasetID.getDatasetMetadataRecord().getFileIdentifier() + "</a><bR>\n";
 
         }
 

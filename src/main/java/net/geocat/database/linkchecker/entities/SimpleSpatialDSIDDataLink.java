@@ -33,6 +33,7 @@
 
 package net.geocat.database.linkchecker.entities;
 
+import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 
 import javax.persistence.Column;
@@ -47,8 +48,8 @@ public class SimpleSpatialDSIDDataLink extends LinkToData {
         super();
     }
 
-    public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype) {
-        super(linkcheckjobid,sha2,capabilitiesdocumenttype);
+    public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord) {
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
     }
     @Column(columnDefinition = "text")
     private String code;

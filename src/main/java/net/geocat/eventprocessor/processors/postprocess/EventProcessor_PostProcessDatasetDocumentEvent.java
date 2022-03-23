@@ -157,9 +157,8 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         }
 
         for(CapabilitiesLinkResult link: result){
-            SimpleLayerMetadataUrlDataLink item = new SimpleLayerMetadataUrlDataLink(link.getLinkcheckjobid(),link.getSha2(), link.getCapabilitiesdocumenttype());
+            SimpleLayerMetadataUrlDataLink item = new SimpleLayerMetadataUrlDataLink(link.getLinkcheckjobid(),link.getSha2(), link.getCapabilitiesdocumenttype(),localDatasetMetadataRecord);
             item.setOgcLayerName(link.getOgclayername());
-            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
             this.localDatasetMetadataRecord.getDataLinks().add(item);
         }
     }
@@ -168,11 +167,10 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         for (StoreQueryCapabilitiesLinkResult link : links) {
             if ( (link.getProcGetSpatialDataSetName() == null) || (link.getProcGetSpatialDataSetName().isEmpty()))
                 continue; //not a WFS 2.0 with the correct stored proc -- don't link
-            SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+            SimpleStoredQueryDataLink item = new SimpleStoredQueryDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype(),localDatasetMetadataRecord);
             item.setCode(link.getCode());
             item.setCodeSpace(link.getCodespace());
             item.setStoredProcName(link.getProcGetSpatialDataSetName());
-            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
             this.localDatasetMetadataRecord.getDataLinks().add(item);
         }
     }
@@ -205,10 +203,9 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
 
     public void addLinkedCapabilities( List<StoreQueryCapabilitiesLinkResult> linkedCapabilities) {
         for(StoreQueryCapabilitiesLinkResult link : linkedCapabilities) {
-            SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype());
+            SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype(),localDatasetMetadataRecord);
             item.setCode(link.getCode());
             item.setCodeSpace(link.getCodespace());
-            item.setDatasetMetadataRecord(localDatasetMetadataRecord);
             this.localDatasetMetadataRecord.getDataLinks().add(item);
         }
     }
@@ -231,11 +228,10 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
                             link.getCapabilitiesdocumenttype(),
                             link.getOgclayername(),
                             identifier.getCode(),
-                            identifier.getCodeSpace()
+                            identifier.getCodeSpace(),
+                            localDatasetMetadataRecord
                             );
-
-                    item.setDatasetMetadataRecord(localDatasetMetadataRecord);
-                    this.localDatasetMetadataRecord.getDataLinks().add(item);
+                     this.localDatasetMetadataRecord.getDataLinks().add(item);
                 }
             }
             else {
@@ -248,10 +244,9 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
                             link.getCapabilitiesdocumenttype(),
                             link.getOgclayername(),
                             identifier.getCode(),
-                            identifier.getCodeSpace()
+                            identifier.getCodeSpace(),
+                            localDatasetMetadataRecord
                     );
-
-                    item.setDatasetMetadataRecord(localDatasetMetadataRecord);
                     this.localDatasetMetadataRecord.getDataLinks().add(item);
                 }
             }

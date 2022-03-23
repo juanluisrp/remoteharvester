@@ -89,9 +89,10 @@ public class LinkToData {
     public LinkToData() {
     }
 
-    public LinkToData(String linkcheckjobid, String sha2, String capabilitiesdocumenttype) {
+    public LinkToData(String linkcheckjobid, String sha2, String capabilitiesdocumenttype,DatasetMetadataRecord datasetMetadataRecord) {
         this.linkCheckJobId = linkcheckjobid;
         this.capabilitiesSha2 = sha2;
+        this.datasetMetadataRecord = datasetMetadataRecord;
         if  ( (capabilitiesdocumenttype !=null) && (!capabilitiesdocumenttype.isEmpty()))
             this.capabilitiesDocumentType = CapabilitiesType.valueOf(capabilitiesdocumenttype);
     }
