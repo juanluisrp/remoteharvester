@@ -31,44 +31,20 @@
  *  ==============================================================================
  */
 
-package net.geocat.routes.queuebased;
+package net.geocat.service.helper;
 
-import net.geocat.eventprocessor.MainLoopRouteCreator;
-import net.geocat.eventprocessor.RedirectEvent;
-import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
-import net.geocat.events.findlinks.StartProcessDocumentsEvent;
-import net.geocat.events.postprocess.AllPostProcessingCompleteEvent;
-import net.geocat.events.postprocess.PostProcessDatasetDocumentEvent;
-import net.geocat.events.postprocess.PostProcessServiceDocumentEvent;
-import net.geocat.events.postprocess.StartPostProcessEvent;
-import org.apache.camel.spring.SpringRouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
-
+import java.util.concurrent.ForkJoinPool;
 
 @Component
-public class PostProcessingOrchestrator extends SpringRouteBuilder {
+@Scope("singleton")
+public class SharedForkJoinPool2 {
+    public static ForkJoinPool pool = new ForkJoinPool(12);
 
-    public static String myJMSQueueName = "linkCheck.PostProcessingOrchestrator";
 
-    @Autowired
-    MainLoopRouteCreator mainLoopRouteCreator;
-
-    @Override
-    public void configure() throws Exception {
-
-        mainLoopRouteCreator.createEventProcessingLoop(this,
-                "activemq:" + myJMSQueueName,
-                new Class[]{StartPostProcessEvent.class, PostProcessServiceDocumentEvent.class, PostProcessDatasetDocumentEvent.class},
-                Arrays.asList(
-                        new RedirectEvent(AllPostProcessingCompleteEvent.class, "activemq:" + MainOrchestrator.myJMSQueueName)
-                ),
-                Arrays.asList(new Class[0]),
-                5
-        );
+    public   ForkJoinPool getPool() {
+        return pool;
     }
 }

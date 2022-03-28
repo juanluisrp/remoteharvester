@@ -107,4 +107,10 @@ public class SimpleLayerDatasetIdDataLink extends LinkToData {
         this.code = code;
         this.codeSpace = codeSpace;
     }
+
+    @Override
+    public String key() {
+        return super.key() +"::"+getOgcLayerName();
+    }
+
 }

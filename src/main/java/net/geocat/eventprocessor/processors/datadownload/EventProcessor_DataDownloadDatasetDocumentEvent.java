@@ -34,16 +34,22 @@
 package net.geocat.eventprocessor.processors.datadownload;
 
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
+import net.geocat.database.linkchecker.entities.OGCRequest;
+import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
+import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
+import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.ServiceMetadataDocumentState;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.eventprocessor.BaseEventProcessor;
-import net.geocat.eventprocessor.processors.postprocess.EventProcessor_PostProcessDatasetDocumentEvent;
-import net.geocat.eventprocessor.processors.processlinks.EventProcessor_ProcessServiceDocLinksEvent;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCInfoCacheItem;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestGenerator;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestResolver;
 import net.geocat.events.Event;
 import net.geocat.events.EventFactory;
 import net.geocat.events.datadownload.DataDownloadDatasetDocumentEvent;
-import net.geocat.events.postprocess.PostProcessDatasetDocumentEvent;
+import net.geocat.service.helper.SharedForkJoinPool2;
 import net.geocat.service.helper.ShouldTransitionOutOfDataDownloading;
+import net.geocat.xml.helpers.CapabilitiesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +57,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
 import static net.geocat.database.linkchecker.service.DatabaseUpdateService.convertToString;
 
@@ -62,6 +72,8 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
 
     Logger logger = LoggerFactory.getLogger(EventProcessor_DataDownloadDatasetDocumentEvent.class);
 
+    public static int MAX_LINKS_TO_FOLLOW = 100;
+
     @Autowired
     LocalDatasetMetadataRecordRepo localDatasetMetadataRecordRepo;
 
@@ -71,6 +83,15 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
     @Autowired
     ShouldTransitionOutOfDataDownloading shouldTransitionOutOfDataDownloading;
 
+    @Autowired
+    OGCRequestGenerator ogcRequestGenerator;
+
+    @Autowired
+    OGCRequestResolver ogcRequestResolver;
+
+    @Autowired
+    SharedForkJoinPool2 sharedForkJoinPool2;
+
     LocalDatasetMetadataRecord localDatasetMetadataRecord;
 
     @Override
@@ -79,6 +100,15 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
         if (localDatasetMetadataRecord.getDataLinks().isEmpty()) {
             // no links to data -> nothing to download
             localDatasetMetadataRecord.setState(ServiceMetadataDocumentState.DATADOWNLOADED);
+
+            localDatasetMetadataRecord.setNumberOfDownloadDataLinks(0);
+            localDatasetMetadataRecord.setNumberOfDownloadLinksAttempted(0);
+            localDatasetMetadataRecord.setNumberOfDownloadLinksSuccessful(0);
+
+            localDatasetMetadataRecord.setNumberOfViewDataLinks(0);
+            localDatasetMetadataRecord.setNumberOfViewLinksAttempted(0);
+            localDatasetMetadataRecord.setNumberOfViewLinksSuccessful(0);
+
             save();
         }
         else
@@ -101,9 +131,95 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
         return this;
     }
 
-    private void process() {
+    private void process() throws Exception {
+        //break into download and view links
+        if ( (localDatasetMetadataRecord.getDataLinks() == null) || (localDatasetMetadataRecord.getDataLinks().isEmpty()))
+            return;
 
+        List<LinkToData> viewLinks = localDatasetMetadataRecord.getDataLinks().stream()
+                .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WMS ||x.getCapabilitiesDocumentType() == CapabilitiesType.WMTS )
+                .collect(Collectors.toList());
+        List<LinkToData> downloadLinks = localDatasetMetadataRecord.getDataLinks().stream()
+                .filter(x->x.getCapabilitiesDocumentType() == CapabilitiesType.WFS ||x.getCapabilitiesDocumentType() == CapabilitiesType.Atom)
+                .collect(Collectors.toList());
+
+        Map<String, OGCInfoCacheItem> ogcInfoCache = new HashMap<>();
+        List<String> cap_sha2s = localDatasetMetadataRecord.getDataLinks(). stream()
+                .map(x->x.getCapabilitiesSha2())
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (String capSha2 : cap_sha2s) {
+            OGCInfoCacheItem ogcInfoCacheItem = ogcRequestGenerator.prep(localDatasetMetadataRecord.getLinkCheckJobId(), capSha2);
+            ogcInfoCache.put(capSha2, ogcInfoCacheItem);
+        }
+        processView(viewLinks,ogcInfoCache);
+        processDownload(downloadLinks,ogcInfoCache);
      }
+
+    private void processDownload(List<LinkToData> downloadLinks, Map<String, OGCInfoCacheItem> ogcInfoCache) {
+    }
+
+
+
+    private void processView(List<LinkToData> viewLinks, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {
+         if (viewLinks.size() > MAX_LINKS_TO_FOLLOW) {
+            viewLinks = viewLinks.subList(0,MAX_LINKS_TO_FOLLOW);
+        }
+        localDatasetMetadataRecord.setNumberOfViewLinksAttempted(viewLinks.size());
+
+        ForkJoinPool pool = sharedForkJoinPool2.getPool();
+
+        List<LinkToData> viewLinksToProcess = viewLinks;
+
+        pool.submit(() ->
+                viewLinksToProcess.stream().parallel()
+                        .forEach(x -> {
+                            processSingleView(x, ogcInfoCache);
+                        })
+        ).get();
+
+
+        long numberSuccessful = viewLinksToProcess.stream()
+                .filter(x->x.getSuccessfullyDownloaded())
+                .count();
+
+        localDatasetMetadataRecord.setNumberOfViewLinksSuccessful((int)numberSuccessful);
+    }
+
+    public void processSingleView(LinkToData link, Map<String, OGCInfoCacheItem> ogcInfoCache)  {
+        try {
+            if (link instanceof SimpleLayerMetadataUrlDataLink) {
+                SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
+                processViewLink_SimpleLayerMetadataUrlDataLink(_link, ogcInfoCache);
+                boolean successful =  (_link.getOgcRequest().isSuccessfulOGCRequest() == null) ? false : _link.getOgcRequest().isSuccessfulOGCRequest();
+                link.setSuccessfullyDownloaded(successful);
+            }
+            if (link instanceof SimpleLayerDatasetIdDataLink) {
+                SimpleLayerDatasetIdDataLink _link = (SimpleLayerDatasetIdDataLink) link;
+                processViewLink_SimpleLayerDatasetIdDataLink(_link, ogcInfoCache);
+                boolean successful = (_link.getOgcRequest().isSuccessfulOGCRequest() == null) ? false : _link.getOgcRequest().isSuccessfulOGCRequest();
+                link.setSuccessfullyDownloaded(successful);
+            }
+            //throw new Exception("don't know how to process - "+link.getClass().getCanonicalName());
+        }
+        catch (Exception e){
+            link.setSuccessfullyDownloaded(false);
+            logger.debug("exception occurred while attempting to download a view", e);
+        }
+     }
+
+    private void processViewLink_SimpleLayerDatasetIdDataLink(SimpleLayerDatasetIdDataLink link, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {
+        OGCRequest ogcRequest = ogcRequestGenerator.prepareToDownload(link,ogcInfoCache.get(link.getCapabilitiesSha2()));
+        link.setOgcRequest(ogcRequest);
+        ogcRequestResolver.resolve(ogcRequest);
+    }
+
+    private void processViewLink_SimpleLayerMetadataUrlDataLink(SimpleLayerMetadataUrlDataLink link, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {
+        OGCRequest ogcRequest = ogcRequestGenerator.prepareToDownload(link,ogcInfoCache.get(link.getCapabilitiesSha2()));
+        link.setOgcRequest(ogcRequest);
+        ogcRequestResolver.resolve(ogcRequest);
+    }
 
 
     public void save()

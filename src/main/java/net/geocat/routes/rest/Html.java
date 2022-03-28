@@ -40,6 +40,7 @@ import net.geocat.service.html.HtmlDiscoverService;
 import net.geocat.service.html.HtmlIdentifierService;
 import net.geocat.service.html.HtmlScrapeService;
 import net.geocat.service.html.HtmlServiceService;
+import net.geocat.service.html.HtmlStatsService;
 import net.geocat.service.html.HtmlSummaryService;
 import org.apache.camel.BeanScope;
 import org.apache.camel.builder.RouteBuilder;
@@ -108,6 +109,15 @@ public class Html extends RouteBuilder {
                 .route()
                 .routeId("rest.rest.html.summary")
                 .bean(HtmlSummaryService.class, "getHtml( ${header.processID}  )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+
+        rest("/api/html/stats/")
+                .get("/{processID}")
+                .route()
+                .routeId("rest.rest.html.stats")
+                .bean(HtmlStatsService.class, "getHtml( ${header.processID}  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;

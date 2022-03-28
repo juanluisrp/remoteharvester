@@ -48,14 +48,19 @@ public class SimpleSpatialDSIDDataLink extends LinkToData {
         super();
     }
 
-    public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord) {
+    public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord, String layerName) {
         super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
+        this.ogcLayerName = layerName;
     }
     @Column(columnDefinition = "text")
     private String code;
 
     @Column(columnDefinition = "text")
     private String codeSpace;
+
+    @Column(columnDefinition = "text")
+    private String ogcLayerName;  //for simple (getmap/getfeature) WFS/WMS/WMTS, this is the Layer/FeatureType name
+
     //---
 
     public String getCode() {
@@ -74,8 +79,15 @@ public class SimpleSpatialDSIDDataLink extends LinkToData {
         this.codeSpace = codeSpace;
     }
 
+    public String getOgcLayerName() {
+        return ogcLayerName;
+    }
 
-    //----
+    public void setOgcLayerName(String ogcLayerName) {
+        this.ogcLayerName = ogcLayerName;
+    }
+
+//----
 
 
     @Override
@@ -87,5 +99,9 @@ public class SimpleSpatialDSIDDataLink extends LinkToData {
                 '}';
     }
 
+    @Override
+    public String key() {
+        return super.key() +"::"+getOgcLayerName();
+    }
 
 }

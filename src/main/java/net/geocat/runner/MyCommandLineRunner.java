@@ -464,16 +464,17 @@ public class MyCommandLineRunner implements CommandLineRunner {
         List<OGCRequest> bad_wms = requests_wms.stream().filter(x->x!=null && !x.isSuccessfulOGCRequest()).collect(Collectors.toList());
 
 //       // links_wmts = links_wmts.subList(52,53);
-        for (LinkToData link : links_wmts) {
-            try {
-                OGCRequest request = ogcRequestGenerator.prepareToDownload(link);
-                requests_wmts.add(request);
-                ogcRequestResolver.resolve(request);
-            }
-            catch (Exception e){
-                int tt=0;
-            }
-        }
+//        for (LinkToData link : links_wmts) {
+//            try {
+//
+//                OGCRequest request = ogcRequestGenerator.prepareToDownload(link);
+//                requests_wmts.add(request);
+//                ogcRequestResolver.resolve(request);
+//            }
+//            catch (Exception e){
+//                int tt=0;
+//            }
+//        }
 
         List<OGCRequest> bad_wmts = requests_wmts.stream().filter(x->x!=null && !x.isSuccessfulOGCRequest()).collect(Collectors.toList());
 

@@ -161,23 +161,47 @@ public class HtmlDatasetService {
             if (link instanceof SimpleLayerMetadataUrlDataLink) {
                 SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
                 result += "<br>ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
+                if (_link.getSuccessfullyDownloaded() != null) {
+                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+                }
+                if (_link.getOgcRequest() != null) {
+                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+                }
             }
             if (link instanceof SimpleStoredQueryDataLink) {
                 SimpleStoredQueryDataLink _link = (SimpleStoredQueryDataLink) link;
                 result += "<br>storedProcName: "+_link.getStoredProcName()+"<br>\n";
                 result += "code: "+_link.getCode()+"<br>\n";
                 result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+                if (_link.getSuccessfullyDownloaded() != null) {
+                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+                }
+                if (_link.getOgcRequest() != null) {
+                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+                }
             }
             if (link instanceof SimpleLayerDatasetIdDataLink) {
                 SimpleLayerDatasetIdDataLink _link = (SimpleLayerDatasetIdDataLink) link;
                  result += "<br>code: "+_link.getCode()+"<br>\n";
                  result += "codespace: "+_link.getCodeSpace()+"<br>\n";
                  result += "ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
+                if (_link.getSuccessfullyDownloaded() != null) {
+                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+                }
+                if (_link.getOgcRequest() != null) {
+                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+                }
             }
             if (link instanceof SimpleSpatialDSIDDataLink) {
                 SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
                  result += "<br>code: "+_link.getCode()+"<br>\n";
                 result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+                if (_link.getSuccessfullyDownloaded() != null) {
+                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+                }
+                if (_link.getOgcRequest() != null) {
+                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+                }
             }
             indx++;
         }

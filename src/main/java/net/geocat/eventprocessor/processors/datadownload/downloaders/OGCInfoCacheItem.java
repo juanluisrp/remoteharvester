@@ -31,44 +31,33 @@
  *  ==============================================================================
  */
 
-package net.geocat.routes.queuebased;
+package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
-import net.geocat.eventprocessor.MainLoopRouteCreator;
-import net.geocat.eventprocessor.RedirectEvent;
-import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
-import net.geocat.events.findlinks.StartProcessDocumentsEvent;
-import net.geocat.events.postprocess.AllPostProcessingCompleteEvent;
-import net.geocat.events.postprocess.PostProcessDatasetDocumentEvent;
-import net.geocat.events.postprocess.PostProcessServiceDocumentEvent;
-import net.geocat.events.postprocess.StartPostProcessEvent;
-import org.apache.camel.spring.SpringRouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.xml.XmlCapabilitiesDocument;
 
-import java.util.Arrays;
+public class OGCInfoCacheItem {
+    CapabilitiesDocument capabilitiesDocument;
+    XmlCapabilitiesDocument xmlCapabilitiesDocument;
 
+    public OGCInfoCacheItem(CapabilitiesDocument capabilitiesDocument, XmlCapabilitiesDocument xmlCapabilitiesDocument) {
+        this.capabilitiesDocument = capabilitiesDocument;
+        this.xmlCapabilitiesDocument = xmlCapabilitiesDocument;
+    }
 
+    public CapabilitiesDocument getCapabilitiesDocument() {
+        return capabilitiesDocument;
+    }
 
-@Component
-public class PostProcessingOrchestrator extends SpringRouteBuilder {
+    public void setCapabilitiesDocument(CapabilitiesDocument capabilitiesDocument) {
+        this.capabilitiesDocument = capabilitiesDocument;
+    }
 
-    public static String myJMSQueueName = "linkCheck.PostProcessingOrchestrator";
+    public XmlCapabilitiesDocument getXmlCapabilitiesDocument() {
+        return xmlCapabilitiesDocument;
+    }
 
-    @Autowired
-    MainLoopRouteCreator mainLoopRouteCreator;
-
-    @Override
-    public void configure() throws Exception {
-
-        mainLoopRouteCreator.createEventProcessingLoop(this,
-                "activemq:" + myJMSQueueName,
-                new Class[]{StartPostProcessEvent.class, PostProcessServiceDocumentEvent.class, PostProcessDatasetDocumentEvent.class},
-                Arrays.asList(
-                        new RedirectEvent(AllPostProcessingCompleteEvent.class, "activemq:" + MainOrchestrator.myJMSQueueName)
-                ),
-                Arrays.asList(new Class[0]),
-                5
-        );
+    public void setXmlCapabilitiesDocument(XmlCapabilitiesDocument xmlCapabilitiesDocument) {
+        this.xmlCapabilitiesDocument = xmlCapabilitiesDocument;
     }
 }

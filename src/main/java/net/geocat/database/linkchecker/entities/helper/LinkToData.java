@@ -34,6 +34,8 @@
 package net.geocat.database.linkchecker.entities.helper;
 
 import net.geocat.database.linkchecker.entities.OGCRequest;
+import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
+import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.xml.helpers.CapabilitiesType;
 
 import javax.persistence.CascadeType;
@@ -52,6 +54,11 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 
 @Entity(name="linktodata")
@@ -66,6 +73,8 @@ public class LinkToData {
 
     @OneToOne(cascade = CascadeType.ALL)
     OGCRequest ogcRequest; // might be null
+
+    Boolean successfullyDownloaded;
 
     //----
     //which dataset metadata document did this link come from?
@@ -107,6 +116,15 @@ public class LinkToData {
 //    private String storedQueryCodeSpace;
 
     //------
+
+
+    public Boolean getSuccessfullyDownloaded() {
+        return successfullyDownloaded;
+    }
+
+    public void setSuccessfullyDownloaded(Boolean successfullyDownloaded) {
+        this.successfullyDownloaded = successfullyDownloaded;
+    }
 
     public String getCapabilitiesSha2() {
         return capabilitiesSha2;
@@ -163,5 +181,20 @@ public class LinkToData {
         return  "     capabilitiesSha2: " + capabilitiesSha2 + "\n" +
                 "     linkCheckJobId: " + linkCheckJobId + "\n" +
                 "     capabilitiesDocumentType: " + capabilitiesDocumentType+ "\n" ;
+    }
+
+   public String key() {
+        return linkCheckJobId + "::"+capabilitiesSha2;
+   }
+
+
+    public static List<LinkToData> unique(List<LinkToData> all) {
+        Map<String,LinkToData> result = new HashMap<>();
+        for (LinkToData link :all ){
+                String hash = link.key();
+                if (!result.containsKey(hash))
+                    result.put(hash, link);
+        }
+        return new ArrayList(result.values());
     }
 }

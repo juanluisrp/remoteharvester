@@ -98,4 +98,9 @@ public class SimpleStoredQueryDataLink extends LinkToData {
                 super.toString() + "\n" +
                 '}';
     }
+
+    @Override
+    public String key() {
+        return super.key() +"::storedquery::"+storedProcName;
+    }
 }

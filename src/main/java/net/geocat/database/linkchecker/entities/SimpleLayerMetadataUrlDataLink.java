@@ -86,4 +86,9 @@ public class SimpleLayerMetadataUrlDataLink extends LinkToData {
                 super.toString() +
                 '}';
     }
+
+    @Override
+    public String key() {
+        return super.key() +"::"+getOgcLayerName();
+    }
 }

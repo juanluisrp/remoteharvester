@@ -35,6 +35,7 @@ package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.OGCRequest;
+import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
@@ -75,25 +76,59 @@ public class OGCRequestGenerator {
     @Autowired
     WFSStoredQueryDownloader wfsStoredQueryDownloader;
 
-
-    //returns a (to be resolved) resolvable OGCRequest
-    public OGCRequest prepareToDownload(LinkToData link) throws Exception {
+    public OGCInfoCacheItem prep(String linkCheckJobId, String cap_sha2) throws Exception {
         CapabilitiesDocument capabilitiesDocument = capabilitiesDocumentRepo.findById(
-                    new SHA2JobIdCompositeKey(link.getCapabilitiesSha2(),link.getLinkCheckJobId())
-                ).get();
+                new SHA2JobIdCompositeKey(cap_sha2,linkCheckJobId)
+        ).get();
         String xml = linkCheckBlobStorageRepo.findById(capabilitiesDocument.getSha2()).get().getTextValue();
         XmlCapabilitiesDocument doc = (XmlCapabilitiesDocument) xmlDocumentFactory.create(xml);
+        return new OGCInfoCacheItem(capabilitiesDocument,doc);
+    }
+
+    //returns a (to be resolved) resolvable OGCRequest
+    public OGCRequest prepareToDownload(LinkToData link,OGCInfoCacheItem ogcInfoCacheItem) throws Exception {
+        CapabilitiesDocument capabilitiesDocument = ogcInfoCacheItem.getCapabilitiesDocument();
+        XmlCapabilitiesDocument doc = ogcInfoCacheItem.getXmlCapabilitiesDocument();
 
         if (link instanceof SimpleLayerMetadataUrlDataLink) {
             SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
-            return downloadLayer(_link,capabilitiesDocument,doc);
+            OGCRequest result =  downloadLayer(_link,capabilitiesDocument,doc);
+            result.setLinkCheckJobId(link.getLinkCheckJobId());
+            return result;
         }
         if (link instanceof SimpleStoredQueryDataLink) {
             SimpleStoredQueryDataLink _link = (SimpleStoredQueryDataLink) link;
-            return downloadStoredQuery( _link, capabilitiesDocument, (XmlCapabilitiesWFS)doc);
+            OGCRequest result =  downloadStoredQuery( _link, capabilitiesDocument, (XmlCapabilitiesWFS)doc);
+            result.setLinkCheckJobId(link.getLinkCheckJobId());
+            return result;
+        }
+        if (link instanceof SimpleLayerDatasetIdDataLink) {
+            SimpleLayerDatasetIdDataLink _link = (SimpleLayerDatasetIdDataLink) link;
+            OGCRequest result =  downloadLayer(_link,capabilitiesDocument,doc);
+            result.setLinkCheckJobId(link.getLinkCheckJobId());
+            return result;
         }
         return null;
     }
+
+    public OGCRequest downloadLayer(SimpleLayerDatasetIdDataLink link,
+                                    CapabilitiesDocument capabilitiesDocument,
+                                    XmlCapabilitiesDocument xmlCapabilitiesDocument) throws Exception {
+        if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWFS){
+            return wfsLayerDownloader.setupRequest( (XmlCapabilitiesWFS) xmlCapabilitiesDocument, link.getOgcLayerName());
+        }
+        else if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWMS){
+            return wmsLayerDownloader.setupRequest( (XmlCapabilitiesWMS) xmlCapabilitiesDocument, link.getOgcLayerName());
+
+        }
+        else if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWMTS){
+            return wmtsLayerDownloader.setupRequest( (XmlCapabilitiesWMTS) xmlCapabilitiesDocument,
+                    link.getOgcLayerName());
+
+        }
+        return null;
+    }
+
 
     public OGCRequest downloadLayer(SimpleLayerMetadataUrlDataLink link,
                                     CapabilitiesDocument capabilitiesDocument,

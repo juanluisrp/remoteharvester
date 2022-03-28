@@ -51,24 +51,24 @@ public class OGCRequestResolver {
     @Autowired
     RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
 
-    public OGCRequest resolve(OGCRequest ogcRequest) {
+    public void resolve(OGCRequest ogcRequest) {
 
         retrievableSimpleLinkDownloader.process(ogcRequest, 4096);
 
         if (ogcRequest.getIndicator_LinkResolves() == IndicatorStatus.FAIL){
             ogcRequest.setSuccessfulOGCRequest(false);
             ogcRequest.setUnSuccessfulOGCRequestReason("link did not resolve");
-            return ogcRequest;
+            return  ;
         }
 
         if (ogcRequest.getLinkHTTPStatusCode() != 200) {
             ogcRequest.setSuccessfulOGCRequest(false);
             ogcRequest.setUnSuccessfulOGCRequestReason("http result code is not 200");
-            return ogcRequest;
+            return  ;
         }
 
         validate(ogcRequest);
-        return ogcRequest;
+        return  ;
     }
 
     //should be done with test cases...
