@@ -37,6 +37,7 @@ import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
 import net.geocat.database.linkchecker.entities.OGCRequest;
 import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
+import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
 import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.entities.helper.SHA2JobIdCompositeKey;
@@ -107,6 +108,28 @@ public class OGCRequestGenerator {
             OGCRequest result =  downloadLayer(_link,capabilitiesDocument,doc);
             result.setLinkCheckJobId(link.getLinkCheckJobId());
             return result;
+        }
+        if (link instanceof SimpleSpatialDSIDDataLink) {
+            SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
+            OGCRequest result =  downloadLayer(_link,capabilitiesDocument,doc);
+            result.setLinkCheckJobId(link.getLinkCheckJobId());
+            return result;
+        }
+        return null;
+    }
+
+    private OGCRequest downloadLayer(SimpleSpatialDSIDDataLink link, CapabilitiesDocument capabilitiesDocument, XmlCapabilitiesDocument xmlCapabilitiesDocument) throws Exception {
+        if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWFS){
+            return wfsLayerDownloader.setupRequest( (XmlCapabilitiesWFS) xmlCapabilitiesDocument, link.getOgcLayerName());
+        }
+        else if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWMS){
+            return wmsLayerDownloader.setupRequest( (XmlCapabilitiesWMS) xmlCapabilitiesDocument, link.getOgcLayerName());
+
+        }
+        else if (xmlCapabilitiesDocument instanceof XmlCapabilitiesWMTS){
+            return wmtsLayerDownloader.setupRequest( (XmlCapabilitiesWMTS) xmlCapabilitiesDocument,
+                    link.getOgcLayerName());
+
         }
         return null;
     }

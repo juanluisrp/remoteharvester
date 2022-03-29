@@ -33,68 +33,60 @@
 
 package net.geocat.database.linkchecker.entities.helper;
 
+import net.geocat.database.linkchecker.entities.OGCRequest;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.ALWAYS_PARTIAL;
-import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.CAPABILITIES_ONLY;
-
 @Entity
-public class AtomSubFeedRequest extends RetrievableSimpleLink  {
+@DiscriminatorValue("OGCLinkToData")
+public class OGCLinkToData extends LinkToData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long atomSubFeedRequestId;
-
-//    @OneToOne(mappedBy = "atomSubFeedRequest")
-//    LinkToData linkToData;
-
-    Boolean successfulAtomRequest;
+    @OneToOne(cascade = CascadeType.ALL)
+    OGCRequest ogcRequest; // might be null
 
     @Column(columnDefinition = "text")
-    String unSuccessfulAtomRequestReason;
+    private String ogcLayerName;  //for simple (getmap/getfeature) WFS/WMS/WMTS, this is the Layer/FeatureType name
+
+    //--
 
 
-    public AtomSubFeedRequest() {
+    public OGCLinkToData() {
         super();
-        setPartialDownloadHint(CAPABILITIES_ONLY);
     }
 
-    public AtomSubFeedRequest(String url ) {
-        this();
-        setRawURL(url);
-        setFixedURL(url);
+    public OGCLinkToData(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord, String ogcLayerName) {
+        super(linkcheckjobid, sha2, capabilitiesdocumenttype, datasetMetadataRecord);
+        this.ogcLayerName = ogcLayerName;
+    }
+
+    public OGCLinkToData(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord ) {
+        super(linkcheckjobid, sha2, capabilitiesdocumenttype, datasetMetadataRecord);
      }
 
-     //--
-
-    public long getAtomSubFeedRequestId() {
-        return atomSubFeedRequestId;
+    @Override
+    public String key() {
+        return super.key() +"::"+getOgcLayerName();
     }
 
-    public void setAtomSubFeedRequestId(long atomSubFeedRequestId) {
-        this.atomSubFeedRequestId = atomSubFeedRequestId;
+
+    public OGCRequest getOgcRequest() {
+        return ogcRequest;
     }
 
-    public Boolean getSuccessfulAtomRequest() {
-        return successfulAtomRequest;
+
+    public void setOgcRequest(OGCRequest ogcRequest) {
+        this.ogcRequest = ogcRequest;
     }
 
-    public void setSuccessfulAtomRequest(Boolean successfulAtomRequest) {
-        this.successfulAtomRequest = successfulAtomRequest;
+    public String getOgcLayerName() {
+        return ogcLayerName;
     }
 
-    public String getUnSuccessfulAtomRequestReason() {
-        return unSuccessfulAtomRequestReason;
-    }
-
-    public void setUnSuccessfulAtomRequestReason(String unSuccessfulAtomRequestReason) {
-        this.unSuccessfulAtomRequestReason = unSuccessfulAtomRequestReason;
+    public void setOgcLayerName(String ogcLayerName) {
+        this.ogcLayerName = ogcLayerName;
     }
 }

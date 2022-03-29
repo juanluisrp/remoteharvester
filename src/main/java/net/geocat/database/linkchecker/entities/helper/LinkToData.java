@@ -71,9 +71,6 @@ public class LinkToData {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long linkToDataId;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    OGCRequest ogcRequest; // might be null
-
     Boolean successfullyDownloaded;
 
     //----
@@ -166,13 +163,7 @@ public class LinkToData {
         this.datasetMetadataRecord = datasetMetadataRecord;
     }
 
-    public OGCRequest getOgcRequest() {
-        return ogcRequest;
-    }
 
-    public void setOgcRequest(OGCRequest ogcRequest) {
-        this.ogcRequest = ogcRequest;
-    }
 
     //------
 

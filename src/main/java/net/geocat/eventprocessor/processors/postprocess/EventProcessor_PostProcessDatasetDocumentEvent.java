@@ -35,6 +35,7 @@ package net.geocat.eventprocessor.processors.postprocess;
 
 import net.geocat.database.linkchecker.entities.CapabilitiesDatasetMetadataLink;
 import net.geocat.database.linkchecker.entities.CapabilitiesDocument;
+import net.geocat.database.linkchecker.entities.SimpleAtomLinkToData;
 import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
 import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
@@ -166,9 +167,20 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
         }
 
         for(CapabilitiesLinkResult link: result){
-            SimpleLayerMetadataUrlDataLink item = new SimpleLayerMetadataUrlDataLink(link.getLinkcheckjobid(),link.getSha2(), link.getCapabilitiesdocumenttype(),localDatasetMetadataRecord);
-            item.setOgcLayerName(link.getOgclayername());
-            this.localDatasetMetadataRecord.getDataLinks().add(item);
+            if (!link.getCapabilitiesdocumenttype().equals("Atom")) {
+                SimpleLayerMetadataUrlDataLink item = new SimpleLayerMetadataUrlDataLink(link.getLinkcheckjobid(), link.getSha2(), link.getCapabilitiesdocumenttype(), localDatasetMetadataRecord);
+                item.setOgcLayerName(link.getOgclayername());
+                this.localDatasetMetadataRecord.getDataLinks().add(item);
+            }
+            else {
+                SimpleAtomLinkToData atomItem = new SimpleAtomLinkToData(link.getLinkcheckjobid(),
+                        link.getSha2(),
+                        link.getCapabilitiesdocumenttype(),
+                        localDatasetMetadataRecord,
+                        link.getOgclayername());
+                atomItem.setContext("SimpleLayerMetadataUrlDataLink");
+                this.localDatasetMetadataRecord.getDataLinks().add(atomItem);
+            }
         }
     }
 
@@ -213,14 +225,25 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
     public void addSingleLinkedCap(StoreQueryCapabilitiesLinkResult link) {
         CapabilitiesDocument capDoc = capabilitiesDocumentRepo.findById(new SHA2JobIdCompositeKey(link.getSha2(), localDatasetMetadataRecord.getLinkCheckJobId())).get();
         for (CapabilitiesDatasetMetadataLink layer : capDoc.getCapabilitiesDatasetMetadataLinkList()) {
-            SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(),
-                    link.getSha2(),
-                    link.getCapabilitiesdocumenttype(),
-                    localDatasetMetadataRecord,
-                    layer.getOgcLayerName());
-            item.setCode(link.getCode());
-            item.setCodeSpace(link.getCodespace());
-            this.localDatasetMetadataRecord.getDataLinks().add(item);
+            if (!link.getCapabilitiesdocumenttype().equals("Atom")) {
+                SimpleSpatialDSIDDataLink item = new SimpleSpatialDSIDDataLink(link.getLinkcheckjobid(),
+                        link.getSha2(),
+                        link.getCapabilitiesdocumenttype(),
+                        localDatasetMetadataRecord,
+                        layer.getOgcLayerName());
+                item.setCode(link.getCode());
+                item.setCodeSpace(link.getCodespace());
+                this.localDatasetMetadataRecord.getDataLinks().add(item);
+            }
+            else {
+                SimpleAtomLinkToData atomItem = new SimpleAtomLinkToData(link.getLinkcheckjobid(),
+                        link.getSha2(),
+                        link.getCapabilitiesdocumenttype(),
+                        localDatasetMetadataRecord,
+                        layer.getOgcLayerName());
+                atomItem.setContext("SimpleSpatialDSIDDataLink: code:"+link.getCode()+", codespace:"+link.getCodespace());
+                this.localDatasetMetadataRecord.getDataLinks().add(atomItem);
+            }
         }
     }
 
@@ -241,32 +264,55 @@ public class EventProcessor_PostProcessDatasetDocumentEvent extends BaseEventPro
                         identifier.getCodeSpace());
 
                 for(CapabilitiesLinkResult link: links){
-                    SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
-                            link.getLinkcheckjobid(),
-                            link.getSha2(),
-                            link.getCapabilitiesdocumenttype(),
-                            link.getOgclayername(),
-                            identifier.getCode(),
-                            identifier.getCodeSpace(),
-                            localDatasetMetadataRecord
-                            );
-                     this.localDatasetMetadataRecord.getDataLinks().add(item);
+                    if (!link.getCapabilitiesdocumenttype().equals("Atom")) {
+                        SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
+                                link.getLinkcheckjobid(),
+                                link.getSha2(),
+                                link.getCapabilitiesdocumenttype(),
+                                link.getOgclayername(),
+                                identifier.getCode(),
+                                identifier.getCodeSpace(),
+                                localDatasetMetadataRecord
+                        );
+                        this.localDatasetMetadataRecord.getDataLinks().add(item);
+                    }
+                    else {
+                        SimpleAtomLinkToData atomItem = new SimpleAtomLinkToData(link.getLinkcheckjobid(),
+                                link.getSha2(),
+                                link.getCapabilitiesdocumenttype(),
+                                localDatasetMetadataRecord,
+                                link.getOgclayername());
+                        atomItem.setContext("SimpleSpatialDSIDDataLink: code:"+identifier.getCode()+", codespace:"+identifier.getCodeSpace());
+                        this.localDatasetMetadataRecord.getDataLinks().add(atomItem);
+                    }
                 }
             }
             else {
                 List<CapabilitiesLinkResult> links = capabilitiesDatasetMetadataLinkRepo.linkToCapabilitiesLayerViaIdentifier(localDatasetMetadataRecord.getLinkCheckJobId(),
                         identifier.getCode());
                 for(CapabilitiesLinkResult link: links){
-                    SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
-                            link.getLinkcheckjobid(),
-                            link.getSha2(),
-                            link.getCapabilitiesdocumenttype(),
-                            link.getOgclayername(),
-                            identifier.getCode(),
-                            identifier.getCodeSpace(),
-                            localDatasetMetadataRecord
-                    );
-                    this.localDatasetMetadataRecord.getDataLinks().add(item);
+                    if (!link.getCapabilitiesdocumenttype().equals("Atom")) {
+
+                        SimpleLayerDatasetIdDataLink item = new SimpleLayerDatasetIdDataLink(
+                                link.getLinkcheckjobid(),
+                                link.getSha2(),
+                                link.getCapabilitiesdocumenttype(),
+                                link.getOgclayername(),
+                                identifier.getCode(),
+                                identifier.getCodeSpace(),
+                                localDatasetMetadataRecord
+                        );
+                        this.localDatasetMetadataRecord.getDataLinks().add(item);
+                    }
+                    else {
+                        SimpleAtomLinkToData atomItem = new SimpleAtomLinkToData(link.getLinkcheckjobid(),
+                                link.getSha2(),
+                                link.getCapabilitiesdocumenttype(),
+                                localDatasetMetadataRecord,
+                                link.getOgclayername());
+                        atomItem.setContext("SimpleSpatialDSIDDataLink: code:"+identifier.getCode()+", codespace:"+identifier.getCodeSpace());
+                        this.localDatasetMetadataRecord.getDataLinks().add(atomItem);
+                    }
                 }
             }
         }

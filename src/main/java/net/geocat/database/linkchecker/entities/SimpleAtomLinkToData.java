@@ -33,74 +33,70 @@
 
 package net.geocat.database.linkchecker.entities;
 
-
+import net.geocat.database.linkchecker.entities.helper.AtomSubFeedRequest;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
-import net.geocat.database.linkchecker.entities.helper.OGCLinkToData;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
-/**
- * This represents WMS, WMTS, and Atom "layers" that have an attached DatasetID
- *  WMS/WMTS: Identity and AuthorityURL
- *  Atom: InspireSpatialDatasetCode and Codespace
- *
- *  WMS/WMTS:
- *
- *   <AuthorityURL name="ABC">
- *      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="URL" xlink:type="simple"/>
- *   </AuthorityURL>
- *    <Identifier authority="ABC">DatasetCODE</Identifier>
- *
- *    Atom:
- *      <inspire_dls:spatial_dataset_identifier_code>spatial_dataset_identifier_code1</inspire_dls:spatial_dataset_identifier_code>
- *      <inspire_dls:spatial_dataset_identifier_namespace>spatial_dataset_identifier_namespace1</inspire_dls:spatial_dataset_identifier_namespace>
- *
- */
 @Entity
-@DiscriminatorValue("SimpleLayerDatasetIdDataLink")
-public class SimpleLayerDatasetIdDataLink extends OGCLinkToData {
-
-
-    @Column(columnDefinition = "text")
-    private String code;
+@DiscriminatorValue("SimpleAtomLinkToData")
+public class SimpleAtomLinkToData extends LinkToData {
 
     @Column(columnDefinition = "text")
-    private String codeSpace;
+    String layerId;
 
+    @Column(columnDefinition = "text")
+    String context;
 
-    public String getCode() {
-        return code;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    AtomSubFeedRequest atomSubFeedRequest;
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getCodeSpace() {
-        return codeSpace;
-    }
-
-    public void setCodeSpace(String codeSpace) {
-        this.codeSpace = codeSpace;
-    }
-
-    public SimpleLayerDatasetIdDataLink() {
+    public SimpleAtomLinkToData() {
         super();
     }
 
-    public SimpleLayerDatasetIdDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype,
-                                        String ogcLayerName, String code, String codeSpace, DatasetMetadataRecord datasetMetadataRecord) {
-        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord,ogcLayerName);
-        this.code = code;
-        this.codeSpace = codeSpace;
+    public SimpleAtomLinkToData(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord, String layerName) {
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
+        this.layerId = layerName;
     }
+
+    //---
+
+
+    public String getLayerId() {
+        return layerId;
+    }
+
+    public void setLayerId(String layerId) {
+        this.layerId = layerId;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public AtomSubFeedRequest getAtomSubFeedRequest() {
+        return atomSubFeedRequest;
+    }
+
+    public void setAtomSubFeedRequest(AtomSubFeedRequest atomSubFeedRequest) {
+        this.atomSubFeedRequest = atomSubFeedRequest;
+    }
+
+
+    //---
 
     @Override
     public String key() {
-        return super.key() +"::"+getOgcLayerName();
+        return super.key() +"::"+layerId;
     }
-
 }

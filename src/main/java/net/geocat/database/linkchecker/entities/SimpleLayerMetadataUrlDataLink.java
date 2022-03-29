@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
+import net.geocat.database.linkchecker.entities.helper.OGCLinkToData;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -53,10 +54,8 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("SimpleLayerMetadataUrlDataLink")
-public class SimpleLayerMetadataUrlDataLink extends LinkToData {
+public class SimpleLayerMetadataUrlDataLink extends OGCLinkToData {
 
-    @Column(columnDefinition = "text")
-    private String ogcLayerName;  //for simple (getmap/getfeature) WFS/WMS/WMTS, this is the Layer/FeatureType name
 
     public SimpleLayerMetadataUrlDataLink() {
         super();
@@ -68,13 +67,6 @@ public class SimpleLayerMetadataUrlDataLink extends LinkToData {
 
     //---
 
-    public String getOgcLayerName() {
-        return ogcLayerName;
-    }
-
-    public void setOgcLayerName(String ogcLayerName) {
-        this.ogcLayerName = ogcLayerName;
-    }
 
     //----
 
@@ -82,7 +74,7 @@ public class SimpleLayerMetadataUrlDataLink extends LinkToData {
     @Override
     public String toString() {
         return "SimpleLayerMetadataUrlDataLink{\n" +
-                "     ogcLayerName:" + ogcLayerName + '\n' +
+                "     ogcLayerName:" + getOgcLayerName() + '\n' +
                 super.toString() +
                 '}';
     }

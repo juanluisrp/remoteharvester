@@ -36,9 +36,11 @@ package net.geocat.database.linkchecker.entities;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 @DiscriminatorValue("SimpleStoredQueryDataLink")
@@ -53,6 +55,10 @@ public class SimpleStoredQueryDataLink extends LinkToData {
     @Column(columnDefinition = "text")
     private String codeSpace;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    OGCRequest ogcRequest; // might be null
+
+
     public SimpleStoredQueryDataLink() {
         super();
     }
@@ -62,6 +68,15 @@ public class SimpleStoredQueryDataLink extends LinkToData {
     }
 
     //----
+
+
+    public OGCRequest getOgcRequest() {
+        return ogcRequest;
+    }
+
+    public void setOgcRequest(OGCRequest ogcRequest) {
+        this.ogcRequest = ogcRequest;
+    }
 
     public String getStoredProcName() {
         return storedProcName;

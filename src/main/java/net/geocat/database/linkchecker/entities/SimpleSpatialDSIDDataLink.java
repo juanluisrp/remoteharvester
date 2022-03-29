@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
+import net.geocat.database.linkchecker.entities.helper.OGCLinkToData;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -42,24 +43,22 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("SimpleSpatialDSIDDataLink")
-public class SimpleSpatialDSIDDataLink extends LinkToData {
+public class SimpleSpatialDSIDDataLink extends OGCLinkToData {
 
     public SimpleSpatialDSIDDataLink() {
         super();
     }
 
     public SimpleSpatialDSIDDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord, String layerName) {
-        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
-        this.ogcLayerName = layerName;
-    }
+        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord,layerName);
+     }
+
     @Column(columnDefinition = "text")
     private String code;
 
     @Column(columnDefinition = "text")
     private String codeSpace;
 
-    @Column(columnDefinition = "text")
-    private String ogcLayerName;  //for simple (getmap/getfeature) WFS/WMS/WMTS, this is the Layer/FeatureType name
 
     //---
 
@@ -79,13 +78,6 @@ public class SimpleSpatialDSIDDataLink extends LinkToData {
         this.codeSpace = codeSpace;
     }
 
-    public String getOgcLayerName() {
-        return ogcLayerName;
-    }
-
-    public void setOgcLayerName(String ogcLayerName) {
-        this.ogcLayerName = ogcLayerName;
-    }
 
 //----
 

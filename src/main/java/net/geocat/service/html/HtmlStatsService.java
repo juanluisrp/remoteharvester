@@ -116,8 +116,14 @@ public class HtmlStatsService {
             row += "<td> </td>";
 
             row += "<td style='text-align: center'>"+ record.getNumberOfDownloadDataLinks() + "</td>";
-            row += "<td style='text-align: center'>"+ record.getNumberOfDownloadLinksAttempted() + "</td>";
-            row += "<td style='text-align: center'>"+ record.getNumberOfDownloadLinksSuccessful() + "</td>";
+
+            style=getStyle(record.getNumberOfDownloadDataLinks(),record.getNumberOfDownloadLinksAttempted());
+
+            row += "<td style='text-align: center;"+style+"'>"+ record.getNumberOfDownloadLinksAttempted() + "</td>";
+
+            style=getStyle(record.getNumberOfDownloadLinksAttempted(),record.getNumberOfDownloadLinksSuccessful());
+
+            row += "<td style='text-align: center;"+style+"'>"+ record.getNumberOfDownloadLinksSuccessful() + "</td>";
             row += "</tr>\n";
 
             row = row.replace(">null<",">-<");

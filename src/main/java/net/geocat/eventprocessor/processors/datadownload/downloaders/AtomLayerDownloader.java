@@ -39,8 +39,10 @@ import net.geocat.http.AlwaysAbortContinueReadingPredicate;
 import net.geocat.service.downloadhelpers.PartialDownloadPredicateFactory;
 import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlCapabilitiesAtom;
+import net.geocat.xml.XmlStringTools;
 import net.geocat.xml.helpers.AtomEntry;
 import net.geocat.xml.helpers.AtomLink;
+import net.geocat.xml.helpers.XmlTagInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static net.geocat.xml.XmlStringTools.determineRootTagInfo;
 
 @Component
 @Scope("prototype")
@@ -89,9 +93,33 @@ public class AtomLayerDownloader {
     }
 
     public AtomSubFeedRequest resolve(AtomSubFeedRequest atomSubFeedRequest) {
-
         retrievableSimpleLinkDownloader.process(atomSubFeedRequest, 4096);
         return atomSubFeedRequest;
+    }
+
+    public void validate(AtomSubFeedRequest atomSubFeedRequest) {
+        if (!atomSubFeedRequest.getUrlFullyRead()) {
+            atomSubFeedRequest.setUnSuccessfulAtomRequestReason("http result was not downloaded(not an xml document)");
+            atomSubFeedRequest.setSuccessfulAtomRequest(false);
+            return;
+        }
+
+        String partialXML = XmlStringTools.bytea2String(atomSubFeedRequest.getLinkContentHead());
+
+        if (!XmlStringTools.isXML(partialXML)) {
+            atomSubFeedRequest.setUnSuccessfulAtomRequestReason("http result is not an xml document");
+            atomSubFeedRequest.setSuccessfulAtomRequest(false);
+            return;
+        }
+
+        XmlTagInfo rootTagInfo = determineRootTagInfo(partialXML);
+        if (!rootTagInfo.getTagName().equals("feed")) {
+            atomSubFeedRequest.setUnSuccessfulAtomRequestReason("xml result is not a feed");
+            atomSubFeedRequest.setSuccessfulAtomRequest(false);
+            return;
+        }
+
+        atomSubFeedRequest.setSuccessfulAtomRequest(true);
     }
 
     public AtomDataRequest createDataRequest(AtomLink link) {

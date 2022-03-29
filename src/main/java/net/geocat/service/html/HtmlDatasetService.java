@@ -37,6 +37,7 @@ import net.geocat.database.linkchecker.entities.DatasetDocumentLink;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LocalDatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.ServiceDocumentLink;
+import net.geocat.database.linkchecker.entities.SimpleAtomLinkToData;
 import net.geocat.database.linkchecker.entities.SimpleLayerDatasetIdDataLink;
 import net.geocat.database.linkchecker.entities.SimpleLayerMetadataUrlDataLink;
 import net.geocat.database.linkchecker.entities.SimpleSpatialDSIDDataLink;
@@ -201,6 +202,16 @@ public class HtmlDatasetService {
                 }
                 if (_link.getOgcRequest() != null) {
                     result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+                }
+            }
+            if (link instanceof SimpleAtomLinkToData) {
+                SimpleAtomLinkToData _link = (SimpleAtomLinkToData) link;
+                result += "<br>context: "+_link.getContext()+"<br>\n";
+                 if (_link.getSuccessfullyDownloaded() != null) {
+                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+                }
+                if (_link.getLayerId() != null) {
+                    result += "ID: " +_link.getLayerId()+"<br>\n";
                 }
             }
             indx++;

@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.entities;
 
 import net.geocat.database.linkchecker.entities.helper.HTTPRequestCheckerType;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
+import net.geocat.database.linkchecker.entities.helper.OGCLinkToData;
 import net.geocat.database.linkchecker.entities.helper.RetrievableSimpleLink;
 
 import javax.persistence.Column;
@@ -58,7 +59,7 @@ public class OGCRequest extends RetrievableSimpleLink  {
     Boolean successfulOGCRequest;
 
     @OneToOne(mappedBy = "ogcRequest")
-    LinkToData linkToData;
+    OGCLinkToData linkToData;
 
 
     @Column(columnDefinition = "text")
@@ -122,11 +123,11 @@ public class OGCRequest extends RetrievableSimpleLink  {
         this.ogcRequestId = ogcRequestId;
     }
 
-    public LinkToData getLinkToData() {
+    public OGCLinkToData getLinkToData() {
         return linkToData;
     }
 
-    public void setLinkToData(LinkToData linkToData) {
+    public void setLinkToData(OGCLinkToData linkToData) {
         this.linkToData = linkToData;
     }
 
