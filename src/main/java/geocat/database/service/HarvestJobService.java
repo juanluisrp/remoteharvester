@@ -77,6 +77,14 @@ public class HarvestJobService {
         return harvestJobRepo.findById(id).get();
     }
 
+    public Optional<HarvestJob> getLastCompletedHarvestJobIdByLongTermTag(String longTermTag) {
+        return harvestJobRepo.findMostRecentHarvestJobCompletedByLongTermTag(longTermTag);
+    }
+
+    public Optional<HarvestJob> getLastHarvestJobIdByLongTermTag(String longTermTag) {
+        return harvestJobRepo.findMostRecentHarvestJobByLongTermTag(longTermTag);
+    }
+
     public List<EndpointJob> getEndpointJobs(String harvestId) {
         return endpointJobRepo.findByHarvestJobId(harvestId);
     }
