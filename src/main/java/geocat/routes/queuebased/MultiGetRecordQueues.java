@@ -32,7 +32,7 @@ public class MultiGetRecordQueues extends SpringRouteBuilder {
     public void configure() throws Exception {
 
         this.errorHandler(this.transactionErrorHandler()
-                .maximumRedeliveries(2)
+                .maximumRedeliveries(1)
                 .redeliveryDelay(1000));
 
         this.onException().onExceptionOccurred(new Processor() {
@@ -44,7 +44,7 @@ public class MultiGetRecordQueues extends SpringRouteBuilder {
 
             }
         })
-                .bean(DatabaseUpdateService.class, "errorOccurred", BeanScope.Request).maximumRedeliveries(2)
+                .bean(DatabaseUpdateService.class, "errorOccurred", BeanScope.Request).maximumRedeliveries(1)
         ;
 
 
