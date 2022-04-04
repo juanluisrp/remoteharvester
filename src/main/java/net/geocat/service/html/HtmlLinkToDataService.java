@@ -82,8 +82,12 @@ public class HtmlLinkToDataService {
         if (link.getAtomSubFeedRequest() != null) {
             result += "<br><h2>Sub Feed Request: <a href='"+link.getAtomSubFeedRequest().getFixedURL()+"'>"+link.getAtomSubFeedRequest().getFixedURL()+ "</a><br></h2>\n";
             result += "Download Successful:"+link.getAtomSubFeedRequest().getSuccessfulAtomRequest()+"<br>\n";
-            if (!link.getAtomSubFeedRequest().getSuccessfulAtomRequest())
-                result += "problem: "+link.getAtomSubFeedRequest().getUnSuccessfulAtomRequestReason()+"<br>\n";
+            if (!link.getAtomSubFeedRequest().getSuccessfulAtomRequest()) {
+                result += "http code:"+link.getAtomSubFeedRequest().getLinkHTTPStatusCode()+"<br>\n";
+                result += "problem: " + link.getAtomSubFeedRequest().getUnSuccessfulAtomRequestReason() + "<br>\n";
+                result += "downloaded text:<br>";
+                result += "<xmp>"+XmlStringTools.bytea2String(link.getAtomSubFeedRequest().getLinkContentHead())+"</xmp><br>";
+            }
         }
         if (link.getAtomActualDataEntryList() !=null) {
             result += "<br><h2>SubFeed Entries</h2>\n";

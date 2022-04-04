@@ -87,8 +87,10 @@ public class HtmlStatsService {
 
 
         List<LocalDatasetMetadataRecord> datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId);
-        if (datasets.isEmpty())
-            datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(lastLinkCheckJobByCountry(linkCheckJobRepo,linkCheckJobId));
+        if (datasets.isEmpty()) {
+            linkCheckJobId= lastLinkCheckJobByCountry(linkCheckJobRepo, linkCheckJobId);
+            datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId);
+         }
 
         LinkCheckJob job = linkCheckJobRepo.findById(linkCheckJobId).get();
 

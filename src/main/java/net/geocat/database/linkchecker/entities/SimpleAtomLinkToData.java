@@ -64,7 +64,7 @@ public class SimpleAtomLinkToData extends LinkToData {
     AtomSubFeedRequest atomSubFeedRequest;
 
     @OneToMany(
-            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "simpleAtomLinkToData")
     @Fetch(value = FetchMode.SUBSELECT)
     List<AtomActualDataEntry> atomActualDataEntryList;
 
