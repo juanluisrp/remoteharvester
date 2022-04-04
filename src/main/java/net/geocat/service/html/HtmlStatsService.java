@@ -67,7 +67,7 @@ public class HtmlStatsService {
     @Autowired
     XmlDocumentFactory xmlDocumentFactory;
 
-    public String lastLinkCheckJob(){
+    public static String lastLinkCheckJob(LinkCheckJobRepo linkCheckJobRepo){
         LinkCheckJob lastJob = null;
         for(LinkCheckJob job : linkCheckJobRepo.findAll()){
             if (lastJob == null)
@@ -80,12 +80,19 @@ public class HtmlStatsService {
 
     public String getHtml(String linkCheckJobId) {
         if ((linkCheckJobId == null) || (linkCheckJobId.trim().isEmpty()))
-            linkCheckJobId = lastLinkCheckJob();
+            linkCheckJobId = lastLinkCheckJob(linkCheckJobRepo);
 
-        String result = "<h1>Stats - " + linkCheckJobId + "</h1>\n";
+
+
+
 
         List<LocalDatasetMetadataRecord> datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId);
+        if (datasets.isEmpty())
+            datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(lastLinkCheckJobByCountry(linkCheckJobRepo,linkCheckJobId));
 
+        LinkCheckJob job = linkCheckJobRepo.findById(linkCheckJobId).get();
+
+        String result = "<h1>Stats - "  + job.getLongTermTag()+" - " + linkCheckJobId  +"</h1>\n";
         result += "number of datasets - "+datasets.size()+"<br>\n";
 
         long nViewLinks = datasets.stream()
@@ -134,6 +141,21 @@ public class HtmlStatsService {
         result += "</table><Br><br>\n";
         return result;
     }
+
+    public static String lastLinkCheckJobByCountry(LinkCheckJobRepo linkCheckJobRepo,String country){
+        LinkCheckJob lastJob = null;
+        for(LinkCheckJob job : linkCheckJobRepo.findAll()){
+            if (!job.getLongTermTag().toLowerCase().startsWith(country.toLowerCase()))
+                continue;
+            if (lastJob == null)
+                lastJob = job;
+            if (lastJob.getCreateTimeUTC().compareTo(job.getCreateTimeUTC()) <1)
+                lastJob = job;
+        }
+        return lastJob.getJobId();
+    }
+
+
 
     private String getStyle(Integer a, Integer b) {
         if ((a ==null) && (b==null))

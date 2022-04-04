@@ -69,10 +69,10 @@ public class RetrievableSimpleLinkDownloader {
     PartialDownloadPredicateFactory partialDownloadPredicateFactory;
 
     public RetrievableSimpleLink process(RetrievableSimpleLink link) {
-        return process(link, headLength);
+        return process(link, headLength,null);
     }
 
-    public RetrievableSimpleLink process(RetrievableSimpleLink link, int headLength) {
+    public RetrievableSimpleLink process(RetrievableSimpleLink link, int headLength, String acceptsHeader) {
         try {
 
             HttpResult data = null;
@@ -95,6 +95,8 @@ public class RetrievableSimpleLinkDownloader {
                 HTTPRequest request = HTTPRequest.createGET(url);
                 request.setLinkCheckJobId(link.getLinkCheckJobId());
                 request.setPredicate(continueReadingPredicate);
+                if ( (acceptsHeader!=null) && (!acceptsHeader.isEmpty()) )
+                    request.setAcceptsHeader(acceptsHeader);
                 data = smartHTTPRetriever.retrieve(request);
             } catch (Exception e) {
                 link.setIndicator_LinkResolves(IndicatorStatus.FAIL);

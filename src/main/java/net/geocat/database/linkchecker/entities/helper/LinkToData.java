@@ -73,6 +73,9 @@ public class LinkToData {
 
     Boolean successfullyDownloaded;
 
+    @Column(columnDefinition = "text")
+    private String errorInfo;
+
     //----
     //which dataset metadata document did this link come from?
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
@@ -114,6 +117,14 @@ public class LinkToData {
 
     //------
 
+
+    public String getErrorInfo() {
+        return errorInfo;
+    }
+
+    public void setErrorInfo(String errorInfo) {
+        this.errorInfo = errorInfo;
+    }
 
     public Boolean getSuccessfullyDownloaded() {
         return successfullyDownloaded;

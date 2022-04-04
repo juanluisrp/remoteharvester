@@ -64,6 +64,21 @@ public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
         setup_layers();
     }
 
+    public List<Node> findbboxes(Node layer){
+        List<Node> bboxs = findNodes(layer,"BoundingBox");
+
+            Node parentLayer = layer.getParentNode();
+            if (parentLayer.getLocalName().equals("Layer")) {
+                bboxs.addAll(findbboxes(parentLayer));
+                return bboxs;
+            }
+            else {
+                return bboxs;
+            }
+
+
+    }
+
     private void setup_layers() throws Exception {
         wmsLayers = new ArrayList<>();
         Node main = getFirstNode();
@@ -77,7 +92,14 @@ public class XmlCapabilitiesWMS extends XmlCapabilitiesDocument {
             String name = nameNode.getTextContent().trim();
             WMSLayer wmsLayer = new WMSLayer(name);
             wmsLayers.add(wmsLayer);
-            List<Node> bboxs = findNodes(layer,"BoundingBox");
+//            List<Node> bboxs = findNodes(layer,"BoundingBox");
+//            if (bboxs.isEmpty()) {
+//                Node parentLayer = layer.getParentNode();
+//                if (parentLayer.getLocalName().equals("Layer")) {
+//                    bboxs = findNodes(parentLayer,"BoundingBox");
+//                }
+//            }
+            List<Node> bboxs = findbboxes(layer );
             for(Node bbox:bboxs) {
                 //        <BoundingBox CRS="CRS:84" maxx="18.95663115922459" maxy="51.305916291382516" minx="12.024498725444078" miny="48.25578803534065"/>
                 String crs = attribute(bbox,"CRS") ;

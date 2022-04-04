@@ -65,7 +65,7 @@ public class AtomEntry {
             return null;
 
         for (AtomLink link:links) {
-            if (link.getRel().equals(rel))
+            if ( (link.getRel() !=null) && (link.getRel().equals(rel)))
                 result.add(link);
         }
         if (!links.isEmpty())

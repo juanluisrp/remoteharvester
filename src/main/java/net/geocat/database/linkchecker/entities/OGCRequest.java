@@ -133,10 +133,10 @@ public class OGCRequest extends RetrievableSimpleLink  {
 
     @Override
     public String toString() {
-        return "OGCRequest{" +
-                summary +"," +
-                "successfulOGCRequest=" + successfulOGCRequest +
-                ", unSuccessfulOGCRequestReason='" + unSuccessfulOGCRequestReason + '\'' +
-                '}';
+        return "OGCRequest{\n      summary:" + summary +"\n " +
+                "    successfulOGCRequest=" + successfulOGCRequest +
+                "\n      unSuccessfulOGCRequestReason='" + unSuccessfulOGCRequestReason + '\'' + '\n'
+                + super.toString() +
+                "\n}";
     }
 }

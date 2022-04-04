@@ -37,11 +37,14 @@ import org.slf4j.MDC;
 
 public class HTTPRequest {
 
+    public static String ACCEPTS_HEADER_XML = "application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9";
+
     String verb = "GET";
     String location;
     String body = null;
     String cookie = null;
     IContinueReadingPredicate predicate = null;
+    String acceptsHeader = "application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9";
 
     boolean useCache = true;
     boolean saveToCache =true;
@@ -74,6 +77,15 @@ public class HTTPRequest {
 
     public void setTimeoutSecondsOnRetry(int timeoutSecondsOnRetry) {
         this.timeoutSecondsOnRetry = timeoutSecondsOnRetry;
+    }
+
+
+    public String getAcceptsHeader() {
+        return acceptsHeader;
+    }
+
+    public void setAcceptsHeader(String acceptsHeader) {
+        this.acceptsHeader = acceptsHeader;
     }
 
     public String getVerb() {

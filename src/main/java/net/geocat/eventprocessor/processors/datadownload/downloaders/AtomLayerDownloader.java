@@ -33,6 +33,7 @@
 
 package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
+import net.geocat.database.linkchecker.entities.AtomActualDataEntry;
 import net.geocat.database.linkchecker.entities.helper.AtomDataRequest;
 import net.geocat.database.linkchecker.entities.helper.AtomSubFeedRequest;
 import net.geocat.http.AlwaysAbortContinueReadingPredicate;
@@ -49,11 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import static net.geocat.http.HTTPRequest.ACCEPTS_HEADER_XML;
 import static net.geocat.xml.XmlStringTools.determineRootTagInfo;
 
 @Component
@@ -72,7 +69,14 @@ public class AtomLayerDownloader {
     RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
 
 
-    public AtomSubFeedRequest createSubFeedRequest(XmlCapabilitiesAtom atomCap, String layerId) throws Exception {
+    public AtomDataRequest createAtomDataRequest(AtomLink link, AtomActualDataEntry atomActualDataEntry, String linkcheckjobid) {
+        AtomDataRequest result = new AtomDataRequest(link.getHref());
+        result.setLinkCheckJobId(linkcheckjobid);
+        result.setAtomActualDataEntry(atomActualDataEntry);
+        return result;
+    }
+
+    public AtomSubFeedRequest createSubFeedRequest(XmlCapabilitiesAtom atomCap, String layerId, String linkCheckJobId) throws Exception {
         AtomEntry entry = atomCap.findEntry(layerId);
         if (entry == null)
             throw new Exception("no atom entry for id="+layerId);
@@ -88,12 +92,12 @@ public class AtomLayerDownloader {
 
 
         AtomSubFeedRequest request = new AtomSubFeedRequest(link.getHref());
-
+        request.setLinkCheckJobId(linkCheckJobId);
         return  request;
     }
 
     public AtomSubFeedRequest resolve(AtomSubFeedRequest atomSubFeedRequest) {
-        retrievableSimpleLinkDownloader.process(atomSubFeedRequest, 4096);
+        retrievableSimpleLinkDownloader.process(atomSubFeedRequest, 4096,ACCEPTS_HEADER_XML);
         return atomSubFeedRequest;
     }
 
@@ -122,35 +126,35 @@ public class AtomLayerDownloader {
         atomSubFeedRequest.setSuccessfulAtomRequest(true);
     }
 
-    public AtomDataRequest createDataRequest(AtomLink link) {
-        AtomDataRequest result = new AtomDataRequest(link.getHref());
-        return result;
-    }
+//    public AtomDataRequest createDataRequest(AtomLink link) {
+//        AtomDataRequest result = new AtomDataRequest(link.getHref());
+//        return result;
+//    }
 
-    // outer list - one for each <Entry>
-    // inner list - multiple if there are rel="section"
-    //            - single if there are not "section" links, but a "alternate"
-    public List<List<AtomDataRequest>> createDataRequests(XmlCapabilitiesAtom atomCapDataSetFeed) {
-        if ( (atomCapDataSetFeed ==null) || (atomCapDataSetFeed.getEntries()==null) ||   (atomCapDataSetFeed.getEntries().isEmpty()))
-            return null;
-        List<List<AtomDataRequest>>  result = new ArrayList<>();
-        for(AtomEntry entry : atomCapDataSetFeed.getEntries()) {
-            List<AtomLink> sectionLinks = entry.findLinks("section");
-            if (sectionLinks != null) {
-                result.add(sectionLinks.stream().map(x->createDataRequest(x)).collect(Collectors.toList()));
-            }
-            else {
-                AtomLink linkRelative  = entry.findLink("relative");
-                if (linkRelative != null)
-                    result.add (  Arrays.asList(new AtomDataRequest[]{createDataRequest(linkRelative)} ));
-            }
-
-        }
-        if (result.isEmpty())
-            return null;
-
-        return result;
-    }
+//    // outer list - one for each <Entry>
+//    // inner list - multiple if there are rel="section"
+//    //            - single if there are not "section" links, but a "alternate"
+//    public List<List<AtomDataRequest>> createDataRequests(XmlCapabilitiesAtom atomCapDataSetFeed) {
+//        if ( (atomCapDataSetFeed ==null) || (atomCapDataSetFeed.getEntries()==null) ||   (atomCapDataSetFeed.getEntries().isEmpty()))
+//            return null;
+//        List<List<AtomDataRequest>>  result = new ArrayList<>();
+//        for(AtomEntry entry : atomCapDataSetFeed.getEntries()) {
+//            List<AtomLink> sectionLinks = entry.findLinks("section");
+//            if (sectionLinks != null) {
+//                result.add(sectionLinks.stream().map(x->createDataRequest(x)).collect(Collectors.toList()));
+//            }
+//            else {
+//                AtomLink linkRelative  = entry.findLink("relative");
+//                if (linkRelative != null)
+//                    result.add (  Arrays.asList(new AtomDataRequest[]{createDataRequest(linkRelative)} ));
+//            }
+//
+//        }
+//        if (result.isEmpty())
+//            return null;
+//
+//        return result;
+//    }
 
 
 }

@@ -31,43 +31,19 @@
  *  ==============================================================================
  */
 
-package net.geocat.routes.queuebased;
+package net.geocat.database.linkchecker.repos;
 
-import net.geocat.eventprocessor.MainLoopRouteCreator;
-import net.geocat.eventprocessor.RedirectEvent;
-import net.geocat.events.datadownload.AllDataDownloadedEvent;
-import net.geocat.events.datadownload.DataDownloadDatasetDocumentEvent;
-import net.geocat.events.datadownload.StartDataDownloadEvent;
-import net.geocat.events.findlinks.LinksFoundInAllDocuments;
-import net.geocat.events.findlinks.ProcessLocalMetadataDocumentEvent;
-import net.geocat.events.findlinks.StartProcessDocumentsEvent;
-import org.apache.camel.spring.SpringRouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geocat.database.linkchecker.entities.AtomActualDataEntry;
+import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
+import java.util.List;
 
 
 @Component
-public class DataDownloadOrchestrator extends SpringRouteBuilder {
+@Scope("prototype")
+public interface AtomActualDataEntryRepo extends CrudRepository<AtomActualDataEntry, Long> {
 
-    public static String myJMSQueueName = "linkCheck.DataDownloadOrchestrator";
-
-    @Autowired
-    MainLoopRouteCreator mainLoopRouteCreator;
-
-    @Override
-    public void configure() throws Exception {
-
-        mainLoopRouteCreator.createEventProcessingLoop(this,
-                "activemq:" + myJMSQueueName,
-                new Class[]{StartDataDownloadEvent.class, DataDownloadDatasetDocumentEvent.class},
-                Arrays.asList(
-                        new RedirectEvent(AllDataDownloadedEvent.class, "activemq:" + MainOrchestrator.myJMSQueueName)
-                ),
-                Arrays.asList(new Class[0]),
-                7  //todo changeme
-        );
-    }
-}
+ }

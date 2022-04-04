@@ -61,6 +61,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +167,10 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
 
     private void processDownload(List<LinkToData> downloadLinks, Map<String, OGCInfoCacheItem> ogcInfoCache) {
         if (downloadLinks.size() > MAX_LINKS_TO_FOLLOW) {
+            // we want to always grab the same set of links...
+            Collections.sort(downloadLinks,( link1,link2) ->{
+                return link1.key().compareToIgnoreCase(link2.key());
+            });
             downloadLinks = downloadLinks.subList(0,MAX_LINKS_TO_FOLLOW);
         }
         localDatasetMetadataRecord.setNumberOfDownloadLinksAttempted(downloadLinks.size());
@@ -245,13 +250,14 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
         }
         catch (Exception e){
             link.setSuccessfullyDownloaded(false);
+            link.setErrorInfo(e.getClass().getSimpleName()+" - "+e.getMessage());
             logger.debug("exception occurred while attempting to download a download", e);
         }
     }
 
     private void processDownloadLink_SimpleAtomLinkToData(SimpleAtomLinkToData link, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {
         atomDownloadProcessor.process(link, ogcInfoCache.get(link.getCapabilitiesSha2()));
-        link.setSuccessfullyDownloaded(false);
+
     }
 
     private void processDownloadLink_SimpleSpatialDSIDDataLink(SimpleSpatialDSIDDataLink link, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {

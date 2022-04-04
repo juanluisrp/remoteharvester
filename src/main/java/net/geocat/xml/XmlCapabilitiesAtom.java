@@ -59,7 +59,7 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
             return null;
 
         for (AtomEntry entry: entries) {
-            if (entry.getId().equals(id))
+            if ((entry.getId() !=null ) && (entry.getId().equals(id)))
                 return entry;
         }
 
@@ -91,6 +91,8 @@ public class XmlCapabilitiesAtom extends XmlCapabilitiesDocument {
             String id = null;
             if ( (idNode!=null) && (idNode.getTextContent() !=null) && (!idNode.getTextContent().trim().isEmpty()) )
                 id = idNode.getTextContent().trim();
+            if ( (id ==null)||(id.isEmpty()))
+                continue; // Atom spec says ID is required.  Also, we need it to identify which <entry> we are talking about
 
             List<AtomLink> atomLinks = new ArrayList<>();
             List<Node> links = XmlDoc.findAllNodes(entryNode,"link");

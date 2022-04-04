@@ -41,6 +41,7 @@ import net.geocat.database.linkchecker.entities.*;
 import net.geocat.database.linkchecker.entities.helper.*;
 import net.geocat.database.linkchecker.repos.*;
 import net.geocat.database.linkchecker.service.*;
+import net.geocat.eventprocessor.processors.datadownload.downloaders.AtomDownloadProcessor;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.AtomLayerDownloader;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestGenerator;
 import net.geocat.eventprocessor.processors.datadownload.downloaders.OGCRequestResolver;
@@ -63,6 +64,7 @@ import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 
 import net.geocat.xml.helpers.CapabilitiesType;
+import net.geocat.xml.helpers.WMSLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,31 +260,68 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     AtomLayerDownloader atomLayerDownloader;
 
+    @Autowired
+    AtomDownloadProcessor atomDownloadProcessor;
+
+    @Autowired
+    AtomActualDataEntryRepo atomActualDataEntryRepo;
+
+
     @Override
     public void run(String... args) throws Exception {
 
         try {
-//            String uuu = "http://data.waterkwaliteitsportaal.nl/inspire/ds/nl.xml?request=GetCapabilities&service=WFS";
+
+
+//        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
+//                                   "6A98AEF11BB3619425EC88C49A3FD78AC184618C7DD548DA3BA8607C95192560",
+//                           "0ae3d6d6-1cbf-436f-8ea8-fc98ceda6f7a") ).get();
+//
+//        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
+//        XmlCapabilitiesWMS _cap = (XmlCapabilitiesWMS)xmlDocumentFactory.create(xmlCap);
+//
+//          WMSLayer layer =  _cap.findWMSLayer("TN.CableTransportNetwork.CablewayLink");
+            int ttt=0;
+
+//            LocalDatasetMetadataRecord localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findById(2121154L).get();
+//
+//
+//            OGCInfoCacheItem ogcInfoCacheItem = ogcRequestGenerator.prep("94b0cb06-5a04-4474-b35c-efe157f9786f", "CC22E03D1E13717C5C06D1E3EA179A8EC7774B75504A5C34416A3ADF9A557339");
+//
+//           // SimpleAtomLinkToData link = (SimpleAtomLinkToData)  linkToDataRepo.findById(2121265L).get();
+//            SimpleAtomLinkToData link =(SimpleAtomLinkToData) localDatasetMetadataRecord.getDataLinks().stream()
+//                            .filter(x->x instanceof SimpleAtomLinkToData)
+//                                    .findFirst().get();
+//            atomDownloadProcessor.process(link,ogcInfoCacheItem);
+//            int tt=0;
+//            if (tt==0) {
+//                AtomActualDataEntry atomActualDataEntry= atomActualDataEntryRepo.save(link.getAtomActualDataEntryList().get(0));
+//                int uu=0;
+//            }
+//            localDatasetMetadataRecord = localDatasetMetadataRecordRepo.save(localDatasetMetadataRecord);
+
+//            String uuu = "https://msdi.data.gov.mt/data/INSPIRE_Dataset/Annex_III/Environmental_Monitoring_Facilities/BentixCarlitPrei/D1_6_BENTIX_CARLIT_PREI.zip";
 //            HTTPRequest request = HTTPRequest.createGET(uuu);
 //            request.setLinkCheckJobId("TESTCASE");
+//            request.setAcceptsHeader("*/*");
 //            HttpResult r = smartHTTPRetriever.retrieve(request);
+//        int tt=0;
 
-
-        SimpleLayerMetadataUrlDataLink link = (SimpleLayerMetadataUrlDataLink) linkToDataRepo.findById(1416565L).get();
-
-        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
-                link.getCapabilitiesSha2(),
-                           link.getLinkCheckJobId() ) ).get();
-
-        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
-        XmlCapabilitiesAtom atomCap = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlCap);
-        AtomSubFeedRequest atomSubFeedRequest = atomLayerDownloader.createSubFeedRequest(atomCap, link.getOgcLayerName());
-
-        atomSubFeedRequest =  atomLayerDownloader.resolve(atomSubFeedRequest);
-        String xmlSub = new String(atomSubFeedRequest.getFullData());
-        XmlCapabilitiesAtom atomCapSub = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlSub);
-
-        List<List<AtomDataRequest>> requests = atomLayerDownloader.createDataRequests(atomCapSub);
+//        SimpleLayerMetadataUrlDataLink link = (SimpleLayerMetadataUrlDataLink) linkToDataRepo.findById(1416565L).get();
+//
+//        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
+//                link.getCapabilitiesSha2(),
+//                           link.getLinkCheckJobId() ) ).get();
+//
+//        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
+//        XmlCapabilitiesAtom atomCap = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlCap);
+//        AtomSubFeedRequest atomSubFeedRequest = atomLayerDownloader.createSubFeedRequest(atomCap, link.getOgcLayerName());
+//
+//        atomSubFeedRequest =  atomLayerDownloader.resolve(atomSubFeedRequest);
+//        String xmlSub = new String(atomSubFeedRequest.getFullData());
+//        XmlCapabilitiesAtom atomCapSub = (XmlCapabilitiesAtom)xmlDocumentFactory.create(xmlSub);
+//
+//        List<List<AtomDataRequest>> requests = atomLayerDownloader.createDataRequests(atomCapSub);
     int t=0;
 
 

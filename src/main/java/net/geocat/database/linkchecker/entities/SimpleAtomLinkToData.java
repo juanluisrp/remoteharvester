@@ -36,12 +36,19 @@ package net.geocat.database.linkchecker.entities;
 import net.geocat.database.linkchecker.entities.helper.AtomSubFeedRequest;
 import net.geocat.database.linkchecker.entities.helper.DatasetMetadataRecord;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("SimpleAtomLinkToData")
@@ -56,6 +63,11 @@ public class SimpleAtomLinkToData extends LinkToData {
     @OneToOne(cascade = CascadeType.ALL)
     AtomSubFeedRequest atomSubFeedRequest;
 
+    @OneToMany(
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    List<AtomActualDataEntry> atomActualDataEntryList;
+
     public SimpleAtomLinkToData() {
         super();
     }
@@ -67,6 +79,14 @@ public class SimpleAtomLinkToData extends LinkToData {
 
     //---
 
+
+    public List<AtomActualDataEntry> getAtomActualDataEntryList() {
+        return atomActualDataEntryList;
+    }
+
+    public void setAtomActualDataEntryList(List<AtomActualDataEntry> atomActualDataEntryList) {
+        this.atomActualDataEntryList = atomActualDataEntryList;
+    }
 
     public String getLayerId() {
         return layerId;

@@ -38,6 +38,7 @@ import net.geocat.service.html.HtmlCapabilitiesService;
 import net.geocat.service.html.HtmlDatasetService;
 import net.geocat.service.html.HtmlDiscoverService;
 import net.geocat.service.html.HtmlIdentifierService;
+import net.geocat.service.html.HtmlLinkToDataService;
 import net.geocat.service.html.HtmlScrapeService;
 import net.geocat.service.html.HtmlServiceService;
 import net.geocat.service.html.HtmlStatsService;
@@ -118,6 +119,15 @@ public class Html extends RouteBuilder {
                 .route()
                 .routeId("rest.rest.html.stats")
                 .bean(HtmlStatsService.class, "getHtml( ${header.processID}  )", BeanScope.Request)
+
+                .setHeader("content-type", constant("text/html"))
+        ;
+
+        rest("/api/html/linktodata/")
+                .get("/{linkId}")
+                .route()
+                .routeId("rest.rest.html.linktodata")
+                .bean(HtmlLinkToDataService.class, "getHtml( ${header.linkId}  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;

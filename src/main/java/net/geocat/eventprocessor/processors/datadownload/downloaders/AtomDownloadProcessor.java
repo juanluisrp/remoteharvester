@@ -33,18 +33,26 @@
 
 package net.geocat.eventprocessor.processors.datadownload.downloaders;
 
+import net.geocat.database.linkchecker.entities.AtomActualDataEntry;
 import net.geocat.database.linkchecker.entities.SimpleAtomLinkToData;
+import net.geocat.database.linkchecker.entities.helper.AtomDataRequest;
 import net.geocat.database.linkchecker.entities.helper.AtomSubFeedRequest;
+import net.geocat.service.downloadhelpers.RetrievableSimpleLinkDownloader;
 import net.geocat.xml.XmlCapabilitiesAtom;
 import net.geocat.xml.XmlDoc;
 import net.geocat.xml.XmlDocumentFactory;
 import net.geocat.xml.XmlStringTools;
 import net.geocat.xml.helpers.AtomEntry;
+import net.geocat.xml.helpers.AtomLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -52,17 +60,27 @@ public class AtomDownloadProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger( AtomDownloadProcessor.class);
 
+    private static int HEADER_LENGTH = 4096;
+    private static String ACCEPT_MIME = "*/*";
+
     @Autowired
     AtomLayerDownloader atomLayerDownloader;
 
     @Autowired
     XmlDocumentFactory xmlDocumentFactory;
 
+    @Autowired
+    RetrievableSimpleLinkDownloader retrievableSimpleLinkDownloader;
+
+
     public void process(SimpleAtomLinkToData simpleAtomLinkToData,OGCInfoCacheItem ogcInfoCacheItem) throws Exception {
         if ( (simpleAtomLinkToData ==null) || (ogcInfoCacheItem ==null))
             return;
 
-        AtomSubFeedRequest subFeedRequest= atomLayerDownloader.createSubFeedRequest((XmlCapabilitiesAtom)ogcInfoCacheItem.getXmlCapabilitiesDocument(), simpleAtomLinkToData.getLayerId());
+        AtomSubFeedRequest subFeedRequest= atomLayerDownloader.createSubFeedRequest(
+                (XmlCapabilitiesAtom)ogcInfoCacheItem.getXmlCapabilitiesDocument(),
+                simpleAtomLinkToData.getLayerId(),
+                simpleAtomLinkToData.getLinkCheckJobId());
         simpleAtomLinkToData.setAtomSubFeedRequest(subFeedRequest);
 
         atomLayerDownloader.resolve(subFeedRequest);
@@ -82,11 +100,61 @@ public class AtomDownloadProcessor {
             simpleAtomLinkToData.setSuccessfullyDownloaded(false);
             return;
         }
-
+        simpleAtomLinkToData.setAtomActualDataEntryList(new ArrayList<>());
+        int index=0;
         //okay, 2nd phase -- try to find one dataset that fully downloads!
         for (AtomEntry entry : secondaryAtom.getEntries()) {
+            AtomActualDataEntry atomActualDataEntry = new AtomActualDataEntry();
+            atomActualDataEntry.setEntryId(entry.getId());
+            atomActualDataEntry.setSimpleAtomLinkToData(simpleAtomLinkToData);
+            atomActualDataEntry.setIndex(index);
+            index++;
+            List<AtomLink> links = entry.findLinks("alternate");
+            if ((links == null)||(links.isEmpty()))
+                links = entry.findLinks("section");
+            if ((links == null)||(links.isEmpty()))
+                continue; // nothing to process
 
+            List<AtomDataRequest> requests = links.stream()
+                            .map(x->atomLayerDownloader.createAtomDataRequest(x,atomActualDataEntry,simpleAtomLinkToData.getLinkCheckJobId()))
+                                    .collect(Collectors.toList());
+            atomActualDataEntry.setAtomDataRequestList(requests);
+            simpleAtomLinkToData.getAtomActualDataEntryList().add(atomActualDataEntry);
         }
+        boolean success=doDownload(simpleAtomLinkToData);
+        simpleAtomLinkToData.setSuccessfullyDownloaded(success);
+    }
+
+    private boolean doDownload(SimpleAtomLinkToData simpleAtomLinkToData) {
+        if (simpleAtomLinkToData.getAtomActualDataEntryList().isEmpty())
+            return false;
+        for (AtomActualDataEntry entry: simpleAtomLinkToData.getAtomActualDataEntryList()){
+            boolean entryDownloads = doDownload(entry);
+            if (entryDownloads)
+                return true;
+        }
+        return false;
+    }
+
+    private boolean doDownload(AtomActualDataEntry entry) {
+        if (entry.getAtomDataRequestList().isEmpty())
+            return false;
+
+        boolean allGood= true;
+        for(AtomDataRequest request:entry.getAtomDataRequestList()){
+            doDownload(request);
+            allGood = allGood && request.getSuccessfullyDownloaded();
+            if (!allGood)
+                break;
+        }
+        return allGood;
+    }
+
+    private void doDownload(AtomDataRequest request) {
+        retrievableSimpleLinkDownloader.process(request,HEADER_LENGTH,ACCEPT_MIME);
+        boolean someDownloaded = (request.getLinkContentHead()!= null) && (request.getLinkContentHead().length>0);
+        boolean is200 = ( (request.getLinkHTTPStatusCode()!=null) && (request.getLinkHTTPStatusCode() == 200));
+        request.setSuccessfullyDownloaded(someDownloaded && is200);
     }
 
 }

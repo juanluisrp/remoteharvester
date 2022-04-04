@@ -173,8 +173,8 @@ public class WMSCapabilitiesDatasetLinkExtractor implements ICapabilitiesDataset
         if (name !=null)
             name = name.trim();
 
-        if (name == null)
-            name = identifier;
+//        if (name == null)
+//            name = identifier;
 
         if ((identifier != null) || (metadataUrls != null)) {
             if (metadataUrls !=null) {

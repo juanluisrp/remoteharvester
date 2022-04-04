@@ -131,6 +131,8 @@ public class RetrievableSimpleLink extends UpdateCreateDateTimeEntity {
     //---------------------------------------------------------------------------
 
 
+
+
     public String getLinkCheckJobId() {
         return linkCheckJobId;
     }

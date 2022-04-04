@@ -89,11 +89,11 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
      * @return response from server
      * @throws Exception
      */
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds)
+    public HttpResult retrieve(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds,String acceptsHeader)
             throws IOException, SecurityException, ExceptionWithCookies, RedirectException
     {
         //some systems don't understand the q qualifier
-        return retrieve(verb,location,body, cookie,predicate, "application/xml",  new String[] {"application/xml,application/xml; q=1.0,text/xml; q=1.0,application/atom+xml; q=0.9"},timeoutSeconds);
+        return retrieve(verb,location,body, cookie,predicate, "application/xml",  new String[] {acceptsHeader},timeoutSeconds);
     }
 
 

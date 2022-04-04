@@ -141,6 +141,8 @@ public class XmlStringTools {
     }
 
     public static String bytea2String(byte[] bytes) {
+        if (bytes == null)
+            return "";
         return trim(new String(bytes, UTF8_CHARSET));
     }
 

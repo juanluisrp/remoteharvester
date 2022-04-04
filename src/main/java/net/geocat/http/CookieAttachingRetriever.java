@@ -61,26 +61,28 @@ public class CookieAttachingRetriever   {
     }
 
     public HttpResult retrieve(HTTPRequest request) throws Exception {
-        return retrieveXML(request.getVerb(),
+        return retrieve(request.getVerb(),
                 request.getLocation(),
                 request.getBody(),
                 request.getCookie(),
                 request.getPredicate(),
                 request.getTimeoutSeconds(),
-                request.getTimeoutSecondsOnRetry());
+                request.getTimeoutSecondsOnRetry(),
+                request.getAcceptsHeader());
     }
 
-        public HttpResult retrieveXML_underlying(boolean throwIfError,
+        public HttpResult retrieve_underlying(boolean throwIfError,
                                                  boolean throwIfTimeout,
                                                  String verb,
                                                  String location,
                                                  String body,
                                                  String cookie,
                                                  IContinueReadingPredicate predicate,
-                                                 int timeoutSeconds) throws IOException, SecurityException, ExceptionWithCookies, RedirectException
+                                                 int timeoutSeconds,
+                                                String acceptsHeader) throws IOException, SecurityException, ExceptionWithCookies, RedirectException
         {
             try {
-                HttpResult result = retriever.retrieveXML(verb, location, body, cookie, predicate, timeoutSeconds);
+                HttpResult result = retriever.retrieve(verb, location, body, cookie, predicate, timeoutSeconds,acceptsHeader);
                 return result;
             }
             catch(SocketTimeoutException ste) {
@@ -103,15 +105,15 @@ public class CookieAttachingRetriever   {
 
 
 
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return retrieveXML( verb,  location,  body,  cookie,  predicate, timeoutSeconds  ,timeoutSeconds);
+    public HttpResult retrieve(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds, String acceptsHeader) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+        return retrieve( verb,  location,  body,  cookie,  predicate, timeoutSeconds  ,timeoutSeconds,acceptsHeader);
     }
 
 
 
-    public HttpResult retrieveXML(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds, int timeout2) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+    public HttpResult retrieve(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds, int timeout2,String acceptsHeader) throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
 
-        HttpResult result = retrieveXML_underlying(false,false,verb, location, body, cookie, predicate, timeoutSeconds);
+        HttpResult result = retrieve_underlying(false,false,verb, location, body, cookie, predicate, timeoutSeconds,acceptsHeader);
         if ( (result !=null) && (result.getHttpCode() == 404))
             return result; // short cut -- not going to change with a retry
 
@@ -123,7 +125,7 @@ public class CookieAttachingRetriever   {
             }
             logger.debug("retrying - "+location);
             String _cookie = result !=null ? result.getSpecialToSendCookie(): null;
-            result= retrieveXML_underlying(false,true,verb, location, body,_cookie, predicate,timeout2);
+            result= retrieve_underlying(false,true,verb, location, body,_cookie, predicate,timeout2,acceptsHeader);
         }
 
         if  ( (result !=null) && (result.getHttpCode() == 403))
@@ -138,7 +140,7 @@ public class CookieAttachingRetriever   {
             }
             logger.debug("retrying2 - "+location);
             String _cookie = result !=null ? result.getSpecialToSendCookie(): null;
-            result= retrieveXML_underlying(true,true,verb, location, body, _cookie, predicate,timeoutSeconds);
+            result= retrieve_underlying(true,true,verb, location, body, _cookie, predicate,timeoutSeconds,acceptsHeader);
         }
 
 

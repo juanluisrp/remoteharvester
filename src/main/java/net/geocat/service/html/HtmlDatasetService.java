@@ -45,12 +45,14 @@ import net.geocat.database.linkchecker.entities.SimpleStoredQueryDataLink;
 import net.geocat.database.linkchecker.entities.helper.DatasetIdentifier;
 import net.geocat.database.linkchecker.entities.helper.LinkToData;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
+import net.geocat.database.linkchecker.repos.LinkToDataRepo;
 import net.geocat.database.linkchecker.repos.LocalDatasetMetadataRecordRepo;
 import net.geocat.service.BlobStorageService;
 import net.geocat.xml.XmlDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,71 +151,84 @@ public class HtmlDatasetService {
         return showDataLinks(new ArrayList(record.getDataLinks()), false);
     }
 
+    public static String showDataLink(LinkToData link, boolean showDSLink, Integer _lndx) {
+        String result = "";
+        String indx = _lndx == null ? "" : _lndx.toString();
+
+        result += "<h3>link "+indx+" - <a href='/api/html/linktodata/"+link.getLinkToDataId() +"'>"+ link.getClass().getSimpleName() + "</a></h3>";
+        if (showDSLink)
+            result += "dataset: <a href='" +"/api/html/dataset/"+ link.getDatasetMetadataRecord().getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+ "'>"+link.getDatasetMetadataRecord().getFileIdentifier()  + "  </a>" + "</h3><br>\n";
+
+        result += "capabilities: <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getCapabilitiesSha2() + "'>"+link.getCapabilitiesDocumentType()  + " Capabilities</a>" + "</h3>\n";
+
+
+
+        if (link instanceof SimpleLayerMetadataUrlDataLink) {
+            SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
+            result += "<br>ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
+            if (_link.getSuccessfullyDownloaded() != null) {
+                result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+            }
+            if (_link.getOgcRequest() != null) {
+                result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+            }
+        }
+        if (link instanceof SimpleStoredQueryDataLink) {
+            SimpleStoredQueryDataLink _link = (SimpleStoredQueryDataLink) link;
+            result += "<br>storedProcName: "+_link.getStoredProcName()+"<br>\n";
+            result += "code: "+_link.getCode()+"<br>\n";
+            result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+            if (_link.getSuccessfullyDownloaded() != null) {
+                result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+            }
+            if (_link.getOgcRequest() != null) {
+                result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+            }
+        }
+        if (link instanceof SimpleLayerDatasetIdDataLink) {
+            SimpleLayerDatasetIdDataLink _link = (SimpleLayerDatasetIdDataLink) link;
+            result += "<br>code: "+_link.getCode()+"<br>\n";
+            result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+            result += "ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
+            if (_link.getSuccessfullyDownloaded() != null) {
+                result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+            }
+            if (_link.getOgcRequest() != null) {
+                result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+            }
+        }
+        if (link instanceof SimpleSpatialDSIDDataLink) {
+            SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
+            result += "<br>code: "+_link.getCode()+"<br>\n";
+            result += "codespace: "+_link.getCodeSpace()+"<br>\n";
+            if (_link.getSuccessfullyDownloaded() != null) {
+                result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+            }
+            if (_link.getOgcRequest() != null) {
+                result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
+            }
+        }
+        if (link instanceof SimpleAtomLinkToData) {
+            SimpleAtomLinkToData _link = (SimpleAtomLinkToData) link;
+            result += "<br>context: "+_link.getContext()+"<br>\n";
+
+            if (_link.getLayerId() != null) {
+                result += "Layer ID: " +_link.getLayerId()+"<br>\n";
+            }
+            if (_link.getSuccessfullyDownloaded() != null) {
+                result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
+            }
+        }
+        if (link.getErrorInfo() !=null)
+            result += "error info: "+link.getErrorInfo()+"<br>\n";
+        return result;
+    }
+
     public static String showDataLinks(List<LinkToData> links, boolean showDSLink) {
         String result = "";
         int indx =0;
         for (LinkToData link:links) {
-            result += "<h3>link "+indx+" - " + link.getClass().getSimpleName() + "</h3>";
-            if (showDSLink)
-                result += "dataset: <a href='" +"/api/html/dataset/"+ link.getDatasetMetadataRecord().getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+ "'>"+link.getDatasetMetadataRecord().getFileIdentifier()  + "  </a>" + "</h3><br>\n";
-
-            result += "capabilities: <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getCapabilitiesSha2() + "'>"+link.getCapabilitiesDocumentType()  + " Capabilities</a>" + "</h3>\n";
-
-            if (link instanceof SimpleLayerMetadataUrlDataLink) {
-                SimpleLayerMetadataUrlDataLink _link = (SimpleLayerMetadataUrlDataLink) link;
-                result += "<br>ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
-                if (_link.getSuccessfullyDownloaded() != null) {
-                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
-                }
-                if (_link.getOgcRequest() != null) {
-                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
-                }
-            }
-            if (link instanceof SimpleStoredQueryDataLink) {
-                SimpleStoredQueryDataLink _link = (SimpleStoredQueryDataLink) link;
-                result += "<br>storedProcName: "+_link.getStoredProcName()+"<br>\n";
-                result += "code: "+_link.getCode()+"<br>\n";
-                result += "codespace: "+_link.getCodeSpace()+"<br>\n";
-                if (_link.getSuccessfullyDownloaded() != null) {
-                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
-                }
-                if (_link.getOgcRequest() != null) {
-                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
-                }
-            }
-            if (link instanceof SimpleLayerDatasetIdDataLink) {
-                SimpleLayerDatasetIdDataLink _link = (SimpleLayerDatasetIdDataLink) link;
-                 result += "<br>code: "+_link.getCode()+"<br>\n";
-                 result += "codespace: "+_link.getCodeSpace()+"<br>\n";
-                 result += "ogcLayer: "+_link.getOgcLayerName()+"<br>\n";
-                if (_link.getSuccessfullyDownloaded() != null) {
-                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
-                }
-                if (_link.getOgcRequest() != null) {
-                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
-                }
-            }
-            if (link instanceof SimpleSpatialDSIDDataLink) {
-                SimpleSpatialDSIDDataLink _link = (SimpleSpatialDSIDDataLink) link;
-                 result += "<br>code: "+_link.getCode()+"<br>\n";
-                result += "codespace: "+_link.getCodeSpace()+"<br>\n";
-                if (_link.getSuccessfullyDownloaded() != null) {
-                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
-                }
-                if (_link.getOgcRequest() != null) {
-                    result += "OGCRequest: " +_link.getOgcRequest().getFixedURL()+"<br>\n";
-                }
-            }
-            if (link instanceof SimpleAtomLinkToData) {
-                SimpleAtomLinkToData _link = (SimpleAtomLinkToData) link;
-                result += "<br>context: "+_link.getContext()+"<br>\n";
-                 if (_link.getSuccessfullyDownloaded() != null) {
-                    result += "Download: success->" +_link.getSuccessfullyDownloaded()+"<br>\n";
-                }
-                if (_link.getLayerId() != null) {
-                    result += "ID: " +_link.getLayerId()+"<br>\n";
-                }
-            }
+            result += showDataLink(link,showDSLink,new Integer(indx));
             indx++;
         }
         return result;

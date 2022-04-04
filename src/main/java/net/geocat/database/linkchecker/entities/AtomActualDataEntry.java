@@ -31,67 +31,93 @@
  *  ==============================================================================
  */
 
-package net.geocat.database.linkchecker.entities.helper;
+package net.geocat.database.linkchecker.entities;
 
-import net.geocat.database.linkchecker.entities.AtomActualDataEntry;
-import net.geocat.database.linkchecker.entities.SimpleAtomLinkToData;
+import net.geocat.database.linkchecker.entities.helper.AtomDataRequest;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.ALWAYS_PARTIAL;
-import static net.geocat.database.linkchecker.entities.helper.PartialDownloadHint.CAPABILITIES_ONLY;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
-public class AtomDataRequest extends RetrievableSimpleLink  {
+public class AtomActualDataEntry {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long atomDataRequestId;
+    private long atomActualDataEntryId;
 
+    Integer index;
 
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    AtomActualDataEntry atomActualDataEntry;
+    SimpleAtomLinkToData simpleAtomLinkToData;
 
-    Boolean successfullyDownloaded;
+    @Column(columnDefinition = "text")
+    String entryId;
 
+    @OneToMany(
+            cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "atomActualDataEntry")
+    @Fetch(value = FetchMode.SUBSELECT)
+  //  @JoinColumn(name = "atomDataRequestId")
+    List<AtomDataRequest> atomDataRequestList;
 
-    public AtomDataRequest() {
-        super();
-        setPartialDownloadHint(ALWAYS_PARTIAL);
+    //--
+
+    public AtomActualDataEntry() {
+
     }
 
-    public AtomDataRequest(String url ) {
-        this();
-        setRawURL(url);
-        setFixedURL(url);
+    //--
+
+
+    public int getIndex() {
+        return (index == null)? 0 : index;
     }
 
-    public AtomActualDataEntry getAtomActualDataEntry() {
-        return atomActualDataEntry;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
-    public void setAtomActualDataEntry(AtomActualDataEntry atomActualDataEntry) {
-        this.atomActualDataEntry = atomActualDataEntry;
+    public SimpleAtomLinkToData getSimpleAtomLinkToData() {
+        return simpleAtomLinkToData;
     }
 
-    public long getAtomDataRequestId() {
-        return atomDataRequestId;
+    public void setSimpleAtomLinkToData(SimpleAtomLinkToData simpleAtomLinkToData) {
+        this.simpleAtomLinkToData = simpleAtomLinkToData;
     }
 
-    public void setAtomDataRequestId(long atomDataRequestId) {
-        this.atomDataRequestId = atomDataRequestId;
+    public String getEntryId() {
+        return entryId;
     }
 
-    public Boolean getSuccessfullyDownloaded() {
-        return successfullyDownloaded;
+    public void setEntryId(String entryId) {
+        this.entryId = entryId;
     }
 
-    public void setSuccessfullyDownloaded(Boolean successfullyDownloaded) {
-        this.successfullyDownloaded = successfullyDownloaded;
+    public List<AtomDataRequest> getAtomDataRequestList() {
+        return atomDataRequestList;
     }
+
+    public void setAtomDataRequestList(List<AtomDataRequest> atomDataRequestList) {
+        this.atomDataRequestList = atomDataRequestList;
+    }
+
+    public long getAtomActualDataEntryId() {
+        return atomActualDataEntryId;
+    }
+
+    public void setAtomActualDataEntryId(long atomActualDataEntryId) {
+        this.atomActualDataEntryId = atomActualDataEntryId;
+    }
+
+    //--
 }
