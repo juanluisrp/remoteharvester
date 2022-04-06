@@ -192,6 +192,9 @@ public class EventProcessor_DataDownloadDatasetDocumentEvent extends BaseEventPr
 
     private void processView(List<LinkToData> viewLinks, Map<String, OGCInfoCacheItem> ogcInfoCache) throws Exception {
          if (viewLinks.size() > MAX_LINKS_TO_FOLLOW) {
+             Collections.sort(viewLinks,( link1,link2) ->{
+                 return link1.key().compareToIgnoreCase(link2.key());
+             });
             viewLinks = viewLinks.subList(0,MAX_LINKS_TO_FOLLOW);
         }
         localDatasetMetadataRecord.setNumberOfViewLinksAttempted(viewLinks.size());

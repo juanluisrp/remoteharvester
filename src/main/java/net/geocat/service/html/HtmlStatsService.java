@@ -108,6 +108,7 @@ public class HtmlStatsService {
         result += "<br><br>\n";
 
         result += "<table border=1>";
+        result += "<tr><td></td><td style='text-align:center' colspan=3><b>VIEW</b></td><td></td><td style='text-align:center'  colspan=3><b>DOWNLOAD</b></td></tr>";
         result += "<tr><td>Dataset fileid</td><td>n view links</td><td>n view attempted</td><td>n view success</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>n download links</td><td>n download attempted</td><td>n  download success</td>";
 
         for (LocalDatasetMetadataRecord record : datasets){

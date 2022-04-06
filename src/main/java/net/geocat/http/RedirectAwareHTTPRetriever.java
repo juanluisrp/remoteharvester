@@ -60,22 +60,27 @@ public class RedirectAwareHTTPRetriever implements IHTTPRetriever {
 
 
     @Override
-    public HttpResult retrieve(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds,String acceptsHeader)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
-        return _retrieve(verb, location, body, cookie, MAXREDIRECTS, predicate,timeoutSeconds,acceptsHeader);
-    }
+//    public HttpResult retrieve(String verb, String location, String body, String cookie, IContinueReadingPredicate predicate,int timeoutSeconds,String acceptsHeader)
+//            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+//    public HttpResult retrieve(HTTPRequest request) throws  Exception
+//        return _retrieve(verb, location, body, cookie, MAXREDIRECTS, predicate,timeoutSeconds,acceptsHeader);
+  //  }
 
 
-    protected HttpResult _retrieve(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate,int timeoutSeconds,String acceptsHeader)
-            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+//    protected HttpResult _retrieve(String verb, String location, String body, String cookie, int nRedirectsRemaining, IContinueReadingPredicate predicate,int timeoutSeconds,String acceptsHeader)
+//            throws IOException, SecurityException, ExceptionWithCookies, RedirectException {
+        public HttpResult retrieve(HTTPRequest request) throws  Exception {
+
         try {
-            return retriever.retrieve(verb, location, body, cookie, predicate,timeoutSeconds,acceptsHeader);
+            return retriever.retrieve(request);
         } catch (RedirectException re) {
-            nRedirectsRemaining--;
-            if (nRedirectsRemaining <= 0)
+            request.setnRedirectsRemaining(request.getnRedirectsRemaining() -1);
+            if (request.getnRedirectsRemaining() <= 0)
                 throw new IOException("too many redirects!");
             logger.debug("     REDIRECTED TO location=" + re.getNewLocation());
-            return _retrieve(verb, re.getNewLocation(), body, cookie, nRedirectsRemaining--, predicate,timeoutSeconds,acceptsHeader);
+            request = request.clone();
+            request.setLocation(re.getNewLocation());
+            return  retrieve(request);
         }
     }
 }

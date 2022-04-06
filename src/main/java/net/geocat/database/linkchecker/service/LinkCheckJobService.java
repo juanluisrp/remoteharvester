@@ -41,14 +41,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
 @Scope("prototype")
 public class LinkCheckJobService {
 
+    static Map<String, LinkCheckJob> jobs = new HashMap<>();
+    static Object lockObj = new Object();
+
     @Autowired
     LinkCheckJobRepo linkCheckJobRepo;
+
+    //run this code after the job is complete
+    public void finalize(String linkCheckJobId) {
+        Optional<LinkCheckJob> _job = linkCheckJobRepo.findById(linkCheckJobId);
+        if (!_job.isPresent())
+            return  ; //shouln't happen
+        LinkCheckJob job = _job.get();
+        if (job.getState() == LinkCheckJobState.ERROR) {
+
+        }
+        else if (job.getState() == LinkCheckJobState.COMPLETE) {
+
+        }
+        else {
+
+        }
+
+    }
+
+    //access to config (when needed)
+    public LinkCheckJob getJobInfo(String linkCheckJobId) {
+        synchronized (lockObj) {
+            LinkCheckJob result = jobs.get(linkCheckJobId);
+            if (result != null)
+                return result;
+            Optional<LinkCheckJob> job = linkCheckJobRepo.findById(linkCheckJobId);
+            if (!job.isPresent())
+                return null; //shouln't happen
+            jobs.put(linkCheckJobId,job.get());
+            return job.get();
+        }
+    }
 
     public LinkCheckJob updateNumberofDocumentsInBatch(String linkCheckJobId, Long number) {
         LinkCheckJob job =  linkCheckJobRepo.findById(linkCheckJobId).get();
