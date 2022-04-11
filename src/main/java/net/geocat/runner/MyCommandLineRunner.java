@@ -270,11 +270,19 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
        //     all_cap();
       //      test_ogcDownload(3640069);
+            long startTime;
+            long endTime;
 
+            startTime = System.currentTimeMillis();
 //        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
-//                                   "6A98AEF11BB3619425EC88C49A3FD78AC184618C7DD548DA3BA8607C95192560",
-//                           "0ae3d6d6-1cbf-436f-8ea8-fc98ceda6f7a") ).get();
-//
+//                                   "4D71133A8C4A0A207B1D44022486A0B448D16D3CAC126CBD8A4F118314715C87",
+//                           "eeb5d499-079d-4b23-a299-92a843228e3f") ).get();
+
+           LocalDatasetMetadataRecord record =
+                   localDatasetMetadataRecordRepo.findById(581469L).get();
+
+            endTime = System.currentTimeMillis();
+            System.out.println("records  total execution time: " + (endTime - startTime));
 //        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
 //        XmlCapabilitiesWMS _cap = (XmlCapabilitiesWMS)xmlDocumentFactory.create(xmlCap);
 //
