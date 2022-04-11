@@ -73,6 +73,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -262,6 +263,12 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Autowired
     AtomActualDataEntryRepo atomActualDataEntryRepo;
 
+    @Autowired
+    DocumentLinkToCapabilitiesProcessor documentLinkToCapabilitiesProcessor;
+
+    @Autowired
+    DatasetDocumentLinkRepo datasetDocumentLinkRepo;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -275,14 +282,34 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
             startTime = System.currentTimeMillis();
 //        CapabilitiesDocument cap = capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(
-//                                   "4D71133A8C4A0A207B1D44022486A0B448D16D3CAC126CBD8A4F118314715C87",
-//                           "eeb5d499-079d-4b23-a299-92a843228e3f") ).get();
+//                                   "DDCE01CEFCC1E8EF7779D23E55DC42C72B798A92D5EDF60CE4DE6C47C367BC90",
+//                           "eacc7604-447d-4fe3-9539-8096f7b793ed") ).get();
 
-           LocalDatasetMetadataRecord record =
-                   localDatasetMetadataRecordRepo.findById(581469L).get();
+
+//            LocalServiceMetadataRecord localServiceMetadataRecord = localServiceMetadataRecordRepo.findById(860463L).get();
+//            localServiceMetadataRecord.setLinkCheckJobId("TESTCASE - "+Math.random());
+//            ServiceDocumentLink link = localServiceMetadataRecord.getServiceDocumentLinks().iterator().next();
+//            localServiceMetadataRecord.setServiceDocumentLinks( new HashSet<>(Arrays.asList(link)));
+//            documentLinkToCapabilitiesProcessor.processDocumentLinks(localServiceMetadataRecord);
+
+            List<DatasetDocumentLink> links =
+                    StreamSupport.stream(datasetDocumentLinkRepo.findAll().spliterator(), false)
+                            .collect(Collectors.toList());
+
+            for(DatasetDocumentLink link : links) {
+                boolean is = link.isInspireSimplifiedLink();
+                if (is) {
+                    int u=3;
+                }
+                int tt3=0;
+            }
+
+//           LocalDatasetMetadataRecord record =
+//                   localDatasetMetadataRecordRepo.findById(581469L).get();
 
             endTime = System.currentTimeMillis();
             System.out.println("records  total execution time: " + (endTime - startTime));
+            int ttt1=0;
 //        String xmlCap = linkCheckBlobStorageRepo.findById(cap.getSha2()).get().getTextValue();
 //        XmlCapabilitiesWMS _cap = (XmlCapabilitiesWMS)xmlDocumentFactory.create(xmlCap);
 //
