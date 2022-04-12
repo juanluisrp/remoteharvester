@@ -292,17 +292,17 @@ public class MyCommandLineRunner implements CommandLineRunner {
 //            localServiceMetadataRecord.setServiceDocumentLinks( new HashSet<>(Arrays.asList(link)));
 //            documentLinkToCapabilitiesProcessor.processDocumentLinks(localServiceMetadataRecord);
 
-            List<DatasetDocumentLink> links =
-                    StreamSupport.stream(datasetDocumentLinkRepo.findAll().spliterator(), false)
-                            .collect(Collectors.toList());
-
-            for(DatasetDocumentLink link : links) {
-                boolean is = link.isInspireSimplifiedLink();
-                if (is) {
-                    int u=3;
-                }
-                int tt3=0;
-            }
+//            List<DatasetDocumentLink> links =
+//                    StreamSupport.stream(datasetDocumentLinkRepo.findAll().spliterator(), false)
+//                            .collect(Collectors.toList());
+//
+//            for(DatasetDocumentLink link : links) {
+//                boolean is = link.isInspireSimplifiedLink();
+//                if (is) {
+//                    int u=3;
+//                }
+//                int tt3=0;
+//            }
 
 //           LocalDatasetMetadataRecord record =
 //                   localDatasetMetadataRecordRepo.findById(581469L).get();
