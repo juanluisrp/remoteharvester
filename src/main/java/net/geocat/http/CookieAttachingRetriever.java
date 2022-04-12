@@ -121,7 +121,7 @@ public class CookieAttachingRetriever   {
 
         if (result==null || result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
             try {
-                Thread.sleep((long) (1 * 1000));
+                Thread.sleep((long) (1 * 100));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -131,13 +131,13 @@ public class CookieAttachingRetriever   {
             result= retrieve_underlying(false,true,request);
         }
 
-        if  ( (result !=null) && (result.getHttpCode() == 403))
+        if  ( (result !=null) && ((result.getHttpCode() == 403) || (result.getHttpCode() == 401) ))
             return result; // short cut -- not going to change with a retry (probably shouldn't have re-tried in the first place, but...)
 
         //3rd try
         if (result==null || result.isErrorOccurred() || (result.getHttpCode() ==500) ) {
             try {
-                Thread.sleep((long) (10 * 1000));
+                Thread.sleep((long) (1 * 100));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

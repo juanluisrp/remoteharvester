@@ -65,21 +65,7 @@ public class HTTPRequest implements Cloneable {
         return (HTTPRequest) super.clone();
     }
 
-    public static HTTPRequest createGET(String location){
-        String linkCheckJobId = MDC.get("JMSCorrelationID");
-        HTTPRequest result = new HTTPRequest();
-        result.setLocation(location);
-        return result;
-    }
 
-    public static HTTPRequest createPOST(String location,String body){
-        String linkCheckJobId = MDC.get("JMSCorrelationID");
-        HTTPRequest result = new HTTPRequest();
-        result.setLocation(location);
-        result.setVerb("POST");
-        result.setBody(body);
-        return result;
-    }
 
     public String getContentType() {
         return contentType;

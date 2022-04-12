@@ -31,52 +31,62 @@
  *  ==============================================================================
  */
 
-package net.geocat.eventprocessor.processors.main;
+package net.geocat.http;
 
-import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.entities.HttpResult;
+import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.service.LinkCheckJobService;
-import net.geocat.eventprocessor.BaseEventProcessor;
-import net.geocat.events.Event;
-import net.geocat.events.LinkCheckAbortEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geocat.events.EventService;
+ import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import static net.geocat.model.LinkCheckRunConfig.maxAtomSectionLinksToFollow_default;
+import static net.geocat.model.LinkCheckRunConfig.useOtherJobsHTTPCache_default;
 
 @Component
 @Scope("prototype")
-public class EventProcessor_LinkCheckAbortEvent extends BaseEventProcessor<LinkCheckAbortEvent> {
-
-    Logger logger = LoggerFactory.getLogger(EventProcessor_LinkCheckAbortEvent.class);
+public class HttpRequestFactory {
 
     @Autowired
     LinkCheckJobService linkCheckJobService;
 
-    @Override
-    public EventProcessor_LinkCheckAbortEvent externalProcessing() {
-        return this;
+
+    public LinkCheckJob getJob(String linkCheckJobId){
+        try {
+            LinkCheckJob job = linkCheckJobService.getJobInfo(linkCheckJobId,false);
+            return job;
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 
+    public   HTTPRequest createGET(String location, String linkCheckJobId){
+        LinkCheckJob job = getJob(linkCheckJobId);
+        HTTPRequest result = new HTTPRequest();
+        result.setLinkCheckJobId(linkCheckJobId);
+        result.setLocation(location);
 
-    @Override
-    public EventProcessor_LinkCheckAbortEvent internalProcessing() {
-        String processID = getInitiatingEvent().getProcessID();
-        logger.warn("attempting to user abort for " + processID);
-        linkCheckJobService.updateLinkCheckJobStateInDB(processID, LinkCheckJobState.USERABORT);
-        logger.warn("user abort processed for " + processID);
-        linkCheckJobService.finalize(getInitiatingEvent().getProcessID());
+        boolean useOtherCaches = job == null ? useOtherJobsHTTPCache_default: job.isUseOtherJobsHTTPCache();
+        result.setCacheUseOtherJobs(useOtherCaches);
 
-        return this;
-    }
-
-
-    @Override
-    public List<Event> newEventProcessing() {
-        List<Event> result = new ArrayList<>();
         return result;
     }
+
+    public   HTTPRequest createPOST(String location,String body, String linkCheckJobId){
+        LinkCheckJob job = getJob(linkCheckJobId);
+
+        HTTPRequest result = new HTTPRequest();
+        result.setLocation(location);
+        result.setVerb("POST");
+        result.setBody(body);
+
+        boolean useOtherCaches = job == null ? useOtherJobsHTTPCache_default: job.isUseOtherJobsHTTPCache();
+        result.setCacheUseOtherJobs(useOtherCaches);
+
+        return result;
+    }
+
 }

@@ -35,6 +35,7 @@ package net.geocat.database.linkchecker.service;
 
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.entities.LinkCheckJobState;
+import net.geocat.database.linkchecker.repos.HttpResultRepo;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
 import net.geocat.events.LinkCheckRequestedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,29 +56,50 @@ public class LinkCheckJobService {
     @Autowired
     LinkCheckJobRepo linkCheckJobRepo;
 
+    @Autowired
+    HttpResultRepo httpResultRepo;
+
+
     //run this code after the job is complete
     public void finalize(String linkCheckJobId) {
-        Optional<LinkCheckJob> _job = linkCheckJobRepo.findById(linkCheckJobId);
-        if (!_job.isPresent())
-            return  ; //shouln't happen
-        LinkCheckJob job = _job.get();
-        if (job.getState() == LinkCheckJobState.ERROR) {
+        LinkCheckJob  job=getJobInfo(linkCheckJobId,true);
+//        // we are using a cache - it might be out-of-date.
+//        // if the job isn't marked as complete (or error/abort), we re-load it
+//        if ( (job.getState() != LinkCheckJobState.ERROR) && (job.getState() != LinkCheckJobState.USERABORT) && (job.getState() != LinkCheckJobState.COMPLETE) )
+//        {
+//            job=getJobInfo(linkCheckJobId,true);
+//        }
+        if (job == null)
+            return;// nothing to do - shouldnt happen
 
+        if (job.getState() == LinkCheckJobState.ERROR) {
+            _finalize(job);
+        }
+        else if (job.getState() == LinkCheckJobState.USERABORT) {
+            _finalize(job);
         }
         else if (job.getState() == LinkCheckJobState.COMPLETE) {
-
+            _finalize(job);
         }
         else {
-
+            _finalize(job);
         }
+    }
 
+    private void _finalize(LinkCheckJob  job) {
+        if ( (job == null) || (job.getJobId() ==null) || (job.getJobId().isEmpty()) )
+            return; //shouldn't happen
+        if (job.isDeleteHTTPCacheWhenComplete()) {
+            Long nItemsDeleted = httpResultRepo.deleteByLinkCheckJobId(job.getJobId());
+            int t=0;
+        }
     }
 
     //access to config (when needed)
-    public LinkCheckJob getJobInfo(String linkCheckJobId) {
+    public LinkCheckJob getJobInfo(String linkCheckJobId, boolean forceRefresh) {
         synchronized (lockObj) {
             LinkCheckJob result = jobs.get(linkCheckJobId);
-            if (result != null)
+            if ( (result != null) && !forceRefresh)
                 return result;
             Optional<LinkCheckJob> job = linkCheckJobRepo.findById(linkCheckJobId);
             if (!job.isPresent())
@@ -94,7 +116,9 @@ public class LinkCheckJobService {
     }
 
     public LinkCheckJob updateLinkCheckJobStateInDBToError(String guid) throws Exception {
-        return updateLinkCheckJobStateInDB(guid, LinkCheckJobState.ERROR);
+        LinkCheckJob result =  updateLinkCheckJobStateInDB(guid, LinkCheckJobState.ERROR);
+        finalize(guid);
+        return result;
     }
 
     public LinkCheckJob updateLinkCheckJobStateInDB(String guid, LinkCheckJobState state) {
@@ -121,6 +145,14 @@ public class LinkCheckJobService {
         newJob.setLongTermTag(event.getLongTermTag());
         newJob.setJobId(event.getLinkCheckJobId());
         newJob.setHarvestJobId(event.getHarvestJobId());
+
+        newJob.setDeleteHTTPCacheWhenComplete(event.getLinkCheckRunConfig().isDeleteHTTPCacheWhenComplete());
+        newJob.setUseOtherJobsHTTPCache(event.getLinkCheckRunConfig().isUseOtherJobsHTTPCache());
+
+        newJob.setMaxDataLinksToFollow(event.getLinkCheckRunConfig().getMaxDataLinksToFollow());
+        newJob.setMaxAtomEntriesToAttempt(event.getLinkCheckRunConfig().getMaxAtomEntriesToAttempt());
+        newJob.setMaxAtomSectionLinksToFollow(event.getLinkCheckRunConfig().getMaxAtomSectionLinksToFollow());
+
         return linkCheckJobRepo.save(newJob);
      }
 

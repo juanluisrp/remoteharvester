@@ -113,10 +113,15 @@ public class HtmlStatsService {
 
         for (LocalDatasetMetadataRecord record : datasets){
             String row ="";
+            String style = "";
             row += "<tr><td><a href='/api/html/dataset/"+record.getLinkCheckJobId()+"/"+record.getFileIdentifier()+"'>"+ record.getFileIdentifier() + "</a></td>";
-            row += "<td style='text-align: center'>"+ record.getNumberOfViewDataLinks() + "</td>";
 
-            String style=getStyle(record.getNumberOfViewDataLinks(),record.getNumberOfViewLinksAttempted());
+            if (record.getNumberOfViewDataLinks() ==0)
+                style = "background:#FFDDDD;";
+
+            row += "<td style='text-align: center;"+style+"'>"+ record.getNumberOfViewDataLinks() + "</td>";
+
+            style=getStyle(record.getNumberOfViewDataLinks(),record.getNumberOfViewLinksAttempted());
 
             row += "<td style='text-align: center;"+style+"'>"+ record.getNumberOfViewLinksAttempted() + "</td>";
 
@@ -125,7 +130,11 @@ public class HtmlStatsService {
 
             row += "<td> </td>";
 
-            row += "<td style='text-align: center'>"+ record.getNumberOfDownloadDataLinks() + "</td>";
+            style = "";
+            if (record.getNumberOfViewDataLinks() ==0)
+                style = "background:#FFDDDD;";
+
+            row += "<td style='text-align: center;"+style+"'>"+ record.getNumberOfDownloadDataLinks() + "</td>";
 
             style=getStyle(record.getNumberOfDownloadDataLinks(),record.getNumberOfDownloadLinksAttempted());
 
