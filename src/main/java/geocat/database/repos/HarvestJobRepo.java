@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -18,4 +19,6 @@ public interface HarvestJobRepo extends CrudRepository<HarvestJob, String> {
 
     @Query("SELECT h FROM HarvestJob h WHERE h.longTermTag = :longTermTag AND h.createTimeUTC = (SELECT max(hs.createTimeUTC) FROM HarvestJob hs WHERE hs.longTermTag = :longTermTag)")
     Optional<HarvestJob> findMostRecentHarvestJobByLongTermTag(@Param("longTermTag") String longTermTag);
+
+    List<HarvestJob> findByLongTermTag(String longTermTag);
 }
