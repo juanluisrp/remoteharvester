@@ -34,23 +34,70 @@
 package net.geocat.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class LinkCheckRunConfig {
 
     String longTermTag;
-
     String harvestJobId;
+
+    Boolean useOtherJobsHTTPCache ;
+    Boolean deleteHTTPCacheWhenComplete ;
+
+    Integer maxDataLinksToFollow;
+    Integer maxAtomEntriesToAttempt;
+    Integer maxAtomSectionLinksToFollow;
 
     // GUID for the harvest (used as JMS Correlation ID).  Provided by server (do not specify)
     private String processID;
 
-    public String getHarvestJobId() {
-        return harvestJobId;
+
+    //--
+
+
+    public Integer getMaxDataLinksToFollow() {
+        return maxDataLinksToFollow;
     }
 
-    public void setHarvestJobId(String harvestJobId) {
-        this.harvestJobId = harvestJobId;
+    public void setMaxDataLinksToFollow(int maxDataLinksToFollow) {
+        this.maxDataLinksToFollow = maxDataLinksToFollow;
+    }
+
+    public Integer getMaxAtomEntriesToAttempt() {
+        return maxAtomEntriesToAttempt;
+    }
+
+    public void setMaxAtomEntriesToAttempt(int maxAtomEntriesToAttempt) {
+        this.maxAtomEntriesToAttempt = maxAtomEntriesToAttempt;
+    }
+
+    public Integer getMaxAtomSectionLinksToFollow() {
+        return maxAtomSectionLinksToFollow;
+    }
+
+    public void setMaxAtomSectionLinksToFollow(int maxAtomSectionLinksToFollow) {
+        this.maxAtomSectionLinksToFollow = maxAtomSectionLinksToFollow;
+    }
+
+    public Boolean isUseOtherJobsHTTPCache() {
+        return useOtherJobsHTTPCache;
+    }
+
+    public void setUseOtherJobsHTTPCache(boolean useOtherJobsHTTPCache) {
+        this.useOtherJobsHTTPCache = useOtherJobsHTTPCache;
+    }
+
+    public Boolean isDeleteHTTPCacheWhenComplete() {
+        return deleteHTTPCacheWhenComplete;
+    }
+
+    public void setDeleteHTTPCacheWhenComplete(boolean deleteHTTPCacheWhenComplete) {
+        this.deleteHTTPCacheWhenComplete = deleteHTTPCacheWhenComplete;
     }
 
     public String getLongTermTag() {
@@ -59,6 +106,14 @@ public class LinkCheckRunConfig {
 
     public void setLongTermTag(String longTermTag) {
         this.longTermTag = longTermTag;
+    }
+
+    public String getHarvestJobId() {
+        return harvestJobId;
+    }
+
+    public void setHarvestJobId(String harvestJobId) {
+        this.harvestJobId = harvestJobId;
     }
 
     public String getProcessID() {
