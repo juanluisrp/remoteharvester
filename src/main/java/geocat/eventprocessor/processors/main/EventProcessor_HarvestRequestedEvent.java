@@ -7,6 +7,7 @@ import geocat.eventprocessor.BaseEventProcessor;
 import geocat.events.Event;
 import geocat.events.EventFactory;
 import geocat.events.HarvestRequestedEvent;
+import geocat.service.DeleteJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
     @Autowired
     EventFactory eventFactory;
 
+    @Autowired
+    DeleteJobService deleteJobService;
 
     HarvestJob job;
 
@@ -35,7 +38,10 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
 
 
     @Override
-    public EventProcessor_HarvestRequestedEvent internalProcessing() {
+    public EventProcessor_HarvestRequestedEvent internalProcessing() throws Exception {
+        deleteJobService.ensureAtMost(getInitiatingEvent().getLongTermTag(),
+                getInitiatingEvent().getStoreAtMostNHistoricalRuns());
+
         harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
         job = harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.DETERMINING_WORK);
         return this;

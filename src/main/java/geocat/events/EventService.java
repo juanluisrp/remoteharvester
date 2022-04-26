@@ -72,6 +72,7 @@ public class EventService {
         result.setProblematicResultsConfigurationJSON(harvesterConfig.getProblematicResultsConfiguration().toString());
         result.setNumberRecordsPerRequest(harvesterConfig.getNumberOfRecordsPerRequest());
         result.setGetRecordQueueHint(harvesterConfig.getGetRecordQueueHint());
+        result.setStoreAtMostNHistoricalRuns(harvesterConfig.getStoreAtMostNHistoricalRuns());
         return result;
     }
 

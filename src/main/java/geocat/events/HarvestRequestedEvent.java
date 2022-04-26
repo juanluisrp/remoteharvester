@@ -12,8 +12,20 @@ public class HarvestRequestedEvent extends Event {
     private String longTermTag;
     private boolean lookForNestedDiscoveryService;
     private Boolean doNotSort;
+    private Integer storeAtMostNHistoricalRuns;
 
     public HarvestRequestedEvent() {
+    }
+
+    //--
+
+
+    public Integer getStoreAtMostNHistoricalRuns() {
+        return storeAtMostNHistoricalRuns;
+    }
+
+    public void setStoreAtMostNHistoricalRuns(Integer storeAtMostNHistoricalRuns) {
+        this.storeAtMostNHistoricalRuns = storeAtMostNHistoricalRuns;
     }
 
     public Boolean getDoNotSort() {

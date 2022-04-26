@@ -48,6 +48,19 @@ public class HarvesterConfig {
     // if numberOfRecordsPerRequest is not specified, use this
     public static int DEFAULT_NRECORDS = 20;
 
+    Integer storeAtMostNHistoricalRuns;
+
+
+    //--
+
+
+    public Integer getStoreAtMostNHistoricalRuns() {
+        return storeAtMostNHistoricalRuns;
+    }
+
+    public void setStoreAtMostNHistoricalRuns(Integer storeAtMostNHistoricalRuns) {
+        this.storeAtMostNHistoricalRuns = storeAtMostNHistoricalRuns;
+    }
 
     public Boolean getDoNotSort() {
         return doNotSort;
@@ -135,6 +148,9 @@ public class HarvesterConfig {
 
         if (numberOfRecordsPerRequest > 500) // unreasonable
             numberOfRecordsPerRequest = 500;
+
+        if (storeAtMostNHistoricalRuns == null)
+            storeAtMostNHistoricalRuns = 10000;
     }
 
     @Override

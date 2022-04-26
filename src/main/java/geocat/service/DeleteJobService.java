@@ -92,12 +92,12 @@ public class DeleteJobService {
     }
 
 
-    public String ensureAtMost(String jobId, int maxAllowed) throws Exception {
-        if (jobId == null)
+    public String ensureAtMost(String longTermTag, int maxAllowed) throws Exception {
+        if (longTermTag == null)
             throw new Exception("delete - countryCode is null");
-        jobId = jobId.trim();
+        longTermTag = longTermTag.trim();
 
-        List<HarvestJob> jobs = harvestJobRepo.findByLongTermTag(jobId);
+        List<HarvestJob> jobs = harvestJobRepo.findByLongTermTag(longTermTag);
         if (jobs.size() <= maxAllowed)
             return "Nothing to do - job count="+jobs.size();
 
