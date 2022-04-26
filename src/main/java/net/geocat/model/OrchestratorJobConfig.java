@@ -30,6 +30,9 @@ public class OrchestratorJobConfig {
     Boolean skipHarvesting;
     String processID;
 
+    //SHARED - used by LinkChecker and Harvester
+    Integer storeAtMostNHistoricalRuns;
+
 
     //--
 
@@ -52,6 +55,18 @@ public class OrchestratorJobConfig {
 
     //---
 
+
+    public void setNumberOfRecordsPerRequest(Integer numberOfRecordsPerRequest) {
+        this.numberOfRecordsPerRequest = numberOfRecordsPerRequest;
+    }
+
+    public Integer getStoreAtMostNHistoricalRuns() {
+        return storeAtMostNHistoricalRuns;
+    }
+
+    public void setStoreAtMostNHistoricalRuns(Integer storeAtMostNHistoricalRuns) {
+        this.storeAtMostNHistoricalRuns = storeAtMostNHistoricalRuns;
+    }
 
     public String getProcessID() {
         return processID;
