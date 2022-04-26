@@ -87,7 +87,9 @@ public class HtmlSummaryService {
         if ((linkCheckJobId == null) || (linkCheckJobId.trim().isEmpty()))
             linkCheckJobId = lastLinkCheckJob();
 
-        String result = "<h1>Summary - "+linkCheckJobId+"</h1>\n";
+        String result = "<head><meta charset=\"UTF-8\"></head>\n";
+
+          result += "<h1>Summary - "+linkCheckJobId+"</h1>\n";
 
 
 

@@ -116,7 +116,10 @@ public class HtmlCapabilitiesService {
         CapabilitiesDocument capabilitiesDocument= capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(sha2,processID)).get();
         if (capabilitiesDocument == null)
             return "<h1> Couldnt find capabilitiesDocument record </h1>";
-        String result =  "<h1> Capabilities Document  </h1> \n";
+
+        String result = "<head><meta charset=\"UTF-8\"></head>\n";
+
+          result +=  "<h1> Capabilities Document  </h1> \n";
 
         result += "type: "+capabilitiesDocument.getCapabilitiesDocumentType()+"<bR>\n";
         result += "procGetSpatialDataSetName: "+capabilitiesDocument.getProcGetSpatialDataSetName()+"<bR>\n";

@@ -65,7 +65,9 @@ public class HtmlIdentifierService {
 
 
     public String getHtml(String identifier){
-        String result = "<h1>Identifier - "+identifier+"</h1>\n";
+        String result = "<head><meta charset=\"UTF-8\"></head>\n";
+
+          result += "<h1>Identifier - "+identifier+"</h1>\n";
 
         List<InspireSpatialDatasetIdentifier> inspireIds = inspireSpatialDatasetIdentifierRepo.findByCode(identifier);
         result += "<h2>Inspire Spatial Dataset Identifier - To Capabilities</h2>";

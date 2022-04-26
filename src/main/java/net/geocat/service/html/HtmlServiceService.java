@@ -94,7 +94,9 @@ public class HtmlServiceService {
         if (record == null)
             return "<h1> Couldnt find service reocrd </h1>";
 
-        String result =  "<h1> Service Record</h1> \n";
+        String result = "<head><meta charset=\"UTF-8\"></head>\n";
+
+          result +=  "<h1> Service Record</h1> \n";
         result += "<xmp>"+record.toString()  + "</xmp><br>\n<br>\n";
 
         result +="<h2>Capabilities Links</h2><Br>\n";

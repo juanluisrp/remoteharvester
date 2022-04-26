@@ -74,7 +74,8 @@ public class HtmlDiscoverService {
         Collections.sort(services, Comparator.comparing(m->m.getLastUpdateUTC()));
         Collections.reverse(services);
 
-        String result = "";
+        String result = "<head><meta charset=\"UTF-8\"></head>\n";
+
         if (!datasets.isEmpty()) {
             result +="<h1>"+datasets.size()+" Dataset Metadata Documents with fileId="+fileId+"</h1>\n<br>\n";
             for(LocalDatasetMetadataRecord record:datasets) {
