@@ -45,6 +45,8 @@ import net.geocat.xml.XmlDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
+
 import static net.geocat.service.html.HtmlDatasetService.showDownloadableLink;
 
 @Component
@@ -139,7 +141,8 @@ public class HtmlServiceService {
             if (!link.getDatasetIdentifiers().isEmpty()){
                 result += "Remote Operates On Dataset Identifiers:<bR>\n";
                 for(DatasetIdentifier identifier:link.getDatasetIdentifiers()) {
-                    String codeLink = "<a href='/api/html/identifier/"+identifier.getCode()+"/"+link.getLinkCheckJobId()+"'>"+identifier.toString()+"</a>";
+
+                    String codeLink = "<a href='/api/html/identifier?code="+ URLEncoder.encode(identifier.getCode())+"&linkcheckjobid"+link.getLinkCheckJobId()+"'>"+identifier.toString()+"</a>";
 
                     result += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+codeLink +"<br>\n";
                 }

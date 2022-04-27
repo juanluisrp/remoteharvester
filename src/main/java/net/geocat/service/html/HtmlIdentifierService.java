@@ -77,9 +77,9 @@ public class HtmlIdentifierService {
      //   result += "     var codespace = document.getElementById('codespace').value;\n";
 
 //        result +=  "    var url = window.location.protocol + '//' +window.location.host+'/api/html/identifier/' + code+'/'+codespace;\n";
-         result +=  "    var url = window.location.protocol + '//' +window.location.host+'/api/html/identifier/' + code ;\n";
+         result +=  "    var url = window.location.protocol + '//' +window.location.host+'/api/html/identifier?code=' + encodeURIComponent(code) ;\n";
 
-        result +=  "    if (linkcheckjobid != '') {url += '/'+ linkcheckjobid;}";
+        result +=  "    if (linkcheckjobid != '') {url += '&linkcheckjobid='+ linkcheckjobid;}";
         result +=  "    window.location = url;}\n";
         result += "</script>\n";
 
@@ -94,7 +94,7 @@ public class HtmlIdentifierService {
         return result;
     }
 
-    public String getHtml(String identifier, String codespace, String linkcheckjob){
+    public String getHtml(String identifier, String codespace, String linkcheckjob) throws Exception {
         String result = "<head><meta charset=\"UTF-8\"></head>\n";
         if ((codespace !=null) && codespace.isEmpty())
             codespace = null;
@@ -102,6 +102,9 @@ public class HtmlIdentifierService {
             linkcheckjob = null;
 
         String linkCheckJobId = linkcheckjob;
+
+        if ((identifier == null) || (identifier.isEmpty()))
+            throw new Exception("identifier is null/empty");
 
         result += "<h1>Code: "+identifier+"</h1>\n";
 

@@ -96,7 +96,7 @@ public class HtmlSummaryService {
         List<LocalDatasetMetadataRecord> datasets = localDatasetMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId);
         result += "<h2> Datasets - " + datasets.size()+"  </h2>\n";
         for (LocalDatasetMetadataRecord datasetRecord : datasets) {
-            result += "<a href='/api/html/dataset/" +linkCheckJobId+"/"+datasetRecord.getFileIdentifier()+"'> "+datasetRecord.getTitle() + "</a><br>\n";
+            result += "<a href='/api/html/dataset/" +linkCheckJobId+"/"+datasetRecord.getFileIdentifier()+"'> "+datasetRecord.getFileIdentifier() +" - " +datasetRecord.getTitle() + "</a><br>\n";
         }
 
 
@@ -104,7 +104,7 @@ public class HtmlSummaryService {
         List<LocalServiceMetadataRecord> services = localServiceMetadataRecordRepo.findByLinkCheckJobId(linkCheckJobId);
         result += "<h2> Services  - " + services.size()+"  </h2>\n";
         for (LocalServiceMetadataRecord serviceRecord : services) {
-            result += "<a href='/api/html/service/" +linkCheckJobId+"/"+serviceRecord.getFileIdentifier()+"'> "+serviceRecord.getTitle() + "</a><br>\n";
+            result += "<a href='/api/html/service/" +linkCheckJobId+"/"+serviceRecord.getFileIdentifier()+"'> "+serviceRecord.getFileIdentifier() + " - "+serviceRecord.getTitle() + "</a><br>\n";
         }
 
 

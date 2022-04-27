@@ -53,6 +53,7 @@ import net.geocat.xml.XmlDocumentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import static net.geocat.service.html.HtmlDatasetService.showDataLinks;
@@ -137,7 +138,7 @@ public class HtmlCapabilitiesService {
         if (capabilitiesDocument.getInspireSpatialDatasetIdentifiers().isEmpty())
             result += "NO Inspire Spatial Dataset Identifiers<br>";
         for (InspireSpatialDatasetIdentifier id:capabilitiesDocument.getInspireSpatialDatasetIdentifiers()) {
-            String codeLink = "<a href='/api/html/identifier/"+id.getCode()+"/"+processID+"'>"+id.toString()+"</a>";
+            String codeLink = "<a href='/api/html/identifier?code="+ URLEncoder.encode(id.getCode())+"&linkcheckjobid"+processID+"'>"+id.toString()+"</a>";
 
             result += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +codeLink +"<br>\n";
         }
@@ -185,7 +186,7 @@ public class HtmlCapabilitiesService {
             if (layer.getDatasetIdentifiers().isEmpty())
                 result += "NO Dataset Identifiers<br>\n";
             for(DatasetIdentifier identifier:layer.getDatasetIdentifiers()) {
-                String codeLink = "<a href='/api/html/identifier/"+identifier.getCode()+"/"+layer.getLinkCheckJobId()+"'>"+identifier.toString()+"</a>";
+                String codeLink = "<a href='/api/html/identifier?code="+URLEncoder.encode(identifier.getCode())+"&linkcheckjobid="+layer.getLinkCheckJobId()+"'>"+identifier.toString()+"</a>";
 
                 result += "&nbsp;&nbsp;&nbsp;+ " +codeLink +"<br>\n";
             }

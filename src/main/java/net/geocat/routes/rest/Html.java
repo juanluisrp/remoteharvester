@@ -115,11 +115,11 @@ public class Html extends RouteBuilder {
                 .setHeader("content-type", constant("text/html"))
         ;
 
-        rest("/api/html/scrape/")
-                .get("/{processID}/{country}")
+        rest("/api/html/compare/")
+                .get("/{item}")
                 .route()
-                .routeId("rest.rest.html.scrape")
-                .bean(HtmlScrapeService.class, "getHtml( ${header.processID}, ${header.country} )", BeanScope.Request)
+                .routeId("rest.rest.html.compare")
+                .bean(HtmlScrapeService.class, "getHtml( ${header.item}  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;
@@ -150,27 +150,29 @@ public class Html extends RouteBuilder {
                 .setHeader("content-type", constant("text/html"))
         ;
 
-        rest("/api/html/identifier/")
-                .get("/{code}")
-                .route()
-                .routeId("rest.rest.html.identifier")
-                .bean(HtmlIdentifierService.class, "getHtml( ${header.code},null,null  )", BeanScope.Request)
-
-                .setHeader("content-type", constant("text/html"))
-        ;
 //        rest("/api/html/identifier/")
-//                .get("/{code}/{codespace}")
+//                .get("/{code}")
 //                .route()
-//                .routeId("rest.rest.html.identifier2")
-//                .bean(HtmlIdentifierService.class, "getHtml( ${header.code}, ${header.codespace},null  )", BeanScope.Request)
+//                .routeId("rest.rest.html.identifier")
+//                .bean(HtmlIdentifierService.class, "getHtml( ${header.code},null,null  )", BeanScope.Request)
 //
 //                .setHeader("content-type", constant("text/html"))
 //        ;
-        rest("/api/html/identifier/")
-                .get("/{code}/{linkcheckjobid}")
+//
+//        rest("/api/html/identifier/")
+//                .get("/{code}/{linkcheckjobid}")
+//                .route()
+//                .routeId("rest.rest.html.identifier3")
+//                .bean(HtmlIdentifierService.class, "getHtml( ${header.code}, ${header.codespace},  ${header.linkcheckjobid}  )", BeanScope.Request)
+//
+//                .setHeader("content-type", constant("text/html"))
+//        ;
+
+        rest("/api/html/identifier")
+                .get("?code={code}&linkcheckjobid={linkcheckjobid}" )
                 .route()
-                .routeId("rest.rest.html.identifier3")
-                .bean(HtmlIdentifierService.class, "getHtml( ${header.code}, ${header.codespace},  ${header.linkcheckjobid}  )", BeanScope.Request)
+                .routeId("rest.rest.html.identifier")
+                .bean(HtmlIdentifierService.class, "getHtml( ${header.code},null,null  )", BeanScope.Request)
 
                 .setHeader("content-type", constant("text/html"))
         ;

@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,7 +111,9 @@ public class HtmlDatasetService {
             return "<h1> Couldnt find Dataset record </h1>";
         String result = "<head><meta charset=\"UTF-8\"></head>\n";
 
-          result += "<h1> Dataset Record</h1> \n";
+        result += "Quick link: <a href='/api/html/discoverInput'>find by fileIdentifier</a><br> <br> \n";
+
+        result += "<h1> Dataset Record</h1> \n";
 
           result += "title: "+record.getTitle()+"<br>\n";
         result += "Metadata Record Type: "+record.getMetadataRecordType()+"<br>\n";
@@ -123,7 +126,7 @@ public class HtmlDatasetService {
         result += "<h2> Dataset Identifiers</h1> \n";
         result += "<b>FileIdentifier: "+ record.getFileIdentifier() +"</b><br><br>\n";
         for(DatasetIdentifier identifier:record.getDatasetIdentifiers()) {
-            result += "<a href='/api/html/identifier/" +identifier.getCode()+"/"+processID+"'>"+identifier.toString() +"</a><br>\n";
+            result += "<a href='/api/html/identifier?code=" + URLEncoder.encode(identifier.getCode())+"&linkcheckjobid="+processID+"'>"+identifier.toString() +"</a><br>\n";
         }
 
         result +="<h2>Successful links to Capabilities Documents</h2> \n";
@@ -214,11 +217,11 @@ public class HtmlDatasetService {
         return result;
     }
 
-    public static String showDataLink(LinkToData link, boolean showDSLink, Integer _lndx) {
+    public static String showDataLink(LinkToData link, boolean showDSLink, Integer _lndx, String type) {
         String result = " ";
         String indx = _lndx == null ? "" : _lndx.toString();
 
-        result += "<h3>link "+indx+" - <a href='/api/html/linktodata/"+link.getLinkToDataId() +"'>"+ link.getClass().getSimpleName() + "</a></h3>";
+        result += "<h3>"+type+" link "+indx+" - <a href='/api/html/linktodata/"+link.getLinkToDataId() +"'>"+ link.getClass().getSimpleName() + "</a></h3>";
 
         result += "\n<table>";
 
@@ -236,13 +239,13 @@ public class HtmlDatasetService {
             result += "<tr><td>ogcLayer: </td><Td>"+_link.getOgcLayerName()+"</td></tr>\n";
             if (link instanceof SimpleLayerDatasetIdDataLink) {
                 SimpleLayerDatasetIdDataLink __link = (SimpleLayerDatasetIdDataLink) link;
-                String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+                String codeLink = "<a href='/api/html/identifier?code="+URLEncoder.encode(__link.getCode())+"&linkcheckjobid="+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
                 result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
                 result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
             }
             if (link instanceof SimpleSpatialDSIDDataLink) {
                 SimpleSpatialDSIDDataLink __link = (SimpleSpatialDSIDDataLink) link;
-                String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+                String codeLink = "<a href='/api/html/identifier?code="+URLEncoder.encode(__link.getCode())+"&linkcheckjobid="+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
 
                 result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
                 result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
@@ -258,7 +261,7 @@ public class HtmlDatasetService {
         if (link instanceof SimpleStoredQueryDataLink) {
             SimpleStoredQueryDataLink __link = (SimpleStoredQueryDataLink) link;
             result += "<tr><td>storedProcName: </td><Td>"+__link.getStoredProcName()+"</td></tr>\n";
-            String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+            String codeLink = "<a href='/api/html/identifier?code="+URLEncoder.encode(__link.getCode())+"&linkcheckjobid="+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
 
             result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
             result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
@@ -308,7 +311,7 @@ public class HtmlDatasetService {
             result += "NO LINKS <BR>\n";
 
         for (LinkToData link:links_view) {
-            result += showDataLink(link,showDSLink,new Integer(indx));
+            result += showDataLink(link,showDSLink,new Integer(indx),"view");
             indx++;
         }
 
@@ -318,7 +321,7 @@ public class HtmlDatasetService {
             result += "NO LINKS <BR>\n";
 
         for (LinkToData link:links_down) {
-            result += showDataLink(link,showDSLink,new Integer(indx));
+            result += showDataLink(link,showDSLink,new Integer(indx),"download");
             indx++;
         }
         return result;

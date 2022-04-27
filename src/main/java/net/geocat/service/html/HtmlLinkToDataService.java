@@ -64,7 +64,7 @@ public class HtmlLinkToDataService {
           result += "<h1>  "+link.getClass().getSimpleName()+" - "+linkId+"</h1>\n";
 
         result += "<br>";
-        result += showDataLink(link,true,null);
+        result += showDataLink(link,true,null,"");
         result += "<br>";
 
 //        if (link instanceof OGCLinkToData) {

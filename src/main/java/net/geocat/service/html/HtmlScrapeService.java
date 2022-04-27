@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import net.geocat.database.linkchecker.entities.HttpResult;
 import net.geocat.database.linkchecker.entities.LinkCheckJob;
 import net.geocat.database.linkchecker.repos.LinkCheckJobRepo;
-import net.geocat.http.BasicHTTPRetriever;
 import net.geocat.http.HTTPRequest;
 import net.geocat.http.HttpRequestFactory;
 import net.geocat.http.SmartHTTPRetriever;
@@ -51,6 +50,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 @Component
 public class HtmlScrapeService {
@@ -135,6 +136,7 @@ public class HtmlScrapeService {
 
     public void run_scrape(String countryCode, String jobid) throws  Exception {
         try{
+            countryCode = countryCode.toLowerCase().substring(0,2);
             String sql =  "drop table if exists scrap;";
             executeSQL2(sql);
         }
@@ -200,26 +202,30 @@ public class HtmlScrapeService {
 
     static Object lockObject = new Object();
 
-    public String getHtml(String linkcheckjob, String country) throws Exception {
+    public String getHtml(String item) throws Exception {
         synchronized (lockObject) {
-            if ((country == null) || (country.trim().isEmpty()))
-                throw new Exception("country is empty");
-            country = country.trim();
-            if (country.length() != 2)
-                throw new Exception("country must be 2 letters");
+            if ((item == null) || (item.trim().isEmpty()))
+                throw new Exception("item is empty");
+            item = item.trim();
 
-            if (country.contains("\"") || country.contains("'") || country.contains("-"))
-                throw new Exception("security exception");
+            Optional<LinkCheckJob> _job = linkCheckJobRepo.findById(item);
+            if (!_job.isPresent()) {
+                //not a job - must be a country
+                _job =linkCheckJobRepo.findById(lastLinkCheckJob(item));
+            }
+            if (!_job.isPresent())
+                throw new Exception("cannot find - "+item);
 
-            String linkCheckJob = linkcheckjob;
-            if ((linkCheckJob == null) || (linkCheckJob.trim().isEmpty()))
-                linkCheckJob = lastLinkCheckJob(country);
+            LinkCheckJob  job = _job.get();
+
+            String linkCheckJob = job.getJobId();
 
 
-            run_scrape(country, linkCheckJob);
+
+            run_scrape(job.getLongTermTag(), linkCheckJob);
             String result = "<head><meta charset=\"UTF-8\"></head>\n";
 
-            result += "<h1>Differences - " + linkCheckJob + " - "+country+ "</h1><hr>";
+            result += "<h1>Differences with GeoPortal - " + linkCheckJob + " - "+job.getLongTermTag()+ "</h1><hr>";
 
             //       select file_id, title, is_view, local_is_view from scrap where is_view !=  local_is_view and is_view and title is not null order by title;
             //        select file_id, title, is_download, local_is_download from scrap where is_download !=  local_is_download and is_download and title is not null order by title;
@@ -267,7 +273,7 @@ public class HtmlScrapeService {
 
     private String results(String linkcheckjob,List queryResult, String type) {
         String result ="";
-        result +="<table><tr> <td>File Identifier</td> <td>Title</td> <td>Geoportal - "+type+" </td><td>Local - "+type+" connected</td><td>Local - connected and "+type+"</td></tr>";
+        result +="<table border=1><tr> <td>File Identifier</td> <td>Title</td> <td>Geoportal - "+type+" </td><td>Local - "+type+" connected</td><td>Local - connected and "+type+"</td></tr>";
         for (Object o:queryResult) {
             Object[] cols = (Object[])o;
             String link = "<a href='/api/html/dataset/"+linkcheckjob+"/"+cols[0].toString()+"'>"+cols[0].toString()+"</a>";
