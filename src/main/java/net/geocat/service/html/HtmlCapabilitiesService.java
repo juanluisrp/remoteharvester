@@ -56,6 +56,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static net.geocat.service.html.HtmlDatasetService.showDataLinks;
+import static net.geocat.service.html.HtmlDatasetService.showDownloadableLink;
 
 @Component
 public class HtmlCapabilitiesService {
@@ -115,7 +116,7 @@ public class HtmlCapabilitiesService {
         processID = processID.trim();
         CapabilitiesDocument capabilitiesDocument= capabilitiesDocumentRepo.findById( new SHA2JobIdCompositeKey(sha2,processID)).get();
         if (capabilitiesDocument == null)
-            return "<h1> Couldnt find capabilitiesDocument record </h1>";
+            return "<h1> Couldn't find capabilitiesDocument record </h1>";
 
         String result = "<head><meta charset=\"UTF-8\"></head>\n";
 
@@ -131,52 +132,66 @@ public class HtmlCapabilitiesService {
 
        // result += "<xmp>"+capabilitiesDocument.toString()  + "</xmp><br>\n<br>\n";
 
+        result += "<h2>  Inspire Spatial Dataset Identifiers</h2>";
 
         if (capabilitiesDocument.getInspireSpatialDatasetIdentifiers().isEmpty())
             result += "NO Inspire Spatial Dataset Identifiers<br>";
         for (InspireSpatialDatasetIdentifier id:capabilitiesDocument.getInspireSpatialDatasetIdentifiers()) {
-            result += id.toString() +"<br>\n";
+            String codeLink = "<a href='/api/html/identifier/"+id.getCode()+"/"+processID+"'>"+id.toString()+"</a>";
+
+            result += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +codeLink +"<br>\n";
         }
         result+="<br>";
+
+        result += "<h2>Back Link to Service Metadata record</h2>";
 
         if (capabilitiesDocument.getRemoteServiceMetadataRecordLink() == null){
             result += "NO Link to Service Metadata record<br>";
         }
         else {
-            result += "<xmp>"+ capabilitiesDocument.getRemoteServiceMetadataRecordLink().toString()+"</xmp><br>\n";
+            result += showDownloadableLink(capabilitiesDocument.getRemoteServiceMetadataRecordLink(),true);
+           // result += "<xmp>"+ capabilitiesDocument.getRemoteServiceMetadataRecordLink().toString()+"</xmp><br>\n";
         }
 
 
-
+        result += "<h3>Service documents that link to this capabilities</h3>\n";
 
         List<ServiceDocumentLink> serviceBackLinks =  serviceDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
         if (!serviceBackLinks.isEmpty()) {
-            result += "<h3>Service documents that link to this capabilities</h3>\n";
             for(ServiceDocumentLink link : serviceBackLinks) {
                 result += "<a href='/api/html/service/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getLocalServiceMetadataRecord().getFileIdentifier()+"'>"+link.getLocalServiceMetadataRecord().getTitle() +"</a><br>";
             }
         }
+       else {
+           result += "NONE<br>\n";
+        }
+        result += "<h3>Dataset  documents that link to this capabilities</h3>\n";
 
         List<DatasetDocumentLink> datasetBackLinks =  datasetDocumentLinkRepo.findByLinkCheckJobIdAndSha2(capabilitiesDocument.getLinkCheckJobId(),capabilitiesDocument.getSha2());
         if (!datasetBackLinks.isEmpty()) {
-            result += "<h3>Dataset  documents that link to this capabilities</h3>\n";
             for(DatasetDocumentLink link : datasetBackLinks) {
                 result += "<a href='/api/html/dataset/"+capabilitiesDocument.getLinkCheckJobId()+"/"+link.getDatasetMetadataRecord().getFileIdentifier()+"'>"+link.getDatasetMetadataRecord().getTitle() +"</a><br>";
             }
+        } else {
+            result += "NONE<br>\n";
         }
 
-        result += "<br> <h3>Layers - "+capabilitiesDocument.getNumberOfDatasetLinks()+"</h3><br>";
+        result += "<br> <h3>Layers - "+capabilitiesDocument.getNumberOfDatasetLinks()+"</h3> ";
         int idx =0;
         for(CapabilitiesDatasetMetadataLink layer : capabilitiesDocument.getCapabilitiesDatasetMetadataLinkList()) {
             result += "<h3> layer #"+idx+"</h3><br>\n";
-            result += "fully downloaded: "+layer.getUrlFullyRead() +"<br><br>";
+          //  result += "fully downloaded: "+layer.getUrlFullyRead() +"<br><br>";
             result += "Remote Dataset Identifiers:<Br>\n";
             if (layer.getDatasetIdentifiers().isEmpty())
                 result += "NO Dataset Identifiers<br>\n";
             for(DatasetIdentifier identifier:layer.getDatasetIdentifiers()) {
-                result += "&nbsp;&nbsp;&nbsp;+ " +identifier.toString() +"<br>\n";
+                String codeLink = "<a href='/api/html/identifier/"+identifier.getCode()+"/"+layer.getLinkCheckJobId()+"'>"+identifier.toString()+"</a>";
+
+                result += "&nbsp;&nbsp;&nbsp;+ " +codeLink +"<br>\n";
             }
-            result += "<xmp>"+ layer.toString() + "</xmp><br>\n";
+            result += "<bR>\n";
+            result += showDownloadableLink(layer,true);
+           // result += "<xmp>"+ layer.toString() + "</xmp><br>\n";
 
             idx++;
         }
@@ -188,7 +203,7 @@ public class HtmlCapabilitiesService {
         if (datalinks.isEmpty())
             result += "NO DATALINKS<BR>";
 
-        result += "<br><br><br><hr><br><br><xmp>"+text(capabilitiesDocument)+"</xmp><br><br>";
+        result += "<br><br><br><hr><br><br><h1>Actual Capabilities Document Text</h1><br><hr><xmp>"+text(capabilitiesDocument)+"</xmp><br><br>";
         return result;
      }
 

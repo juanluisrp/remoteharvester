@@ -113,6 +113,8 @@ public class HtmlDatasetService {
           result += "<h1> Dataset Record</h1> \n";
 
           result += "title: "+record.getTitle()+"<br>\n";
+        result += "Metadata Record Type: "+record.getMetadataRecordType()+"<br>\n";
+
         //  result += "file identifier: "+record.getFileIdentifier()+"<br>\n";
 
         // result += "<xmp>" + record.toString() + "</xmp><br>\n<br>\n";
@@ -121,7 +123,7 @@ public class HtmlDatasetService {
         result += "<h2> Dataset Identifiers</h1> \n";
         result += "<b>FileIdentifier: "+ record.getFileIdentifier() +"</b><br><br>\n";
         for(DatasetIdentifier identifier:record.getDatasetIdentifiers()) {
-            result += identifier.toString() +"<br>\n";
+            result += "<a href='/api/html/identifier/" +identifier.getCode()+"/"+processID+"'>"+identifier.toString() +"</a><br>\n";
         }
 
         result +="<h2>Successful links to Capabilities Documents</h2> \n";
@@ -129,7 +131,7 @@ public class HtmlDatasetService {
 
         for(DatasetDocumentLink link: record.getDocumentLinks()) {
             if ( (link.getUrlFullyRead() != null) && (link.getUrlFullyRead())) {
-                result += "<h3>Link #" + idx + " - <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getSha2()   + "'>"+link.getXmlDocInfo() + "</a>" + "</h3>\n";
+                result += " <a href='" +"/api/html/capabilities/"+ link.getLinkCheckJobId()+"/"+link.getSha2()   + "'>"+link.getXmlDocInfo() + "</a>" + " <br>\n";
                 idx++;
             }
         }
@@ -158,7 +160,7 @@ public class HtmlDatasetService {
             idx++;
         }
 
-        result += "<br><br><br><hr><br><br><xmp>"+text(record)+"</xmp><br><br>";
+        result += "<br><br><br><hr><br><br><h1>Actual Dataset Text</h1><br><hr><xmp>"+text(record)+"</xmp><br><br>";
         return result;
     }
 
@@ -183,6 +185,8 @@ public class HtmlDatasetService {
         if (link instanceof DatasetDocumentLink) {
             result += "<tr><td>Is Inspire SimplifiedLink: </td><Td>"+((DatasetDocumentLink)link).isInspireSimplifiedLink()+"</td></tr>";
         }
+        if (link.getXmlDocInfo() !=null)
+            result += "<tr><td> Xml Doc Info: </td><Td>"+link.getXmlDocInfo()+"</td></tr>";
 
         result += "</table>";
 
@@ -232,12 +236,15 @@ public class HtmlDatasetService {
             result += "<tr><td>ogcLayer: </td><Td>"+_link.getOgcLayerName()+"</td></tr>\n";
             if (link instanceof SimpleLayerDatasetIdDataLink) {
                 SimpleLayerDatasetIdDataLink __link = (SimpleLayerDatasetIdDataLink) link;
-                result += "<tr><td>code: </td><Td>"+__link.getCode()+"</td></tr>\n";
+                String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+                result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
                 result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
             }
             if (link instanceof SimpleSpatialDSIDDataLink) {
                 SimpleSpatialDSIDDataLink __link = (SimpleSpatialDSIDDataLink) link;
-                result += "<tr><td>code: </td><Td>"+__link.getCode()+"</td></tr>\n";
+                String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+
+                result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
                 result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
             }
              if (_link.getSuccessfullyDownloaded() != null) {
@@ -251,7 +258,9 @@ public class HtmlDatasetService {
         if (link instanceof SimpleStoredQueryDataLink) {
             SimpleStoredQueryDataLink __link = (SimpleStoredQueryDataLink) link;
             result += "<tr><td>storedProcName: </td><Td>"+__link.getStoredProcName()+"</td></tr>\n";
-            result += "<tr><td>code: </td><Td>"+__link.getCode()+"</td></tr>\n";
+            String codeLink = "<a href='/api/html/identifier/"+__link.getCode()+"/"+__link.getLinkCheckJobId()+"'>"+__link.getCode()+"</a>";
+
+            result += "<tr><td>code: </td><Td>"+codeLink+"</td></tr>\n";
             result += "<tr><td>codespace: </td><Td>"+__link.getCodeSpace()+"</td></tr>\n";
             if (__link.getSuccessfullyDownloaded() != null) {
                 result += "<tr><td>Downloaded&nbsp;success:&nbsp;</td><Td>"+__link.getSuccessfullyDownloaded()+"</td></tr>\n";
