@@ -3,12 +3,15 @@ package com.geocat.ingester.service;
 import com.geocat.ingester.dao.harvester.EndpointJobRepo;
 import com.geocat.ingester.dao.harvester.HarvestJobRepo;
 import com.geocat.ingester.dao.harvester.MetadataRecordRepo;
+import com.geocat.ingester.dao.ingester.IngestJobRepo;
 import com.geocat.ingester.dao.linkchecker.*;
 import com.geocat.ingester.exception.GeoNetworkClientException;
 import com.geocat.ingester.geonetwork.client.GeoNetworkClient;
 import com.geocat.ingester.model.harvester.EndpointJob;
 import com.geocat.ingester.model.harvester.HarvestJob;
+import com.geocat.ingester.model.harvester.HarvestJobState;
 import com.geocat.ingester.model.harvester.MetadataRecordXml;
+import com.geocat.ingester.model.ingester.IngestJob;
 import com.geocat.ingester.model.ingester.IngestJobState;
 
 import com.geocat.ingester.model.linkchecker.LinkCheckJob;
@@ -73,19 +76,27 @@ public class IngesterService {
     @Autowired
     LazyLocalDatsetMetadataRecordRepo lazyLocalDatsetMetadataRecordRepo;
 
+    @Autowired
+    private IngestJobRepo ingestJobRepo;
+
+    public boolean continueProcessing(String jobid){
+        IngestJob ingestJob = ingestJobRepo.findById(jobid).get();
+        return  (ingestJob.getState() != IngestJobState.ERROR) && (ingestJob.getState() != IngestJobState.USERABORT);
+    }
 
     /**
      * Executes the ingester process.
      *
      * @param harvestJobId
+     * @return  true - completed, false - aborted
      * @throws Exception
      */
-    public void run(String processId, String harvestJobId) throws Exception {
+    public boolean run(String processId, String harvestJobId) throws Exception {
         Optional<HarvestJob> harvestJob = harvestJobRepo.findById(harvestJobId);
         if (!harvestJob.isPresent()) {
             log.info("No harvester job related found with harvest job id " +  harvestJobId + ".");
             // TODO: throw Exception harvester job not found
-            return;
+            return false;
         }
 
         String harvesterUuidOrName = harvestJob.get().getLongTermTag();
@@ -95,7 +106,7 @@ public class IngesterService {
         if (!harvesterConfigurationOptional.isPresent()) {
             log.info("Harvester with name/uuid " +  harvesterUuidOrName + " not found.");
             // TODO: throw Exception harvester not found
-            return;
+            return false;
         }
 
         log.info("Start ingestion process for harvester with name/uuid " + harvestJob.get().getLongTermTag() + ".");
@@ -115,6 +126,10 @@ public class IngesterService {
             totalMetadataToProcess = totalMetadataToProcess + metadataRecordRepo.countMetadataRecordByEndpointJobId(job.getEndpointJobId());
         }
 
+        if (!continueProcessing(processId)) {
+            log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+            return false;
+        }
         ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, 0, 0, 0, totalMetadataToProcess);
 
         Map<String, Boolean> metadataIds = new HashMap<>();
@@ -129,6 +144,12 @@ public class IngesterService {
                 long total = 0;
 
                 while (pagesAvailable) {
+
+                    if (!continueProcessing(processId)) {
+                        log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+                        return false;
+                    }
+
                     Pageable pageableRequest = PageRequest.of(page++, size);
 
                     Page<MetadataRecordXml> metadataRecordList =
@@ -153,8 +174,15 @@ public class IngesterService {
                         });
                     }
 
+                    if (!continueProcessing(processId)) {
+                        log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+                        return false;
+                    }
                     metadataIds.putAll(catalogueService.addOrUpdateMetadataRecords(metadataRecordList.toList(), harvesterConfigurationOptional.get(), harvestJobId));
-
+                    if (!continueProcessing(processId)) {
+                        log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+                        return false;
+                    }
                     ingestJobService.updateIngestJobStateInDBIngestedRecords(processId, total);
 
                     pagesAvailable = !metadataRecordList.isLast();
@@ -165,15 +193,30 @@ public class IngesterService {
             ex.printStackTrace();
         }
 
+        if (!continueProcessing(processId)) {
+            log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+            return false;
+        }
+
         // Index added/updated records
         // TODO: Test, commented to be indexed in GeoNetwork to avoid issues with GeoNetwork API and ECAS
-        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
         List<String> metadataIdsToIndex = metadataIds.entrySet().stream().filter(a -> a.getValue().equals(Boolean.TRUE))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         geoNetworkClient.init();
-        indexRecords(metadataIdsToIndex, processId);
 
+        if (!continueProcessing(processId)) {
+            log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+            return false;
+        }
+
+        ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
+
+        boolean completed=  indexRecords(metadataIdsToIndex, processId);
+        if (!completed) {
+            log.warn(harvestJobId + " indexRecords reported non-complete -- aborting");
+            return false;
+        }
         // Delete old harvested records no longer in the harvester server
         List<String> remoteHarvesterUuids = metadataIds.entrySet().stream()
                 .map(Map.Entry::getKey)
@@ -187,12 +230,23 @@ public class IngesterService {
                 .filter(s -> !remoteHarvesterUuids.contains(s))
                 .collect(Collectors.toList());
 
+        if (!continueProcessing(processId)) {
+            log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+            return false;
+        }
+
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.DELETING_RECORDS);
         deleteRecords(metadataIdsToDelete, processId);
 
+        if (!continueProcessing(processId)) {
+            log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
+            return false;
+        }
+
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.RECORDS_PROCESSED);
 
-        log.info("Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
+        log.info("IngesterService: run(): Finished ingestion process for harvester with name/uuid " +  harvesterUuidOrName + ".");
+        return true;
     }
 
 
@@ -201,9 +255,10 @@ public class IngesterService {
      *
      * @param metadataIds
      * @param processId
+     * @return true - completed, false - aborted
      * @throws GeoNetworkClientException
      */
-    private void indexRecords(List<String> metadataIds, String processId) {
+    private boolean indexRecords(List<String> metadataIds, String processId) {
         int batchSize = 50;
 
         int totalPages = (int) Math.ceil(metadataIds.size() * 1.0 / batchSize * 1.0);
@@ -212,6 +267,11 @@ public class IngesterService {
 
         for (int i = 0; i < totalPages; i++) {
             try {
+                if (!continueProcessing(processId)) {
+                    log.warn(processId+" is in USERABORT/ERROR state - aborting");
+                    return false;
+                }
+
                 int from = i * batchSize;
                 int to = Math.min(((i+1) * batchSize), metadataIds.size());
 
@@ -227,8 +287,10 @@ public class IngesterService {
             } catch (GeoNetworkClientException ex) {
                 // TODO: Handle exception
                 log.error(ex.getMessage(), ex);
+                return false;
             }
         }
+        return true;
     }
 
     /**
