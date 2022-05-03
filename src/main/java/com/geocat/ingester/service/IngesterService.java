@@ -17,7 +17,6 @@ import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
 import com.geocat.ingester.model.linkchecker.helper.CapabilitiesType;
 import com.geocat.ingester.model.linkchecker.helper.IndicatorStatus;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -188,7 +184,7 @@ public class IngesterService {
                 .collect(Collectors.toList());
 
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.DELETING_RECORDS);
-        deleteRecords(metadataIdsToDelete, processId);
+            deleteRecords(metadataIdsToDelete, processId);
 
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.RECORDS_PROCESSED);
 
@@ -251,7 +247,7 @@ public class IngesterService {
                 int to = Math.min(((i+1) * batchSize), metadataIds.size());
 
                 int toR = (i == totalPages - 1)?metadataIds.size():(to-1);
-                log.info("Indexing harvested metadata records from " +  Math.max(1, i * batchSize) + " to " + toR + " of " + metadataIds.size());
+                log.info("Deleting old harvested metadata records from " +  Math.max(1, i * batchSize) + " to " + toR + " of " + metadataIds.size());
 
                 geoNetworkClient.delete(metadataIds.subList(from , to));
 
