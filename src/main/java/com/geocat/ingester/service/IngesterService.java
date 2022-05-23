@@ -208,11 +208,12 @@ public class IngesterService {
 
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.INDEXING_RECORDS);
 
-        boolean completed=  indexRecords(metadataIdsToIndex, processId);
+        // Commented: to do remote indexing due to ECAS auth in GeoNetwork the csw-ingester can't use GeoNetwork API
+        /*boolean completed=indexRecords(metadataIdsToIndex, processId);
         if (!completed) {
             log.warn(harvestJobId + " indexRecords reported non-complete -- aborting");
             return false;
-        }
+        }*/
         // Delete old harvested records no longer in the harvester server
         List<String> remoteHarvesterUuids = metadataIds.entrySet().stream()
                 .map(Map.Entry::getKey)
@@ -232,7 +233,7 @@ public class IngesterService {
         }
 
         ingestJobService.updateIngestJobStateInDB(processId, IngestJobState.DELETING_RECORDS);
-            deleteRecords(metadataIdsToDelete, processId);
+        deleteRecords(metadataIdsToDelete, processId);
 
         if (!continueProcessing(processId)) {
             log.warn(harvestJobId+" is in USERABORT/ERROR state - aborting");
@@ -311,7 +312,9 @@ public class IngesterService {
                 int toR = (i == totalPages - 1)?metadataIds.size():(to-1);
                 log.info("Deleting old harvested metadata records from " +  Math.max(1, i * batchSize) + " to " + toR + " of " + metadataIds.size());
 
-                geoNetworkClient.delete(metadataIds.subList(from , to));
+                catalogueService.deleteMetadata(new HashSet(metadataIds.subList(from , to)));
+                // Commented: to do local delete due to ECAS auth in GeoNetwork the csw-ingester can't use GeoNetwork API
+                //geoNetworkClient.delete(metadataIds.subList(from , to));
 
                 total = total + (to-from);
 
