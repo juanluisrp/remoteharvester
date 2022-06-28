@@ -44,3 +44,5 @@ buildNumber.properties
 # File-based project format
 *.iws
 
+# Mac OS files
+.DS_Store
