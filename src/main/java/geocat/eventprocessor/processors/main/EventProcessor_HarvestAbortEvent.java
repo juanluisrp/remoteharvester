@@ -1,5 +1,6 @@
 package geocat.eventprocessor.processors.main;
 
+import geocat.database.entities.HarvestJob;
 import geocat.database.entities.HarvestJobState;
 import geocat.database.service.HarvestJobService;
 import geocat.eventprocessor.BaseEventProcessor;
@@ -34,8 +35,16 @@ public class EventProcessor_HarvestAbortEvent extends BaseEventProcessor<Harvest
     public EventProcessor_HarvestAbortEvent internalProcessing() {
         String processID = getInitiatingEvent().getProcessID();
         logger.warn("attempting to user abort for " + processID);
-        harvestJobService.updateHarvestJobStateInDB(processID, HarvestJobState.USERABORT);
-        logger.warn("user abort processed for " + processID);
+        HarvestJob job = harvestJobService.getById(processID);
+        if ( (job.getState() != HarvestJobState.COMPLETE)
+                && (job.getState() != HarvestJobState.ERROR)
+                && (job.getState() != HarvestJobState.USERABORT)) {
+            harvestJobService.updateHarvestJobStateInDB(processID, HarvestJobState.USERABORT);
+            logger.warn("user abort processed for " + processID);
+        }
+        else {
+            logger.warn("user abort - process is already in state: " + job.getState() );
+        }
         return this;
     }
 
