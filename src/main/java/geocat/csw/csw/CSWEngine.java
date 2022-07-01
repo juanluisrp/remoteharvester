@@ -88,8 +88,9 @@ public class CSWEngine {
             url += GETCAP_KVP;
         else if (!url.contains("?"))
             url += "?" + GETCAP_KVP;
-        else
-            url += "&" + GETCAP_KVP;
+        //else
+        //    url += "&" + GETCAP_KVP;
+
         //otherwise, likely already has the request=GetCapabilities in it!
         HttpResult result = retriever.retrieveXML("GET", url, null, null,null);
         return new String(result.getData());
