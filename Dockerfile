@@ -13,7 +13,7 @@ RUN --mount=type=cache,target=/root/.m2/repository \
 RUN --mount=type=cache,target=/root/.m2/repository \
 	mvn -B package -DskipTests
 RUN mkdir /application && \
-	cp target/*.jar /application/csw-harvester.jar
+	cp target/csw-harvester*.jar /application/csw-harvester.jar
 
 WORKDIR /application
 
@@ -32,8 +32,12 @@ LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-harvester
 # Check the file application.properties for a description of the environment variables that can be customized.
 # The property names can be translated to environment varibles passing them to upper case and replacing the dots
 # with underscores. For example harvester.jdbc.url -> HARVESTER_JDBC_URL
+COPY extra/certs/ /certs
+COPY extra/bin /usr/local/bin
 
-RUN mkdir -p /opt/csw-harvester
+RUN chmod -R +x /usr/local/bin && \
+	import_certs.sh && \
+	mkdir -p /opt/csw-harvester
 WORKDIR /opt/csw-harvester
 COPY --from=builder /application/dependencies/ ./
 COPY --from=builder /application/spring-boot-loader ./
