@@ -113,6 +113,7 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         }
 
 
+
         http.setConnectTimeout(TIMEOUT_MS);
         http.setReadTimeout(TIMEOUT_MS);
         http.setRequestMethod(verb);
@@ -120,9 +121,8 @@ public class BasicHTTPRetriever implements IHTTPRetriever {
         http.setDoInput(true);
         if (verb.equals("POST")) {
             http.setFixedLengthStreamingMode(body_bytes.length);
-           // http.setRequestProperty("Content-Type", "application/xml");
+            http.setRequestProperty("Content-Type", "application/xml");
         }
-        http.setRequestProperty("Content-Type", "application/xml");
         http.setRequestProperty("Accept", "application/xml");
         if ((cookie != null) && (!cookie.isEmpty()))
             http.setRequestProperty("Cookie", cookie);
