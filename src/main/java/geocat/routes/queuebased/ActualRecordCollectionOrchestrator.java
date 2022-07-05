@@ -29,7 +29,8 @@ public class ActualRecordCollectionOrchestrator extends SpringRouteBuilder {
                 "activemq:" + myJMSQueueName,
                 new Class[]{ActualHarvestStartCommand.class, ActualHarvestEndpointStartCommand.class, GetRecordsCommand.class, EndpointHarvestComplete.class},
                 Arrays.asList(new RedirectEvent(ActualHarvestCompleted.class, "activemq:" + MainOrchestrator.myJMSQueueName)),
-                Arrays.asList(new Class[]{GetRecordsCommand.class})
+                Arrays.asList(new Class[]{GetRecordsCommand.class}),
+                2
         );
 
         from("direct:" + myJMSQueueName + "_GetRecordsCommand")

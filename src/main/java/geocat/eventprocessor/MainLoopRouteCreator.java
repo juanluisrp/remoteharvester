@@ -38,7 +38,8 @@ public class MainLoopRouteCreator {
                                           String from,
                                           Class[] eventTypes,
                                           List<RedirectEvent> redirectEventList,
-                                          List<Class> handledElsewhereEvents) throws Exception {
+                                          List<Class> handledElsewhereEvents,
+                                          int concurrency) throws Exception {
 
         String mainRouteName = extractName(from);
         JacksonDataFormat jsonDefHarvesterConfig = new JacksonDataFormat(Event.class);
@@ -59,7 +60,7 @@ public class MainLoopRouteCreator {
         ;
 
         ChoiceDefinition choice = routeBuilder
-                .from(from)
+                .from(from+"?concurrentConsumers="+concurrency)
                 .routeId(mainRouteName + ".eventprocessor")
                 .transacted()
                 .unmarshal(jsonDefHarvesterConfig)
