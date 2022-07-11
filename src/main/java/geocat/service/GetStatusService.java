@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 public class GetStatusService {
 
+    public static Boolean DEFAULT_QUICK = Boolean.FALSE;
+
+
     @Autowired
     HarvestJobService harvestJobService;
 
@@ -39,15 +42,19 @@ public class GetStatusService {
     @Autowired
     LogbackLoggingEventExceptionRepo logbackLoggingEventExceptionRepo;
 
-    public HarvestStatus getStatus(String processId) {
+    public HarvestStatus getStatus(String processId, Boolean quick) {
+        if (quick == null)
+            quick = DEFAULT_QUICK;
         HarvestJob job = harvestJobService.getById(processId);
         List<EndpointJob> endpointJobs = endpointJobService.findAll(processId);
 
         HarvestStatus result = new HarvestStatus(job);
-        setupErrorMessages(result);
-        for (EndpointJob endpointJob : endpointJobs) {
-            long numberReceived = computeNumberReceived(endpointJob);
-            result.endpoints.add(new EndpointStatus(endpointJob, (int) numberReceived));
+        if (!quick) {
+            setupErrorMessages(result);
+            for (EndpointJob endpointJob : endpointJobs) {
+                long numberReceived = computeNumberReceived(endpointJob);
+                result.endpoints.add(new EndpointStatus(endpointJob, (int) numberReceived));
+            }
         }
         return result;
     }
