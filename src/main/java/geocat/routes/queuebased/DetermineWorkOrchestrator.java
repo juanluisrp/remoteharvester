@@ -28,7 +28,8 @@ public class DetermineWorkOrchestrator extends SpringRouteBuilder {
                 Arrays.asList(
                         new RedirectEvent(WorkedDeterminedFinished.class, "activemq:" + MainOrchestrator.myJMSQueueName)
                 ),
-                Arrays.asList(new Class[0])
+                Arrays.asList(new Class[0]),
+                2
         );
     }
 }
