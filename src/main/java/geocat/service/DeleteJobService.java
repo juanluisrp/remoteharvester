@@ -1,11 +1,11 @@
 package geocat.service;
 
 import geocat.database.entities.HarvestJob;
+import geocat.database.entities.HarvestJobState;
 import geocat.database.repos.HarvestJobRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class DeleteJobService {
@@ -105,7 +106,15 @@ public class DeleteJobService {
                 Comparator.comparing(HarvestJob::getCreateTimeUTC));
         Collections.reverse(jobs);
 
-        List<HarvestJob> jobsToDelete = jobs.subList(maxAllowed, jobs.size());
+        //preferentially remove ERROR and USERABORT jobs (they aren't worth keeping)
+        List<HarvestJob> jobsToDelete = jobs.stream()
+                .filter(x->x.getState() == HarvestJobState.USERABORT || x.getState() == HarvestJobState.ERROR)
+                .collect(Collectors.toList());
+
+        jobs.removeAll(jobsToDelete);
+
+        if (jobs.size() > maxAllowed)
+            jobsToDelete.addAll(jobs.subList(maxAllowed, jobs.size()));
 
         String  result  = jobsToDelete.size() +" jobs were deleted.";
         for (HarvestJob job : jobsToDelete) {
