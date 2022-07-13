@@ -11,6 +11,8 @@ import geocat.service.DeleteJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +34,20 @@ public class EventProcessor_HarvestRequestedEvent extends BaseEventProcessor<Har
 
 
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public EventProcessor_HarvestRequestedEvent externalProcessing() {
+        job =  harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
         return this;
     }
 
 
     @Override
     public EventProcessor_HarvestRequestedEvent internalProcessing() throws Exception {
-        deleteJobService.ensureAtMost(getInitiatingEvent().getLongTermTag(),
-                getInitiatingEvent().getStoreAtMostNHistoricalRuns());
 
-        harvestJobService.createNewHarvestJobInDB(getInitiatingEvent());
+        deleteJobService.ensureAtMost(getInitiatingEvent().getLongTermTag(),
+                getInitiatingEvent().getStoreAtMostNHistoricalRuns(),
+                job.getJobId());
+
         job = harvestJobService.updateHarvestJobStateInDB(getInitiatingEvent().getHarvestId(), HarvestJobState.DETERMINING_WORK);
         return this;
     }

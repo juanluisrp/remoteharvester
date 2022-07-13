@@ -92,13 +92,22 @@ public class DeleteJobService {
         return "DELETED";
     }
 
+    public void insertToDBImmediate(HarvestJob job) {
 
-    public String ensureAtMost(String longTermTag, int maxAllowed) throws Exception {
+    }
+
+
+    public String ensureAtMost(String longTermTag, int maxAllowed, String jobIdDoNotDelete) throws Exception {
         if (longTermTag == null)
             throw new Exception("delete - countryCode is null");
         longTermTag = longTermTag.trim();
 
         List<HarvestJob> jobs = harvestJobRepo.findByLongTermTag(longTermTag);
+        // don't delete the one being created...
+        jobs = jobs.stream()
+                .filter(x->!x.getJobId().equals(jobIdDoNotDelete))
+                .collect(Collectors.toList());
+
         if (jobs.size() <= maxAllowed)
             return "Nothing to do - job count="+jobs.size();
 
@@ -118,6 +127,7 @@ public class DeleteJobService {
 
         String  result  = jobsToDelete.size() +" jobs were deleted.";
         for (HarvestJob job : jobsToDelete) {
+            logger.debug("ensureAtMost: deleting jobid="+job.getJobId());
             deleteById(job.getJobId());
             result+= job.getJobId()+",";
         }
