@@ -18,10 +18,7 @@ import com.geocat.ingester.model.linkchecker.LinkCheckJob;
 import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
 import com.geocat.ingester.model.linkchecker.ServiceDocumentLink;
-import com.geocat.ingester.model.linkchecker.helper.CapabilitiesType;
-import com.geocat.ingester.model.linkchecker.helper.IndicatorStatus;
-import com.geocat.ingester.model.linkchecker.helper.LinkToData;
-import com.geocat.ingester.model.linkchecker.helper.ServiceMetadataRecord;
+import com.geocat.ingester.model.linkchecker.helper.*;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -383,6 +380,12 @@ public class IngesterService {
                     String capabilitiesSha2 = vl.getCapabilitiesSha2();
 
                     Optional<ServiceDocumentLink> serviceDocumentLink = serviceDocumentLinkRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, capabilitiesSha2);
+
+                    if (vl instanceof OGCLinkToData) {
+                        OGCLinkToData ogcLinkToData = (OGCLinkToData) vl;
+                        addIndicator(metadata, "INDICATOR_VIEW_SERVICE_LAYERNAME", ogcLinkToData.getOgcLayerName());
+                        addIndicator(metadata, "INDICATOR_VIEW_SERVICE_LAYERLINK", ogcLinkToData.getOgcRequest().getFinalURL());
+                    }
 
                     if (serviceDocumentLink.isPresent()) {
                         ServiceMetadataRecord serviceMetadataRecord = serviceDocumentLink.get().getLocalServiceMetadataRecord();
