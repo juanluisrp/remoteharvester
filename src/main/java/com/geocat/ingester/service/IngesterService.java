@@ -17,8 +17,11 @@ import com.geocat.ingester.model.ingester.IngestJobState;
 import com.geocat.ingester.model.linkchecker.LinkCheckJob;
 import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
+import com.geocat.ingester.model.linkchecker.ServiceDocumentLink;
 import com.geocat.ingester.model.linkchecker.helper.CapabilitiesType;
 import com.geocat.ingester.model.linkchecker.helper.IndicatorStatus;
+import com.geocat.ingester.model.linkchecker.helper.LinkToData;
+import com.geocat.ingester.model.linkchecker.helper.ServiceMetadataRecord;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +74,12 @@ public class IngesterService {
 
     @Autowired
     LazyLocalDatsetMetadataRecordRepo lazyLocalDatsetMetadataRecordRepo;
+
+    @Autowired
+    ServiceDocumentLinkRepo serviceDocumentLinkRepo;
+
+    @Autowired
+    LinkToDataRepo linkToDataRepo;
 
     @Autowired
     private IngestJobRepo ingestJobRepo;
@@ -349,6 +358,7 @@ public class IngesterService {
             addIndicator(metadata, "INDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES", localServiceMetadataRecord.get().getINDICATOR_CAPABILITIES_SERVICE_FILE_ID_MATCHES());
            // addIndicator(metadata, "INDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES", localServiceMetadataRecord.get(0).getINDICATOR_CAPABILITIES_SERVICE_FULLY_MATCHES());
             addIndicator(metadata, "INDICATOR_RESOLVES_TO_CAPABILITIES", localServiceMetadataRecord.get().getINDICATOR_RESOLVES_TO_CAPABILITIES());
+
         } else {
            // List<LocalDatasetMetadataRecord> localDatasetMetadataRecord = localDatasetMetadataRecordRepo.findAllByFileIdentifierAndLinkCheckJobId(metadata.getRecordIdentifier(), linkCheckJobId);
             Optional<LocalDatasetMetadataRecord> localDatasetMetadataRecord = lazyLocalDatsetMetadataRecordRepo.searchFirstByFileIdentifierAndLinkCheckJobId(metadata.getRecordIdentifier(), linkCheckJobId);
@@ -361,8 +371,56 @@ public class IngesterService {
                 addIndicator(metadata, "INDICATOR_LAYER_MATCHES_DOWNLOAD", localDatasetMetadataRecord.get().getINDICATOR_LAYER_MATCHES_DOWNLOAD());
                 addIndicator(metadata, "INDICATOR_VIEW_LINK_TO_DATA", localDatasetMetadataRecord.get().getINDICATOR_VIEW_LINK_TO_DATA());
                 addIndicator(metadata, "INDICATOR_DOWNLOAD_LINK_TO_DATA", localDatasetMetadataRecord.get().getINDICATOR_DOWNLOAD_LINK_TO_DATA());
+
+                List<LinkToData> metadataLinks = linkToDataRepo.findAllByLinkCheckJobIdAndDatasetMetadataFileIdentifier( linkCheckJobId, localDatasetMetadataRecord.get().getFileIdentifier());
+                List<LinkToData> viewLinks = metadataLinks.stream().filter(l ->
+                        l.getCapabilitiesDocumentType().equals(CapabilitiesType.WMS) ||
+                                l.getCapabilitiesDocumentType().equals(CapabilitiesType.WMTS)
+                ).collect(Collectors.toList());
+
+                // Retrieve the service view links
+                viewLinks.stream().forEach(vl -> {
+                    String capabilitiesSha2 = vl.getCapabilitiesSha2();
+
+                    Optional<ServiceDocumentLink> serviceDocumentLink = serviceDocumentLinkRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, capabilitiesSha2);
+
+                    if (serviceDocumentLink.isPresent()) {
+                        ServiceMetadataRecord serviceMetadataRecord = serviceDocumentLink.get().getLocalServiceMetadataRecord();
+
+                        if (serviceMetadataRecord != null) {
+                            addIndicator(metadata, "INDICATOR_VIEW_SERVICE_IDENTIFIER", serviceMetadataRecord.getFileIdentifier());
+                        }
+                    }
+                });
+
+                // Retrieve the service download links
+                List<LinkToData> downloadLinks = metadataLinks.stream().filter(l ->
+                        l.getCapabilitiesDocumentType().equals(CapabilitiesType.Atom) ||
+                                l.getCapabilitiesDocumentType().equals(CapabilitiesType.WFS)
+                ).collect(Collectors.toList());
+
+                // Retrieve the service download links
+                downloadLinks.stream().forEach(vl -> {
+                    String capabilitiesSha2 = vl.getCapabilitiesSha2();
+
+                    Optional<ServiceDocumentLink> serviceDocumentLink = serviceDocumentLinkRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, capabilitiesSha2);
+
+                    if (serviceDocumentLink.isPresent()) {
+                        ServiceMetadataRecord serviceMetadataRecord = serviceDocumentLink.get().getLocalServiceMetadataRecord();
+
+                        if (serviceMetadataRecord != null) {
+                            addIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_IDENTIFIER", serviceMetadataRecord.getFileIdentifier());
+                        }
+                    }
+                });
             }
 
+        }
+    }
+
+    private void addIndicator(MetadataRecordXml metadata, String indicatorName, String value) {
+        if (StringUtils.hasLength(value)) {
+            metadata.addIndicator(indicatorName, value);
         }
     }
 
