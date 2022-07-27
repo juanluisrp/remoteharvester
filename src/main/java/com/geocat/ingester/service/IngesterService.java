@@ -14,10 +14,7 @@ import com.geocat.ingester.model.harvester.MetadataRecordXml;
 import com.geocat.ingester.model.ingester.IngestJob;
 import com.geocat.ingester.model.ingester.IngestJobState;
 
-import com.geocat.ingester.model.linkchecker.LinkCheckJob;
-import com.geocat.ingester.model.linkchecker.LocalDatasetMetadataRecord;
-import com.geocat.ingester.model.linkchecker.LocalServiceMetadataRecord;
-import com.geocat.ingester.model.linkchecker.ServiceDocumentLink;
+import com.geocat.ingester.model.linkchecker.*;
 import com.geocat.ingester.model.linkchecker.helper.*;
 import com.geocat.ingester.model.metadata.HarvesterConfiguration;
 import org.slf4j.Logger;
@@ -407,6 +404,28 @@ public class IngesterService {
                     String capabilitiesSha2 = vl.getCapabilitiesSha2();
 
                     Optional<ServiceDocumentLink> serviceDocumentLink = serviceDocumentLinkRepo.findFirstByLinkCheckJobIdAndSha2(linkCheckJobId, capabilitiesSha2);
+
+                    if (vl instanceof OGCLinkToData) {
+                        OGCLinkToData ogcLinkToData = (OGCLinkToData) vl;
+                        addIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERNAME", ogcLinkToData.getOgcLayerName());
+                        addIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK", ogcLinkToData.getOgcRequest().getFinalURL());
+                    } else if (vl instanceof SimpleStoredQueryDataLink) {
+                        SimpleStoredQueryDataLink simpleStoredQueryDataLink = (SimpleStoredQueryDataLink) vl;
+                        addIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK", simpleStoredQueryDataLink.getOgcRequest().getFinalURL());
+                    } else if (vl instanceof SimpleAtomLinkToData) {
+                        SimpleAtomLinkToData simpleAtomLinkToData = (SimpleAtomLinkToData) vl;
+
+                        List<AtomActualDataEntry> atomActualDataEntryList = simpleAtomLinkToData.getAtomActualDataEntryList();
+                        for (AtomActualDataEntry atomActualDataEntry : atomActualDataEntryList) {
+                            if (atomActualDataEntry.getSuccessfullyDownloaded()) {
+                                atomActualDataEntry.getAtomDataRequestList().forEach(r -> {
+                                    addIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK",  r.getFinalURL());
+                                });
+                                break;
+                            }
+                        }
+
+                    }
 
                     if (serviceDocumentLink.isPresent()) {
                         ServiceMetadataRecord serviceMetadataRecord = serviceDocumentLink.get().getLocalServiceMetadataRecord();
