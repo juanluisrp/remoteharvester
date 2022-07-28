@@ -36,12 +36,28 @@ package com.geocat.ingester.model.linkchecker;
 import com.geocat.ingester.model.linkchecker.helper.HTTPRequestCheckerType;
 import com.geocat.ingester.model.linkchecker.helper.RetrievableSimpleLink;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import static com.geocat.ingester.model.linkchecker.helper.PartialDownloadHint.ALWAYS_PARTIAL;
 
-@Entity
 
+@Entity
+@Table(
+        indexes = {
+                @Index(
+                        name = "OGCRequest_linkcheckjobid_idx",
+                        columnList = "linkcheckjobid",
+                        unique = false
+                )})
 public class OGCRequest extends RetrievableSimpleLink {
 
     @Id
@@ -68,7 +84,7 @@ public class OGCRequest extends RetrievableSimpleLink {
         setPartialDownloadHint(ALWAYS_PARTIAL);
     }
 
-    public OGCRequest(String url, HTTPRequestCheckerType httpRequestCheckerType) {
+    public OGCRequest(String url,HTTPRequestCheckerType httpRequestCheckerType) {
         this();
         setRawURL(url);
         setFixedURL(url);

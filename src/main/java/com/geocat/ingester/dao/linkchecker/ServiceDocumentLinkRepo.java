@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -48,4 +49,5 @@ public interface ServiceDocumentLinkRepo extends CrudRepository<ServiceDocumentL
 
     Optional<ServiceDocumentLink> findFirstByLinkCheckJobIdAndSha2(String linkCheckJobId, String sha2);
 
+    List<ServiceDocumentLink> findByLinkCheckJobIdAndSha2(String linkCheckJobId, String Sha2);
 }

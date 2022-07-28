@@ -31,54 +31,20 @@
  *  ==============================================================================
  */
 
-package com.geocat.ingester.model.linkchecker;
+package com.geocat.ingester.dao.linkchecker;
 
-import com.geocat.ingester.model.linkchecker.helper.DatasetMetadataRecord;
-import com.geocat.ingester.model.linkchecker.helper.OGCLinkToData;
+import com.geocat.ingester.model.linkchecker.DatasetDocumentLink;
+import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
-
-/**
- * Represents a simple linkage between a dataset and layer in an OGC service (WFS/WMS/WMTS).
- *
- *     The service (capabilities) can be found using capabilitiesSha2,linkCheckJobId.
- *     The layer is in ogcLayerName.
- *
- *     In the capabilities file, you should find a layer/featuretype (Name=ogcLayerName) that has a metadataURL
- *     that points the Dataset Metadata document (via fileIdentifier and datasetIdentifier).
- *
- */
-@Entity
-@DiscriminatorValue("SimpleLayerMetadataUrlDataLink")
-public class SimpleLayerMetadataUrlDataLink extends OGCLinkToData {
+import java.util.List;
 
 
-    public SimpleLayerMetadataUrlDataLink() {
-        super();
-    }
+@Component
+@Scope("prototype")
+public interface DatasetDocumentLinkRepo extends CrudRepository<DatasetDocumentLink, Long> {
 
-    public SimpleLayerMetadataUrlDataLink(String linkcheckjobid, String sha2, String capabilitiesdocumenttype, DatasetMetadataRecord datasetMetadataRecord) {
-        super(linkcheckjobid,sha2,capabilitiesdocumenttype,datasetMetadataRecord);
-    }
+    List<DatasetDocumentLink> findByLinkCheckJobIdAndSha2(String linkCheckJobId, String Sha2);
 
-    //---
-
-
-    //----
-
-
-    @Override
-    public String toString() {
-        return "SimpleLayerMetadataUrlDataLink{\n" +
-                "     ogcLayerName:" + getOgcLayerName() + '\n' +
-                super.toString() +
-                '}';
-    }
-
-    @Override
-    public String key() {
-        return super.key() +"::"+getOgcLayerName();
-    }
 }

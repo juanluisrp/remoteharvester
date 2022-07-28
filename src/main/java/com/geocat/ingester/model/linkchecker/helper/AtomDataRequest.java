@@ -36,7 +36,13 @@ package com.geocat.ingester.model.linkchecker.helper;
 
 import com.geocat.ingester.model.linkchecker.AtomActualDataEntry;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import static com.geocat.ingester.model.linkchecker.helper.PartialDownloadHint.ALWAYS_PARTIAL;
 

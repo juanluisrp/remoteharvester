@@ -33,8 +33,6 @@
 
 package com.geocat.ingester.model.linkchecker;
 
-
-
 import com.geocat.ingester.model.linkchecker.helper.DatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.helper.OGCLinkToData;
 

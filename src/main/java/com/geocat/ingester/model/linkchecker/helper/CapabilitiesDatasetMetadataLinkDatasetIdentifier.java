@@ -33,9 +33,14 @@
 
 package com.geocat.ingester.model.linkchecker.helper;
 
+
 import com.geocat.ingester.model.linkchecker.CapabilitiesDatasetMetadataLink;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 
 
 @Entity
@@ -54,7 +59,7 @@ public class CapabilitiesDatasetMetadataLinkDatasetIdentifier extends DatasetIde
     public CapabilitiesDatasetMetadataLinkDatasetIdentifier(DatasetIdentifier id) {
         super(id.getIdentifierNodeType(),id.getCode(),id.getCodeSpace());
     }
-    public CapabilitiesDatasetMetadataLinkDatasetIdentifier(DatasetIdentifier id, CapabilitiesDatasetMetadataLink r ) {
+    public CapabilitiesDatasetMetadataLinkDatasetIdentifier(DatasetIdentifier id,CapabilitiesDatasetMetadataLink r ) {
         this(id);
         this.capDatasetMetadataLink = r;
     }

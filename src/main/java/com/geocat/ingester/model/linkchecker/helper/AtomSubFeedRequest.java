@@ -33,12 +33,28 @@
 
 package com.geocat.ingester.model.linkchecker.helper;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import static com.geocat.ingester.model.linkchecker.helper.PartialDownloadHint.CAPABILITIES_ONLY;
 
-
 @Entity
+@Table(
+        indexes = {
+                @Index(
+                        name = "AtomSubFeedRequest_linkcheckid_idx",
+                        columnList = "linkcheckjobid",
+                        unique = false
+                )
+        })
 public class AtomSubFeedRequest extends RetrievableSimpleLink  {
 
     @Id
@@ -63,9 +79,9 @@ public class AtomSubFeedRequest extends RetrievableSimpleLink  {
         this();
         setRawURL(url);
         setFixedURL(url);
-     }
+    }
 
-     //--
+    //--
 
     public long getAtomSubFeedRequestId() {
         return atomSubFeedRequestId;

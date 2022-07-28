@@ -33,11 +33,14 @@
 
 package com.geocat.ingester.model.linkchecker;
 
-
 import com.geocat.ingester.model.linkchecker.helper.DatasetMetadataRecord;
 import com.geocat.ingester.model.linkchecker.helper.LinkToData;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 @DiscriminatorValue("SimpleStoredQueryDataLink")
