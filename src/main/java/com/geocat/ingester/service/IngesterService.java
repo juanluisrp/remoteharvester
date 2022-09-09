@@ -486,8 +486,8 @@ public class IngesterService {
                 if (simpleStoredQueryDataLink.getOgcRequest() != null) {
                     addOrUpdateIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK", simpleStoredQueryDataLink.getOgcRequest().getFinalURL());
                 } else {
-
-                }  addOrUpdateIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK", "");
+                    addOrUpdateIndicator(metadata, "INDICATOR_DOWNLOAD_SERVICE_LAYERLINK", "");
+                }
             } else if (vl instanceof SimpleAtomLinkToData) {
                 SimpleAtomLinkToData simpleAtomLinkToData = (SimpleAtomLinkToData) vl;
 
