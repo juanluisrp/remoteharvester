@@ -68,8 +68,14 @@ public class CSWEngine {
     public String GetCapabilities(String url) throws Exception {
         try {
             String result =  GetCapabilitiesPOST(url);
-            if (!isXML(result))
+            if (!isXML(result)) {
                 throw new Exception("URL did not return XML!");
+            }
+
+            if (result.contains("<ExceptionReport")) {
+                throw new Exception("GetCapabilities exception: " + result);
+            }
+
             return result;
         } catch (Exception e) {
             return GetCapabilitiesGET(url);
