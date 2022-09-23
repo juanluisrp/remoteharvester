@@ -72,10 +72,12 @@ public class QueueChooserService {
         return chooseQueueByGroup(queueGroupsMap.get("parallel_" + parallellism));
     }
 
-
-    public synchronized String chooseQueueByGroup(QueueGroupInfo groupInfo) {
-        QueueInfo result = groupInfo.currentQueueInfo();
-        groupInfo.useNextQueue();
-        return result.queueName();
+    static Object lockobject = new Object();
+    public String chooseQueueByGroup(QueueGroupInfo groupInfo) {
+        synchronized (lockobject) {
+            QueueInfo result = groupInfo.currentQueueInfo();
+            groupInfo.useNextQueue();
+            return result.queueName();
+        }
     }
 }

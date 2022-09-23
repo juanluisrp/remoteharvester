@@ -17,10 +17,13 @@ public class QueueGroupInfo {
         return new QueueInfo(this, nextQueueNumber);
     }
 
-    public synchronized void useNextQueue() {
-        nextQueueNumber++;
-        if (nextQueueNumber >= numberOfQueues)
-            nextQueueNumber = 0;
+    static Object lockobject = new Object();
+    public   void useNextQueue() {
+        synchronized (lockobject) {
+            nextQueueNumber++;
+            if (nextQueueNumber >= numberOfQueues)
+                nextQueueNumber = 0;
+        }
     }
 
     public QueueInfo queueInfo(int subQueueNumber) {
