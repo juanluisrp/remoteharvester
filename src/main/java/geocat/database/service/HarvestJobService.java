@@ -60,18 +60,21 @@ public class HarvestJobService {
         return harvestJobRepo.save(job);
     }
 
-    public synchronized WorkedDeterminedFinished determineIfWorkCompleted(String harvestId) {
-        HarvestJob harvestJob = harvestJobRepo.findById(harvestId).get();
-        if (!(harvestJob.getState() == HarvestJobState.DETERMINING_WORK))
-            return null; //already completed earlier
-        List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, EndpointJobState.DETERMINING_WORK);
-        boolean workCompleted = outstandingJobs.isEmpty();
-        if (workCompleted) {
-            //move state
-            updateHarvestJobStateInDB(harvestId, HarvestJobState.WORK_DETERMINED);
-            return new WorkedDeterminedFinished(harvestId);
+    static Object lockobject = new Object();
+    public   WorkedDeterminedFinished determineIfWorkCompleted(String harvestId) {
+        synchronized (lockobject) {
+            HarvestJob harvestJob = harvestJobRepo.findById(harvestId).get();
+            if (!(harvestJob.getState() == HarvestJobState.DETERMINING_WORK))
+                return null; //already completed earlier
+            List<EndpointJob> outstandingJobs = endpointJobRepo.findByHarvestJobIdAndState(harvestId, EndpointJobState.DETERMINING_WORK);
+            boolean workCompleted = outstandingJobs.isEmpty();
+            if (workCompleted) {
+                //move state
+                updateHarvestJobStateInDB(harvestId, HarvestJobState.WORK_DETERMINED);
+                return new WorkedDeterminedFinished(harvestId);
+            }
+            return null;
         }
-        return null;
     }
 
     public HarvestJob getById(String id) {

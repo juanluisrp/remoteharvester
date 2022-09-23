@@ -100,25 +100,28 @@ public class DatabaseUpdateService {
         return result;
     }
 
+    static Object lockobject = new Object();
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     //synchronized so other threads cannot update while we are writing...
-    public synchronized void errorOccurred(Exchange exchange) {
-        Exception e = (Exception) exchange.getMessage().getHeader("exception");
-        if (e == null)
-            return;
-        String processId = (String) exchange.getMessage().getHeader("processID");
-        Optional<HarvestJob> _job = harvestJobRepo.findById(processId);
-        if (!_job.isPresent())
-            return; // cannot update database.  Likely DB issue or very very early exception
-        HarvestJob job = _job.get();
-        if (job.getMessages() == null)
-            job.setMessages("");
-        String thisMessage = "\n--------------------------------------\n";
-        thisMessage += "WHEN:" + Instant.now().toString() + "\n\n";
-        thisMessage += convertToString(e);
-        thisMessage += "\n--------------------------------------\n";
-        job.setMessages(job.getMessages() + thisMessage);
-        HarvestJob j2 = harvestJobRepo.save(job);
+    public   void errorOccurred(Exchange exchange) {
+        synchronized (lockobject) {
+            Exception e = (Exception) exchange.getMessage().getHeader("exception");
+            if (e == null)
+                return;
+            String processId = (String) exchange.getMessage().getHeader("processID");
+            Optional<HarvestJob> _job = harvestJobRepo.findById(processId);
+            if (!_job.isPresent())
+                return; // cannot update database.  Likely DB issue or very very early exception
+            HarvestJob job = _job.get();
+            if (job.getMessages() == null)
+                job.setMessages("");
+            String thisMessage = "\n--------------------------------------\n";
+            thisMessage += "WHEN:" + Instant.now().toString() + "\n\n";
+            thisMessage += convertToString(e);
+            thisMessage += "\n--------------------------------------\n";
+            job.setMessages(job.getMessages() + thisMessage);
+            HarvestJob j2 = harvestJobRepo.save(job);
+        }
     }
 
 
