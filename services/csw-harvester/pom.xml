@@ -11,8 +11,8 @@
     <groupId>net.geocat</groupId>
     <artifactId>csw-harvester</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>csw-harvester</name>
-    <description>Demo project for Spring Boot</description>
+    <name>CSW Remote Harvester</name>
+    <description>Service that retrieves geo-metadata documents from servers supporting CSW 2.0.2 specification</description>
     <properties>
         <java.version>1.8</java.version>
         <camel.version>3.9.0</camel.version>
