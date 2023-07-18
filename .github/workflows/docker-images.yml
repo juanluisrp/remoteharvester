@@ -1,0 +1,24 @@
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_docker_images:
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        module: [csw-harvester, full-orchestrator, ingester, linkchecker]
+    uses: ./.github/workflows/build-and-publish-docker-image.yml
+    with:
+      context-path: services/${{ matrix.module }}
+      image-name: ${{ matrix.module }}
+
+

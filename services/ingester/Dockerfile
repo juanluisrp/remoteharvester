@@ -1,4 +1,6 @@
-FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 as builder
+FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 AS builder
+
+ARG MODULE
 
 WORKDIR /sources
 COPY ./ /sources
@@ -10,26 +12,27 @@ RUN --mount=type=cache,target=/root/.m2/repository \
 RUN --mount=type=cache,target=/root/.m2/repository \
     mvn -B package -DskipTests
 RUN mkdir /application && \
-    cp target/*.jar /application/csw-ingester.jar
+    cp $MODULE/target/*.jar /application/application.jar
 
 WORKDIR /application
 
 # Extract spring boot JAR layers
-RUN --mount=type=cache,target=/root/.m2/repository \ 
-    java -Djarmode=layertools -jar csw-ingester.jar extract
+RUN --mount=type=cache,target=/root/.m2/repository \
+    java -Djarmode=layertools -jar application.jar extract
 
 
-FROM eclipse-temurin:8-jre  as finalImage
+FROM eclipse-temurin:8-jre  AS finalImage
 
-LABEL vendor="GeoCat B.V."
-LABEL org.opencontainers.image.source https://github.com/GeoCat/csw-ingester
+ARG MODULE
+
+LABEL vendor="GeoNetwork"
 
 
 # Check the file application.properties for a description of the environment variables that can be customized.
 # The property names can be translated to environment varibles passing them to upper case and replacing the dots
 # with underscores. For example harvester.jdbc.url -> HARVESTER_JDBC_URL
 
-WORKDIR /opt/jrc-ingester
+WORKDIR /opt/$MODULE
 
 COPY --from=builder /application/dependencies/ ./
 COPY --from=builder /application/spring-boot-loader ./
