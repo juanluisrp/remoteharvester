@@ -1,4 +1,6 @@
-FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 as builder
+FROM --platform=$BUILDPLATFORM maven:3-eclipse-temurin-8 AS builder
+
+ARG MODULE
 
 WORKDIR /sources
 COPY ./ /sources
@@ -9,32 +11,33 @@ RUN --mount=type=cache,target=/root/.m2/repository \
 RUN --mount=type=cache,target=/root/.m2/repository \
     mvn -B package -DskipTests
 RUN mkdir /application && \
-    cp target/*.jar /application/icat.jar
+    cp $MODULE/target/*.jar /application/application.jar
 
 WORKDIR /application
 
 # Extract spring boot JAR layers
 RUN --mount=type=cache,target=/root/.m2/repository \
-    java -Djarmode=layertools -jar icat.jar extract
+    java -Djarmode=layertools -jar application.jar extract
 
 
-FROM eclipse-temurin:8-jre as finalImage
+FROM eclipse-temurin:8-jre AS finalImage
 
-LABEL maintainer="GeoCat B.V."
+ARG MODULE
+
+LABEL maintainer="GeoNetwork"
 
 
 # Check the file application.properties for a description of the environment variables that can be customized.
 # The property names can be translated to environment varibles passing them to upper case and replacing the dots
 # with underscores. For example harvester.jdbc.url -> HARVESTER_JDBC_URL
 
-COPY extra/certs/ /certs
-COPY extra/bin /usr/local/bin
+COPY $MODULE/extra/certs/ /certs
+COPY $MODULE/extra/bin /usr/local/bin
 
 RUN chmod -R +x /usr/local/bin && \
-	import_certs.sh && \
-	mkdir -p  mkdir -p /opt/icat
+	import_certs.sh
 
-WORKDIR /opt/icat
+WORKDIR /opt/$MODULE
 COPY --from=builder /application/dependencies/ ./
 COPY --from=builder /application/spring-boot-loader ./
 COPY --from=builder /application/snapshot-dependencies/ ./
